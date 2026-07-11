@@ -1,0 +1,68 @@
+{
+  "generator": "udioapi.pro/chirp-v4-5",
+  "tracks": {
+    "s1_jungle": {
+      "file": "tracks/s1_jungle.mp3",
+      "biome": "jungle",
+      "level": "Jungle Approach",
+      "section": "stage",
+      "key": "E minor",
+      "source_url": "https://tempfile.aiquickdraw.com/r/5f95cd2482d54fe8a6eda4f3f3d7c9d8.mp3",
+      "workId": "gen2acd41055939e4fa4ac0d111ccfa81420bksv"
+    },
+    "s2_base": {
+      "file": "tracks/s2_base.mp3",
+      "biome": "base interior",
+      "level": "Base Interior",
+      "section": "stage_base",
+      "key": "D minor",
+      "source_url": "https://tempfile.aiquickdraw.com/r/0d69181835bf4db88a94619ce654ccf3.mp3",
+      "workId": "gen29c9d90ef908d42e4a9fb81544fcfef5fbksv"
+    },
+    "s3_waterfall": {
+      "file": "tracks/s3_waterfall.mp3",
+      "biome": "waterfall",
+      "level": "Cascade Base",
+      "section": "stage2",
+      "key": "A minor",
+      "source_url": "https://tempfile.aiquickdraw.com/r/cf3146b4573b4357af1d8036be05e70c.mp3",
+      "workId": "gen2e4e372752a584038bca952bf8b0d6741bksv"
+    },
+    "s4_snowfield": {
+      "file": "tracks/s4_snowfield.mp3",
+      "biome": "snowfield",
+      "level": "Snowfield",
+      "section": "stage_snow",
+      "key": "C minor",
+      "source_url": "https://tempfile.aiquickdraw.com/r/d25801aba5e540c6b9ad0003bd1626d4.mp3",
+      "workId": "gen2a35140052c7d46bc9a39d56636a1b00cbksv"
+    },
+    "s5_energy": {
+      "file": "tracks/s5_energy.mp3",
+      "biome": "energy zone",
+      "level": "Energy Zone",
+      "section": "stage_energy",
+      "key": "F# minor",
+      "source_url": "https://tempfile.aiquickdraw.com/r/a2c4474ef96e40459e45fbeaca5e2194.mp3",
+      "workId": "gen29c9f259a2d924a9faded3bd126145dd9bksv"
+    },
+    "s6_hangar": {
+      "file": "tracks/s6_hangar.mp3",
+      "biome": "hangar",
+      "level": "Hangar",
+      "section": "stage_hangar",
+      "key": "G minor",
+      "source_url": "https://tempfile.aiquickdraw.com/r/30e00625bd3b4db7bb2a3fe3812dfd6c.mp3",
+      "workId": "gen2ed3ea8aa60fe400c8c08764b622bea41bksv"
+    },
+    "s7_alienlair": {
+      "file": "tracks/s7_alienlair.mp3",
+      "biome": "alien lair",
+      "level": "Alien Lair",
+      "section": "stage_alien",
+      "key": "B minor",
+      "source_url": "https://tempfile.aiquickdraw.com/r/1ad3ca240edb4cc7bef6e666e711610a.mp3",
+      "workId": "gen26cb75ddcab314b0491f6589457a1e16fbksv"
+    }
+  }
+}
