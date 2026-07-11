@@ -87,6 +87,18 @@ waveform exactly — no dynamic compression) with true-peak headroom. Measured a
 (`TRACK-ANALYSIS.md §1c`): spread **0.10 LU** (inaudible step) and worst true peak **−1.7
 dBFS** (no clipping). So stage→stage transitions no longer jump in volume.
 
+**CANONICAL FROM-MASTER BUILD (`pipeline/rebuild-clean.py`).** The incremental steps above
+stacked 4–5 lossy MP3 re-encodes and left a **21.4 MB** first-load payload (every player
+`loadTracks` all 7 at boot). This one script rebuilds each shipped loop from its original
+Udio master (`source_url`) through a **single ffmpeg encode** that does trim + click-safe
+fades + linear loudnorm (−15 LUFS) + web bitrate (~120 kbps VBR) at once — so each file is
+ONE transcode from the master (higher fidelity than the stacked chain) AND smaller. Measured
+after (`TRACK-ANALYSIS.md §1d`): total payload **14.5 MB** (−32%), loudness spread held at
+**0.10 LU**, seams intact, live playback 10/10. This is the preferred rebuild; `make-seamless`
++ `normalize-loudness` remain for incremental tweaks. The audio loads **async** (the synth
+covers until the mp3s arrive), so a smaller payload just means the real biome music kicks in
+sooner on slower/mobile connections.
+
 **LIVE-VERIFIED in a real browser (`verify/campaign-tracks-live.mjs`, all-pass):** boots the
 SHIPPED build (`game/serve.mjs`) in Chromium, fires the autoplay gesture, and asserts that
 `wireCampaignMusic` fetched the manifest + **decoded all 7 mp3s** (`decodeAudioData`), then

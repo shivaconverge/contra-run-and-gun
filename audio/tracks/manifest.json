@@ -12,8 +12,9 @@
       "workId": "gen2acd41055939e4fa4ac0d111ccfa81420bksv",
       "processed": "trimmed to sustained-energy loop + click-safe fades (make-seamless.py)",
       "loop_dur_s": 81.0,
-      "loudness_lufs": -15.0,
-      "normalized": "EBU R128 linear loudnorm to -15.0 LUFS / -1.5 dBFS TP"
+      "loudness_lufs": -14.9,
+      "normalized": "EBU R128 linear loudnorm to -15.0 LUFS / -1.5 dBFS TP",
+      "build": "from-master single-encode (trim+fade+loudnorm+q:a6)"
     },
     "s2_cascade": {
       "file": "tracks/s2_cascade.mp3",
@@ -27,7 +28,8 @@
       "processed": "trimmed to sustained-energy loop + click-safe fades (make-seamless.py)",
       "loop_dur_s": 216.2,
       "loudness_lufs": -14.9,
-      "normalized": "EBU R128 linear loudnorm to -15.0 LUFS / -1.5 dBFS TP"
+      "normalized": "EBU R128 linear loudnorm to -15.0 LUFS / -1.5 dBFS TP",
+      "build": "from-master single-encode (trim+fade+loudnorm+q:a6)"
     },
     "s3_snow": {
       "file": "tracks/s3_snow.mp3",
@@ -40,8 +42,9 @@
       "reused_from": "s4_snowfield",
       "processed": "trimmed to sustained-energy loop + click-safe fades (make-seamless.py)",
       "loop_dur_s": 180.6,
-      "loudness_lufs": -14.1,
-      "normalized": "EBU R128 linear loudnorm to -15.0 LUFS / -1.5 dBFS TP"
+      "loudness_lufs": -14.9,
+      "normalized": "EBU R128 linear loudnorm to -15.0 LUFS / -1.5 dBFS TP",
+      "build": "from-master single-encode (trim+fade+loudnorm+q:a6)"
     },
     "s4_desert": {
       "file": "tracks/s4_desert.mp3",
@@ -53,8 +56,9 @@
       "workId": "gen25d6741cf57c24b9193a534bb9aaa4db9bksv",
       "processed": "trimmed to sustained-energy loop + click-safe fades (make-seamless.py)",
       "loop_dur_s": 131.8,
-      "loudness_lufs": -15.0,
-      "normalized": "EBU R128 linear loudnorm to -15.0 LUFS / -1.5 dBFS TP"
+      "loudness_lufs": -14.9,
+      "normalized": "EBU R128 linear loudnorm to -15.0 LUFS / -1.5 dBFS TP",
+      "build": "from-master single-encode (trim+fade+loudnorm+q:a6)"
     },
     "s5_foundry": {
       "file": "tracks/s5_foundry.mp3",
@@ -67,7 +71,8 @@
       "processed": "trimmed to sustained-energy loop + click-safe fades (make-seamless.py)",
       "loop_dur_s": 195.0,
       "loudness_lufs": -14.9,
-      "normalized": "EBU R128 linear loudnorm to -15.0 LUFS / -1.5 dBFS TP"
+      "normalized": "EBU R128 linear loudnorm to -15.0 LUFS / -1.5 dBFS TP",
+      "build": "from-master single-encode (trim+fade+loudnorm+q:a6)"
     },
     "s6_caverns": {
       "file": "tracks/s6_caverns.mp3",
@@ -80,7 +85,8 @@
       "processed": "trimmed to sustained-energy loop + click-safe fades (make-seamless.py)",
       "loop_dur_s": 193.0,
       "loudness_lufs": -14.9,
-      "normalized": "EBU R128 linear loudnorm to -15.0 LUFS / -1.5 dBFS TP"
+      "normalized": "EBU R128 linear loudnorm to -15.0 LUFS / -1.5 dBFS TP",
+      "build": "from-master single-encode (trim+fade+loudnorm+q:a6)"
     },
     "s7_fortress": {
       "file": "tracks/s7_fortress.mp3",
@@ -92,8 +98,9 @@
       "workId": "gen2a97e8dc164db4b378a08c3b122bd31f8bksv",
       "processed": "trimmed to sustained-energy loop + click-safe fades (make-seamless.py)",
       "loop_dur_s": 200.5,
-      "loudness_lufs": -14.2,
-      "normalized": "EBU R128 linear loudnorm to -15.0 LUFS / -1.5 dBFS TP"
+      "loudness_lufs": -14.8,
+      "normalized": "EBU R128 linear loudnorm to -15.0 LUFS / -1.5 dBFS TP",
+      "build": "from-master single-encode (trim+fade+loudnorm+q:a6)"
     }
   }
 }
