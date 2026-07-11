@@ -11,7 +11,9 @@
       "source_url": "https://tempfile.aiquickdraw.com/r/5f95cd2482d54fe8a6eda4f3f3d7c9d8.mp3",
       "workId": "gen2acd41055939e4fa4ac0d111ccfa81420bksv",
       "processed": "trimmed to sustained-energy loop + click-safe fades (make-seamless.py)",
-      "loop_dur_s": 81.0
+      "loop_dur_s": 81.0,
+      "loudness_lufs": -15.0,
+      "normalized": "EBU R128 linear loudnorm to -15.0 LUFS / -1.5 dBFS TP"
     },
     "s2_cascade": {
       "file": "tracks/s2_cascade.mp3",
@@ -23,7 +25,9 @@
       "workId": "gen2e4e372752a584038bca952bf8b0d6741bksv",
       "reused_from": "s3_waterfall",
       "processed": "trimmed to sustained-energy loop + click-safe fades (make-seamless.py)",
-      "loop_dur_s": 216.2
+      "loop_dur_s": 216.2,
+      "loudness_lufs": -14.9,
+      "normalized": "EBU R128 linear loudnorm to -15.0 LUFS / -1.5 dBFS TP"
     },
     "s3_snow": {
       "file": "tracks/s3_snow.mp3",
@@ -35,7 +39,9 @@
       "workId": "gen2a35140052c7d46bc9a39d56636a1b00cbksv",
       "reused_from": "s4_snowfield",
       "processed": "trimmed to sustained-energy loop + click-safe fades (make-seamless.py)",
-      "loop_dur_s": 180.6
+      "loop_dur_s": 180.6,
+      "loudness_lufs": -14.1,
+      "normalized": "EBU R128 linear loudnorm to -15.0 LUFS / -1.5 dBFS TP"
     },
     "s4_desert": {
       "file": "tracks/s4_desert.mp3",
@@ -46,7 +52,9 @@
       "source_url": "https://tempfile.aiquickdraw.com/r/ba878b3c008a43e798e804fc54cf91f9.mp3",
       "workId": "gen25d6741cf57c24b9193a534bb9aaa4db9bksv",
       "processed": "trimmed to sustained-energy loop + click-safe fades (make-seamless.py)",
-      "loop_dur_s": 131.8
+      "loop_dur_s": 131.8,
+      "loudness_lufs": -15.0,
+      "normalized": "EBU R128 linear loudnorm to -15.0 LUFS / -1.5 dBFS TP"
     },
     "s5_foundry": {
       "file": "tracks/s5_foundry.mp3",
@@ -57,7 +65,9 @@
       "source_url": "https://tempfile.aiquickdraw.com/r/633f836c224f4084bf6599723e062513.mp3",
       "workId": "gen270c83d3cdf414bfd8e36d3b9e909b943bksv",
       "processed": "trimmed to sustained-energy loop + click-safe fades (make-seamless.py)",
-      "loop_dur_s": 195.0
+      "loop_dur_s": 195.0,
+      "loudness_lufs": -14.9,
+      "normalized": "EBU R128 linear loudnorm to -15.0 LUFS / -1.5 dBFS TP"
     },
     "s6_caverns": {
       "file": "tracks/s6_caverns.mp3",
@@ -68,7 +78,9 @@
       "source_url": "https://tempfile.aiquickdraw.com/r/152a22f9f83f4391b75e1ac44b845e62.mp3",
       "workId": "gen26671edace6c249f79a017cdf088a20febksv",
       "processed": "trimmed to sustained-energy loop + click-safe fades (make-seamless.py)",
-      "loop_dur_s": 193.0
+      "loop_dur_s": 193.0,
+      "loudness_lufs": -14.9,
+      "normalized": "EBU R128 linear loudnorm to -15.0 LUFS / -1.5 dBFS TP"
     },
     "s7_fortress": {
       "file": "tracks/s7_fortress.mp3",
@@ -79,7 +91,9 @@
       "source_url": "https://tempfile.aiquickdraw.com/r/c7ebc0b2da934173a154b2b883d1ae3a.mp3",
       "workId": "gen2a97e8dc164db4b378a08c3b122bd31f8bksv",
       "processed": "trimmed to sustained-energy loop + click-safe fades (make-seamless.py)",
-      "loop_dur_s": 200.5
+      "loop_dur_s": 200.5,
+      "loudness_lufs": -14.2,
+      "normalized": "EBU R128 linear loudnorm to -15.0 LUFS / -1.5 dBFS TP"
     }
   }
 }
