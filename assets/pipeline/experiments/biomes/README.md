@@ -41,7 +41,18 @@ Re-tuned to a bright full-coverage snow/ice prompt + lower contrast (1.12); snow
 **0% near-black**, verified clean by looking. The recipe now exposes a per-biome
 `contrast` override for exactly this.
 
-## HANDOFF — engine wire (produce-ahead-of-wire, like the chopper)
+## ✅ FINALIZED + LIVE (verified by looking, cycle: biome-finalize)
+The engine wired the biome tilesets (commit 41e9563: `assets.js theme_<id>` keys +
+`render.js drawGround` blits `assets.get(world.theme.tileset)`). Finalized here: folded
+into canonical `run()` (§5c) so `manifest.json` carries all 6 `theme_<id>`; byte-synced
+to `game/assets/`; gate cross-source consistent + theme-tileset draw path modeled.
+
+**LIVE proof:** `live/MONTAGE-live-biomes.png` — a headless capture of the REAL game at
+`?level=1,3,4,5,6,7`. Every stage renders its own distinct tileset (snow/desert/foundry/
+caverns/fortress), jungle falls back to `tiles`; 0 page errors, 0 missing, per-stage
+`tileset loaded=true` (`live/capture.json`). Harness: `../../tools/capture-biome.mjs`.
+
+## HANDOFF (historical) — engine wire (produce-ahead-of-wire, like the chopper)
 NOT synced to `game/assets/` and NOT in `manifest.json` yet — the engine loader
 (`game/data/assets.js`) doesn't key `theme_<id>`, so shipping now would trip the
 cross-source contract gate (orphan). Two small steps land them together:
