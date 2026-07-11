@@ -1,4 +1,4 @@
-=== GO-LIVE verification @ 2026-07-11T22:17:24Z ===
+=== GO-LIVE verification @ 2026-07-11T22:42:53Z ===
 URL: https://shivaconverge.github.io/contra-run-and-gun/
 --- root HTTP 0 ---
 <!doctype html>
@@ -42,7 +42,7 @@ URL: https://shivaconverge.github.io/contra-run-and-gun/
   #boot-help[hidden] { display: none !important; }
   #boot-help .card { max-width: 580px; text-align: left; font-size: 13px; line-height: 1.65; }
 
-src/main.js: HTTP 200 (18965 bytes)
+src/main.js: HTTP 200 (23254 bytes)
 asset resolve-gate: 25/25 referenced assets HTTP 200
 assets/audio/manifest.json: HTTP 200
 audio resolve-gate: 7/7 tracks HTTP 200:
@@ -55,10 +55,15 @@ audio resolve-gate: 7/7 tracks HTTP 200:
   assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 4156581 bytes
 RESULT: LIVE ✅
 
-VISUAL BOOT PROOF (headless Chromium against the LIVE URL, audio-realign build):
-  deploy/evidence/live-boot.png — captured 2026-07-12
-  Rendered stage-1 jungle frame from the LIVE URL after master realigned the 7
-  Udio tracks to campaign biome order (s1_jungle..s7_fortress) + generated the
-  desert/foundry/caverns/fortress biomes (commit 2a2c9de). Audio resolve-gate
-  confirmed ALL 7 per-stage tracks (not just the first) serve HTTP 200 audio/mp3
-  non-truncated, and all 25 game-referenced image assets serve HTTP 200.
+CAMPAIGN-LIVE PROOF (headless Chromium against the LIVE URL, campaign-complete build):
+  Master advanced to the full campaign flow — STAGE CLEAR interstitial + final
+  VICTORY screen + campaign restart (commit 2e02c92). Re-deployed; resolve-gate
+  green (25 assets + all 7 biome tracks HTTP 200 live).
+  Distinct-biome proof via ?level=N boot on the LIVE URL (JUDGE BY LOOKING):
+    deploy/evidence/live-stage1.png  — Stage 1 JUNGLE  (green foliage, starry night)
+    deploy/evidence/live-stage4.png  — Stage 4 DESERT  (tan dunes, warm palette, flyer)
+    deploy/evidence/live-stage7.png  — Stage 7 FORTRESS (crimson metal, red sky, ninja mix)
+  Read side by side: three clearly DISTINCT tilesets/palettes/enemy mixes render
+  from the deployed bundle — the per-stage biome theming is live, not just 200-OK
+  files. (VICTORY screen itself requires beating stage-7's boss — a gameplay-flow
+  check owned by the in-browser playthrough verifiers, not this deploy gate.)
