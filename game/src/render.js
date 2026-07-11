@@ -1038,9 +1038,21 @@ const _bossScratch = {};
 // can't aim, so it read as a second "phantom" turret beside the aiming one. We
 // erase that protruding barrel and fill its dark bore, leaving a clean weaponless
 // dome; the aiming barrel is drawn on top. Region is proportional to the sprite
-// (verified against the native 26×27 art) and cached per source image. The art
-// pipeline's real weaponless `turret_base` sprite supersedes this automatically
-// when it lands (drawEnemy prefers it). open_need: assets/turret_base.png.
+// (verified against the native 26×27 armed art) and cached per source image.
+//
+// STATUS: the pipeline now ships a WEAPONLESS base turret (assets/turret.png, a
+// clean 32×32 dome, NO barrel), and drawEnemy resolves `turret_base` → that file,
+// so this strip is NOT invoked on the live path (verified live: one barrel).
+//
+// KNOWN BUG (latent, dead-path only — 2026-07-12): the probe threshold below was
+// calibrated for the OLD 26×27 armed turret. On the CURRENT 32×32 clean dome the
+// far-left probe zone counts protrude=16 (the wider dome fills it), so if this
+// function were ever invoked on the current weaponless art (e.g. the `turret_base`
+// key removed so drawEnemy hits the `|| weaponlessTurret(img)` fallback) it would
+// FALSE-STRIP and chop the dome's left side. Safe today because the fallback never
+// fires. If that fallback is ever reactivated, recalibrate the probe to detect a
+// NARROW horizontal barrel protrusion (rows-opaque-at-leftmost-column), not raw
+// opaque-pixel count in the zone. Do NOT reactivate the fallback without that fix.
 const _turretBaseCache = new WeakMap();
 function weaponlessTurret(img) {
   if (!img) return null;
