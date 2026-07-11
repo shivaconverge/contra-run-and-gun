@@ -69,9 +69,31 @@ min pairwise timbre distance 0.017 (none identical), and every `theme` matches t
 stage order (7/7 OK). Regenerate/extend: `source ../../.provider_secrets.env && python3
 audio/pipeline/generate-udio.py`; re-verify: `python3 audio/pipeline/analyze-tracks.py`.
 
+**LIVE-VERIFIED in a real browser (`verify/campaign-tracks-live.mjs`, all-pass):** boots the
+SHIPPED build (`game/serve.mjs`) in Chromium, fires the autoplay gesture, and asserts that
+`wireCampaignMusic` fetched the manifest + **decoded all 7 mp3s** (`decodeAudioData`), then
+drives every stage's selector (the exact `audio.useTrack(id)` call `world.onStageChange`
+makes) and asserts the engine **hard-cuts to that biome's real loop** (`m.track===id`, its
+`BufferSource` live, `trackGain` hot, the procedural synth silenced) — for all 7 stages —
+and that `useTrack(null)` cleanly restores the synth fallback. `verify/track-handoff-check.mjs`
+grounds the same handoff on the **source-of-truth `audio/music.js`** (loads it directly via
+`verify/handoff-harness.html`, independent of the shipped copy). Both need `puppeteer-core`
+(this layer's devDep) + a cached chrome-for-testing; run `npm run tracks:live` /
+`npm run tracks:handoff` from `audio/`.
+
+> 🔁 **OPEN NEED — re-sync `game/src/music.js` from `audio/music.js`.** This cycle added a
+> `_stopTrackSource` hygiene fix (pins the stopped real-track bus's schedule to silence) to
+> the source of truth. `game/src/music.js` (owned by the integrator, kept as a verbatim
+> copy) must be re-synced (`cp audio/music.js game/src/music.js`) to carry it. Byte-safe: the
+> served build's 7-track playback already passes today; this only tidies the sourceless-bus
+> gain state. (Finding: the "trackGain lingers hot after useTrack(null)" I chased is a
+> **headless-shell readback artifact on a sourceless GainNode**, not an audible defect — the
+> bus emits silence regardless; verifiers now assert the audible contract, not that value.)
+
 > Open need (parent to confirm): the boss fight currently keeps the stage's real biome
-> loop (no per-biome *boss* track yet). If a distinct boss cue per stage is wanted, that's
-> a follow-up generation pass — flag it and I'll produce boss loops keyed `s<N>_..._boss`.
+> loop (no per-biome *boss* track yet — confirmed: `onStageChange` fires only on stage
+> change, so the boss inherits the stage loop by construction). If a distinct boss cue per
+> stage is wanted, that's a follow-up generation pass — flag it and I'll produce boss loops.
 
 ## Status: LIVE ✅ (integrated by root.B, commit `89f6f80`)
 The music is wired into the shipped build and **verified live end-to-end** by

@@ -33,6 +33,7 @@ function findChrome() {
 async function loadPuppeteer() {
   const rel = 'node_modules/puppeteer-core/lib/esm/puppeteer/puppeteer-core.js';
   for (const c of [
+    resolve(__dirname, '..', rel),
     resolve(__dirname, '../../playtest/e2e', rel),
     resolve(__dirname, '../../../../repo/playtest/e2e', rel),
     resolve(__dirname, '../../../../strategy/playtest/e2e', rel),
