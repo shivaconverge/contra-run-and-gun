@@ -577,4 +577,24 @@ export class World {
     });
     return { pass: violations.length === 0, violations };
   }
+
+  // SET-DRESSING guard: every level.decor prop is BASE-anchored (its bottom sits on the
+  // ground under `x`), so `x` MUST be over a `kind:'ground'` solid and `key` must be a
+  // decor_* sprite id. Keeps the per-stage set-dressing data well-formed for whenever
+  // render.js blits it (props are inert until then). Returns the flat prop list too, so
+  // an asset harness can cross-check the keys against the manifest.
+  static validateDecor(stages) {
+    const violations = [];
+    const keys = new Set();
+    stages.forEach((lvl, i) => {
+      for (const d of (lvl.decor || [])) {
+        keys.add(d.key);
+        const badKey = typeof d.key !== 'string' || !d.key.startsWith('decor_');
+        const onGround = lvl.solids.some((s) => s.kind === 'ground' && d.x >= s.x && d.x <= s.x + s.w);
+        if (badKey) violations.push({ stage: i + 1, x: d.x, reason: 'bad key ' + d.key });
+        else if (!onGround) violations.push({ stage: i + 1, x: d.x, key: d.key, reason: 'x not over ground' });
+      }
+    });
+    return { pass: violations.length === 0, violations, keys: [...keys] };
+  }
 }
