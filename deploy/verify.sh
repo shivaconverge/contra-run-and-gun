@@ -22,6 +22,15 @@ pass() { printf '\033[32m[verify] OK:\033[0m %s\n' "$*"; }
 
 fetch() { curl -fsSL --max-time 25 "$1"; }
 code() { curl -s -o /dev/null -w '%{http_code}' --max-time 25 "$1"; }
+# HTTP status + Content-Type + byte size, tab-separated (for binary assets we
+# must NOT slurp the body — mp3 tracks are multi-MB). Follows redirects.
+head_meta() { curl -sIL --max-time 30 "$1" | awk '
+  BEGIN{IGNORECASE=1}
+  {gsub(/\r/,"")}                       # strip CR so numeric compares work
+  /^HTTP\//{c=$2}
+  /^content-type:/{t=$2}
+  /^content-length:/{l=$2}
+  END{printf "%s\t%s\t%s", c, t, l}'; }
 
 {
   echo "=== GO-LIVE verification @ $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
@@ -54,10 +63,36 @@ log "GET $ASSET_URL -> $AC"
 [ "$AC" = "200" ] || fail "assets/player_idle.png returned HTTP $AC (assets not published)"
 pass "sprite asset reachable (HTTP 200)"
 
+# 4) Audio: the live campaign now FETCHES the per-stage Udio mp3 tracks at boot
+#    (main.js reads assets/audio/manifest.json, then fetch()+decodeAudioData on
+#    each assets/audio/<file>.mp3). A dropped file or a wrong MIME = silent music
+#    failure for real players, so the deploy gate must confirm the audio serves.
+MANIFEST_URL="${BASE}/assets/audio/manifest.json"
+log "GET $MANIFEST_URL"
+MJ="$(fetch "$MANIFEST_URL")" || fail "assets/audio/manifest.json not reachable"
+grep -qi '<html' <<<"$MJ" && fail "audio manifest served an HTML page (Pages 404 fallback)"
+# Pull the first track's basename straight from the manifest the game reads —
+# don't hard-code, so this survives track renames on the game side.
+TRACK_FILE="$(sed -n 's/.*"file"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' <<<"$MJ" | head -1 | sed 's#.*/##')"
+[ -n "$TRACK_FILE" ] || fail "no track 'file' found in audio manifest"
+TRACK_URL="${BASE}/assets/audio/${TRACK_FILE}"
+log "HEAD $TRACK_URL"
+IFS=$'\t' read -r TCODE TTYPE TLEN <<<"$(head_meta "$TRACK_URL")"
+[ "$TCODE" = "200" ] || fail "audio track $TRACK_FILE returned HTTP $TCODE (track not published)"
+case "$TTYPE" in
+  audio/mpeg*|audio/mp3*) : ;;
+  *) fail "audio track $TRACK_FILE served wrong Content-Type '$TTYPE' (want audio/mpeg — decodeAudioData will fail)";;
+esac
+# A real Udio track is hundreds of KB+; a truncated/LFS-pointer file would be tiny.
+[ "${TLEN:-0}" -ge 100000 ] || fail "audio track $TRACK_FILE only ${TLEN:-0} bytes (looks truncated)"
+pass "audio manifest + track '$TRACK_FILE' reachable (HTTP 200, $TTYPE, $TLEN bytes)"
+
 {
   echo ""
   echo "src/main.js: HTTP $MC ($(wc -c <<<"$MAIN" | tr -d ' ') bytes)"
   echo "assets/player_idle.png: HTTP $AC"
+  echo "assets/audio/manifest.json: HTTP 200"
+  echo "assets/audio/${TRACK_FILE}: HTTP $TCODE, $TTYPE, $TLEN bytes"
   echo "RESULT: LIVE ✅"
 } >>"$OUT"
 

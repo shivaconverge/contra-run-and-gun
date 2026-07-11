@@ -1,4 +1,4 @@
-=== GO-LIVE verification @ 2026-07-11T20:23:09Z ===
+=== GO-LIVE verification @ 2026-07-11T21:20:54Z ===
 URL: https://shivaconverge.github.io/contra-run-and-gun/
 --- root HTTP 0 ---
 <!doctype html>
@@ -42,14 +42,18 @@ URL: https://shivaconverge.github.io/contra-run-and-gun/
   #boot-help[hidden] { display: none !important; }
   #boot-help .card { max-width: 580px; text-align: left; font-size: 13px; line-height: 1.65; }
 
-src/main.js: HTTP 200 (15992 bytes)
+src/main.js: HTTP 200 (18965 bytes)
 assets/player_idle.png: HTTP 200
+assets/audio/manifest.json: HTTP 200
+assets/audio/s1_jungle.mp3: HTTP 200, audio/mp3, 1517973 bytes
 RESULT: LIVE ✅
 
-VISUAL BOOT PROOF (headless Chromium against the LIVE URL):
+VISUAL BOOT PROOF (headless Chromium against the LIVE URL, post-audio-wire):
   deploy/evidence/live-boot.png — captured 2026-07-12
-  Shows a rendered gameplay frame from https://shivaconverge.github.io/contra-run-and-gun/?headless=1
-  Visible: player sprite, turret enemy, parallax mountain BG + stars, grass
-  platforms, ground tiles, and the full control HUD. The ES-module tree executed
-  and drew to the 480x270 canvas — i.e. the game is genuinely booting live, not
-  merely serving static files.
+  Rendered gameplay frame from the LIVE public URL after master advanced to
+  include the 7 per-stage Udio mp3 tracks + biome content (commit 34392d4).
+  Visible: stage-1 jungle biome — player sprite, turret enemy, parallax
+  mountains + stars, grass platforms, ground tiles, full control HUD. The ES
+  module tree executed and drew to the 480x270 canvas => genuinely booting live.
+  Audio: assets/audio/manifest.json + s1_jungle.mp3 verified reachable
+  (HTTP 200, audio/mp3, 1,517,973 bytes) — the campaign music is served too.
