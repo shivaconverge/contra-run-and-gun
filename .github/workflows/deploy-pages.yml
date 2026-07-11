@@ -1,0 +1,66 @@
+name: Deploy game to GitHub Pages
+
+# GO-LIVE: keep the public URL CURRENT with the default branch. Every push that
+# advances the game (other loops land here) re-publishes the served build. The
+# game is a static ES-module site (no build step) whose entire runtime lives
+# under game/ with all-relative paths (./src/main.js, assets/...), so we upload
+# the game/ directory verbatim as the Pages artifact — it serves cleanly under a
+# project-site subpath (https://<owner>.github.io/<repo>/).
+#
+# Deploy target is game/ ONLY (not the repo root), so the design docs, QA notes,
+# audio sources, and pipeline tooling never leak into the public site.
+
+on:
+  push:
+    branches: [master, main]
+    # Only re-deploy when something the site actually serves changed. QA notes,
+    # strategy files, and sibling loop scaffolding don't affect the live build.
+    paths:
+      - 'game/**'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch: {}
+
+# Least-privilege token: read the repo, write to Pages, mint an OIDC token so
+# deploy-pages can prove provenance to the Pages service.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; a newer push supersedes an in-flight one so the live URL
+# always converges on the latest master rather than a stale mid-flight build.
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Sanity — confirm the served build has an entrypoint + module tree
+        run: |
+          set -euo pipefail
+          test -f game/index.html || { echo "::error::game/index.html missing"; exit 1; }
+          test -f game/src/main.js || { echo "::error::game/src/main.js missing"; exit 1; }
+          # Disable Jekyll so nothing (e.g. files the game may add later) is
+          # silently dropped by the default Pages Jekyll pass.
+          touch game/.nojekyll
+          echo "Serving $(find game -type f | wc -l | tr -d ' ') files from game/"
+
+      - name: Upload game/ as the Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: game
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

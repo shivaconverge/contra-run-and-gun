@@ -1,0 +1,55 @@
+=== GO-LIVE verification @ 2026-07-11T20:23:09Z ===
+URL: https://shivaconverge.github.io/contra-run-and-gun/
+--- root HTTP 0 ---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>CONTRA-LIKE — Vertical Slice</title>
+<style>
+  :root { --bg: #0a0e14; }
+  html, body {
+    margin: 0; height: 100%; background: var(--bg);
+    color: #cdd6e0; font-family: monospace;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  #stage {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  #game {
+    image-rendering: pixelated;
+    width: min(96vw, calc(96vh * 16 / 9));
+    height: auto;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border: 2px solid #1c2a3a;
+    box-shadow: 0 0 0 2px #0a0e14, 0 8px 40px rgba(0,0,0,0.6);
+  }
+  #help {
+    font-size: 12px; color: #6b7a8d; text-align: center; line-height: 1.5;
+    max-width: 90vw;
+  }
+  #help b { color: #8ef0ff; }
+  h1 { font-size: 14px; letter-spacing: 3px; color: #ffe36e; margin: 0; }
+  /* Shown only if the game fails to boot (e.g. opened via file:// where the
+     browser blocks ES modules) — so a player never hits a silent blank screen. */
+  #boot-help { position: fixed; inset: 0; z-index: 100; padding: 24px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(6,10,16,0.97); }
+  /* the ID rule above out-specifies the UA [hidden] rule — make hidden authoritative */
+  #boot-help[hidden] { display: none !important; }
+  #boot-help .card { max-width: 580px; text-align: left; font-size: 13px; line-height: 1.65; }
+
+src/main.js: HTTP 200 (15992 bytes)
+assets/player_idle.png: HTTP 200
+RESULT: LIVE ✅
+
+VISUAL BOOT PROOF (headless Chromium against the LIVE URL):
+  deploy/evidence/live-boot.png — captured 2026-07-12
+  Shows a rendered gameplay frame from https://shivaconverge.github.io/contra-run-and-gun/?headless=1
+  Visible: player sprite, turret enemy, parallax mountain BG + stars, grass
+  platforms, ground tiles, and the full control HUD. The ES-module tree executed
+  and drew to the 480x270 canvas — i.e. the game is genuinely booting live, not
+  merely serving static files.
