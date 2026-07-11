@@ -5,7 +5,7 @@ import { Enemy } from './enemy.js';
 import { Bullet, Particle, Pickup, burst } from './entities.js';
 import { Camera } from './camera.js';
 import { Feel } from './feel.js';
-import { FEEL, PLAYER, SIM, DIFFICULTY } from '../data/config.js';
+import { FEEL, PLAYER, SIM, DIFFICULTY, resolveTheme } from '../data/config.js';
 import { makeRng, aabbOverlap } from './util.js';
 
 const ACTIVATE_MARGIN = 56; // px beyond the view where a dormant enemy wakes
@@ -55,7 +55,14 @@ export class World {
     const s = this.level.playerStart;
     this.player = new Player(s.x, s.y);
     this.player.shield = this.modeDef.shield;
-    this.enemies = this.level.spawns.map((sp) => new Enemy(sp.type, sp.x, sp.y));
+    // Resolved biome descriptor for THIS stage (data-driven). Render/audio read
+    // world.theme to pick the backdrop/tileset/music without per-stage branches.
+    this.theme = resolveTheme(this.level.theme);
+    // Spawn enemies. A spawn may carry a per-stage `override` (folded onto its
+    // archetype def) — used by the campaign ladder to give each stage's boss a
+    // distinct identity/stats (name/hp/color/cadence) while reusing the PROVEN
+    // behavior branch + arena. Keeps enemy.js untouched (it reads this.def.*).
+    this.enemies = this.level.spawns.map((sp) => this._spawnEnemy(sp));
     // Generalized boss-finder: any archetype flagged def.isBoss (Sentinel, or the
     // Stage-2 chopper) — not a hardcoded kind — so new bosses register + get the HP
     // bar / callout / win path for free.
@@ -78,6 +85,23 @@ export class World {
     this.sfxEvents = [];      // SFX event names emitted this run (drained by the live loop)
     this.paused = false;      // LIVE-only freeze (main.js toggles on P / touch Pause)
     this.camera.follow(this.player, true);
+  }
+
+  // Build one Enemy from a spawn record, applying an optional per-spawn `override`
+  // that shadows fields on its archetype def (name/hp/color/cadence/size). The
+  // behavior branch in enemy.js reads this.def.* so a stat re-skin needs no engine
+  // change; hp/size are re-synced onto the instance since the ctor read the base def.
+  _spawnEnemy(sp) {
+    const e = new Enemy(sp.type, sp.x, sp.y);
+    if (sp.override) {
+      e.def = { ...e.def, ...sp.override };
+      if (sp.override.hp !== undefined) e.hp = e.def.hp;
+      if (sp.override.w !== undefined) e.w = e.def.w;
+      if (sp.override.h !== undefined) e.h = e.def.h;
+      // Cooldown seeds from fireEvery in the ctor; re-seed if the cadence changed.
+      if (sp.override.fireEvery !== undefined) e.cooldown = Math.floor(e.def.fireEvery * 0.5);
+    }
+    return e;
   }
 
   // Record a sound-effect trigger. Pure output (strings only) — never touches sim
@@ -369,5 +393,87 @@ export class World {
     p.resetWeapon();
     p.iframe = PLAYER.respawnProtect;  // brief spawn-in invulnerability (blink)
     p.flash = 12;
+  }
+
+  // ==========================================================================
+  // HEADLESS CAMPAIGN SPINE SELFTEST (pure sim, no DOM — runnable under Node).
+  // Asserts the INTENDED progression: boot stage 1 → its boss registers via the
+  // isBoss finder → clearing it flips status to 'cleared' → the transition
+  // (loadStage of the next entry, exactly what main.js requestNextStage does)
+  // advances to stage 2 and REACHES stage 2's boss → repeat through all 7 →
+  // clearing the LAST stage is terminal with NO next stage (== final VICTORY).
+  // Carries score/lives across like the live transition. Force-kills each boss so
+  // this measures the STATE MACHINE (a fact), NOT boss balance (a live-playtest
+  // judgment — see content/stage2/WIRE.md). Returns a machine-readable report.
+  //
+  // Repro (from game/):
+  //   node --input-type=module -e "import {World} from './src/world.js'; \
+  //     import {STAGES} from './data/config.js'; \
+  //     console.log(JSON.stringify(World.campaignSpineTest(STAGES),null,2))"
+  // ==========================================================================
+  static campaignSpineTest(stages, seed = 1234) {
+    const errors = [];
+    const stageReports = [];
+    const ck = (cond, msg) => { if (!cond) errors.push(msg); return cond; };
+
+    ck(Array.isArray(stages) && stages.length === 7,
+      `expected a 7-stage ladder, got ${stages && stages.length}`);
+
+    const world = new World(stages[0], seed, 'arcade');
+    let carry = { score: 0, lives: world.lives };
+
+    for (let i = 0; i < stages.length; i++) {
+      const num = i + 1;
+      const rep = { stage: num, name: world.level.name, theme: world.level.theme };
+
+      // Boss must register on load via the generalized isBoss finder.
+      ck(!!world.boss, `stage ${num}: no boss registered`);
+      ck(world.boss && world.boss.def && world.boss.def.isBoss === true,
+        `stage ${num}: registered boss is not flagged isBoss`);
+      rep.status0 = world.status;
+      rep.bossKind = world.boss && world.boss.kind;
+      rep.bossName = world.boss && world.boss.def && world.boss.def.name;
+      rep.bossHp = world.boss && world.boss.hp;
+      ck(world.status === 'playing', `stage ${num}: should boot 'playing', got '${world.status}'`);
+
+      // Boot integrity: step the real sim a beat with no input — must not throw
+      // and must stay 'playing' (nothing clears a stage on its own at spawn).
+      for (let f = 0; f < 30; f++) world.step({});
+      ck(world.status === 'playing', `stage ${num}: left 'playing' during idle boot`);
+
+      // Force-clear: destroy the boss, then step once so the win check fires.
+      const boss = world.boss;
+      let guard = 0;
+      while (boss && !boss.dead && guard++ < 100) boss.takeDamage(999);
+      world.step({});
+      ck(world.status === 'cleared', `stage ${num}: boss down but status='${world.status}' (expected 'cleared')`);
+      rep.cleared = world.status === 'cleared';
+
+      carry = { score: world.score, lives: world.lives };
+
+      if (i < stages.length - 1) {
+        // Transition (== main.js requestNextStage): same world object, next level,
+        // carry score/lives. Assert we REACH the next stage's boss.
+        world.loadStage(stages[i + 1], carry);
+        ck(world.level === stages[i + 1], `stage ${num}→${num + 1}: level did not advance`);
+        ck(world.status === 'playing', `stage ${num + 1}: not 'playing' after transition`);
+        ck(!!world.boss && world.boss.def.isBoss,
+          `stage ${num + 1}: next boss not reached/registered after transition`);
+        rep.advancedTo = world.level.name;
+      } else {
+        // Final stage cleared → VICTORY: terminal 'cleared' with no next stage.
+        rep.victory = world.status === 'cleared';
+        ck(world.status === 'cleared', `final stage: expected terminal 'cleared' (victory)`);
+      }
+      stageReports.push(rep);
+    }
+
+    return {
+      pass: errors.length === 0,
+      stageCount: stages.length,
+      finalScoreCarried: carry.score,
+      stages: stageReports,
+      errors,
+    };
   }
 }

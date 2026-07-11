@@ -27,6 +27,9 @@
 
 export const LEVEL2 = {
   name: 'Cascade Base',
+  // Biome id → resolved via THEMES (config.js), exposed on world.theme (data-driven
+  // render/audio selection). Additive; ignored safely by the current renderer.
+  theme: 'cascade',
   width: 2600,
   height: 270,
   // Falling below this y is a PIT/WATER DEATH (world._onPitFall). The water GAPS
