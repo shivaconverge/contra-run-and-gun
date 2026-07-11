@@ -52,6 +52,16 @@ export class World {
   }
 
   reset() {
+    // Re-bind the ACTIVE level's geometry every reset. CRITICAL for stage transitions:
+    // loadStage() swaps this.level then calls reset(), so without this the sim kept
+    // colliding against the PREVIOUS stage's solids and the camera stayed clamped to
+    // the old width — i.e. every stage past 1 in the normal (loadStage) play flow ran
+    // on stage-1 geometry. (The ?level=N dev shortcut hid it: it constructs a fresh
+    // World per stage, so the constructor set these correctly.) Mutating the camera's
+    // bounds (not replacing the object) keeps any held reference valid.
+    this.solids = this.level.solids;
+    this.camera.levelW = this.level.width;
+    this.camera.levelH = this.level.height;
     const s = this.level.playerStart;
     this.player = new Player(s.x, s.y);
     this.player.shield = this.modeDef.shield;
@@ -459,6 +469,12 @@ export class World {
         ck(world.status === 'playing', `stage ${num + 1}: not 'playing' after transition`);
         ck(!!world.boss && world.boss.def.isBoss,
           `stage ${num + 1}: next boss not reached/registered after transition`);
+        // GEOMETRY must switch with the level (regression guard for the loadStage bug
+        // where sim collided against the previous stage's solids / stale camera width).
+        ck(world.solids === stages[i + 1].solids,
+          `stage ${num + 1}: world.solids did not switch to the new level's geometry`);
+        ck(world.camera.levelW === stages[i + 1].width,
+          `stage ${num + 1}: camera width bound did not switch to the new level`);
         rep.advancedTo = world.level.name;
       } else {
         // Final stage cleared → VICTORY: terminal 'cleared' with no next stage.

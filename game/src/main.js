@@ -164,6 +164,9 @@ function runHeadless(ctx, world, assets, params) {
       world.step(bossInput.poll());
       if (world.boss.dead) { if (++held >= 6) break; } // hold past death so the FX render
     }
+  } else if (params.get('scenario') === 'campaign') {
+    runCampaignPlaythrough(ctx, world, assets, params);
+    return;
   } else {
     // Showcase demo (fidelity firefight capture). Keep the demo player ALIVE so it
     // pushes into a DENSE cluster and the captured beat is reliably BUSY — a
@@ -207,6 +210,60 @@ function runHeadless(ctx, world, assets, params) {
   const flag = document.createElement('div');
   flag.id = 'headless-done';
   flag.textContent = JSON.stringify(window.__bench);
+  document.body.appendChild(flag);
+}
+
+// FULL-CAMPAIGN PLAYTHROUGH oracle (?headless=1&scenario=campaign). An invincible,
+// competent auto-bot actually PLAYS every stage in the REAL browser engine — runs
+// right, hops the gaps, grabs on-path pickups, aims at the boss — clears it, then takes
+// the LIVE requestNextStage transition, through all 7 stages to VICTORY. Invincibility
+// isolates the FACTS this proves — TRAVERSABILITY + boss DEFEATABILITY + the transition
+// chain switching geometry correctly — from one-hit survival (a separate human-feel
+// matter). Unlike the Node force-kill spine test, this exercises render/assets/theme +
+// the real loadStage path per biome in-browser, catching anything that "breaks past
+// stage 2" (e.g. the stale-geometry transition bug this run fixes). Publishes
+// window.__campaign + a #campaign-done flag for the puppeteer harness to assert.
+function runCampaignPlaythrough(ctx, world, assets, params) {
+  const budget = parseInt(params.get('budget') || '9000', 10); // frames per stage cap
+  const stages = [];
+  let victory = false;
+  for (let s = 0; s < (world.stageCount || 7); s++) {
+    let reachedBoss = false, f = 0;
+    const startBarrierX = (world.solids.find((g) => g.kind === 'barrier') || {}).x;
+    for (; f < budget; f++) {
+      const p = world.player;
+      p.iframe = 999; // oracle: measure reach/defeat, not one-hit survival
+      // Hop when there's no ground just ahead of the feet (clears the water/chasm gaps).
+      const aheadX = p.x + p.w + 14, footY = p.y + p.h + 4;
+      const groundAhead = world.solids.some((g) => g.kind === 'ground' && aheadX >= g.x && aheadX <= g.x + g.w && footY >= g.y && footY <= g.y + g.h + 4);
+      const jump = p.grounded && !groundAhead;
+      // Aim at the boss once it is live (keep running right so we stay pinned at the barrier).
+      const b = world.boss; let up = false, down = false;
+      if (b && world.bossActive && !b.dead) {
+        const bcy = b.y + b.h / 2, pcy = p.y + p.h / 2;
+        up = bcy < pcy - 6; down = bcy > pcy + 6;
+      }
+      world.step({ left: false, right: true, up, down, jump, fire: true, swap: false, jumpPressed: jump, swapPressed: false });
+      if (world.bossActive) reachedBoss = true;
+      if (world.status !== 'playing') break; // 'cleared' (win) or 'gameover' (shouldn't, invincible)
+    }
+    const cleared = world.status === 'cleared';
+    stages.push({
+      stage: world.stageNum, name: world.level.name, theme: world.level.theme,
+      barrierX: startBarrierX, reachedBoss, cleared,
+      frames: f, sec: +(f / SIM.STEP_HZ).toFixed(1),
+      weapon: world.player.weaponKey, playerX: Math.round(world.player.x),
+    });
+    if (!cleared) break;                 // campaign broken here → stop and REPORT
+    if (world.isFinalStage) { victory = true; break; }
+    world.requestNextStage();            // the REAL normal-flow transition
+  }
+  render(ctx, world, assets);
+  const pass = victory && stages.length === (world.stageCount || 7) && stages.every((r) => r.cleared && r.reachedBoss);
+  window.__campaign = { pass, victory, stagesCleared: stages.filter((r) => r.cleared).length, stageCount: world.stageCount || 7, stages };
+  const flag = document.createElement('div');
+  flag.id = 'campaign-done';
+  flag.textContent = JSON.stringify(window.__campaign);
   document.body.appendChild(flag);
 }
 
