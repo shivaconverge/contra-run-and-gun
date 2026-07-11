@@ -45,7 +45,19 @@ generate 2–3 variant strips the engine cycles. Recorded so it gets improved, n
 Scope this cycle = the FAR layer only (biggest fidelity carrier); the engine keeps its
 procedural near/canopy/foliage bands. A near-layer strip is the obvious next step.
 
-## HANDOFF — engine background-image blit hook (produce-ahead-of-wire, gate-safe)
+## ✅ FINALIZED + LIVE (verified by looking)
+The engine wired the bg-blit hook (commit 43d2db2: `assets.js bg_<biome>` keys +
+`render.js drawParallax` blits `assets.get('bg_'+theme.id)` at `camx*0.15`, base y=158,
+procedural fallback). Finalized here: folded into canonical `run()` (§5d) so
+`manifest.json` carries all 6 `bg_<biome>`; byte-synced; gate extended (bg draw-path
+modeled + wide-strip frame-cap exemption) → 31/31 pass, cross-source 31=31=31.
+
+**LIVE proof:** `live/MONTAGE-live-bg.png` — headless capture of the REAL game at
+`?level=3/5/6`. Snow's mountain range, foundry's glowing industrial skyline, caverns'
+violet crystal spires render as the far layer in-engine; jungle keeps the procedural
+fallback; 0 errors, 0 missing. Harness: `../../tools/capture-biome.mjs`.
+
+## HANDOFF (historical) — engine background-image blit hook
 STAGED only: `assets/sprites/bg_*.png` + fragment `assets/pipeline/backgrounds.json`.
 NOT synced to `game/assets/` and NOT in `manifest.json` (no bg-blit hook yet → keeps the
 cross-source gate green). To wire (engine loop):

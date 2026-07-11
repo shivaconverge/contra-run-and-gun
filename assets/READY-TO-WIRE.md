@@ -1,23 +1,21 @@
 # READY-TO-WIRE — art-slice fidelity levers awaiting an engine greenlight
 
-## 🎨 STAGED — per-stage BACKGROUND parallax art (6 biomes, deliverable #2 "background layers")
-`python assets/pipeline/generate.py backdrops` produces a detailed 128×56 distant-scenery
-far-layer per biome — real PixelLab art (snow mountains / desert mesas / foundry industrial
-skyline / cavern crystal spires / fortress towers / cascade dam). This is the authored art
-`render.js drawParallax` explicitly awaits ("Procedural placeholder … until authored
-background art lands") and directly answers the creator's "background looks very simple".
-Grounded experiment first proved pixflux CAN do wide backgrounds; all 6 judged by looking
-tiled over the REAL live biome frames: `assets/pipeline/experiments/backgrounds/`
-(`backdrops-in-context.png`, `README.md`). Known limitation: 128px strip repeats ~4×/screen
-(reads fine at far parallax; wider-strip/seam-blend is a noted polish follow-up).
+## ✅ DONE — per-stage BACKGROUND parallax art (6 biomes, deliverable #2 "background layers") — FINALIZED + LIVE
+WIRED by the engine (commit 43d2db2: `assets.js` keys `bg_snow..bg_cascade`, `render.js
+drawParallax` blits `assets.get('bg_'+theme.id)` tiled at `camx*0.15`, base y=158, with the
+procedural fallback) and FINALIZED by me: folded into canonical `run()` (§5d) so
+`manifest.json` carries all 6 `bg_<biome>` entries; byte-synced to `game/assets/`; gate
+extended (bg draw-path modeled + wide-strip frame-cap exemption) → cross-source consistent
+(31=31=31), bg keys reachable, 31/31 sprites pass.
 
-**Engine background-blit hook to wire (then I finalize sync+manifest):**
-1. `game/data/assets.js` — key the strips (`bg_snow: 'assets/bg_snow.png'`, …).
-2. `game/src/render.js drawParallax` — if `assets.get('bg_'+world.theme.id)` exists, blit
-   it tiled at `camx*0.15`, ridge base ~y=158, over the sky gradient; keep the procedural
-   fallback (jungle/unloaded byte-identical), mirroring the tileset-swap pattern.
-STAGED out of manifest/game-assets (no bg hook yet → gate stays green, 25/25).
-**NEED:** confirm the bg-blit hook shape + whether a NEAR parallax layer is also wanted.
+**Verified LIVE by looking** (headless capture at `?level=3/5/6`):
+`assets/pipeline/experiments/backgrounds/live/MONTAGE-live-bg.png` — snow's mountain range,
+foundry's glowing industrial skyline, and caverns' violet crystal spires all render as the
+far layer in-engine; jungle keeps the procedural fallback; 0 errors, 0 missing. Answers the
+creator's "background looks very simple". Known limitation (recorded, non-blocking): 128px
+strip repeats ~4×/screen — wider-strip/seam-blend is a noted polish follow-up.
+**NEED (future):** whether a NEAR authored parallax layer is also wanted (far layer is the
+confirmed scope; engine keeps procedural near/canopy/foliage bands for now).
 
 ## 🎨 STAGED — per-stage SET-DRESSING props (6 biomes, deliverable #2 next art class)
 `python assets/pipeline/generate.py decor` produces one signature transparent prop per
