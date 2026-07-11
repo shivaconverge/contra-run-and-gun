@@ -69,6 +69,16 @@ min pairwise timbre distance 0.017 (none identical), and every `theme` matches t
 stage order (7/7 OK). Regenerate/extend: `source ../../.provider_secrets.env && python3
 audio/pipeline/generate-udio.py`; re-verify: `python3 audio/pipeline/analyze-tracks.py`.
 
+**SEAMLESS LOOPS (`pipeline/make-seamless.py`).** The engine loops each track whole
+(`loop=true`), so raw Udio songs — which fade to a silent outro — would play music then **up
+to 3.4 s of dead air** before restarting (a broken loop; the corpus anti-pattern). This step
+trims each track to its sustained-energy region with click-safe fades. Measured after
+(`TRACK-ANALYSIS.md §1b`): worst trailing silence **10.6 ms** (was 3374 ms), worst end→start
+discontinuity **0.001** (click-free), and every loop wraps on live music (end RMS ≫ 0). Run
+`generate-udio.py` (raw download) → `make-seamless.py` (loop-trim, overwrites + syncs
+`game/assets/audio/`) → `analyze-tracks.py` (verify). The raw Udio render stays reproducible
+via each track's `source_url` in the manifest.
+
 **LIVE-VERIFIED in a real browser (`verify/campaign-tracks-live.mjs`, all-pass):** boots the
 SHIPPED build (`game/serve.mjs`) in Chromium, fires the autoplay gesture, and asserts that
 `wireCampaignMusic` fetched the manifest + **decoded all 7 mp3s** (`decodeAudioData`), then

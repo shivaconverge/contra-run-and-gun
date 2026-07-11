@@ -24,32 +24,48 @@ Each track's `theme` matches `game/data/config.js` THEMES/STAGES at the same sta
 
 | stage_id | biome | key | dur | RMS | peak | centroid | bass<250Hz |
 |---|---|---|---:|---:|---:|---:|---:|
-| `s1_jungle` | jungle | E minor | 83s | -13.0 dB | 1.8 dB | 2344 Hz | 41.7% |
-| `s2_cascade` | cascade waterfall base | A minor | 220s | -13.1 dB | 2.9 dB | 2949 Hz | 57.7% |
-| `s3_snow` | snow | C minor | 185s | -13.7 dB | 2.1 dB | 2611 Hz | 47.9% |
-| `s4_desert` | desert | D minor | 133s | -12.6 dB | 1.3 dB | 2840 Hz | 46.8% |
-| `s5_foundry` | foundry | G minor | 200s | -11.7 dB | 0.9 dB | 2805 Hz | 69.6% |
-| `s6_caverns` | caverns | F# minor | 195s | -13.2 dB | 2.1 dB | 2991 Hz | 51.0% |
-| `s7_fortress` | fortress | B minor | 201s | -14.5 dB | 3.1 dB | 3079 Hz | 41.8% |
+| `s1_jungle` | jungle | E minor | 81s | -12.9 dB | 1.7 dB | 2430 Hz | 41.5% |
+| `s2_cascade` | cascade waterfall base | A minor | 216s | -13.0 dB | 2.8 dB | 3019 Hz | 57.4% |
+| `s3_snow` | snow | C minor | 181s | -13.6 dB | 2.4 dB | 2622 Hz | 47.9% |
+| `s4_desert` | desert | D minor | 132s | -12.6 dB | 1.1 dB | 2852 Hz | 46.7% |
+| `s5_foundry` | foundry | G minor | 195s | -11.6 dB | 1.0 dB | 2814 Hz | 69.7% |
+| `s6_caverns` | caverns | F# minor | 193s | -13.1 dB | 2.1 dB | 3062 Hz | 50.7% |
+| `s7_fortress` | fortress | B minor | 200s | -14.4 dB | 2.9 dB | 3150 Hz | 41.5% |
 
 Every track is multi-second, well above the noise floor (RMS ≫ −60 dB) and carries a real bass floor — i.e. real music, not silence/placeholder.
+
+## 1b. Seamless loop (no dead air, no wrap click)
+
+The engine loops each track whole (`loop=true`), so the END must wrap back to the START cleanly. Raw Udio songs fade to a silent outro (up to 3.4 s of dead air per loop); `pipeline/make-seamless.py` trims each to its sustained-energy region with click-safe fades. Measured on the shipped files:
+
+| stage_id | tail silence | end→start jump | end RMS |
+|---|---:|---:|---:|
+| `s1_jungle` | 8.3 ms | 0.0010 | 0.064 |
+| `s2_cascade` | 5.8 ms | 0.0004 | 0.041 |
+| `s3_snow` | 10.6 ms | 0.0001 | 0.063 |
+| `s4_desert` | 3.9 ms | 0.0001 | 0.057 |
+| `s5_foundry` | 6.0 ms | 0.0001 | 0.065 |
+| `s6_caverns` | 4.9 ms | 0.0003 | 0.054 |
+| `s7_fortress` | 3.6 ms | 0.0002 | 0.110 |
+
+**Loop verdict: PASS** — worst trailing silence 10.6 ms and worst wrap discontinuity 0.0010; every loop wraps on live music (end RMS ≫ 0), so no track goes silent mid-loop and no wrap clicks.
 
 ## 2. Distinct per biome (band-fingerprint cosine distance)
 
 Pairwise cosine distance between 8-band spectral fingerprints (0 = identical timbre, larger = more distinct).
 
-- **min pairwise distance:** 0.0169  (the two closest biomes)
-- **mean pairwise distance:** 0.0849
+- **min pairwise distance:** 0.0168  (the two closest biomes)
+- **mean pairwise distance:** 0.0852
 
 | | jungle | cascade | snow | desert | foundry | caverns | fortress |
 |---|---|---|---|---|---|---|---|
-| **s1_jungle** | 0.000 | 0.158 | 0.064 | 0.049 | 0.291 | 0.174 | 0.116 |
-| **s2_cascade** | 0.158 | 0.000 | 0.051 | 0.056 | 0.025 | 0.017 | 0.041 |
-| **s3_snow** | 0.064 | 0.051 | 0.000 | 0.041 | 0.134 | 0.080 | 0.048 |
-| **s4_desert** | 0.049 | 0.056 | 0.041 | 0.000 | 0.142 | 0.049 | 0.056 |
-| **s5_foundry** | 0.291 | 0.025 | 0.134 | 0.142 | 0.000 | 0.049 | 0.108 |
-| **s6_caverns** | 0.174 | 0.017 | 0.080 | 0.049 | 0.049 | 0.000 | 0.036 |
-| **s7_fortress** | 0.116 | 0.041 | 0.048 | 0.056 | 0.108 | 0.036 | 0.000 |
+| **s1_jungle** | 0.000 | 0.159 | 0.064 | 0.049 | 0.293 | 0.175 | 0.117 |
+| **s2_cascade** | 0.159 | 0.000 | 0.050 | 0.056 | 0.026 | 0.017 | 0.041 |
+| **s3_snow** | 0.064 | 0.050 | 0.000 | 0.041 | 0.134 | 0.079 | 0.047 |
+| **s4_desert** | 0.049 | 0.056 | 0.041 | 0.000 | 0.143 | 0.049 | 0.056 |
+| **s5_foundry** | 0.293 | 0.026 | 0.134 | 0.143 | 0.000 | 0.049 | 0.109 |
+| **s6_caverns** | 0.175 | 0.017 | 0.079 | 0.049 | 0.049 | 0.000 | 0.037 |
+| **s7_fortress** | 0.117 | 0.041 | 0.047 | 0.056 | 0.109 | 0.037 | 0.000 |
 
 **Distinctness verdict: PASS** — the two most-similar biomes still differ by 0.017 in coarse timbre fingerprint; no two are identical.
 
