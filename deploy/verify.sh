@@ -56,12 +56,35 @@ MAIN="$(fetch "$MAIN_URL")"
 grep -qi '<html' <<<"$MAIN" && fail "src/main.js served an HTML page (Pages 404 fallback)"
 pass "src/main.js reachable (HTTP 200, JS payload)"
 
-# 3) A real binary asset must be reachable (relative paths resolve under subpath).
-ASSET_URL="${BASE}/assets/player_idle.png"
-AC="$(code "$ASSET_URL")"
-log "GET $ASSET_URL -> $AC"
-[ "$AC" = "200" ] || fail "assets/player_idle.png returned HTTP $AC (assets not published)"
-pass "sprite asset reachable (HTTP 200)"
+# 3) ASSET RESOLVE-GATE — every asset the game references must be published.
+#    Source of truth is the game's OWN manifest (game/data/assets.js), so this
+#    stays in sync as loops add biome tilesets/sprites: we don't hard-code a list.
+#    A missing biome tileset (e.g. theme_snow.png) would silently drop that stage
+#    back to the default sheet — a distinct-theme fidelity regression that a plain
+#    "site is 200" check misses. We assert HTTP 200 for each referenced path.
+ASSETS_JS="$(cd "$(dirname "$0")/.." && pwd)/game/data/assets.js"
+ASSET_PATHS=()
+if [ -f "$ASSETS_JS" ]; then
+  # bash 3.2 (macOS default) has no mapfile — read line by line.
+  while IFS= read -r p; do ASSET_PATHS+=("$p"); done \
+    < <(grep -oE "'assets/[^']+'" "$ASSETS_JS" | tr -d "'" | sort -u)
+else
+  # Deploy dir checked out without game/ alongside — fall back to a core sprite.
+  ASSET_PATHS=(assets/player_idle.png)
+  log "assets.js not found at $ASSETS_JS — checking core sprite only"
+fi
+log "resolve-gate: ${#ASSET_PATHS[@]} referenced assets vs the deployed bundle"
+ASSET_FAILED=0
+for rel in "${ASSET_PATHS[@]}"; do
+  ac="$(code "${BASE}/${rel}")"
+  if [ "$ac" != "200" ]; then
+    printf '\033[31m[verify]   MISSING\033[0m %s -> HTTP %s\n' "$rel" "$ac"
+    echo "  MISSING: $rel -> HTTP $ac" >>"$OUT"
+    ASSET_FAILED=$((ASSET_FAILED+1))
+  fi
+done
+[ "$ASSET_FAILED" -eq 0 ] || fail "$ASSET_FAILED/${#ASSET_PATHS[@]} referenced assets are NOT published (see above)"
+pass "all ${#ASSET_PATHS[@]} referenced assets reachable (HTTP 200) — incl. per-stage biome tilesets"
 
 # 4) Audio: the live campaign now FETCHES the per-stage Udio mp3 tracks at boot
 #    (main.js reads assets/audio/manifest.json, then fetch()+decodeAudioData on
@@ -90,7 +113,7 @@ pass "audio manifest + track '$TRACK_FILE' reachable (HTTP 200, $TTYPE, $TLEN by
 {
   echo ""
   echo "src/main.js: HTTP $MC ($(wc -c <<<"$MAIN" | tr -d ' ') bytes)"
-  echo "assets/player_idle.png: HTTP $AC"
+  echo "asset resolve-gate: ${#ASSET_PATHS[@]}/${#ASSET_PATHS[@]} referenced assets HTTP 200"
   echo "assets/audio/manifest.json: HTTP 200"
   echo "assets/audio/${TRACK_FILE}: HTTP $TCODE, $TTYPE, $TLEN bytes"
   echo "RESULT: LIVE ✅"

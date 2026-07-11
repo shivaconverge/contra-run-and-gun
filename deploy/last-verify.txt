@@ -1,4 +1,4 @@
-=== GO-LIVE verification @ 2026-07-11T21:20:54Z ===
+=== GO-LIVE verification @ 2026-07-11T21:55:16Z ===
 URL: https://shivaconverge.github.io/contra-run-and-gun/
 --- root HTTP 0 ---
 <!doctype html>
@@ -43,17 +43,14 @@ URL: https://shivaconverge.github.io/contra-run-and-gun/
   #boot-help .card { max-width: 580px; text-align: left; font-size: 13px; line-height: 1.65; }
 
 src/main.js: HTTP 200 (18965 bytes)
-assets/player_idle.png: HTTP 200
+asset resolve-gate: 25/25 referenced assets HTTP 200
 assets/audio/manifest.json: HTTP 200
 assets/audio/s1_jungle.mp3: HTTP 200, audio/mp3, 1517973 bytes
 RESULT: LIVE ✅
 
-VISUAL BOOT PROOF (headless Chromium against the LIVE URL, post-audio-wire):
+VISUAL BOOT PROOF (headless Chromium against the LIVE URL, biome-tileset build):
   deploy/evidence/live-boot.png — captured 2026-07-12
-  Rendered gameplay frame from the LIVE public URL after master advanced to
-  include the 7 per-stage Udio mp3 tracks + biome content (commit 34392d4).
-  Visible: stage-1 jungle biome — player sprite, turret enemy, parallax
-  mountains + stars, grass platforms, ground tiles, full control HUD. The ES
-  module tree executed and drew to the 480x270 canvas => genuinely booting live.
-  Audio: assets/audio/manifest.json + s1_jungle.mp3 verified reachable
-  (HTTP 200, audio/mp3, 1,517,973 bytes) — the campaign music is served too.
+  Rendered stage-1 jungle frame from the LIVE URL after master advanced to
+  include 6 per-stage biome tilesets (theme_cascade/snow/desert/foundry/caverns/
+  fortress) + the chopper boss-clearability fix (commit 074dd21). Asset
+  resolve-gate confirmed all 25 game-referenced assets serve HTTP 200 live.
