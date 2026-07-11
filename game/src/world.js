@@ -5,7 +5,7 @@ import { Enemy } from './enemy.js';
 import { Bullet, Particle, Pickup, burst } from './entities.js';
 import { Camera } from './camera.js';
 import { Feel } from './feel.js';
-import { FEEL, PLAYER, SIM, DIFFICULTY, resolveTheme } from '../data/config.js';
+import { FEEL, PLAYER, SIM, DIFFICULTY, ENEMIES, resolveTheme } from '../data/config.js';
 import { makeRng, aabbOverlap } from './util.js';
 
 const ACTIVATE_MARGIN = 56; // px beyond the view where a dormant enemy wakes
@@ -540,5 +540,25 @@ export class World {
     const results = stages.map((lvl, i) => ({ stage: i + 1, name: lvl.name, ...World.bossDefeatableTest(lvl, opts) }));
     const undefeated = results.filter((r) => !r.defeated);
     return { pass: undefeated.length === 0, results, undefeated };
+  }
+
+  // FOOTING guard: every GROUND-resting spawn (a gravity grunt, or a stationary
+  // turret/mortar emplacement) must sit over a `kind:'ground'` solid — otherwise a
+  // grunt falls straight into a pit (wasted spawn) or an emplacement hangs in the
+  // air over a chasm. Flyers/bosses are airborne and exempt. Guards the per-stage
+  // enemy MIX so a future spawn edit can't silently float a unit off the map.
+  static validateFooting(stages) {
+    const GROUNDED = new Set(['grunt', 'turret', 'mortar']);
+    const violations = [];
+    stages.forEach((lvl, i) => {
+      for (const sp of lvl.spawns) {
+        if (!GROUNDED.has(sp.type)) continue;
+        const arche = ENEMIES[sp.type];
+        const cx = sp.x + (arche ? arche.w / 2 : 0);
+        const onGround = lvl.solids.some((s) => s.kind === 'ground' && cx >= s.x && cx <= s.x + s.w);
+        if (!onGround) violations.push({ stage: i + 1, type: sp.type, x: sp.x });
+      }
+    });
+    return { pass: violations.length === 0, violations };
   }
 }

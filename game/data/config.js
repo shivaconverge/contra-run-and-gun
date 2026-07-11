@@ -334,15 +334,27 @@ export function resolveTheme(id) { return THEMES[id] || THEMES[THEME_DEFAULT]; }
 // so every stage still ends on a boss that registers via the isBoss finder and is
 // defeatable on a geometry we've already validated live.
 //
-// OPEN NEEDS (declared, not worked around): (1) distinct GEOMETRY + set-dressing per
-// biome (pipeline/content) so stages 3–7 stop reusing two layouts; (2) distinct boss
+// Each variant stage also gets a SIGNATURE ENEMY MIX (`mix`) — extra spawns folded
+// onto the base layout so S3–7 stop being identical to S1/S2 in what you actually
+// FIGHT. Each biome leans on one threat axis (air / artillery / turrets / ambush /
+// gauntlet) and density RAMPS with stage number, on validated footing (LEVEL1 ground
+// [0,1700]∪[1900,2220]∪[2278,2400]; LEVEL2 ground [0,1180]∪[1346,2600] — additions
+// avoid the pits/chasms and stay clear of the boss arena). Verified: every added
+// ground unit sits over ground, and every boss stays defeatable (World.campaign*Test).
+//
+// OPEN NEEDS (declared, not worked around): (1) distinct GEOMETRY per biome
+// (pipeline/content) so stages 3–7 stop reusing two layouts; (2) distinct boss
 // MECHANICS beyond stat re-skins (weapon-defect owns enemy.js behavior branches);
-// (3) render/audio consuming `world.theme`. The spine below is correct and live now;
-// those layer in without changing this ladder's shape.
+// (3) render.js to draw a FINAL VICTORY screen — it still shows only STAGE CLEAR /
+// GAME OVER (render.js:1618); world.isFinalStage + world.nextStageLabel are exposed
+// for it. render/audio ALREADY consume world.theme (backdrop/tileset/music). The
+// spine below is correct and live now; those layer in without changing its shape.
 // ============================================================================
 function bossVariant(base, spec) {
-  // Clone the base level, retag its theme/name, and fold the boss stat override
-  // onto whichever spawn is a boss archetype (isBoss). Geometry is untouched.
+  // Clone the base level, retag its theme/name, fold the boss stat override onto the
+  // boss spawn, and splice this stage's signature MIX in just before the boss (order
+  // is cosmetic — the boss is found by the isBoss flag, not position). Geometry is
+  // untouched; the mix only ADDS enemies at hand-validated, on-ground coordinates.
   const spawns = base.spawns.map((sp) => {
     const arche = ENEMIES[sp.type];
     if (arche && arche.isBoss && spec.boss) {
@@ -350,18 +362,71 @@ function bossVariant(base, spec) {
     }
     return sp;
   });
+  if (spec.mix && spec.mix.length) {
+    const bi = spawns.findIndex((sp) => ENEMIES[sp.type] && ENEMIES[sp.type].isBoss);
+    if (bi >= 0) spawns.splice(bi, 0, ...spec.mix);
+    else spawns.push(...spec.mix);
+  }
   return { ...base, name: spec.name, theme: spec.theme, spawns };
 }
 
-// One row per stage. `boss` overrides fold onto the base geometry's boss spawn.
+// Ground-emplacement Y helpers (base ground top = y236): a gravity-less turret (h16)
+// sits at 220, a mortar (h12) at 224; grunts spawn at 210 and fall onto the ground.
+// One row per stage. `boss` folds onto the base boss spawn; `mix` adds the signature.
 const CAMPAIGN = [
   { base: LEVEL1 },  // Stage 1 — Jungle Approach (authored; theme in level1.js)
   { base: LEVEL2 },  // Stage 2 — Cascade Base   (authored; theme in level2.js)
-  { base: LEVEL1, theme: 'snow',     name: 'Frozen Ridge',    boss: { name: 'Ice Sentinel',  hp: 72,  color: '#7fb6d9', enrageFireEvery: 42 } },
-  { base: LEVEL2, theme: 'desert',   name: 'Scorched Dunes',  boss: { name: 'Sand Gunship',  hp: 88,  color: '#d9b06a', enrageFireEvery: 42 } },
-  { base: LEVEL1, theme: 'foundry',  name: 'Iron Foundry',    boss: { name: 'Foundry Core',  hp: 104, color: '#9aa4b0', fireEvery: 74, enrageFireEvery: 40 } },
-  { base: LEVEL2, theme: 'caverns',  name: 'Crystal Caverns', boss: { name: 'Crystal Wing',  hp: 96,  color: '#b98ad9', enrageFireEvery: 40 } },
-  { base: LEVEL1, theme: 'fortress', name: 'Red Falcon Keep', boss: { name: 'Red Falcon',    hp: 128, color: '#ff5a6e', fireEvery: 68, enrageFireEvery: 36 } },
+  // Stage 3 — Frozen Ridge (AIR pressure: drones own the cold open sky).
+  { base: LEVEL1, theme: 'snow', name: 'Frozen Ridge',
+    boss: { name: 'Ice Sentinel', hp: 72, color: '#7fb6d9', enrageFireEvery: 42 },
+    mix: [
+      { type: 'flyer', x: 520,  y: 120 },
+      { type: 'flyer', x: 1120, y: 115 },
+      { type: 'flyer', x: 1500, y: 120 },
+      { type: 'grunt', x: 1150, y: 210 },
+    ] },
+  // Stage 4 — Scorched Dunes (ARTILLERY: mortar bombardment denies the open flats).
+  { base: LEVEL2, theme: 'desert', name: 'Scorched Dunes',
+    boss: { name: 'Sand Gunship', hp: 88, color: '#d9b06a', enrageFireEvery: 42 },
+    mix: [
+      { type: 'mortar', x: 820,  y: 224 },
+      { type: 'mortar', x: 1560, y: 224 },
+      { type: 'grunt',  x: 1000, y: 210 },
+      { type: 'grunt',  x: 1700, y: 210 },
+    ] },
+  // Stage 5 — Iron Foundry (TURRET fortress: automated sentries lock the lanes).
+  { base: LEVEL1, theme: 'foundry', name: 'Iron Foundry',
+    boss: { name: 'Foundry Core', hp: 104, color: '#9aa4b0', fireEvery: 74, enrageFireEvery: 40 },
+    mix: [
+      { type: 'turret', x: 640,  y: 220 },
+      { type: 'turret', x: 1150, y: 220 },
+      { type: 'turret', x: 1950, y: 169 }, // on the 1900 platform (top y185)
+      { type: 'grunt',  x: 1000, y: 210 },
+      { type: 'grunt',  x: 1980, y: 210 },
+    ] },
+  // Stage 6 — Crystal Caverns (MIXED ambush: aerial + artillery crossfire).
+  { base: LEVEL2, theme: 'caverns', name: 'Crystal Caverns',
+    boss: { name: 'Crystal Wing', hp: 96, color: '#b98ad9', enrageFireEvery: 40 },
+    mix: [
+      { type: 'flyer',  x: 850,  y: 115 },
+      { type: 'flyer',  x: 1620, y: 120 },
+      { type: 'mortar', x: 1000, y: 224 },
+      { type: 'mortar', x: 1750, y: 224 },
+      { type: 'grunt',  x: 1560, y: 210 },
+    ] },
+  // Stage 7 — Red Falcon Keep (GAUNTLET: every threat axis at once, densest run).
+  { base: LEVEL1, theme: 'fortress', name: 'Red Falcon Keep',
+    boss: { name: 'Red Falcon', hp: 128, color: '#ff5a6e', fireEvery: 68, enrageFireEvery: 36 },
+    mix: [
+      { type: 'grunt',  x: 600,  y: 210 },
+      { type: 'grunt',  x: 1000, y: 210 },
+      { type: 'grunt',  x: 1980, y: 210 },
+      { type: 'turret', x: 700,  y: 220 },
+      { type: 'turret', x: 1300, y: 220 },
+      { type: 'flyer',  x: 1100, y: 110 },
+      { type: 'flyer',  x: 1550, y: 110 },
+      { type: 'mortar', x: 1250, y: 224 },
+    ] },
 ];
 
 // The playable ladder: stages 1–2 pass through by identity; 3–7 are themed variants.
