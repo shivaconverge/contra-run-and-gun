@@ -1841,6 +1841,35 @@ def verify_contract() -> int:
             for pp in pprob:
                 print(f"  PLACEHOLDER: {pp}")
             rprob.extend(pprob)
+
+            # DECOR-reference reachability (the set-dressing analogue of the no-
+            # placeholder-enemy check): every prop PLACED in a level's
+            # `decor:[{key:'decor_*'}]` array must (a) be a sprite my pipeline actually
+            # produces, (b) be keyed in game/data/assets.js so it LOADS, and (c) be
+            # BLITTED by render.js (a level.decor draw path) -- else the placed prop is
+            # INVISIBLE in-game. Catches the current gap: level2 (Cascade) places
+            # decor_cascade_valve but render.js has NO decor blit, so Stage-2 set-dressing
+            # renders nothing (verified live, experiments/set-dressing/live/).
+            dprob = []
+            placed_decor = set(_re.findall(r"key:\s*'(decor_\w+)'", lvl))
+            has_decor_render = bool(_re.search(r"\bdecor\b", render_src))
+            for key in sorted(placed_decor):
+                gaps = []
+                if not (SPRITES / f"{key}.png").exists():
+                    gaps.append("no produced sprite (add to SET_DRESSING)")
+                if key not in eng_keys:
+                    gaps.append("not keyed in assets.js (won't LOAD)")
+                if not has_decor_render:
+                    gaps.append("render.js has no level.decor blit (won't DRAW)")
+                if gaps:
+                    dprob.append(f"placed decor '{key}': " + "; ".join(gaps))
+            if placed_decor:
+                print(f"Decor-reachability: {len(placed_decor)} placed prop(s) "
+                      f"({', '.join(sorted(placed_decor))}) -> "
+                      f"{'all render' if not dprob else str(len(dprob))+' WONT-RENDER'}")
+                for dp in dprob:
+                    print(f"  WONT-RENDER: {dp}")
+                rprob.extend(dprob)
         except FileNotFoundError:
             print("No-placeholder-enemy: level1.js not found (skipped)")
     except FileNotFoundError:
