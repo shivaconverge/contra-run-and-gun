@@ -60,6 +60,18 @@ export class AudioKit {
   // enraged. Idempotent — main.js calls it every frame with the live boss.enraged flag.
   setIntensity(active) { if (this.music) this.music.setIntensity(active); }
 
+  // REAL per-stage campaign audio (Udio-generated mp3s, audio/tracks/manifest.json).
+  // Register decodes each biome's mp3 into a reusable buffer; useTrack hard-cuts the
+  // BGM to that stage's real loop (or back to the synth with useTrack(null)). Ducking,
+  // the scene gate, and KeyM apply to real tracks exactly as they do to the synth.
+  // Pass-throughs so main.js drives the campaign music without reaching past AudioKit;
+  // no-ops when audio is disabled (headless / blocked), so callers stay guard-free.
+  loadTracks(map) { return this.music ? this.music.loadTracks(map) : Promise.resolve(0); }
+  registerTrack(id, url) { return this.music ? this.music.registerTrack(id, url) : Promise.resolve(false); }
+  useTrack(id) { if (this.music) this.music.useTrack(id); }
+  hasTrack(id) { return this.music ? this.music.hasTrack(id) : false; }
+  get track() { return this.music ? this.music.track : null; }
+
   _makeNoise() {
     const n = this.ctx.sampleRate * 0.4;
     const buf = this.ctx.createBuffer(1, n, this.ctx.sampleRate);

@@ -88,6 +88,10 @@ function main() {
     world.nextStageLabel = world.hasNextStage
       ? `STAGE ${stageIndex + 2}` + (STAGES[stageIndex + 1].name ? ` — ${STAGES[stageIndex + 1].name}` : '')
       : null;
+    // Campaign audio hook: whenever the active stage changes (boot + every CONTINUE),
+    // let the live layer swap to THIS stage's real generated biome track. Wired in
+    // runLive (undefined in headless), so the sim path stays byte-identical.
+    if (world.onStageChange) world.onStageChange(stageIndex);
   };
   syncStageMeta();
 
@@ -199,9 +203,42 @@ function runHeadless(ctx, world, assets, params) {
 
 const START_KEYS = ['Space', 'KeyZ', 'KeyX', 'Enter'];
 
+// CAMPAIGN MUSIC — wire the REAL Udio-generated per-stage tracks (audio/tracks/,
+// served under game/assets/audio/) into the live audio layer. Reads the manifest,
+// decodes every biome's mp3 into a reusable buffer, then installs world.onStageChange
+// so each stage (boot + every CONTINUE) hard-cuts the BGM to ITS biome loop. The synth
+// (music.js) stays the fallback: a track that's still decoding or failed keeps the
+// procedural theme, so the game is never silent. LIVE-only — headless never calls this,
+// so the sim path is byte-identical and deterministic.
+function wireCampaignMusic(audio, world) {
+  if (!audio || !audio.music) return; // audio blocked/unsupported → synth-or-silent, no-op
+  fetch('assets/audio/manifest.json')
+    .then((r) => (r.ok ? r.json() : null))
+    .then((manifest) => {
+      if (!manifest || !manifest.tracks) return;
+      // Order tracks by their s<N>_ prefix so index i === campaign stage i (s1..s7).
+      const ids = Object.keys(manifest.tracks).sort((a, b) => {
+        const n = (s) => parseInt((/^s(\d+)/.exec(s) || [])[1] || '0', 10);
+        return n(a) - n(b);
+      });
+      const urls = {};
+      for (const id of ids) {
+        const file = (manifest.tracks[id].file || `${id}.mp3`).split('/').pop();
+        urls[id] = `assets/audio/${file}`;
+      }
+      // Select-by-stage stays live even while buffers are still decoding: useTrack keeps
+      // the current source until the target buffer is ready, so early advances degrade
+      // gracefully to the synth rather than going silent.
+      world.onStageChange = (i) => audio.useTrack(ids[i] || null);
+      audio.loadTracks(urls).then(() => world.onStageChange(world.stageIndex || 0));
+    })
+    .catch(() => { /* no manifest / offline → synth fallback, never throw */ });
+}
+
 function runLive(ctx, world, assets) {
   const audio = new AudioKit();
   window.__audio = audio;
+  wireCampaignMusic(audio, world); // register the real per-stage biome tracks + select stage 1's
   world.toTitle(); // arcade "insert coin": boot onto a title/start screen
   // Keyboard (desktop) + on-screen touch (phones/Android) feed one merged input,
   // so both work. Touch mounts only on touch devices, or forced via ?touch=1.

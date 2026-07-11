@@ -32,6 +32,8 @@ const MIME = {
   '.png': 'image/png',
   '.svg': 'image/svg+xml',
   '.woff2': 'font/woff2',
+  '.mp3': 'audio/mpeg',
+  '.wav': 'audio/wav',
 };
 
 // Serve the real game/ directory. Returns { url, close }. Modules resolve

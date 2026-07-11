@@ -39,6 +39,48 @@ try {
   }));
   ok('music.transportRunning', afterStart.running, JSON.stringify(afterStart));
 
+  // REAL PER-STAGE TRACK: main.js registers the Udio-generated biome mp3s from
+  // assets/audio/manifest.json and useTrack()s stage 1's on boot. Confirm the buffer
+  // decoded, the active track is the jungle theme, and the real-track gain is up while
+  // the synth gain is ducked to silence — i.e. the campaign is playing the REAL audio,
+  // not the procedural fallback. (Buffers decode async, so wait for readiness first.)
+  await page.waitForFunction(
+    "window.__audio.music._trackBuffers && Object.keys(window.__audio.music._trackBuffers).length === 7",
+    { timeout: 20000 },
+  );
+  await sleep(300); // let useTrack's gain cross-fade settle
+  const realTrack = await page.evaluate(() => {
+    const m = window.__audio.music;
+    return {
+      hasS1: m.hasTrack('s1_jungle'),
+      active: m.track,
+      trackGain: m.trackGain.gain.value,
+      synthGain: m.musicGain.gain.value,
+      loadedCount: [1, 2, 3, 4, 5, 6, 7]
+        .filter((n) => Object.keys(m._trackBuffers || {}).some((k) => k.startsWith('s' + n + '_'))).length,
+    };
+  });
+  ok('music.realTrackDecoded', realTrack.hasS1, JSON.stringify(realTrack));
+  ok('music.playsRealStage1Track', realTrack.active === 's1_jungle', JSON.stringify(realTrack));
+  ok('music.realTrackAudible', realTrack.trackGain > 0.05 && realTrack.synthGain < 0.02, JSON.stringify(realTrack));
+  ok('music.allSevenBiomeTracksLoaded', realTrack.loadedCount === 7, JSON.stringify(realTrack));
+
+  // CAMPAIGN ADVANCE: clearing a stage → CONTINUE swaps the BGM to the next biome's
+  // real track. Drive world.onStageChange (the hook main.js installed) across all 7
+  // stages and confirm each selects its own distinct registered track.
+  const ladder = await page.evaluate(async () => {
+    const w = window.__game, m = window.__audio.music;
+    const seen = [];
+    for (let i = 0; i < 7; i++) {
+      w.onStageChange(i);
+      await new Promise((r) => setTimeout(r, 120));
+      seen.push(m.track);
+    }
+    return seen;
+  });
+  const distinct = new Set(ladder);
+  ok('music.everyStageHasDistinctTrack', distinct.size === 7 && ladder.every(Boolean), JSON.stringify(ladder));
+
   // KeyM mutes music in lockstep with SFX.
   await page.keyboard.press('KeyM');
   await sleep(200);
