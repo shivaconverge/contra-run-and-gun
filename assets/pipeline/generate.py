@@ -490,21 +490,25 @@ def cap_bevel(im: Image.Image) -> Image.Image:
     return Image.fromarray(a.astype("uint8"), "RGBA")
 
 
-def enhance_dirt(im: Image.Image, seed: int, contrast: float = 1.4) -> Image.Image:
-    """Denser, higher-contrast dirt fill (ASSESS-3 fix #2). Contrast-stretch the
-    base texture, then stipple deterministic higher-contrast detail: dark pebbles
-    + a few warm mineral-speckle highlights, keyed to a fixed seed so the tile is
-    reproducible and stays horizontally tileable (no edge pixels touched)."""
+def enhance_dirt(im: Image.Image, seed: int, contrast: float = 1.4,
+                 speckle: tuple | None = None) -> Image.Image:
+    """Denser, higher-contrast fill (ASSESS-3 fix #2). Contrast-stretch the base
+    texture, then stipple deterministic higher-contrast detail keyed to a fixed seed
+    so the tile is reproducible and stays horizontally tileable (no edge pixels
+    touched).
+
+    speckle = (dark, mid, light) RGB triple, tuned PER BIOME so the anti-repeat/
+    density stipple stays ON-palette (brown pebbles on jungle dirt, but ice-blue on
+    snow, molten-orange on foundry, etc.). Defaults to the jungle browns for
+    backward-compatibility with the stage-1 `tiles` sheet."""
     import numpy as np
     from PIL import ImageEnhance
     im = ImageEnhance.Contrast(im.convert("RGBA")).enhance(contrast)
     a = np.array(im, dtype=np.uint8)
     h, w = a.shape[:2]
     rng = np.random.default_rng(seed)
-    PEBBLE = (26, 18, 12)          # dark clod
-    MINERAL = (210, 168, 74)       # warm yellow mineral fleck
-    MID = (92, 70, 46)             # lighter earth clump
-    for color, n in ((PEBBLE, 16), (MID, 12), (MINERAL, 6)):
+    dark, mid, light = speckle or ((26, 18, 12), (92, 70, 46), (210, 168, 74))
+    for color, n in ((dark, 16), (mid, 12), (light, 6)):
         ys = rng.integers(1, h - 1, n)   # keep 1px border clean for tiling
         xs = rng.integers(1, w - 1, n)
         for y, x in zip(ys, xs):
@@ -523,6 +527,155 @@ def pack_tiles(tiles: list[Image.Image], out: Path) -> dict:
     out.parent.mkdir(parents=True, exist_ok=True)
     sheet.save(out)
     return {"tileSize": TILE_PX, "rects": rects}
+
+
+# --------------------------------------------------------------------------- #
+# PER-STAGE BIOME TILESET RECIPE  (deliverable #2 — the SCALING ENGINE)
+# --------------------------------------------------------------------------- #
+# The engine's config.js THEMES registry declares a `tileset: 'theme_<id>'` key for
+# every one of the 7 stages (jungle/cascade/snow/desert/foundry/caverns/fortress) but
+# render.js "currently draws the jungle tiles for all stages" (config.js:283) — the
+# per-biome tileset ART does not exist yet. This recipe closes that gap: from a compact
+# THEME SPEC it produces a distinct biome tileset in the EXACT SAME format as the
+# stage-1 `tiles` sheet (48x16, three 16px tiles [cap@0, dirt@16, dirt2@32]) so the
+# engine swap is a one-liner: assets.get('tiles') -> assets.get(world.theme.tileset),
+# identical slicing (render.js TILES rects unchanged).
+#
+# Consistency-vs-distinct (strategy obs_consistency_vs_distinct_tension): every biome
+# SHARES the coherent style via TILE_STYLE_BASE (chunky 16-bit, bold outline, three
+# tone values, seamless) + the SAME cap_bevel/enhance_dirt/dirt2-derive pipeline; each
+# is made DISTINCT by biome-specific material nouns + a palette keyed to that theme's
+# config `ground`/`accent`. The dirt `speckle` triple is tuned per biome so the anti-
+# repeat stipple stays on-palette (ice-blue on snow, molten-orange on foundry, ...).
+TILE_STYLE_BASE = (", three tone values, chunky 16-bit pixel art, bold near-black "
+                   "outline, seamless horizontal tile, no character, no creature")
+
+BIOME_TILESETS = {
+    # id must match config.js THEMES keys. cap = lit surface top; dirt = body fill;
+    # speckle = (dark, mid, light) RGB for the on-palette density stipple.
+    "cascade": {
+        "cap_seed": 301, "dirt_seed": 401, "dirt2_seed": 451,
+        "speckle": ((22, 38, 50), (74, 110, 126), (120, 196, 208)),
+        "cap": ("wet concrete dam walkway surface top tile, blue-grey weathered "
+                "concrete deck with a teal-green moss highlight along the top edge, "
+                "damp riveted metal trim"),
+        "dirt": ("wet blue-grey concrete and riveted steel dam-wall fill texture, "
+                 "dark vertical seams, small teal water-stain flecks"),
+    },
+    "snow": {
+        # v2 (cycle: biome-recipe): v1 (seeds 302/402) leaned into dark rock shadow —
+        # 24% near-black voids broke the seamless snow-ground read. Re-tuned to a
+        # BRIGHT full-coverage snow/ice fill + lower contrast (1.4 default deepened the
+        # darks). Verified by looking that the black voids are gone.
+        "cap_seed": 312, "dirt_seed": 412, "dirt2_seed": 462, "contrast": 1.12,
+        "speckle": ((96, 128, 158), (168, 196, 220), (224, 240, 250)),
+        "cap": ("seamless solid snow and ice ground surface top tile, bright white "
+                "packed snow covering the whole top edge to edge, pale ice-blue "
+                "shading, a few tiny icicles, fully covered, no dark gaps"),
+        "dirt": ("seamless solid packed snow and pale blue ice ground fill, bright "
+                 "white and light ice-blue covering the whole tile edge to edge, "
+                 "subtle ice cracks, no dark holes, no deep shadow"),
+    },
+    "desert": {
+        "cap_seed": 303, "dirt_seed": 403, "dirt2_seed": 453,
+        "speckle": ((92, 66, 30), (156, 116, 58), (232, 196, 112)),
+        "cap": ("sun-baked desert sandstone ledge surface top tile, bright golden "
+                "sand crest with wind ripples along the top edge, tan sandstone body "
+                "underneath"),
+        "dirt": ("tan sandstone and packed sand fill texture, warm gold and ochre "
+                 "bands, small dark pebble flecks"),
+    },
+    "foundry": {
+        "cap_seed": 304, "dirt_seed": 404, "dirt2_seed": 454,
+        "speckle": ((26, 20, 22), (86, 80, 86), (255, 124, 60)),
+        "cap": ("riveted iron foundry catwalk surface top tile, dark gunmetal steel "
+                "plate deck with a glowing molten-orange hot edge along the top, "
+                "industrial bolts"),
+        "dirt": ("dark riveted iron and steel plating fill texture, gunmetal grey "
+                 "panels with bolt studs and a few glowing molten-orange cracks"),
+    },
+    "caverns": {
+        "cap_seed": 305, "dirt_seed": 405, "dirt2_seed": 455,
+        "speckle": ((30, 24, 52), (92, 72, 124), (196, 148, 224)),
+        "cap": ("crystal cavern rock ledge surface top tile, dark purple stone with "
+                "glowing violet crystal shards clustered along the top edge"),
+        "dirt": ("dark purple cavern rock fill texture, deep violet stone with small "
+                 "glowing lavender crystal flecks"),
+    },
+    "fortress": {
+        "cap_seed": 306, "dirt_seed": 406, "dirt2_seed": 456,
+        "speckle": ((34, 20, 26), (92, 56, 64), (255, 92, 112)),
+        "cap": ("fortress stone battlement surface top tile, dark grey-red carved "
+                "stone block deck with a red banner-cloth trim highlight along the "
+                "top edge, riveted metal"),
+        "dirt": ("dark stone fortress wall fill texture, grey-red carved blocks with "
+                 "mortar seams and small red rivet flecks"),
+    },
+}
+
+
+def gen_theme_tileset(theme_id: str, spec: dict) -> dict:
+    """Produce ONE biome's 48x16 [cap,dirt,dirt2] tileset PNG from a THEME SPEC.
+
+    Same pipeline as run()'s stage-1 tiles (pixflux 32px opaque -> 16px downscale ->
+    cap_bevel / enhance_dirt with the biome speckle -> dirt2 DERIVED from dirt by
+    offset+re-stipple to kill a repeating-clod motif -> pack_tiles). Writes to
+    assets/sprites/theme_<id>.png. Returns a manifest-ready tileset record."""
+    from PIL import ImageChops
+    cap_raw = gen_tile({"name": f"{theme_id}_cap", "seed": spec["cap_seed"],
+                        "prompt": spec["cap"] + TILE_STYLE_BASE})
+    dirt_raw = gen_tile({"name": f"{theme_id}_dirt", "seed": spec["dirt_seed"],
+                         "prompt": spec["dirt"] + TILE_STYLE_BASE})
+    ctr = spec.get("contrast", 1.4)   # per-biome (snow lowers it to avoid dark voids)
+    cap = cap_bevel(cap_raw)
+    dirt = enhance_dirt(dirt_raw, seed=spec["dirt_seed"], contrast=ctr,
+                        speckle=spec["speckle"])
+    dirt2 = enhance_dirt(ImageChops.offset(dirt_raw, 7, 5), contrast=ctr,
+                         seed=spec["dirt2_seed"], speckle=spec["speckle"])
+    out = SPRITES / f"theme_{theme_id}.png"
+    tpack = pack_tiles([cap, dirt, dirt2], out)
+    meta = [("cap", "surface"), ("dirt", "fill"), ("dirt2", "fill")]
+    return {
+        "image": f"sprites/theme_{theme_id}.png",
+        "type": "tileset",
+        "tileSize": tpack["tileSize"],
+        "tiles": [{"name": n, "role": r, **tpack["rects"][i]}
+                  for i, (n, r) in enumerate(meta)],
+        "note": (f"biome tileset for the '{theme_id}' stage (config THEMES.{theme_id}."
+                 f"tileset). Drop-in same format as `tiles`; engine swaps "
+                 f"assets.get('tiles') -> assets.get(world.theme.tileset)."),
+    }
+
+
+def gen_biome_tilesets(only: str | None = None) -> None:
+    """Deliverable #2 driver: one command produces the per-stage biome tilesets and
+    stages them for the engine to wire. Writes assets/sprites/theme_<id>.png for each
+    biome + a fragment manifest assets/pipeline/biome-tilesets.json (the engine loop
+    merges it into manifest.json + game/data/assets.js when it extends the loader —
+    the same produce-ahead-of-wire pattern the chopper used). Also writes a side-by-
+    side comparison strip per biome vs the stage-1 jungle tiles for by-looking QA.
+
+    Kept OUT of run() and OUT of manifest.json/game-assets on purpose: the engine's
+    LOADER (game/data/assets.js) does not yet key theme_<id>, so shipping them now
+    would trip the cross-source contract gate (orphan). They finalize together with
+    the engine's one-line render swap. See READY-TO-WIRE.md."""
+    bal0 = balance()
+    print(f"Balance: ${bal0:.2f}")
+    if bal0 < MIN_BALANCE_USD:
+        sys.exit(f"Balance below ${MIN_BALANCE_USD}; aborting.")
+    SPRITES.mkdir(parents=True, exist_ok=True)
+    ids = [only] if only else list(BIOME_TILESETS)
+    frag = {}
+    for tid in ids:
+        if tid not in BIOME_TILESETS:
+            sys.exit(f"unknown biome '{tid}'; known: {', '.join(BIOME_TILESETS)}")
+        print(f"[biome] {tid} tileset (48x16 [cap,dirt,dirt2])")
+        frag[f"theme_{tid}"] = gen_theme_tileset(tid, BIOME_TILESETS[tid])
+    fragpath = Path(__file__).resolve().parent / "biome-tilesets.json"
+    fragpath.write_text(json.dumps({"sprites": frag}, indent=2))
+    print(f"Wrote {fragpath.name} ({len(frag)} biome tileset(s))")
+    bal1 = balance()
+    print(f"Balance: ${bal1:.2f}  (spent ${bal0 - bal1:.2f})")
 
 
 def gen_anim_text(description: str, action: str, ref: Image.Image,
@@ -1353,6 +1506,20 @@ def verify_contract() -> int:
         js2 = (ROOT.parent / "game" / "data" / "assets.js").read_text()
         eng_keys = {m.group(1) for m in _re.finditer(r"(\w+):\s*'assets/[\w.]+\.png'", js2)}
         literal = set(_re.findall(r"assets\.get\('([\w.]+)'\)", render_src))
+        # Assets-access WRAPPERS: the engine may indirect through a local helper like
+        # `const get = (k) => assets && assets.get(k)` and then call get('player_idle')
+        # -- a LITERAL key reached via the wrapper, not `assets.get('literal')`. Detect
+        # single-arg wrappers that forward their param straight to assets.get(), harvest
+        # the literal keys passed to them, and treat the wrapper's param as a modeled arg
+        # form (else its `assets.get(k)` indirection false-trips the staleness warn AND
+        # every wrapper-drawn key false-fails as unreachable). Master's render.js added
+        # exactly this for the weaponless `player_*_noweapon` sprites (cycle: biome-recipe).
+        wrappers = _re.findall(
+            r"(\w+)\s*=\s*\(\s*(\w+)\s*\)\s*=>[^\n;]*?assets\.get\(\s*\2\s*\)", render_src)
+        wrapper_params = set()
+        for wname, wparam in wrappers:
+            wrapper_params.add(wparam)
+            literal |= set(_re.findall(rf"\b{wname}\(\s*'([\w.]+)'\s*\)", render_src))
         has_dynamic_kind = "assets.get(e.kind)" in render_src
         enemies_block = cfg_src.split("ENEMIES", 1)[-1]
         enemy_kinds = set(_re.findall(r"^  (\w+):\s*\{", enemies_block, _re.M))
@@ -1364,7 +1531,7 @@ def verify_contract() -> int:
         # assume the shape holds forever (verified sole routes = literal + e.kind,
         # cycle 26). This is not a violation (no false red) -- it's a staleness alarm.
         all_args = {a.strip() for a in _re.findall(r"assets\.get\(([^)]*)\)", render_src)}
-        modeled = {"e.kind"} | {f"'{k}'" for k in literal}
+        modeled = {"e.kind"} | {f"'{k}'" for k in literal} | wrapper_params
         unmodeled = {a for a in all_args if a not in modeled}
         if unmodeled:
             print("\n  MODEL-WARN: unmodeled assets.get() arg form(s) in render.js "
@@ -1469,6 +1636,12 @@ def verify_contract() -> int:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1 and sys.argv[1] == "verify":
+    cmd = sys.argv[1] if len(sys.argv) > 1 else None
+    if cmd == "verify":
         sys.exit(1 if verify_contract() else 0)
-    run()
+    elif cmd == "biomes":
+        # produce the per-stage biome tilesets (deliverable #2). `biomes` = all 6;
+        # `biomes <id>` = just that biome (e.g. `biomes snow`).
+        gen_biome_tilesets(sys.argv[2] if len(sys.argv) > 2 else None)
+    else:
+        run()

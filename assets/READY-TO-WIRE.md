@@ -1,5 +1,23 @@
 # READY-TO-WIRE — art-slice fidelity levers awaiting an engine greenlight
 
+## 🎨 STAGED — per-stage BIOME TILESETS (6 biomes, deliverable #2 scaling engine)
+The engine's `config.js THEMES` declares `tileset: 'theme_<id>'` for all 7 stages but
+"render currently draws the jungle tiles for all stages" (config.js:283). One command —
+`python assets/pipeline/generate.py biomes` — now produces a **distinct, on-palette
+tileset for every biome** (`cascade/snow/desert/foundry/caverns/fortress`), all real
+PixelLab art, in the **exact `tiles` format** (48×16 `[cap,dirt,dirt2]`, 16px slices),
+staged at `assets/sprites/theme_<id>.png` + fragment `assets/pipeline/biome-tilesets.json`.
+Proven distinct-yet-coherent by looking: `assets/pipeline/experiments/biomes/` (`ALL-
+biomes-vs-jungle.png`, `README.md`).
+
+**Engine wire (2 small edits, then art finalizes in ~5 min $0):**
+1. `game/data/assets.js` — add `theme_cascade..theme_fortress: 'assets/theme_<id>.png'`.
+2. `game/src/render.js` `drawSolid`/`drawGround` — `assets.get('tiles')` →
+   `assets.get(world.theme.tileset) || assets.get('tiles')` (slicing unchanged; jungle
+   stays `tiles`). Then ping me: I sync `theme_*.png`→`game/assets/` + merge the fragment
+   into `manifest.json` (the contract gate then covers them). Staged out of manifest/
+   game-assets on purpose so the cross-source gate stays green until the loader keys exist.
+
 ## 🔧 SHIPPED — WEAPONLESS hero + turret (creator round-2 two-gun defect fix)
 **Unblocks the weapon-defect loop.** `player_idle/run/prone/jump` and `turret` are
 regenerated as **weaponless bodies (no baked weapon)** — same keys, byte-compatible
