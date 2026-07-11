@@ -1,0 +1,28 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>MusicKit track-handoff harness</title>
+<!-- Loads the SOURCE-OF-TRUTH audio/music.js directly (../music.js) in a real browser
+     so verify/track-handoff-check.mjs can exercise the synth↔real-track handoff without
+     depending on the shipped game (game/src/music.js is a synced copy). -->
+<script type="module">
+  import { MusicKit } from '../music.js';
+  window.__setup = async (trackUrl, id) => {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const mk = new MusicKit(ctx, null, {});
+    await ctx.resume();
+    mk.start();                                   // arm the synth transport
+    const okReg = await mk.registerTrack(id, trackUrl);
+    window.__mk = mk; window.__ctx = ctx;
+    return { okReg, enabled: mk.enabled, ctx: ctx.state, hasBuf: mk.hasTrack(id) };
+  };
+  window.__use = (id) => { window.__mk.useTrack(id); };
+  window.__gains = () => {
+    const m = window.__mk;
+    return {
+      active: m.track,
+      trackGain: +m.trackGain.gain.value.toFixed(4),
+      synthGain: +m.musicGain.gain.value.toFixed(4),
+      src: !!m._trackSource,
+    };
+  };
+</script>

@@ -470,6 +470,19 @@ export class MusicKit {
       try { this._trackSource.disconnect(); } catch (e) { /* no-op */ }
       this._trackSource = null;
     }
+    // Pin the real-track bus's SCHEDULE to silence the instant its source stops, so the
+    // stopped bus is deterministically at unity-silence for its next use. (Audibly this is
+    // already correct either way — a GainNode with no connected input emits silence
+    // regardless of gain — and in headless-shell a sourceless node's `.gain.value` readback
+    // doesn't reflect automation anyway; verify/track-handoff-check.mjs asserts the audible
+    // contract: source stopped + synth restored, not this internal value.) On a stage
+    // SWITCH, _applyGain immediately ramps it back up for the incoming source (clean
+    // fade-in); on useTrack(null) it stays silent so only the synth is audible.
+    if (this.enabled && this.trackGain) {
+      const t = this.ctx.currentTime;
+      this.trackGain.gain.cancelScheduledValues(t);
+      this.trackGain.gain.setValueAtTime(0.0001, t);
+    }
   }
 
   // Duck the music under hit-stop (or any transient). Pass the boolean each frame;
