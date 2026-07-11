@@ -207,10 +207,26 @@ export class MusicKit {
     this._noiseBuf = null;
     this._playing = true;     // scene gate: 1 while a run is in progress, fades to 0 on
                               // title/gameover/victory so the SFX sting lands clean
+    // ---- REAL generated-track layer (per-biome campaign audio) --------------
+    // When the campaign registers a generated per-stage track (a Udio-generated mp3,
+    // see audio/pipeline/generate-udio.py + audio/tracks/manifest.json) and selects it
+    // via useTrack(id), MusicKit plays that DECODED audio buffer on a seamless loop and
+    // suppresses the procedural synth — a hard cut to the real biome theme. useTrack(null)
+    // returns to the synth. Both paths share duck/scene/mute downstream, so ducking, the
+    // run-active scene gate, and KeyM keep working identically for real tracks. Dormant
+    // and byte-safe until a track is registered — the synth remains the default/fallback.
+    this._trackBuffers = {};  // stage_id -> decoded AudioBuffer
+    this._activeTrack = null; // stage_id currently playing as real audio, or null (synth)
+    this._trackSource = null; // live looping BufferSource for the active track
+    this._pendingTrack = null; // id requested while ctx suspended → started on resume()
     try {
       if (!ctx) return;
       this.dest = destination || ctx.destination;
-      // graph: musicGain (mute/vol) → duckGain (hitstop) → sceneGain (run-active) → dest
+      // graph:  musicGain (synth vol/mute) ┐
+      //         trackGain (real vol/mute)  ┴→ duckGain (hitstop) → sceneGain (run-active) → dest
+      // Synth and real-track paths run in PARALLEL into the same duck/scene chain; only one
+      // is un-muted at a time (whichever useTrack selected), so duck + scene-gate + KeyM
+      // apply to real audio exactly as they do to the synth.
       this.sceneGain = ctx.createGain();
       this.sceneGain.gain.value = 1;
       this.sceneGain.connect(this.dest);
@@ -220,6 +236,9 @@ export class MusicKit {
       this.musicGain = ctx.createGain();
       this.musicGain.gain.value = this._base;
       this.musicGain.connect(this.duckGain);
+      this.trackGain = ctx.createGain();
+      this.trackGain.gain.value = 0.0001; // silent until a real track is selected
+      this.trackGain.connect(this.duckGain);
       this._noiseBuf = this._makeNoise();
       this.enabled = true;
     } catch (e) {
@@ -333,7 +352,10 @@ export class MusicKit {
       while (this._nextBarTime < horizon) {
         // Apply a queued section switch on the DOWNBEAT (clean cut, no mid-bar glitch).
         if (this._pendingSection) { this._section = this._pendingSection; this._pendingSection = null; this._bar = 0; }
-        this._scheduleBar(this._bar, this._nextBarTime);
+        // Real-track mode: a generated biome loop is playing, so don't schedule synth
+        // voices (they'd be gain-muted anyway) — just keep the bar clock advancing so a
+        // later useTrack(null) resumes the synth on-beat.
+        if (!this._activeTrack) this._scheduleBar(this._bar, this._nextBarTime);
         this._nextBarTime += this.barDur;
         this._bar++;
       }
@@ -356,6 +378,11 @@ export class MusicKit {
     if (this.ctx.state === 'suspended') { this.ctx.resume(); }
     if (!this.running) this.start();
     else this._applyGain();
+    // A real track requested before the first gesture starts now (ctx is live).
+    if (this._pendingTrack && this.ctx.state !== 'suspended') {
+      this._startTrackSource(this._pendingTrack);
+      this._applyGain();
+    }
   }
 
   toggleMute() { this.setMuted(!this.muted); return this.muted; }
@@ -369,6 +396,80 @@ export class MusicKit {
     if (!SECTIONS[name] || name === this._section) return;
     if (this.running) this._pendingSection = name; // clean downbeat cut in the scheduler
     else { this._section = name; this._bar = 0; }   // offline / pre-start: apply now
+  }
+
+  // ---- REAL generated-track layer ----------------------------------------
+  // Register a generated per-biome track (decode an mp3/ogg URL into a reusable buffer).
+  // Headless / no-ctx = silent no-op returning false. Idempotent per id. The campaign
+  // loop calls this once at boot for each stage's track (see audio/tracks/manifest.json),
+  // then useTrack(stageId) to hard-cut to it. Returns true once the buffer is ready.
+  //   e.g. await audio.music.registerTrack('s1_jungle', 'assets/audio/s1_jungle.mp3')
+  async registerTrack(id, url) {
+    if (!this.enabled || !id || !url) return false;
+    if (this._trackBuffers[id]) return true;
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) return false;
+      const bytes = await resp.arrayBuffer();
+      // decodeAudioData: promise form (modern) with a callback fallback (older Safari).
+      const buf = await new Promise((res, rej) => {
+        const p = this.ctx.decodeAudioData(bytes, res, rej);
+        if (p && typeof p.then === 'function') p.then(res, rej);
+      });
+      this._trackBuffers[id] = buf;
+      return true;
+    } catch (e) {
+      return false; // network/decode failure → keep the synth fallback, never throw
+    }
+  }
+
+  // Convenience: register a batch of {id: url} in parallel. Returns the count loaded.
+  async loadTracks(map) {
+    if (!this.enabled || !map) return 0;
+    const ids = Object.keys(map);
+    const oks = await Promise.all(ids.map((id) => this.registerTrack(id, map[id])));
+    return oks.filter(Boolean).length;
+  }
+
+  get track() { return this._activeTrack; }
+  hasTrack(id) { return !!this._trackBuffers[id]; }
+
+  // Hard-cut the music to a registered real track (per stage), or back to the synth with
+  // useTrack(null). Idempotent — safe to call every stage-change. If the id isn't
+  // registered (still loading / failed), it stays on the synth so the game is never silent.
+  //   e.g. campaign on stage advance: audio.music.useTrack(STAGE_TRACK[stageIndex])
+  useTrack(id) {
+    if (!this.enabled) { this._activeTrack = id && this._trackBuffers[id] ? id : (id ? this._activeTrack : null); return; }
+    id = id || null;
+    if (id && !this._trackBuffers[id]) return; // not ready → keep current source
+    if (id === this._activeTrack) return;
+    this._stopTrackSource();
+    this._activeTrack = id;
+    if (id) {
+      if (this.ctx.state === 'suspended') { this._pendingTrack = id; } // start on resume()
+      else this._startTrackSource(id);
+    }
+    this._applyGain(); // cross-fade synth↔track gains
+  }
+
+  _startTrackSource(id) {
+    const buf = this._trackBuffers[id];
+    if (!buf) return;
+    const src = this.ctx.createBufferSource();
+    src.buffer = buf;
+    src.loop = true;                 // seamless whole-file loop for the stage
+    src.connect(this.trackGain);
+    src.start(this.ctx.currentTime + 0.02);
+    this._trackSource = src;
+    this._pendingTrack = null;
+  }
+
+  _stopTrackSource() {
+    if (this._trackSource) {
+      try { this._trackSource.stop(); } catch (e) { /* already stopped */ }
+      try { this._trackSource.disconnect(); } catch (e) { /* no-op */ }
+      this._trackSource = null;
+    }
   }
 
   // Duck the music under hit-stop (or any transient). Pass the boolean each frame;
@@ -407,8 +508,14 @@ export class MusicKit {
 
   _applyGain() {
     if (!this.enabled) return;
-    const target = this.muted ? 0.0001 : this._base * (this._intensity ? this._intensityBoost : 1);
-    this._ramp(this.musicGain.gain, target, 0.05);
+    // Exactly one path is audible: the synth (when no real track is active) or the real
+    // track (when one is selected). Mute (KeyM) silences whichever is live.
+    const onTrack = !!this._activeTrack;
+    const synthTarget = (this.muted || onTrack)
+      ? 0.0001 : this._base * (this._intensity ? this._intensityBoost : 1);
+    const trackTarget = (this.muted || !onTrack) ? 0.0001 : this._base;
+    this._ramp(this.musicGain.gain, synthTarget, 0.05);
+    if (this.trackGain) this._ramp(this.trackGain.gain, trackTarget, 0.05);
   }
 
   _ramp(param, to, secs) {
