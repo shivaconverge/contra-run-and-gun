@@ -5,6 +5,21 @@ import { moveAndCollide } from './physics.js';
 
 const SQRT1_2 = Math.SQRT1_2;
 
+// Hero weapon geometry — the SINGLE source of truth for where the one rifle sits
+// and where its muzzle is, SHARED with render.js drawGun so the drawn muzzle and
+// the bullet spawn are the exact same point (seen-gun == firing-gun). This is the
+// CREATOR round-2 fix: the hero carries ONE procedural aiming weapon (no baked
+// sprite gun), and the shot leaves that weapon's real muzzle. `pivotY` is the
+// hands/chest height as a fraction of the standing hitbox; `muzzle` is the barrel
+// reach in px along the unit 8-way aim (|aim| == 1 for cardinals AND diagonals).
+export const HERO_GUN = { pivotY: 0.30, muzzle: 11 };
+
+// Muzzle world-point for the current aim — the rifle tip the shot leaves from.
+export function heroMuzzle(p) {
+  const gx = p.x + p.w / 2, gy = p.y + p.h * HERO_GUN.pivotY;
+  return { gx, gy, mx: gx + p.aim.x * HERO_GUN.muzzle, my: gy + p.aim.y * HERO_GUN.muzzle };
+}
+
 // Landing feedback tuning. LAND_MIN_VY gates out micro step-downs so only real
 // jumps/falls (fall speed > this) trigger the squash + dust; LAND_SQUASH_FRAMES is
 // how long the touchdown squash eases out over.
@@ -166,11 +181,10 @@ export class Player {
     this.fireCd = wpn.fireRate;
     this.muzzle = 4;
     world.emit('shoot_' + this.weaponKey); // audio maps per-weapon (falls back to rifle)
-    // Muzzle origin at the HANDS (the sprite holds its rifle at chest height ~28%
-    // down the taller-than-hitbox sprite), NOT the waist — CREATOR_FEEDBACK #2:
-    // shots must come from the hand-held gun. Kept in sync with render.js drawGun.
-    const mx = this.x + this.w / 2 + this.aim.x * (this.w * 0.7);
-    const my = this.y + this.h * 0.28 + this.aim.y * (this.h * 0.5);
+    // Muzzle origin = the ONE rifle's real muzzle (heroMuzzle / HERO_GUN), the
+    // exact point render.js draws the barrel tip at, so the weapon you SEE and the
+    // weapon that FIRES are the same one (CREATOR round-2 fix — no phantom waist gun).
+    const { mx, my } = heroMuzzle(this);
     const baseAng = Math.atan2(this.aim.y, this.aim.x);
     for (let p = 0; p < wpn.pellets; p++) {
       let ang = baseAng;
