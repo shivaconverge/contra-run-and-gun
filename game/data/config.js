@@ -394,6 +394,65 @@ function bossVariant(base, spec) {
 // arrays are inert (render ignores unknown level fields), so this is gate-safe.
 // ============================================================================
 
+// ============================================================================
+// DISTINCT STAGE GEOMETRY — Stage 4 "Scorched Dunes" gets its OWN layout, not a
+// reskin of LEVEL2. This breaks the 2-layout reuse (creator ROUND-1: "theme not
+// clear... move at multiple heights, not one flat plane") for the first non-authored
+// stage: an OPEN desert — long sunbaked flats (sparse, wide dune step-ups instead of
+// the jungle/cascade platform thicket), ONE dry-canyon gap (jump hazard, no water),
+// and the PROVEN chopper arena tail (barrier@2140, gunship@2340) so boss defeatability
+// is unchanged. Enemy layout is authored inline for the open flats (mortar area-denial
+// + dune-perch turrets). Verified traversable+clearable by the campaign oracle; footing
+// + decor guarded. Same schema as level1/level2 so render/audio/physics read it as-is.
+const LEVEL4_DESERT = {
+  name: 'Scorched Dunes',
+  theme: 'desert',
+  width: 2500,
+  height: 270,
+  gravityFloor: 268,
+  solids: [
+    // Open flats broken by ONE dry canyon (x1000–1056, 56px — the Stage-1 jump reach).
+    { x: 0,    y: 236, w: 1000, h: 40, kind: 'ground' },
+    // — 56px dry-canyon gap (x1000–1056): drop through = pit death —
+    { x: 1056, y: 236, w: 1444, h: 40, kind: 'ground' }, // continuous to the far wall + arena
+    // Sparse, WIDE dune step-ups (the "multiple heights" motif, desert-sparse vs the
+    // jungle platform thicket). Low + broad so they read as sand mounds, not girders.
+    { x: 380,  y: 202, w: 130, h: 8, kind: 'platform' },
+    { x: 720,  y: 176, w: 110, h: 8, kind: 'platform' },
+    { x: 1300, y: 192, w: 150, h: 8, kind: 'platform' }, // mesa past the canyon
+    { x: 1650, y: 168, w: 110, h: 8, kind: 'platform' },
+    // Boss-arena barrier — SAME as LEVEL2 (bullets pass, player stops) so the chopper
+    // fight geometry + firing line are the proven ones.
+    { x: 2140, y: 90, w: 12, h: 146, kind: 'barrier', noBullet: true },
+  ],
+  // No water band (desert). level.water is optional (world reads `this.level.water||[]`).
+  spawns: [
+    // Opening flats — grunt pair + a dune-perch sentry.
+    { type: 'grunt',  x: 300,  y: 210 },
+    { type: 'grunt',  x: 520,  y: 210 },
+    { type: 'turret', x: 430,  y: 186 }, // on the 380 dune (top y202 → y186)
+    // Mid flat — mortar area-denial over the open sand (the desert signature).
+    { type: 'mortar', x: 800,  y: 224 },
+    // Past the canyon — landing party + mesa sentry + second mortar.
+    { type: 'grunt',  x: 1200, y: 210 },
+    { type: 'grunt',  x: 1450, y: 210 },
+    { type: 'turret', x: 1330, y: 176 }, // on the 1300 mesa (top y192 → y176)
+    { type: 'mortar', x: 1600, y: 224 },
+    // Pre-boss run-in.
+    { type: 'grunt',  x: 1900, y: 210 },
+    { type: 'grunt',  x: 2000, y: 210 },
+    // STAGE-4 BOSS — the Gunship (chopper), retuned via the CAMPAIGN row's boss override.
+    { type: 'chopper', x: 2340, y: 120 },
+  ],
+  pickups: [
+    { weapon: 'spread',  x: 250,  y: 218 },
+    { weapon: 'machine', x: 1150, y: 218 },
+    { weapon: 'spread',  x: 2000, y: 218 }, // pre-boss: fan weapon for the sweeping gunship
+  ],
+  playerStart: { x: 40, y: 200 },
+  goalX: 2340, // chopper x is the fight trigger; boss.dead = stage clear
+};
+
 // Ground-emplacement Y helpers (base ground top = y236): a gravity-less turret (h16)
 // sits at 220, a mortar (h12) at 224; grunts spawn at 210 and fall onto the ground.
 // One row per stage. `boss` folds onto the base boss spawn; `mix` adds the signature.
@@ -415,20 +474,15 @@ const CAMPAIGN = [
       { x: 1280, key: 'decor_snow_pine' },
       { x: 1640, key: 'decor_snow_pine' },
     ] },
-  // Stage 4 — Scorched Dunes (ARTILLERY: mortar bombardment denies the open flats).
-  { base: LEVEL2, theme: 'desert', name: 'Scorched Dunes',
+  // Stage 4 — Scorched Dunes (DISTINCT open-desert geometry, not a LEVEL2 reskin; the
+  // artillery/mortar enemy mix is authored inline in LEVEL4_DESERT for the open flats).
+  { base: LEVEL4_DESERT, theme: 'desert', name: 'Scorched Dunes',
     boss: { name: 'Sand Gunship', hp: 88, color: '#d9b06a', enrageFireEvery: 42 },
-    mix: [
-      { type: 'mortar', x: 820,  y: 224 },
-      { type: 'mortar', x: 1560, y: 224 },
-      { type: 'grunt',  x: 1000, y: 210 },
-      { type: 'grunt',  x: 1700, y: 210 },
-    ],
-    decor: [ // saguaro cacti on the flats (x over LEVEL2 ground, clear of the gap 1290–1346)
-      { x: 300,  key: 'decor_desert_cactus' },
+    decor: [ // saguaro cacti on the flats (x over LEVEL4_DESERT ground, clear of the canyon 1000–1056)
+      { x: 350,  key: 'decor_desert_cactus' },
       { x: 900,  key: 'decor_desert_cactus' },
-      { x: 1620, key: 'decor_desert_cactus' },
-      { x: 1980, key: 'decor_desert_cactus' },
+      { x: 1500, key: 'decor_desert_cactus' },
+      { x: 2050, key: 'decor_desert_cactus' },
     ] },
   // Stage 5 — Iron Foundry (TURRET fortress: automated sentries lock the lanes).
   { base: LEVEL1, theme: 'foundry', name: 'Iron Foundry',
