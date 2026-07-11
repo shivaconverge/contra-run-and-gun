@@ -153,4 +153,19 @@ export const ASSET_MANIFEST = {
   theme_foundry: 'assets/theme_foundry.png',
   theme_caverns: 'assets/theme_caverns.png',
   theme_fortress: 'assets/theme_fortress.png',
+  // Per-stage BACKGROUND far-parallax scenery (deliverable #2 "background layers",
+  // from assets/pipeline/generate.py backdrops). One detailed 128×56 distant-scenery
+  // silhouette per themed biome (snow peaks / desert mesas / foundry skyline / cavern
+  // crystal spires / fortress towers / cascade dam), transparent above the ridge.
+  // Keyed as bg_<theme.id>; render.js drawParallax resolves assets.get('bg_'+theme.id)
+  // and, when present, tiles it horizontally at camx*0.15 (far rate) with its base at
+  // ~y=158 IN PLACE OF the procedural far ridge — the near ridge/canopy/foliage bands
+  // still draw over it (mirrors the theme-tileset swap). Jungle has no bg_jungle key,
+  // so Stage 1 keeps the procedural ridge byte-identical; same for any unloaded strip.
+  bg_snow: 'assets/bg_snow.png',
+  bg_desert: 'assets/bg_desert.png',
+  bg_foundry: 'assets/bg_foundry.png',
+  bg_caverns: 'assets/bg_caverns.png',
+  bg_fortress: 'assets/bg_fortress.png',
+  bg_cascade: 'assets/bg_cascade.png',
 };

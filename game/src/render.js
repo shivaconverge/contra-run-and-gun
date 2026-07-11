@@ -56,7 +56,7 @@ export function render(ctx, world, assets) {
   ctx.save();
   ctx.clearRect(0, 0, SIM.VIEW_W, SIM.VIEW_H);
   drawSky(ctx, world.frame, world.theme);
-  drawParallax(ctx, cam.x, world.theme);
+  drawParallax(ctx, cam.x, world.theme, assets);
   drawAmbient(ctx, cam.x, world.frame); // fireflies behind the action (depth/atmosphere)
 
   ctx.translate(-Math.round(cam.x) + shake.x, -Math.round(cam.y) + shake.y);
@@ -165,10 +165,18 @@ function drawSky(ctx, frame, theme) {
   ctx.arc(mx - 3, my + 4, 1.8, 0, TAU); ctx.fill();
 }
 
+// Far-parallax background scenery — 128×56 authored silhouette strip per biome,
+// tiled behind the ridges at the far rate. Base sits at ~y=158 (the far-ridge
+// horizon); a small overlap tucks the bottom edge under the near ridge. Mirrors
+// manifest sprites.bg_<theme> (parallax 0.15, anchor horizon).
+const BG = { w: 128, h: 56, base: 158, parallax: 0.15 };
+
 // Multi-layer parallax jungle: distant ridges → treeline canopy → foreground
-// ferns, each scrolling at its own rate for depth. Procedural placeholder for
-// the environment until authored background art lands.
-function drawParallax(ctx, camx, theme) {
+// ferns, each scrolling at its own rate for depth. The far ridge is either the
+// authored per-biome background strip (assets.get('bg_'+theme.id)) or, when that
+// isn't loaded/authored (jungle, or any missing strip), the procedural ridge —
+// byte-identical to the pre-wiring look.
+function drawParallax(ctx, camx, theme, assets) {
   // Layer COLORS come from the biome (world.theme.back); the silhouette SHAPES/
   // parallax rates are shared across stages. Jungle's palette is the pre-wiring
   // hardcoded set, so Stage 1 is byte-identical.
@@ -177,9 +185,21 @@ function drawParallax(ctx, camx, theme) {
   // distance haze band above the horizon
   ctx.fillStyle = back.haze;
   ctx.fillRect(0, 150, SIM.VIEW_W, 90);
-  // far ridge (slow)
-  ctx.fillStyle = back.ridgeFar;
-  drawHills(ctx, camx * 0.15, 158, 46, 260);
+  // far ridge (slow) — authored biome background strip when present, else procedural.
+  const bg = theme && assets && assets.get('bg_' + theme.id);
+  if (bg) {
+    // Tile the strip horizontally at the far parallax rate over the sky gradient.
+    // Transparent above the silhouette, so the sky reads through; base ~y=158 with
+    // a 4px overlap under the near ridge. Deterministic (camx only) — no rng.
+    const topY = BG.base - BG.h + 4;
+    const off = ((camx * BG.parallax) % BG.w + BG.w) % BG.w;
+    for (let x = -off; x < SIM.VIEW_W + BG.w; x += BG.w) {
+      ctx.drawImage(bg, Math.round(x), topY, BG.w, BG.h);
+    }
+  } else {
+    ctx.fillStyle = back.ridgeFar;
+    drawHills(ctx, camx * 0.15, 158, 46, 260);
+  }
   // near ridge
   ctx.fillStyle = back.ridgeNear;
   drawHills(ctx, camx * 0.3, 182, 40, 190);
