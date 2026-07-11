@@ -1,4 +1,4 @@
-=== GO-LIVE verification @ 2026-07-11T23:14:22Z ===
+=== GO-LIVE verification @ 2026-07-11T23:39:16Z ===
 URL: https://shivaconverge.github.io/contra-run-and-gun/
 --- root HTTP 0 ---
 <!doctype html>
@@ -46,23 +46,21 @@ src/main.js: HTTP 200 (26701 bytes)
 asset resolve-gate: 31/31 referenced assets HTTP 200
 assets/audio/manifest.json: HTTP 200
 audio resolve-gate: 7/7 tracks HTTP 200:
-  assets/audio/s1_jungle.mp3: HTTP 200, audio/mp3, 1406780 bytes
-  assets/audio/s2_cascade.mp3: HTTP 200, audio/mp3, 4973684 bytes
-  assets/audio/s3_snow.mp3: HTTP 200, audio/mp3, 3028556 bytes
-  assets/audio/s4_desert.mp3: HTTP 200, audio/mp3, 2265908 bytes
-  assets/audio/s5_foundry.mp3: HTTP 200, audio/mp3, 3943196 bytes
-  assets/audio/s6_caverns.mp3: HTTP 200, audio/mp3, 4159724 bytes
-  assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 3827564 bytes
+  assets/audio/s1_jungle.mp3: HTTP 200, audio/mp3, 1300470 bytes [current]
+  assets/audio/s2_cascade.mp3: HTTP 200, audio/mp3, 4699764 bytes [current]
+  assets/audio/s3_snow.mp3: HTTP 200, audio/mp3, 2928289 bytes [current]
+  assets/audio/s4_desert.mp3: HTTP 200, audio/mp3, 2187002 bytes [current]
+  assets/audio/s5_foundry.mp3: HTTP 200, audio/mp3, 3816049 bytes [current]
+  assets/audio/s6_caverns.mp3: HTTP 200, audio/mp3, 3957888 bytes [current]
+  assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 3581570 bytes [current]
 RESULT: LIVE ✅
 
-PARALLAX-BACKGROUND REFRESH (headless Chromium against the LIVE URL):
-  Master advanced with 6 per-stage parallax BACKGROUND strips (bg_cascade/
-  caverns/desert/fortress/foundry/snow.png) + 7 re-mastered SEAMLESS audio loops
-  (Udio silence trimmed) + the 'breaks past stage 2' progression fix (HEAD 7a5dba1).
-  Re-deployed; resolve-gate green — 31 referenced assets (auto-adapted from 25 as
-  the 6 bg_*.png landed) + all 7 tracks HTTP 200 live.
-  Distinct-background proof via ?level=N on the LIVE URL (JUDGE BY LOOKING):
-    deploy/evidence/live-stage3.png  — Stage 3 SNOW    (layered snow-capped mountain parallax)
-    deploy/evidence/live-stage6.png  — Stage 6 CAVERNS (purple crystalline formations, glow)
-  Read side by side: the new per-stage background strips render distinctly from
-  the deployed bundle — a visible depth/fidelity upgrade over the flat backdrops.
+LOUDNESS RE-MASTER + BYTE-FRESHNESS GATE (LIVE URL):
+  Master advanced: 7 per-biome loops loudness-matched to -15 LUFS (spread
+  2.2->0.10 LU, 0dBFS clippers fixed) — audio bytes rewritten, filenames kept
+  (HEAD 705c45f). Re-deployed; resolve-gate green (31 assets + 7 tracks HTTP 200).
+  NEW: verify.sh now asserts each live track's Content-Length EQUALS the local
+  build's file size, proving the public URL serves the CURRENT re-master (not a
+  stale CDN copy) for changes a screenshot can't see. All 7 tracks: current.
+    s1_jungle 1300470 | s2_cascade 4699764 | s3_snow 2928289 | s4_desert 2187002
+    s5_foundry 3816049 | s6_caverns 3957888 | s7_fortress 3581570  (live == local)

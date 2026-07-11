@@ -104,7 +104,14 @@ while IFS= read -r f; do [ -n "$f" ] && TRACK_FILES+=("$f"); done < <(
     | sed -E 's/.*"([^"]+)"$/\1/; s#.*/##')
 [ "${#TRACK_FILES[@]}" -gt 0 ] || fail "no track 'file' entries found in audio manifest"
 log "audio resolve-gate: ${#TRACK_FILES[@]} tracks vs the deployed bundle"
+# FRESHNESS: audio changes (loudness re-master, seamless re-trim) rewrite the mp3
+# bytes but keep the filename — invisible to a screenshot, and a stale CDN copy
+# would still pass a plain HTTP-200 check. When the local build's audio is beside
+# us, assert each live track's Content-Length EQUALS the local file's size, so we
+# prove the public URL is serving the CURRENT build, not a lagging cached version.
+LOCAL_AUDIO_DIR="$(cd "$(dirname "$0")/.." && pwd)/game/assets/audio"
 AUDIO_FAILED=0
+AUDIO_STALE=0
 AUDIO_LINES=""
 for tf in "${TRACK_FILES[@]}"; do
   IFS=$'\t' read -r tc tt tl <<<"$(head_meta "${BASE}/assets/audio/${tf}")"
@@ -112,16 +119,25 @@ for tf in "${TRACK_FILES[@]}"; do
   [ "$tc" = "200" ] || ok=0
   case "$tt" in audio/mpeg*|audio/mp3*) : ;; *) ok=0 ;; esac
   [ "${tl:-0}" -ge 100000 ] 2>/dev/null || ok=0
+  # Byte-freshness vs the local build (only when the local file is present).
+  fresh="-"
+  if [ -f "${LOCAL_AUDIO_DIR}/${tf}" ]; then
+    local_sz="$(stat -f%z "${LOCAL_AUDIO_DIR}/${tf}" 2>/dev/null || stat -c%s "${LOCAL_AUDIO_DIR}/${tf}" 2>/dev/null)"
+    if [ "${tl:-0}" = "${local_sz:-x}" ]; then fresh="current"; else fresh="STALE(local=${local_sz})"; ok=0; AUDIO_STALE=$((AUDIO_STALE+1)); fi
+  fi
   if [ "$ok" = 1 ]; then
-    printf '\033[32m[verify]   ok\033[0m %-18s HTTP %s %s %s bytes\n' "$tf" "$tc" "$tt" "$tl"
+    printf '\033[32m[verify]   ok\033[0m %-18s HTTP %s %s %s bytes  %s\n' "$tf" "$tc" "$tt" "$tl" "$fresh"
   else
-    printf '\033[31m[verify]   BAD\033[0m %-18s HTTP %s %s %s bytes\n' "$tf" "$tc" "$tt" "${tl:-0}"
+    printf '\033[31m[verify]   BAD\033[0m %-18s HTTP %s %s %s bytes  %s\n' "$tf" "$tc" "$tt" "${tl:-0}" "$fresh"
     AUDIO_FAILED=$((AUDIO_FAILED+1))
   fi
-  AUDIO_LINES="${AUDIO_LINES}  assets/audio/${tf}: HTTP ${tc:-?}, ${tt:-?}, ${tl:-0} bytes"$'\n'
+  AUDIO_LINES="${AUDIO_LINES}  assets/audio/${tf}: HTTP ${tc:-?}, ${tt:-?}, ${tl:-0} bytes [${fresh}]"$'\n'
 done
+if [ "$AUDIO_STALE" -gt 0 ]; then
+  fail "$AUDIO_STALE/${#TRACK_FILES[@]} live tracks are STALE (size != local build) — public URL not current with master; wait for the deploy run or re-run go-live.sh"
+fi
 [ "$AUDIO_FAILED" -eq 0 ] || fail "$AUDIO_FAILED/${#TRACK_FILES[@]} audio tracks failed (HTTP/MIME/size — see above)"
-pass "audio manifest + all ${#TRACK_FILES[@]} per-stage tracks reachable (HTTP 200, audio/mp3, non-truncated)"
+pass "audio manifest + all ${#TRACK_FILES[@]} per-stage tracks reachable + byte-current with local build"
 
 {
   echo ""
