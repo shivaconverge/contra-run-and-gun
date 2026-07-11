@@ -634,6 +634,7 @@ def gen_theme_tileset(theme_id: str, spec: dict) -> dict:
                          seed=spec["dirt2_seed"], speckle=spec["speckle"])
     out = SPRITES / f"theme_{theme_id}.png"
     tpack = pack_tiles([cap, dirt, dirt2], out)
+    sync_to_engine(out)   # engine keys theme_<id> in assets.js (WIRED, commit 41e9563)
     meta = [("cap", "surface"), ("dirt", "fill"), ("dirt2", "fill")]
     return {
         "image": f"sprites/theme_{theme_id}.png",
@@ -648,17 +649,15 @@ def gen_theme_tileset(theme_id: str, spec: dict) -> dict:
 
 
 def gen_biome_tilesets(only: str | None = None) -> None:
-    """Deliverable #2 driver: one command produces the per-stage biome tilesets and
-    stages them for the engine to wire. Writes assets/sprites/theme_<id>.png for each
-    biome + a fragment manifest assets/pipeline/biome-tilesets.json (the engine loop
-    merges it into manifest.json + game/data/assets.js when it extends the loader —
-    the same produce-ahead-of-wire pattern the chopper used). Also writes a side-by-
-    side comparison strip per biome vs the stage-1 jungle tiles for by-looking QA.
+    """Deliverable #2 FAST ITERATOR: regenerate one/all per-stage biome tilesets
+    without a full run(). Writes assets/sprites/theme_<id>.png (synced to game/assets
+    via gen_theme_tileset) + a fragment assets/pipeline/biome-tilesets.json for review.
 
-    Kept OUT of run() and OUT of manifest.json/game-assets on purpose: the engine's
-    LOADER (game/data/assets.js) does not yet key theme_<id>, so shipping them now
-    would trip the cross-source contract gate (orphan). They finalize together with
-    the engine's one-line render swap. See READY-TO-WIRE.md."""
+    NOW FINALIZED + WIRED (commit 41e9563): the engine keys theme_<id> in
+    game/data/assets.js and render.js drawGround blits assets.get(world.theme.tileset).
+    The canonical manifest.json entries are produced by run() (fold-in, section 5c) so
+    the full pipeline reproduces every shipped tileset; this command is just the quick
+    per-biome loop (e.g. `biomes snow` to re-tune one). See READY-TO-WIRE.md."""
     bal0 = balance()
     print(f"Balance: ${bal0:.2f}")
     if bal0 < MIN_BALANCE_USD:
@@ -1362,6 +1361,19 @@ def run() -> None:
                     f"render.js drawBridge/drawWater assets.get('{s['key']}').",
         }
 
+    # 5c) PER-STAGE BIOME TILESETS (deliverable #2) -- FINALIZED + WIRED (the engine
+    # added the theme_<id> loader keys in game/data/assets.js and render.js drawGround
+    # now blits assets.get(world.theme.tileset) with the jungle `tiles` fallback, commit
+    # 41e9563). Fold the 6 biome tilesets into the canonical run so manifest.json is the
+    # complete shipped source of truth (previously staged in biome-tilesets.json; now
+    # first-class like the chopper finalize). Each is the same 48x16 [cap,dirt,dirt2]
+    # format as `tiles`; `python generate.py biomes [id]` stays the fast per-biome
+    # iterator. Jungle intentionally has NO theme_jungle key (Stage 1 keeps `tiles`).
+    print("[biomes] per-stage tilesets (6 biomes, 48x16 [cap,dirt,dirt2])")
+    for tid, spec in BIOME_TILESETS.items():
+        rec = gen_theme_tileset(tid, spec)           # writes assets/sprites + syncs
+        manifest["sprites"][f"theme_{tid}"] = rec
+
     manifest["meta"]["knownIssues"] = [
         "boss_enraged: real phase-2 enraged Sentinel sprite produced + synced + "
         "loads, but drawBoss doesn't swap to it yet -- wire it to blit "
@@ -1523,6 +1535,16 @@ def verify_contract() -> int:
         has_dynamic_kind = "assets.get(e.kind)" in render_src
         enemies_block = cfg_src.split("ENEMIES", 1)[-1]
         enemy_kinds = set(_re.findall(r"^  (\w+):\s*\{", enemies_block, _re.M))
+        # PER-STAGE BIOME TILESET path: render.js drawGround resolves the stage's biome
+        # tileset via `const themeKey = world.theme.tileset; assets.get(themeKey)` (commit
+        # 41e9563). The arg is a VAR, not a literal -- so model it: collect every var
+        # assigned from `<x>.tileset`, and if any is passed to assets.get(), the theme
+        # `tileset:'theme_<id>'` keys declared in config THEMES are reachable via that
+        # path. (Same shape the engine confirmed to the parent this cycle.)
+        theme_tileset_keys = set(_re.findall(r"tileset:\s*'([\w.]+)'", cfg_src))
+        tileset_vars = set(_re.findall(r"(\w+)\s*=\s*[^;\n]*\.tileset\b", render_src))
+        has_theme_tileset_path = any(f"assets.get({v})" in render_src
+                                     for v in tileset_vars)
         # Self-grounding guard: this reachability model KNOWS only two consumption
         # forms -- a literal 'key' and the dynamic e.kind. If the engine later adds
         # ANY other dynamic argument form (a var, a lookup, fx.kind, ...), the model
@@ -1531,7 +1553,8 @@ def verify_contract() -> int:
         # assume the shape holds forever (verified sole routes = literal + e.kind,
         # cycle 26). This is not a violation (no false red) -- it's a staleness alarm.
         all_args = {a.strip() for a in _re.findall(r"assets\.get\(([^)]*)\)", render_src)}
-        modeled = {"e.kind"} | {f"'{k}'" for k in literal} | wrapper_params
+        modeled = ({"e.kind"} | {f"'{k}'" for k in literal} | wrapper_params
+                   | (tileset_vars if has_theme_tileset_path else set()))
         unmodeled = {a for a in all_args if a not in modeled}
         if unmodeled:
             print("\n  MODEL-WARN: unmodeled assets.get() arg form(s) in render.js "
@@ -1540,6 +1563,8 @@ def verify_contract() -> int:
         for key in sorted(eng_keys):
             if key in literal or (has_dynamic_kind and key in enemy_kinds):
                 continue
+            if has_theme_tileset_path and key in theme_tileset_keys:
+                continue   # drawn via assets.get(world.theme.tileset)
             how = "spawned-enemy-kind" if has_dynamic_kind else "no dynamic e.kind path"
             rprob.append(f"engine key '{key}' NOT blitted by render.js "
                          f"(no literal assets.get; {how}) -> shipped-but-unreachable")

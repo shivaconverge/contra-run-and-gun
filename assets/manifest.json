@@ -407,6 +407,198 @@
       "frameWidth": 16,
       "frameHeight": 16,
       "note": "creator #1 bridge-over-water theme tile (theme_water_top); wired via render.js drawBridge/drawWater assets.get('theme_water_top')."
+    },
+    "theme_cascade": {
+      "image": "sprites/theme_cascade.png",
+      "type": "tileset",
+      "tileSize": 16,
+      "tiles": [
+        {
+          "name": "cap",
+          "role": "surface",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt",
+          "role": "fill",
+          "x": 16,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt2",
+          "role": "fill",
+          "x": 32,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        }
+      ],
+      "note": "biome tileset for the 'cascade' stage (config THEMES.cascade.tileset). Drop-in same format as `tiles`; engine swaps assets.get('tiles') -> assets.get(world.theme.tileset)."
+    },
+    "theme_snow": {
+      "image": "sprites/theme_snow.png",
+      "type": "tileset",
+      "tileSize": 16,
+      "tiles": [
+        {
+          "name": "cap",
+          "role": "surface",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt",
+          "role": "fill",
+          "x": 16,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt2",
+          "role": "fill",
+          "x": 32,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        }
+      ],
+      "note": "biome tileset for the 'snow' stage (config THEMES.snow.tileset). Drop-in same format as `tiles`; engine swaps assets.get('tiles') -> assets.get(world.theme.tileset)."
+    },
+    "theme_desert": {
+      "image": "sprites/theme_desert.png",
+      "type": "tileset",
+      "tileSize": 16,
+      "tiles": [
+        {
+          "name": "cap",
+          "role": "surface",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt",
+          "role": "fill",
+          "x": 16,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt2",
+          "role": "fill",
+          "x": 32,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        }
+      ],
+      "note": "biome tileset for the 'desert' stage (config THEMES.desert.tileset). Drop-in same format as `tiles`; engine swaps assets.get('tiles') -> assets.get(world.theme.tileset)."
+    },
+    "theme_foundry": {
+      "image": "sprites/theme_foundry.png",
+      "type": "tileset",
+      "tileSize": 16,
+      "tiles": [
+        {
+          "name": "cap",
+          "role": "surface",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt",
+          "role": "fill",
+          "x": 16,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt2",
+          "role": "fill",
+          "x": 32,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        }
+      ],
+      "note": "biome tileset for the 'foundry' stage (config THEMES.foundry.tileset). Drop-in same format as `tiles`; engine swaps assets.get('tiles') -> assets.get(world.theme.tileset)."
+    },
+    "theme_caverns": {
+      "image": "sprites/theme_caverns.png",
+      "type": "tileset",
+      "tileSize": 16,
+      "tiles": [
+        {
+          "name": "cap",
+          "role": "surface",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt",
+          "role": "fill",
+          "x": 16,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt2",
+          "role": "fill",
+          "x": 32,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        }
+      ],
+      "note": "biome tileset for the 'caverns' stage (config THEMES.caverns.tileset). Drop-in same format as `tiles`; engine swaps assets.get('tiles') -> assets.get(world.theme.tileset)."
+    },
+    "theme_fortress": {
+      "image": "sprites/theme_fortress.png",
+      "type": "tileset",
+      "tileSize": 16,
+      "tiles": [
+        {
+          "name": "cap",
+          "role": "surface",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt",
+          "role": "fill",
+          "x": 16,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt2",
+          "role": "fill",
+          "x": 32,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        }
+      ],
+      "note": "biome tileset for the 'fortress' stage (config THEMES.fortress.tileset). Drop-in same format as `tiles`; engine swaps assets.get('tiles') -> assets.get(world.theme.tileset)."
     }
   }
 }
