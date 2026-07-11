@@ -1,5 +1,26 @@
 // One enemy set: a walking Grunt and a stationary Sentry turret.
 // Both are data-configured via ENEMIES; behavior branches on `kind`.
+//
+// ── ONE-WEAPON-PER-ARMED-ENTITY AUDIT (creator ROUND-2 REJECT) — 2026-07-12 ──
+// The two-weapon defect is a DETERMINISTIC render fact: it occurs only when a
+// render path draws a PROCEDURAL aiming weapon ON TOP of a sprite that already
+// bakes a weapon. Audited every armed entity + VERIFIED BY LOOKING (headless
+// 8-way + per-enemy fire capture):
+//   • hero   — was defective (baked rifle + procedural drawGun); FIXED: weaponless
+//              body sprite + the single procedural rifle (render.js drawGun).
+//   • turret — was defective (baked barrel + procedural drawTurretBarrel); FIXED:
+//              weaponless dome (turret_base / runtime strip) + one barrel.
+//   • mortar — one baked barrel, shell lobs from it. render.js draws NO procedural
+//              weapon over the mortar sprite. Single weapon. ✓
+//   • flyer  — copper drone, NO baked gun; fires an energy shot from its body/eye.
+//              No procedural weapon overlaid. Single weapon. ✓
+//   • boss / chopper — one baked cannon/gunship; drawBoss/drawChopper add only
+//              telegraph + core-glow FX, never a second gun. Single weapon. ✓
+//   • grunt  — melee/contact, unarmed.
+// INVARIANT for future edits: do NOT draw a procedural aiming weapon over an
+// enemy sprite that already carries one (that is exactly what reopened the reject
+// for hero+turret). If a NEW enemy needs an aiming weapon, ship its body
+// weaponless (like turret_base) OR fire from the baked weapon — never both.
 import { ENEMIES, PHYSICS } from '../data/config.js';
 import { moveAndCollide } from './physics.js';
 import { sign } from './util.js';
