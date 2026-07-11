@@ -119,11 +119,22 @@ export const ASSET_MANIFEST = {
   //   turret_base           ~26×27 (purple dome, NO barrel — barrel is procedural)
   // Palette-locked to the existing bodies (STYLE-BIBLE §5). Absent keys are simply
   // skipped by the tolerant loader, so shipping them is a pure drop-in upgrade.
-  player_idle_noweapon: 'assets/player_idle_noweapon.png',
-  player_run_noweapon: 'assets/player_run_noweapon.png',
-  player_jump_noweapon: 'assets/player_jump_noweapon.png',
-  player_prone_noweapon: 'assets/player_prone_noweapon.png',
-  turret_base: 'assets/turret_base.png',
+  // WIRED (acceptance): the art pipeline shipped the ROUND-2 two-gun fix by
+  // regenerating the base hero/turret sprites as WEAPONLESS bodies IN PLACE (same
+  // keys/paths, byte-compatible drop-in — manifest.json weaponlessContract:true,
+  // commit 5979d0b). But render.js only blits real hero/turret art through these
+  // *_noweapon / turret_base keys (it treats the base player_*/turret keys as
+  // gun-baked and never draws them for the hero). Bridging the two halves: point
+  // the noweapon keys at the already-weaponless real files so drawPlayerSprite /
+  // drawEnemySprite blit the pipeline's real art instead of the procedural
+  // fallback commando — the single procedural drawGun / drawTurretBarrel stays the
+  // sole weapon (verified live: one gun, real body). Dims match render.js:
+  // idle 16×31, run 88×31 (PLAYER_RUN 4×22×31), jump 22×25, prone 24×10, turret 32×32.
+  player_idle_noweapon: 'assets/player_idle.png',
+  player_run_noweapon: 'assets/player_run.png',
+  player_jump_noweapon: 'assets/player_jump.png',
+  player_prone_noweapon: 'assets/player_prone.png',
+  turret_base: 'assets/turret.png',
   tiles: 'assets/tiles.png',
   explosion: 'assets/explosion.png',
   muzzle: 'assets/muzzle.png',
