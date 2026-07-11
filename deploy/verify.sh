@@ -26,6 +26,7 @@ code() { curl -s -o /dev/null -w '%{http_code}' --max-time 25 "$1"; }
 # must NOT slurp the body — mp3 tracks are multi-MB). Follows redirects.
 head_meta() { curl -sIL --max-time 30 "$1" | awk '
   BEGIN{IGNORECASE=1}
+  {gsub(/\r/,"")}                       # strip CR so numeric compares work
   /^HTTP\//{c=$2}
   /^content-type:/{t=$2}
   /^content-length:/{l=$2}
