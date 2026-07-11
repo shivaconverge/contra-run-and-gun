@@ -86,36 +86,50 @@ done
 [ "$ASSET_FAILED" -eq 0 ] || fail "$ASSET_FAILED/${#ASSET_PATHS[@]} referenced assets are NOT published (see above)"
 pass "all ${#ASSET_PATHS[@]} referenced assets reachable (HTTP 200) — incl. per-stage biome tilesets"
 
-# 4) Audio: the live campaign now FETCHES the per-stage Udio mp3 tracks at boot
-#    (main.js reads assets/audio/manifest.json, then fetch()+decodeAudioData on
-#    each assets/audio/<file>.mp3). A dropped file or a wrong MIME = silent music
-#    failure for real players, so the deploy gate must confirm the audio serves.
+# 4) AUDIO RESOLVE-GATE — the live campaign decodes EVERY per-stage Udio track at
+#    boot (main.js reads assets/audio/manifest.json, sorts by s<N>_ prefix, then
+#    fetch()+decodeAudioData on each assets/audio/<basename>.mp3). Tracks get
+#    renamed/realigned as biomes settle (e.g. s2_base -> s2_cascade), so we read
+#    the LIVE manifest and confirm EVERY track it lists serves — a partial rename
+#    that leaves one stage's mp3 unpublished = silent music for that biome, and
+#    checking only the first track would miss it.
 MANIFEST_URL="${BASE}/assets/audio/manifest.json"
 log "GET $MANIFEST_URL"
 MJ="$(fetch "$MANIFEST_URL")" || fail "assets/audio/manifest.json not reachable"
 grep -qi '<html' <<<"$MJ" && fail "audio manifest served an HTML page (Pages 404 fallback)"
-# Pull the first track's basename straight from the manifest the game reads —
-# don't hard-code, so this survives track renames on the game side.
-TRACK_FILE="$(sed -n 's/.*"file"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' <<<"$MJ" | head -1 | sed 's#.*/##')"
-[ -n "$TRACK_FILE" ] || fail "no track 'file' found in audio manifest"
-TRACK_URL="${BASE}/assets/audio/${TRACK_FILE}"
-log "HEAD $TRACK_URL"
-IFS=$'\t' read -r TCODE TTYPE TLEN <<<"$(head_meta "$TRACK_URL")"
-[ "$TCODE" = "200" ] || fail "audio track $TRACK_FILE returned HTTP $TCODE (track not published)"
-case "$TTYPE" in
-  audio/mpeg*|audio/mp3*) : ;;
-  *) fail "audio track $TRACK_FILE served wrong Content-Type '$TTYPE' (want audio/mpeg — decodeAudioData will fail)";;
-esac
-# A real Udio track is hundreds of KB+; a truncated/LFS-pointer file would be tiny.
-[ "${TLEN:-0}" -ge 100000 ] || fail "audio track $TRACK_FILE only ${TLEN:-0} bytes (looks truncated)"
-pass "audio manifest + track '$TRACK_FILE' reachable (HTTP 200, $TTYPE, $TLEN bytes)"
+# Every track basename the manifest lists (same field main.js reads).
+TRACK_FILES=()
+while IFS= read -r f; do [ -n "$f" ] && TRACK_FILES+=("$f"); done < <(
+  grep -oE '"file"[[:space:]]*:[[:space:]]*"[^"]+"' <<<"$MJ" \
+    | sed -E 's/.*"([^"]+)"$/\1/; s#.*/##')
+[ "${#TRACK_FILES[@]}" -gt 0 ] || fail "no track 'file' entries found in audio manifest"
+log "audio resolve-gate: ${#TRACK_FILES[@]} tracks vs the deployed bundle"
+AUDIO_FAILED=0
+AUDIO_LINES=""
+for tf in "${TRACK_FILES[@]}"; do
+  IFS=$'\t' read -r tc tt tl <<<"$(head_meta "${BASE}/assets/audio/${tf}")"
+  ok=1
+  [ "$tc" = "200" ] || ok=0
+  case "$tt" in audio/mpeg*|audio/mp3*) : ;; *) ok=0 ;; esac
+  [ "${tl:-0}" -ge 100000 ] 2>/dev/null || ok=0
+  if [ "$ok" = 1 ]; then
+    printf '\033[32m[verify]   ok\033[0m %-18s HTTP %s %s %s bytes\n' "$tf" "$tc" "$tt" "$tl"
+  else
+    printf '\033[31m[verify]   BAD\033[0m %-18s HTTP %s %s %s bytes\n' "$tf" "$tc" "$tt" "${tl:-0}"
+    AUDIO_FAILED=$((AUDIO_FAILED+1))
+  fi
+  AUDIO_LINES="${AUDIO_LINES}  assets/audio/${tf}: HTTP ${tc:-?}, ${tt:-?}, ${tl:-0} bytes"$'\n'
+done
+[ "$AUDIO_FAILED" -eq 0 ] || fail "$AUDIO_FAILED/${#TRACK_FILES[@]} audio tracks failed (HTTP/MIME/size — see above)"
+pass "audio manifest + all ${#TRACK_FILES[@]} per-stage tracks reachable (HTTP 200, audio/mp3, non-truncated)"
 
 {
   echo ""
   echo "src/main.js: HTTP $MC ($(wc -c <<<"$MAIN" | tr -d ' ') bytes)"
   echo "asset resolve-gate: ${#ASSET_PATHS[@]}/${#ASSET_PATHS[@]} referenced assets HTTP 200"
   echo "assets/audio/manifest.json: HTTP 200"
-  echo "assets/audio/${TRACK_FILE}: HTTP $TCODE, $TTYPE, $TLEN bytes"
+  echo "audio resolve-gate: ${#TRACK_FILES[@]}/${#TRACK_FILES[@]} tracks HTTP 200:"
+  printf '%s' "$AUDIO_LINES"
   echo "RESULT: LIVE ✅"
 } >>"$OUT"
 
