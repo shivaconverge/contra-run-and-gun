@@ -10,6 +10,11 @@
     "verify": "node verify/render-check.mjs",
     "headless": "node verify/headless-safety.mjs",
     "live": "node verify/live-check.mjs",
+    "tracks:live": "node verify/campaign-tracks-live.mjs",
+    "tracks:handoff": "node verify/track-handoff-check.mjs",
     "soak": "node verify/perf-soak.mjs"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^23.11.1"
   }
 }

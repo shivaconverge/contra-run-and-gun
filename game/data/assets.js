@@ -104,32 +104,27 @@ export const ASSET_MANIFEST = {
   //   dark center); procedural pill fallback. See assets/QA-NOTES.md OPEN ISSUE #8.
   pickup: 'assets/pickup.png',
   // WEAPONLESS bodies — the DURABLE fix for the creator's ROUND-2 REJECT (exactly
-  // ONE weapon per armed entity). The current player_*/turret sprites carry a
-  // BAKED weapon; drawn under the procedural aiming weapon that produced the
-  // "two guns on screen" defect. These keys let the art pipeline drop in
-  // weapon-FREE bodies (same silhouette/palette, just no gun/barrel) so the single
-  // procedural rifle (render.js drawGun) / turret barrel (drawTurretBarrel) is the
-  // only weapon shown. render.js PREFERS these when loaded; until they land it
-  // draws a procedural weaponless commando (hero) and strips the baked barrel
-  // (turret) at runtime. OPEN NEED (pipeline loop): author these at native size —
-  //   player_idle_noweapon  ~20×29 (1 frame, aim-neutral, NO rifle)
-  //   player_run_noweapon   ~22×31 ×4-frame strip (NO rifle)
-  //   player_jump_noweapon  ~25×25 (NO rifle)
-  //   player_prone_noweapon ~28×15 (NO rifle)
-  //   turret_base           ~26×27 (purple dome, NO barrel — barrel is procedural)
-  // Palette-locked to the existing bodies (STYLE-BIBLE §5). Absent keys are simply
-  // skipped by the tolerant loader, so shipping them is a pure drop-in upgrade.
-  // WIRED (acceptance): the art pipeline shipped the ROUND-2 two-gun fix by
-  // regenerating the base hero/turret sprites as WEAPONLESS bodies IN PLACE (same
-  // keys/paths, byte-compatible drop-in — manifest.json weaponlessContract:true,
-  // commit 5979d0b). But render.js only blits real hero/turret art through these
-  // *_noweapon / turret_base keys (it treats the base player_*/turret keys as
-  // gun-baked and never draws them for the hero). Bridging the two halves: point
-  // the noweapon keys at the already-weaponless real files so drawPlayerSprite /
-  // drawEnemySprite blit the pipeline's real art instead of the procedural
-  // fallback commando — the single procedural drawGun / drawTurretBarrel stays the
-  // sole weapon (verified live: one gun, real body). Dims match render.js:
-  // idle 16×31, run 88×31 (PLAYER_RUN 4×22×31), jump 22×25, prone 24×10, turret 32×32.
+  // ONE weapon per armed entity). render.js draws the hero/turret WEAPONLESS and
+  // adds exactly one procedural aiming weapon (drawGun / drawTurretBarrel), so the
+  // seen gun == the firing gun. The hero body is selected ONLY through these
+  // *_noweapon keys (drawPlayer never blits the bare player_* keys — that guards
+  // against a gun-baked body sneaking back under the aiming rifle); the turret
+  // prefers turret_base.
+  //
+  // ── DO NOT "CLEAN UP" THE ALIAS BELOW ──────────────────────────────────────
+  // RESOLVED (was OPEN NEED): the art pipeline shipped the fix by regenerating the
+  // BASE hero/turret sprites as WEAPONLESS bodies IN PLACE — same file paths,
+  // byte-compatible drop-in (assets/manifest.json weaponlessContract:true; the
+  // base files assets/player_*.png + assets/turret.png now carry NO gun/barrel;
+  // verified LIVE by looking — 8-way hero + turret each render a single weapon).
+  // So the *_noweapon / turret_base keys INTENTIONALLY point at those already-
+  // weaponless base files. This aliasing is the bridge between the pipeline's
+  // "same-key drop-in" contract and render.js's "only draw the hero through
+  // _noweapon keys" invariant. Repointing these to nonexistent player_*_noweapon.png
+  // files would make the loader skip them → render falls back to the procedural
+  // drawHeroBody commando (still one gun, but loses the real art). Keep the alias.
+  // Native dims (must match render.js meta): idle 16×31, run 88×31
+  // (PLAYER_RUN 4×22×31), jump 22×25, prone 24×10, turret 32×32.
   player_idle_noweapon: 'assets/player_idle.png',
   player_run_noweapon: 'assets/player_run.png',
   player_jump_noweapon: 'assets/player_jump.png',

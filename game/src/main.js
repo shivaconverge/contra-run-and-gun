@@ -108,6 +108,15 @@ function main() {
     syncStageMeta();
   };
 
+  // "Play again" from the VICTORY screen restarts the whole CAMPAIGN at stage 1 (fresh
+  // score/lives) — not world.reset(), which would rebuild only the final stage. Exposed
+  // as a closure so runLive's key handler (no stageIndex scope) can drive it.
+  world.restartCampaign = () => {
+    stageIndex = 0;
+    world.loadStage(STAGES[0]); // no carry → fresh score/lives for a new run
+    syncStageMeta();
+  };
+
   assets.load(ASSET_MANIFEST).then(() => {
     if (headless) runHeadless(ctx, world, assets, params);
     else runLive(ctx, world, assets);
@@ -266,7 +275,8 @@ function runLive(ctx, world, assets) {
     if (e.code === 'Digit1') world.setMode('arcade'); // one-hit death (default)
     else if (e.code === 'Digit2') world.setMode('casual');  // shield + extra lives
     else if (e.code === 'KeyM') audio.toggleMute();
-    else if (e.code === 'KeyR') world.reset();          // R always → fresh playing
+    else if (e.code === 'KeyR' && world.status === 'cleared' && world.isFinalStage && world.restartCampaign) world.restartCampaign(); // victory → replay from stage 1
+    else if (e.code === 'KeyR') world.reset();          // R otherwise → fresh playing (current stage)
     else if (e.code === 'KeyP' && world.status === 'playing') world.paused = !world.paused; // pause/resume
     else if (e.code === 'KeyN' && world.status === 'cleared' && world.hasNextStage) world.requestNextStage(); // continue to next stage
     else if (onTitle && START_KEYS.includes(e.code)) world.start();
@@ -353,6 +363,15 @@ function runLive(ctx, world, assets) {
 
     render(ctx, world, assets);
 
+    // CAMPAIGN END SCREENS (composited over render's generic overlay, the same way
+    // drawFps/attract draw on top — LIVE-only, so headless/fidelity captures stay
+    // byte-identical). render.js (weapon-defect's) currently draws only "STAGE CLEAR"
+    // + a HARDCODED "STAGE 2" continue line and has no final victory screen; until it
+    // consumes world.nextStageLabel/isFinalStage, this layer supplies the real thing:
+    //  • intermediate clear → a STAGE CLEAR interstitial naming the ACTUAL next stage,
+    //  • final stage cleared → a VICTORY / CAMPAIGN COMPLETE screen (goal payoff).
+    drawCampaignEndOverlay(ctx, world);
+
     // Scene-gate the BGM: play only while a run is live; fade out under title /
     // game-over / victory so the 'gameover'/'clear' sting reads clean. Runs every
     // frame (outside the play branch) so it also covers the frozen title screen.
@@ -379,6 +398,75 @@ function drawFps(ctx, fps) {
   ctx.textAlign = 'left';
   ctx.textBaseline = 'bottom';
   ctx.fillText(fps + 'fps', 4, SIM.VIEW_H - 2);
+  ctx.restore();
+}
+
+// Campaign end screens, drawn OVER render's generic 'cleared' overlay (a full opaque
+// dim first, so render's "STAGE CLEAR / STAGE 2" is fully superseded). Only fires on
+// the 'cleared' status — 'gameover'/'title'/'playing'/'paused' keep render's screens.
+// INTERIM: this belongs in render.js long-term (open need); it lives here so the
+// victory payoff + correct next-stage label SHIP now without editing another loop's file.
+function drawCampaignEndOverlay(ctx, world) {
+  if (!world || world.status !== 'cleared') return;
+  const W = SIM.VIEW_W, H = SIM.VIEW_H, cx = W / 2, cy = H / 2;
+  const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints || 0) > 0;
+  const score = 'SCORE ' + String(world.score || 0).padStart(6, '0');
+  const hi = world.highScore || 0;
+  ctx.save();
+  // Near-opaque so render's already-drawn 'cleared' text (incl. its stale "STAGE 2"
+  // line) is fully covered — a lighter dim let it ghost through underneath.
+  ctx.fillStyle = 'rgba(0,0,0,0.985)';
+  ctx.fillRect(0, 0, W, H);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  if (world.isFinalStage) {
+    // FINAL VICTORY — the campaign payoff after clearing stage 7.
+    ctx.fillStyle = '#ffd23c';
+    ctx.font = '24px monospace';
+    ctx.fillText('VICTORY', cx, cy - 46);
+    ctx.fillStyle = '#7CFC7C';
+    ctx.font = '10px monospace';
+    ctx.fillText('CAMPAIGN COMPLETE', cx, cy - 24);
+    ctx.fillStyle = '#9fe0c0';
+    ctx.font = '7px monospace';
+    ctx.fillText('ALL ' + (world.stageCount || 7) + ' STAGES CLEARED', cx, cy - 12);
+    ctx.fillStyle = '#ffe36e';
+    ctx.font = '11px monospace';
+    ctx.fillText(score, cx, cy + 6);
+    if (world.newHigh) {
+      ctx.fillStyle = '#ffd23c'; ctx.font = '9px monospace';
+      ctx.fillText('★ NEW HIGH SCORE ★', cx, cy + 22);
+    } else {
+      ctx.fillStyle = '#8a97a8'; ctx.font = '8px monospace';
+      ctx.fillText('HI ' + String(hi).padStart(6, '0'), cx, cy + 22);
+    }
+    ctx.fillStyle = '#fff'; ctx.font = '8px monospace';
+    ctx.fillText(isTouch ? 'TAP TO PLAY AGAIN' : 'press R to play again', cx, cy + 38);
+  } else {
+    // INTERMEDIATE STAGE CLEAR — interstitial naming the ACTUAL next stage.
+    ctx.fillStyle = '#7CFC7C';
+    ctx.font = '16px monospace';
+    ctx.fillText('STAGE CLEAR', cx, cy - 34);
+    ctx.fillStyle = '#ffe36e';
+    ctx.font = '10px monospace';
+    ctx.fillText(score, cx, cy - 16);
+    if (world.newHigh) {
+      ctx.fillStyle = '#ffd23c'; ctx.font = '8px monospace';
+      ctx.fillText('★ NEW HIGH SCORE ★', cx, cy - 3);
+    } else {
+      ctx.fillStyle = '#8a97a8'; ctx.font = '8px monospace';
+      ctx.fillText('HI ' + String(hi).padStart(6, '0'), cx, cy - 3);
+    }
+    ctx.fillStyle = '#7CFC7C';
+    ctx.font = '9px monospace';
+    ctx.fillText(isTouch ? 'TAP TO CONTINUE' : 'press N to continue', cx, cy + 16);
+    if (world.nextStageLabel) {
+      ctx.fillStyle = '#cfe';
+      ctx.font = '7px monospace';
+      ctx.fillText('▶  ' + world.nextStageLabel, cx, cy + 30);
+    }
+  }
   ctx.restore();
 }
 
