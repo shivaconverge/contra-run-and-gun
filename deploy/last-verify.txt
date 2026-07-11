@@ -1,4 +1,4 @@
-=== GO-LIVE verification @ 2026-07-11T22:42:53Z ===
+=== GO-LIVE verification @ 2026-07-11T23:14:22Z ===
 URL: https://shivaconverge.github.io/contra-run-and-gun/
 --- root HTTP 0 ---
 <!doctype html>
@@ -42,28 +42,27 @@ URL: https://shivaconverge.github.io/contra-run-and-gun/
   #boot-help[hidden] { display: none !important; }
   #boot-help .card { max-width: 580px; text-align: left; font-size: 13px; line-height: 1.65; }
 
-src/main.js: HTTP 200 (23254 bytes)
-asset resolve-gate: 25/25 referenced assets HTTP 200
+src/main.js: HTTP 200 (26701 bytes)
+asset resolve-gate: 31/31 referenced assets HTTP 200
 assets/audio/manifest.json: HTTP 200
 audio resolve-gate: 7/7 tracks HTTP 200:
-  assets/audio/s1_jungle.mp3: HTTP 200, audio/mp3, 1517973 bytes
-  assets/audio/s2_cascade.mp3: HTTP 200, audio/mp3, 5440101 bytes
-  assets/audio/s3_snow.mp3: HTTP 200, audio/mp3, 3607341 bytes
-  assets/audio/s4_desert.mp3: HTTP 200, audio/mp3, 2536197 bytes
-  assets/audio/s5_foundry.mp3: HTTP 200, audio/mp3, 4580373 bytes
-  assets/audio/s6_caverns.mp3: HTTP 200, audio/mp3, 4503741 bytes
-  assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 4156581 bytes
+  assets/audio/s1_jungle.mp3: HTTP 200, audio/mp3, 1406780 bytes
+  assets/audio/s2_cascade.mp3: HTTP 200, audio/mp3, 4973684 bytes
+  assets/audio/s3_snow.mp3: HTTP 200, audio/mp3, 3028556 bytes
+  assets/audio/s4_desert.mp3: HTTP 200, audio/mp3, 2265908 bytes
+  assets/audio/s5_foundry.mp3: HTTP 200, audio/mp3, 3943196 bytes
+  assets/audio/s6_caverns.mp3: HTTP 200, audio/mp3, 4159724 bytes
+  assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 3827564 bytes
 RESULT: LIVE ✅
 
-CAMPAIGN-LIVE PROOF (headless Chromium against the LIVE URL, campaign-complete build):
-  Master advanced to the full campaign flow — STAGE CLEAR interstitial + final
-  VICTORY screen + campaign restart (commit 2e02c92). Re-deployed; resolve-gate
-  green (25 assets + all 7 biome tracks HTTP 200 live).
-  Distinct-biome proof via ?level=N boot on the LIVE URL (JUDGE BY LOOKING):
-    deploy/evidence/live-stage1.png  — Stage 1 JUNGLE  (green foliage, starry night)
-    deploy/evidence/live-stage4.png  — Stage 4 DESERT  (tan dunes, warm palette, flyer)
-    deploy/evidence/live-stage7.png  — Stage 7 FORTRESS (crimson metal, red sky, ninja mix)
-  Read side by side: three clearly DISTINCT tilesets/palettes/enemy mixes render
-  from the deployed bundle — the per-stage biome theming is live, not just 200-OK
-  files. (VICTORY screen itself requires beating stage-7's boss — a gameplay-flow
-  check owned by the in-browser playthrough verifiers, not this deploy gate.)
+PARALLAX-BACKGROUND REFRESH (headless Chromium against the LIVE URL):
+  Master advanced with 6 per-stage parallax BACKGROUND strips (bg_cascade/
+  caverns/desert/fortress/foundry/snow.png) + 7 re-mastered SEAMLESS audio loops
+  (Udio silence trimmed) + the 'breaks past stage 2' progression fix (HEAD 7a5dba1).
+  Re-deployed; resolve-gate green — 31 referenced assets (auto-adapted from 25 as
+  the 6 bg_*.png landed) + all 7 tracks HTTP 200 live.
+  Distinct-background proof via ?level=N on the LIVE URL (JUDGE BY LOOKING):
+    deploy/evidence/live-stage3.png  — Stage 3 SNOW    (layered snow-capped mountain parallax)
+    deploy/evidence/live-stage6.png  — Stage 6 CAVERNS (purple crystalline formations, glow)
+  Read side by side: the new per-stage background strips render distinctly from
+  the deployed bundle — a visible depth/fidelity upgrade over the flat backdrops.
