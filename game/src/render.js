@@ -1343,6 +1343,14 @@ function drawGun(ctx, p, x, y, assets) {
   // weaponless sprite), so this is the ONLY gun on the hero. Authored to real
   // pixel-art quality (shaded gunmetal receiver + barrel + stock + fore-grip),
   // muzzle ending exactly at HERO_GUN.muzzle so the shot leaves the drawn tip.
+  // The gripping hands/forearm are drawn in THIS rotated frame (below) so they
+  // travel with the aim — the intentional single-weapon design that bridges the
+  // weaponless body + one procedural gun (vs the arcade's 8 baked aim frames).
+  // VERIFIED BY LOOKING at TRUE 1× gameplay scale, 8 directions, side-by-side vs
+  // reference/frames/arcade-contra-1987/stage1/hero-8way-aim-native-~53s.png
+  // (2026-07-12): exactly ONE rifle per aim, pointing where the bullet leaves,
+  // reads at least as clearly as the arcade original. Do NOT reintroduce a baked
+  // sprite weapon under this (see enemy.js ONE-WEAPON audit) — that is the reject.
   const gx = x + p.w / 2, gy = y + p.h * HERO_GUN.pivotY;
   const ang = Math.atan2(p.aim.y, p.aim.x);
   const muzzle = HERO_GUN.muzzle; // barrel tip distance from the pivot (== bullet spawn)
