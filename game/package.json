@@ -1,0 +1,11 @@
+{
+  "name": "run-and-gun-vertical-slice",
+  "version": "0.1.0",
+  "description": "Browser-playable Contra-lineage run-and-gun vertical slice (vanilla Canvas2D + ES modules, zero build step).",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node serve.mjs",
+    "serve": "node serve.mjs"
+  }
+}

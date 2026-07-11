@@ -1,0 +1,12 @@
+{
+  "title": "HUNTDOWN",
+  "steam_appid": 598550,
+  "source": "Official Steam store trailer 'Huntdown Launch Trailer' (movies[0], HLS h264), frame-grabbed with ffmpeg fps=1",
+  "tool": "reference/tools/fetch-trailer-frames.mjs --app 598550",
+  "scope": "MOTION: grounds hit-feedback juice (combat text, damage numbers, kill-streaks), explosion + blood particles, enemy density IN MOTION (dims 2, 4, 5). NOT precise cadence — see CAP-2.",
+  "frames": [
+    {"file": "dense-interior-firefight-~40s.png", "approx_t_s": 40, "shows": "5-6 enemies across multi-tier red/gold interior; heavy set-dressing (crates, banners, columns)"},
+    {"file": "coop-rooftop-muzzleflash-~55s.png", "approx_t_s": 55, "shows": "2-player co-op firing (muzzle flashes), night city skyline + helicopter, pickups"},
+    {"file": "juice-comboText-explosion-~68s.png", "approx_t_s": 68, "shows": "peak feedback: DOUBLE KILL!/WEAPONS COMBO!/EXPLOSIVE! text + damage numbers + explosion + blood spray + kill-streak counter"}
+  ]
+}

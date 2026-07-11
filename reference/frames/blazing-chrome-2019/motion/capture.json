@@ -1,0 +1,11 @@
+{
+  "title": "Blazing Chrome",
+  "steam_appid": 609110,
+  "source": "Official Steam store trailer 'Blazing Chrome Release Trailer' (movies[0], HLS h264), frame-grabbed with ffmpeg fps=1",
+  "tool": "reference/tools/fetch-trailer-frames.mjs --app 609110",
+  "scope": "MOTION: grounds hit-feedback / weapon-juice / explosion-scale / boss composition IN MOTION (dims 2 & 4). NOT precise cadence (edited trailer, unknown zoom/scroll) — see CAP-2.",
+  "frames": [
+    {"file": "boss-composition-~65s.png", "approx_t_s": 65, "shows": "BOSS splash: tiny co-op heroes vs a massive golden mech-beast — scale contrast + boss-arena framing"},
+    {"file": "firefight-explosion-dashring-~85s.png", "approx_t_s": 85, "shows": "layered warm explosion + debris, player dash/shield ring VFX, spider-mech enemies, industrial interior"}
+  ]
+}

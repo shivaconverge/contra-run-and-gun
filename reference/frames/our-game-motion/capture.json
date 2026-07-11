@@ -1,0 +1,55 @@
+{
+  "title": "",
+  "url": "http://localhost:8151/index.html?seed=1234",
+  "mode": "pptr",
+  "viewport": [
+    480,
+    270
+  ],
+  "settle_ms": 1500,
+  "frames": 8,
+  "interval_ms": 220,
+  "captured": [
+    {
+      "frame": 0,
+      "file": "frame-00.png",
+      "key": "ArrowRight"
+    },
+    {
+      "frame": 1,
+      "file": "frame-01.png",
+      "key": "KeyX"
+    },
+    {
+      "frame": 2,
+      "file": "frame-02.png",
+      "key": "Space"
+    },
+    {
+      "frame": 3,
+      "file": "frame-03.png",
+      "key": "ArrowRight"
+    },
+    {
+      "frame": 4,
+      "file": "frame-04.png",
+      "key": "KeyX"
+    },
+    {
+      "frame": 5,
+      "file": "frame-05.png",
+      "key": "ArrowDown"
+    },
+    {
+      "frame": 6,
+      "file": "frame-06.png",
+      "key": "ArrowDown"
+    },
+    {
+      "frame": 7,
+      "file": "frame-07.png",
+      "key": "KeyX"
+    }
+  ],
+  "tool": "capture-frames.mjs"
+}

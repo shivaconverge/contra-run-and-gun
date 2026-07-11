@@ -1,0 +1,9 @@
+{
+  "subject": "our-game arcade title / attract screen (PR#34)",
+  "build": "03d5653",
+  "source": "live pptr (non-headless), canvas toDataURL at native 480x270",
+  "frames": [
+    {"file": "title-0.png", "shows": "title 'RUN & GUN', ARCADE/CASUAL mode select, 'one hit = one life — the 1987 way', PRESS Z/SPACE, live attract gameplay behind (arcade convention)"},
+    {"file": "title-1-select.png", "shows": "difficulty select after ArrowDown"}
+  ]
+}

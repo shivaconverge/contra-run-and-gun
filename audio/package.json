@@ -1,0 +1,15 @@
+{
+  "name": "contra-audio-staging",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Staging dir for the missing music layer: chiptune BGM sequencer (music.js), corpus teardown, drop-in patch for game/src/audio.js, and offline render verification. Mirrors game/'s ESM setup so node runs the same module the browser loads.",
+  "scripts": {
+    "verify:all": "node verify/all.mjs",
+    "verify:all:json": "node verify/all.mjs --json",
+    "verify": "node verify/render-check.mjs",
+    "headless": "node verify/headless-safety.mjs",
+    "live": "node verify/live-check.mjs",
+    "soak": "node verify/perf-soak.mjs"
+  }
+}

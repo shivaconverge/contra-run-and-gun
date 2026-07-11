@@ -1,0 +1,157 @@
+{
+  "when": "2026-07-10T08:16:36.329Z",
+  "base": "repo-root",
+  "ok": true,
+  "pairs": [
+    {
+      "id": "firefight-vs-blazing-chrome",
+      "sheet": "firefight-vs-blazing-chrome.png",
+      "valid": true,
+      "ours": {
+        "w": 480,
+        "h": 270,
+        "uniqueColors": 418,
+        "inkFraction": 0.755,
+        "edgeDensity": 0.06
+      },
+      "ref": {
+        "w": 640,
+        "h": 360,
+        "uniqueColors": 838,
+        "inkFraction": 0.93,
+        "edgeDensity": 0.088
+      },
+      "delta": {
+        "uniqueColors": 420,
+        "inkFraction": 0.175,
+        "edgeDensity": 0.028
+      },
+      "oursLabel": "firefight peak beat (live sim)",
+      "refLabel": "Blazing Chrome — firefight"
+    },
+    {
+      "id": "firefight-vs-huntdown",
+      "sheet": "firefight-vs-huntdown.png",
+      "valid": true,
+      "ours": {
+        "w": 480,
+        "h": 270,
+        "uniqueColors": 418,
+        "inkFraction": 0.755,
+        "edgeDensity": 0.06
+      },
+      "ref": {
+        "w": 640,
+        "h": 360,
+        "uniqueColors": 1130,
+        "inkFraction": 0.636,
+        "edgeDensity": 0.124
+      },
+      "delta": {
+        "uniqueColors": 712,
+        "inkFraction": -0.119,
+        "edgeDensity": 0.064
+      },
+      "oursLabel": "firefight peak beat (live sim)",
+      "refLabel": "Huntdown — dense interior firefight"
+    },
+    {
+      "id": "boss-vs-blazing-chrome",
+      "sheet": "boss-vs-blazing-chrome.png",
+      "valid": true,
+      "ours": {
+        "w": 480,
+        "h": 270,
+        "uniqueColors": 496,
+        "inkFraction": 0.77,
+        "edgeDensity": 0.061
+      },
+      "ref": {
+        "w": 640,
+        "h": 360,
+        "uniqueColors": 430,
+        "inkFraction": 0.851,
+        "edgeDensity": 0.043
+      },
+      "delta": {
+        "uniqueColors": -66,
+        "inkFraction": 0.081,
+        "edgeDensity": -0.018
+      },
+      "oursLabel": "boss mid-fight (live sim)",
+      "refLabel": "Blazing Chrome — boss composition"
+    },
+    {
+      "id": "firefight-vs-gunnrun-web",
+      "sheet": "firefight-vs-gunnrun-web.png",
+      "valid": true,
+      "ours": {
+        "w": 480,
+        "h": 270,
+        "uniqueColors": 418,
+        "inkFraction": 0.755,
+        "edgeDensity": 0.06
+      },
+      "ref": {
+        "w": 960,
+        "h": 600,
+        "uniqueColors": 261,
+        "inkFraction": 0.204,
+        "edgeDensity": 0.005
+      },
+      "delta": {
+        "uniqueColors": -157,
+        "inkFraction": -0.551,
+        "edgeDensity": -0.055
+      },
+      "oursLabel": "firefight peak beat (live sim)",
+      "refLabel": "GUN N' RUN (itch HTML5) — firefight"
+    },
+    {
+      "id": "duel-vs-gunnrun-web",
+      "sheet": "duel-vs-gunnrun-web.png",
+      "valid": true,
+      "ours": {
+        "w": 480,
+        "h": 270,
+        "uniqueColors": 418,
+        "inkFraction": 0.755,
+        "edgeDensity": 0.06
+      },
+      "ref": {
+        "w": 960,
+        "h": 600,
+        "uniqueColors": 259,
+        "inkFraction": 0.294,
+        "edgeDensity": 0.005
+      },
+      "delta": {
+        "uniqueColors": -159,
+        "inkFraction": -0.461,
+        "edgeDensity": -0.055
+      },
+      "oursLabel": "firefight peak beat (live sim)",
+      "refLabel": "GUN N' RUN (itch HTML5) — duel"
+    }
+  ],
+  "bossMidfight": {
+    "captured": true,
+    "bossPresent": true,
+    "valid": true,
+    "status": "playing",
+    "enemiesAlive": 1,
+    "frames": 300
+  },
+  "firefight": {
+    "captured": true,
+    "busy": true,
+    "valid": true,
+    "onScreenEnemies": 6,
+    "bullets": 8,
+    "particles": 12,
+    "fx": 0,
+    "frames": 300
+  },
+  "pageErrors": [],
+  "failures": []
+}

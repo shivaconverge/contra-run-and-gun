@@ -1,0 +1,27 @@
+{
+  "title": "HUNTDOWN",
+  "steam_appid": 598550,
+  "slug": "huntdown-2020",
+  "source": "Steam store appdetails (official developer screenshots)",
+  "note": "STILLS not motion: grounds visual dims (sprite/palette/density), not cadence/hit-stop.",
+  "shots": [
+    {
+      "i": 0,
+      "file": "shot-00.jpg",
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/598550/ss_4317056a3f90399e6d18242a0beeebedd6ecd912.1920x1080.jpg?t=1723637797",
+      "bytes": 339672
+    },
+    {
+      "i": 1,
+      "file": "shot-01.jpg",
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/598550/ss_c60dfaf2a92e46320354bce0d7fdf3a40da2c796.1920x1080.jpg?t=1723637797",
+      "bytes": 458546
+    },
+    {
+      "i": 2,
+      "file": "shot-02.jpg",
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/598550/ss_5033816517e9eb719822640eca1154f057bf7cff.1920x1080.jpg?t=1723637797",
+      "bytes": 371156
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "frames": 120,
+  "playerX": 253,
+  "playerDead": false,
+  "playerProne": false,
+  "playerH": 20,
+  "weapon": "rifle",
+  "lives": 3,
+  "pickupsLeft": 2,
+  "enemiesAlive": 19,
+  "enemiesStart": 20,
+  "onScreenEnemies": 2,
+  "peakOnScreen": 2,
+  "bullets": 7,
+  "particles": 5,
+  "fx": 0,
+  "fxSpawned": 1,
+  "score": 100,
+  "status": "playing",
+  "trauma": 0.107,
+  "hitStop": 0,
+  "spritesLoaded": [
+    "player_idle",
+    "grunt",
+    "turret",
+    "tiles",
+    "explosion",
+    "muzzle"
+  ],
+  "spritesMissing": [
+    "player_run"
+  ]
+}

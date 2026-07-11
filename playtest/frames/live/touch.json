@@ -1,0 +1,127 @@
+{
+  "when": "2026-07-10T08:16:26.669Z",
+  "viewport": "landscape phone (hasTouch)",
+  "buttons": [
+    "up",
+    "left",
+    "right",
+    "down",
+    "jump",
+    "fire"
+  ],
+  "layout": {
+    "touchActive": true,
+    "cw": 667,
+    "ch": 375,
+    "vw": 812,
+    "vh": 375,
+    "h1Hidden": true,
+    "helpHidden": true,
+    "rotateShown": false
+  },
+  "pageErrors": [],
+  "portrait": {
+    "rotateShown": true,
+    "hasHint": true
+  },
+  "results": [
+    {
+      "id": "touch.overlayMounts",
+      "ok": true,
+      "detail": "#touch-controls present=true, window.__touch=true",
+      "critical": true
+    },
+    {
+      "id": "touch.buttonSet",
+      "ok": true,
+      "detail": "buttons=[\"up\",\"left\",\"right\",\"down\",\"jump\",\"fire\"] (need [\"up\",\"left\",\"right\",\"down\",\"jump\",\"fire\"])",
+      "critical": true
+    },
+    {
+      "id": "touch.mobileLayoutEngages",
+      "ok": true,
+      "detail": "body.touch-active=true, desktop chrome hidden (h1=true, help=true)",
+      "critical": true
+    },
+    {
+      "id": "touch.canvasFillsViewport",
+      "ok": true,
+      "detail": "canvas 667×375 in 812×375 viewport: fills height=true, ratio=1.78 (want 1.78)",
+      "critical": true
+    },
+    {
+      "id": "touch.rotateHintHiddenLandscape",
+      "ok": true,
+      "detail": "landscape → rotate-hint shown=false (should be hidden)",
+      "critical": true
+    },
+    {
+      "id": "touch.bootsToTitle",
+      "ok": true,
+      "detail": "status='title'",
+      "critical": true
+    },
+    {
+      "id": "touch.startFromTitle",
+      "ok": true,
+      "detail": "tapped FIRE on title → status='playing' (mobile must be able to start)",
+      "critical": true
+    },
+    {
+      "id": "touch.dpadRightMoves",
+      "ok": true,
+      "detail": "▶ held: x 40 → peak 119",
+      "critical": true
+    },
+    {
+      "id": "touch.jumpButton",
+      "ok": true,
+      "detail": "JUMP: vy=-4.6 grounded=false",
+      "critical": true
+    },
+    {
+      "id": "touch.fireButton",
+      "ok": true,
+      "detail": "FIRE held: peak player bullets=2",
+      "critical": true
+    },
+    {
+      "id": "touch.dpadDownProne",
+      "ok": true,
+      "detail": "▼ held → prone engaged=true",
+      "critical": true
+    },
+    {
+      "id": "touch.dpadUpAims",
+      "ok": true,
+      "detail": "▲ held → aim up engaged=true",
+      "critical": true
+    },
+    {
+      "id": "touch.reachesGameover",
+      "ok": true,
+      "detail": "drove into a grunt on touch → status=gameover",
+      "critical": true
+    },
+    {
+      "id": "touch.restartFromGameover",
+      "ok": true,
+      "detail": "a touch press restarts after game-over (TOUCH-1 fixed): FIRE → status=playing",
+      "critical": true
+    },
+    {
+      "id": "touch.noErrors",
+      "ok": true,
+      "detail": "errors=[]",
+      "critical": true
+    },
+    {
+      "id": "touch.portraitRotateHint",
+      "ok": true,
+      "detail": "portrait phone → rotate-to-landscape hint shown=true",
+      "critical": true
+    }
+  ],
+  "passed": 16,
+  "failed": 0
+}

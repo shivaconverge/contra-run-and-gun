@@ -1,0 +1,11 @@
+{
+  "subject": "our-game MOBILE-FIRST layout (PR#78) + game-over touch-restart gap",
+  "build": "7f7872d",
+  "source": "headless Chrome emulating a landscape Android phone (Pixel 7, 844x390, hasTouch); full-page screenshots + measured canvas fill + game-over state forced via real game state",
+  "note": "LAYOUT VERIFIED (PR#78): the canvas now fills 100% of viewport HEIGHT (was letterboxed before) — moon-to-ground, mobile-first. DEFECT CONFIRMED (TOUCH-1, from playtest): at GAME OVER the prompt says 'press R to restart' (keyboard-only) and the touch overlay has NO restart control (hasRestartControl=false; buttons only ▲◀▶▼/JUMP/FIRE) — a touchscreen player is STRANDED after death. Real mobile-playability blocker.",
+  "frames": [
+    {"file": "mobile-layout-play.png", "shows": "mobile-first layout: canvas fills viewport height, clean touch overlay, gameplay"},
+    {"file": "mobile-gameover.png", "shows": "BEFORE fix: GAME OVER — 'press R to restart' (keyboard only), no touch restart → stranded (TOUCH-1)"},
+    {"file": "mobile-gameover-fixed.png", "shows": "AFTER fix (PR#82): GAME OVER — 'TAP TO RESTART'; verified a touch press restarts (status gameover→playing, lives→3, respawn). TOUCH-1 RESOLVED."}
+  ]
+}

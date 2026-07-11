@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>CONTRA-LIKE — Vertical Slice</title>
+<style>
+  :root { --bg: #0a0e14; }
+  html, body {
+    margin: 0; height: 100%; background: var(--bg);
+    color: #cdd6e0; font-family: monospace;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  #stage {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  #game {
+    image-rendering: pixelated;
+    width: min(96vw, calc(96vh * 16 / 9));
+    height: auto;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border: 2px solid #1c2a3a;
+    box-shadow: 0 0 0 2px #0a0e14, 0 8px 40px rgba(0,0,0,0.6);
+  }
+  #help {
+    font-size: 12px; color: #6b7a8d; text-align: center; line-height: 1.5;
+    max-width: 90vw;
+  }
+  #help b { color: #8ef0ff; }
+  h1 { font-size: 14px; letter-spacing: 3px; color: #ffe36e; margin: 0; }
+  /* Shown only if the game fails to boot (e.g. opened via file:// where the
+     browser blocks ES modules) — so a player never hits a silent blank screen. */
+  #boot-help { position: fixed; inset: 0; z-index: 100; padding: 24px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(6,10,16,0.97); }
+  /* the ID rule above out-specifies the UA [hidden] rule — make hidden authoritative */
+  #boot-help[hidden] { display: none !important; }
+  #boot-help .card { max-width: 580px; text-align: left; font-size: 13px; line-height: 1.65; }
+  #boot-help h2 { color: #ff6b6b; margin: 0 0 10px; font-size: 16px; letter-spacing: 1px; }
+  #boot-help code { color: #8ef0ff; background: #121a26; padding: 1px 5px; border-radius: 3px; }
+  #boot-help a { color: #ffe36e; }
+
+  /* --- Mobile layout (body.touch-active, set by touch.js when the on-screen
+     controls mount) --- the 16:9 game wants the whole screen, not a strip under
+     desktop keyboard chrome. Hide the chrome and maximize the canvas within the
+     viewport (aspect preserved). Desktop never gets this class. */
+  body.touch-active h1, body.touch-active #help { display: none; }
+  body.touch-active { justify-content: center; }
+  body.touch-active #stage { position: fixed; inset: 0; gap: 0;
+    justify-content: center; }
+  body.touch-active #game { width: min(100vw, calc(100vh * 16 / 9));
+    height: min(100vh, calc(100vw * 9 / 16)); border: none; box-shadow: none; }
+
+  /* Portrait on a phone: the game is a tiny sideways strip — prompt to rotate.
+     The sim keeps running behind the hint, so a rotate resumes instantly. */
+  #rotate-hint { display: none; position: fixed; inset: 0; z-index: 80;
+    background: rgba(6,10,16,0.94); color: #cdd6e0; text-align: center;
+    flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+    font-family: monospace; padding: 24px; }
+  #rotate-hint .glyph { font-size: 54px; animation: rot 2.4s ease-in-out infinite; }
+  #rotate-hint b { color: #ffe36e; letter-spacing: 2px; font-size: 16px; }
+  #rotate-hint span { color: #6b7a8d; font-size: 13px; }
+  @keyframes rot { 0%,40% { transform: rotate(-90deg);} 60%,100% { transform: rotate(0deg);} }
+  @media (orientation: portrait) { body.touch-active #rotate-hint { display: flex; } }
+</style>
+</head>
+<body>
+  <div id="stage">
+    <h1>RUN &amp; GUN — VERTICAL SLICE</h1>
+    <canvas id="game" width="480" height="270"></canvas>
+    <div id="help">
+      <b>←/→</b> or <b>A/D</b> move &nbsp;·&nbsp; <b>↑</b> aim &nbsp;·&nbsp;
+      <b>↓</b> prone (duck fire) &nbsp;·&nbsp;
+      <b>Z / Space</b> jump &nbsp;·&nbsp; <b>X</b> fire &nbsp;·&nbsp; <b>R</b> restart &nbsp;·&nbsp;
+      <b>1</b> Arcade / <b>2</b> Casual &nbsp;·&nbsp; <b>M</b> mute<br />
+      <b>Arcade</b> (default): one hit = one life — the 1987 way. <b>Casual</b>: a
+      shield + extra lives. Grab weapon capsules —
+      <b style="color:#8ef0ff">S</b>pread, <b style="color:#ffd27a">M</b>achine,
+      <b style="color:#8affd6">L</b>aser (pierces!), <b style="color:#ff8a3c">F</b>ire (corkscrew)
+      (lost on death). Defeat the <b style="color:#ff4d6d">SENTINEL</b> boss — hold
+      <b>↓</b> to duck its cannon fire.
+    </div>
+    <div id="help" style="margin-top:-4px">
+      Real pixel-art sprites + tileset; procedural fallback for any asset not yet in <b>assets/</b>.
+    </div>
+  </div>
+
+  <!-- Portrait-phone hint: the 16:9 run-and-gun plays best in landscape. Shown
+       only on touch devices in portrait (CSS); the game runs on behind it. -->
+  <div id="rotate-hint">
+    <div class="glyph">📱</div>
+    <b>ROTATE TO LANDSCAPE</b>
+    <span>Run &amp; Gun plays in widescreen — turn your device sideways.</span>
+  </div>
+
+  <!-- Graceful boot failure (e.g. opened via file://, where browsers block ES
+       modules) — a real player gets clear instructions, never a blank screen. -->
+  <div id="boot-help" hidden>
+    <div class="card">
+      <h2>▶ SERVE ME TO PLAY</h2>
+      This build uses ES modules, which browsers only load over <b>http(s)</b> — not
+      from a local <code>file://</code> path. One command, no install (just Node):
+      <pre style="color:#8ef0ff">cd game &amp;&amp; npm start</pre>
+      then open <a href="http://localhost:8080/">http://localhost:8080/</a>.<br />
+      No Node? <code>python3 -m http.server 8080</code> in the <code>game/</code> folder.
+      <br /><br />If you opened a <b>hosted link</b> and still see this, a script failed
+      to load — check the browser console.
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+  <script>
+    // Non-module guard: runs even when the module above fails to load. POLLS for a
+    // successful boot (window.__booted, set by main.js) so a merely-slow load never
+    // false-triggers, and only surfaces the help card after a generous grace with no
+    // boot (file://, bad MIME, 404, or a JS error). main.js also hides the card on
+    // boot, so a very-late load self-recovers instead of showing a stuck overlay.
+    (function () {
+      var el = document.getElementById('boot-help');
+      // Harness contexts (?headless=/?selftest=) are controlled and always boot over
+      // http — skip the guard so virtual-time capture frames are never polluted.
+      if (/[?&](headless|selftest)=/.test(location.search)) return;
+      if (location.protocol === 'file:') { el.hidden = false; return; }
+      var tries = 0;
+      var iv = setInterval(function () {
+        if (window.__booted) { clearInterval(iv); el.hidden = true; return; }
+        if (++tries >= 24) { clearInterval(iv); el.hidden = false; } // ~6s, no boot → help
+      }, 250);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "subject": "our-game prone stance (arcade §2 dodge)",
+  "source": "live pptr session, hold ArrowDown (+ KeyX fire) at spawn before enemy contact; canvas read at native 480x270 via toDataURL",
+  "build": "0e8d80c",
+  "frames": [
+    {"file": "prone-0.png", "shows": "prone duck (hold Down), hero flattened low"},
+    {"file": "prone-fire.png", "shows": "prone + fire — gun dropped low near ground, muzzle-flash star + tracer; matches arcade §2 'duck under over-fire, hit low targets'"}
+  ]
+}

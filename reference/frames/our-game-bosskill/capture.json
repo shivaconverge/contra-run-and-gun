@@ -1,0 +1,15 @@
+{
+  "subject": "our-game (loop-root-B game/index.html) — boss-death MULTI-BLAST finale (closes EXPL-1)",
+  "build": "game HEAD post d6a8146 ('add scenario=bosskill headless beat + bossDefeated bench flag')",
+  "base": "http://localhost:8137",
+  "url": "index.html?headless=1&scenario=bosskill&seed=1234",
+  "native": [480, 270],
+  "purpose": "Finally WITNESS the boss-death finale FX — the longstanding EXPL-1 capture-coverage gap (the normal showcase player dies to the boss before the boss dies, so the climax was never seen). The engine loop added scenario=bosskill (main.js:98) exactly for this: demo player is iframe-invincible + laser, runs until world.boss.dead, then holds 6 frames so the explosion cluster renders at peak.",
+  "method": "Headless one-shot at the bosskill scenario; read canvas via toDataURL + window.__bench. tools/bosskill-cap.mjs.",
+  "bench_facts": "bossDefeated=true; fx=7 (SEVEN live explosion strips on-screen this frame = a multi-blast, not one puff); fxSpawned=7; particles=63; trauma=0.867 (big screen-shake); hitStop=13 (death freeze holds the FX at peak); score=3000.",
+  "frames_kept": [
+    {"file": "bosskill-finale.png", "note": "full native frame: the Sentinel is dead; a wide cluster of orange fireballs erupts across its footprint in the boss arena (right), player (LASER) alongside. The climactic finale, witnessed end-to-end for the first time."},
+    {"file": "bosskill-cluster-4x.png", "note": "4x crop of the cluster: a genuine MULTI-BLAST — 3-4 tall white-cored flame plumes over a dense billowing base + spark bits flying off. Much bigger/denser than a single grunt kill; the boss-death 'bigger fireball' realized as a stacked multi-fireball spectacle."}
+  ],
+  "verdict": "EXPL-1 CLOSED. The boss-death finale is now witnessable (scenario=bosskill) and verified by looking: a wide MULTI-BLAST cluster (fx=7, particles=63) with heavy trauma (0.867) + hit-stop (13) — a satisfying climax. Confirms my ASSESS-22 prediction that the boss-death uses the SHARED drawFx multi-lobe billow, here spawned x7 across the boss body. It also delivers the 'stacked/multiple bursts' element I had flagged as the remaining dim-2 pinnacle stretch — at the climax. dim-2 HOLDS at 4.5 on a stronger basis (per-kill density + hand-drawn scale remain the residual stretch; not inflating for one scripted climax)."
+}

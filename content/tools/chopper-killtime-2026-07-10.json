@@ -1,0 +1,30 @@
+{
+  "measured": "2026-07-10",
+  "by": "root.G (content)",
+  "method": "Applied content/stage2/WIRE.md patches 1-3 + level2.data.js to a THROWAWAY copy of game/ (I never edit game/), then drove the real patched sim headless. Isolated boss fight: only the boss enemy, player parked at x2090/y210 with spread + permanent i-frames, an AIM-TRACKING bot that sets the 8-way toward the boss's live center each frame and holds fire. Measures frames-to-boss-death / 60.",
+  "valid_conclusions": [
+    "The chopper archetype WIRES correctly: registers as boss via the isBoss finder generalization (bossFound='chopper'), plays without crash, phase-2 enrage fires (~13s), and is DEFEATABLE.",
+    "Defeatable across a wide HP range 70-110 => the win path is robust, not knife-edge."
+  ],
+  "chopper_hp_sweep_fixed_geometry": {
+    "note": "hover96 / sweepAmp120 held constant; only hp varied. NON-MONOTONIC => noisy instrument.",
+    "110": 62.8, "100": 66.1, "90": 51.8, "85": 44.3, "80": 51.1, "75": 44.1, "70": 33.5
+  },
+  "aim_dependence": { "horizontal_only_dmg": "110->94", "up_aim_dmg": "110->72" },
+  "instrument_caveat": "Headless kill-time is noisy + geometry-sensitive: changing hoverY/sweepAmp, or placing the bot off-center, can make it whiff entirely (a sweeping aerial target + spread + one fixed bot position is near-chaotic). Even the Stage-1 Sentinel didn't die under this exact protocol (up-aim overshoots a ground target). => This is a DEFEATABILITY oracle, NOT a balance oracle. Boss FEEL/difficulty must be judged by a LIVE human (incl. mobile) playtest, not these numbers.",
+  "recommendation": "root.B: start chopper hp ~80-90 (shipped 110 => ~63s fight is too long vs the Stage-1 boss feel), then TUNE LIVE. Do not treat any single number here as a proven-optimal balance verdict.",
+  "UPDATE_2026-07-10_shipped_regression_CHOP-1": {
+    "context": "root.B shipped hp78/hoverY120/sweepAmp90 (applied the WIRE BAL-1 suggestion incl. the speculative sweepAmp~90).",
+    "finding": "Driving the REAL shipped build, the chopper HP PLATEAUS at exactly 31 (= enrage threshold 78*0.4) and never dies (>180s, all firing positions x2060-2135).",
+    "isolated_cause": "sweepAmp:90. Same config with sweepAmp120 kills in 54.9s; hp78+orig-geometry kills 47.7s; hp110 orig kills 62.8s. The narrow enraged sweep keeps the low-hover boss ~30px outside the barrier player's spread cone.",
+    "retraction": "The WIRE 'narrow sweepAmp to ~90' suggestion is RETRACTED as harmful.",
+    "fix": "keep hp78/hoverY120 but revert sweepAmp to ~120 (or add enrageSweepAmp~120 / lower enrageHoverY), then LIVE human playtest. See content/stage2/QA-NOTES.md CHOP-1."
+  },
+  "UPDATE_2026-07-10b_leading_aim_and_fix_validation": {
+    "leading_aim": "Re-ran with a bot that LEADS the sweeping boss (aim at bossPos + bossVel*lead; lead=8,20,40). Spread STILL floors at exactly 31 at every lead => the stall is POSITIONAL (enrage-phase reachability), NOT a no-lead aiming artifact.",
+    "fix_validated": "sweepAmp:120 under the same leading bot => boss dies 54.9s (shipped sweepAmp:90 => >180s stall). One-number fix confirmed.",
+    "enrageSweepAmp_correction": "Adding enrageSweepAmp alone does NOT work: enemy.js reads this.def.sweepAmp for BOTH phases (no enrageSweepAmp in the code path). Fix = change base sweepAmp, or add the field AND wire enemy.js to read it.",
+    "weapon_test_inconclusive": "At the parked x2090 position only spread chipped HP; rifle/machine/laser/fire showed 0 damage even with leading. Likely a range/single-projectile-vs-parked-position confound, NOT a claim those guns can't hit — a repositioning human would differ. Flagged, not asserted.",
+    "residual": "Bot is PARKED (no jump/reposition). Human clearability of the enrage phase still needs a live playtest; but leading-invariance makes the human-also-stalls case stronger."
+  }
+}

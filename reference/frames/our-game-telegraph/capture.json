@@ -1,0 +1,9 @@
+{
+  "subject": "our-game enemy fire TELEGRAPH (turret/flyer ~0.18s muzzle wind-up, PR#62)",
+  "build": "current",
+  "source": "live pptr; polled window.__game.enemies for an on-screen turret/flyer with telegraph>0, captured that frame (turret tel=4)",
+  "note": "Verified: a yellow-white core wind-up glow appears on the turret ~0.18s (TELEGRAPH_FRAMES) before its aimed shot — a fairness/readability tell (dodgeable). Modest/subtle at gameplay scale, appropriate for common enemies. render.js draws it as additive arcs (soft), not a box.",
+  "frames": [
+    {"file": "telegraph.png", "shows": "turret mid-telegraph (yellow wind-up glow) on the upper-left platform; a flyer aiming center"}
+  ]
+}

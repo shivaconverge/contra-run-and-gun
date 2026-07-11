@@ -1,0 +1,12 @@
+{
+  "subject": "our-game weapon roster firing (Rifle/Spread/Machine/Laser)",
+  "build": "59c7e01",
+  "source": "live pptr; each weapon set via the game's own player.setWeapon(key) (real state, not a mock), fired (KeyX), canvas toDataURL native 480x270",
+  "role": "weapon-juice (dim 4) + arcade weapon-lineage (§3 M/S/L/F) verification",
+  "frames": [
+    {"file": "rifle.png", "shows": "Rifle — single yellow shots (default)"},
+    {"file": "spread.png", "shows": "Spread (S) — 5-pellet cyan fan"},
+    {"file": "machine.png", "shows": "Machine (M) — dense fast warm-gold stream (fireRate 3)"},
+    {"file": "laser.png", "shows": "Laser (L) — long thin mint piercing beam (14x3, damage 3, pierce)"}
+  ]
+}

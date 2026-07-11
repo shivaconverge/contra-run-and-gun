@@ -1,0 +1,13 @@
+{
+  "title": "Contra (Arcade, 1987) — Stage 1 jungle side-scroll",
+  "source": "archive.org item 'Contraarcade1cc' (Contra Arcade 1cc longplay), file contra1cc.mp4 (480x360, ~29.97fps, 539s). Frame-grabbed with ffmpeg.",
+  "tool": "ffmpeg -user_agent <UA> -ss <t> -i https://archive.org/download/Contraarcade1cc/contra1cc.mp4 -vf fps=N ...",
+  "role": "NOSTALGIC-FEEL CADENCE ANCHOR (dim-3). Clean side-scroll gameplay for movement-cadence grounding — unlike the Steam competitor TRAILERS which are boss/title montages (no clean isolated jump).",
+  "scope": "Grounds the ARCADE cadence/feel reference: brisk run-right pacing, 8-way diagonal aim (visible bullet streams), fixed-arc somersault jumps over ledges/water. Precise apex/airtime pixel-measurement is bounded by the small hero (~playfield 256x224) — see teardowns/cadence-dim3.md for OUR measured cadence + the exact frame-step repro to pin arcade apex/airtime.",
+  "frames": [
+    {"file": "jungle-open-~30s.png", "shows": "Stage-1 open jungle: mountains bg, bridge over water, run-right pacing"},
+    {"file": "cliff-bridge-~37s.png", "shows": "cliff/bridge section, enemies, 8-way aim"},
+    {"file": "bamboo-run-~44s.png", "shows": "bamboo forest run, dense enemy trickle"},
+    {"file": "hero-8way-aim-native-~53s.png", "shows": "native-fps crop: hero firing diagonal (8-way aim), grassy ledges"}
+  ]
+}

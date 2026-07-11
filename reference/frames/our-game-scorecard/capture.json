@@ -1,0 +1,11 @@
+{
+  "subject": "our-game current-build capture for the fidelity SCORECARD",
+  "build": "5d321b7",
+  "source": "deterministic headless harness (?headless=1&frames=N&seed=1234), canvas native 480x270",
+  "role": "verify PR#46 night-jungle atmosphere pass (twinkling stars, fireflies, vignette; hero readable) + ground SCORECARD.md",
+  "frames": [
+    {"file": "state-0060.png", "shows": "early run, night-jungle atmosphere (stars/moon/fireflies)"},
+    {"file": "state-0180.png", "shows": "firefight: airborne 8-way rifle, turret + grunt, atmosphere pass visible, hero readable"},
+    {"file": "state-0300.png", "shows": "continued firefight, spread"}
+  ]
+}

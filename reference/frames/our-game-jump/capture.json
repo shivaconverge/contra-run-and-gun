@@ -1,0 +1,10 @@
+{
+  "subject": "our-game airborne leap sprite (player_jump, PR#35)",
+  "build": "03d5653",
+  "source": "live pptr, jump (Space) while running; canvas toDataURL native 480x270",
+  "note": "distinct airborne pose (forward-bound leap), palette-locked, no blur; completes sprite set idle/run/leap/prone. NOTE: forward-bound, not the arcade tucked somersault (LEAP-1).",
+  "frames": [
+    {"file": "leap-rising.png", "shows": "airborne leap just after takeoff, firing (tracer)"},
+    {"file": "leap-apex.png", "shows": "airborne near apex"}
+  ]
+}

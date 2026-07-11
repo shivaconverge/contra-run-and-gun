@@ -1,0 +1,11 @@
+{
+  "subject": "our-game ON-SCREEN TOUCH CONTROLS (mobile/Android browser playability, PR#74)",
+  "build": "9bf33af",
+  "source": "headless Chrome emulating a landscape Android phone (Pixel 7 UA, 844x390, hasTouch) so the touch overlay mounts (isTouch: ontouchstart/maxTouchPoints>0); full-PAGE screenshot (canvas + DOM overlay)",
+  "role": "mobile/touch playability check vs the web/Android goal + the Contra Returns touch-UI reference (clean-HUD positioning)",
+  "note": "Touch overlay verified: cyan D-pad (up/left/right/down = move + aim + prone), yellow JUMP + red FIRE (w/ ammo count) circles, semi-transparent, edge-positioned — the core arcade control scheme, thumb-sized (76-84px). CLEAN + minimal: leaves gameplay readable, FAR less cluttered than Contra Returns' touch UI (d-pad + grenade + special + ammo meters + operator portraits + objectives) — confirms OUR positioning advantage. Minor: the keyboard help text still shows under the touch controls on a touch device (mildly redundant).",
+  "frames": [
+    {"file": "touch-play.png", "shows": "gameplay with the touch overlay: D-pad left, JUMP+FIRE right, hero firing at red grunts + a drone, clean readable scene"},
+    {"file": "touch-title.png", "shows": "title/attract with touch overlay mounted"}
+  ]
+}

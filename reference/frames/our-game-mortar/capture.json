@@ -1,0 +1,23 @@
+{
+  "subject": "our-game (loop-root-B game/index.html) — Mortar, the 4th non-boss enemy type (dim-5 variety)",
+  "build": "game HEAD post 592be76 ('widen enemy set — Mortar arcing area-denial lob')",
+  "base": "http://localhost:8137",
+  "seed": "1234",
+  "native": [480, 270],
+  "purpose": "Verify by looking that the newly-landed Mortar reads as a DISTINCT 4th non-boss threat with a new area-denial/arcing axis, and re-ground SCORECARD dim-5 (enemy density & pacing). Spawn: level1.js -> {type:'mortar', x:1040, y:178} on the 1000-platform; enemy.js kind==='mortar' telegraphs (TELEGRAPH_FRAMES=11) then _lobShell() a deterministic parabolic shell at the player's ground position.",
+  "method": "Headless deterministic showcase (?headless=1&frames=N&seed=1234), canvas toDataURL at native 480x270. To identify the correct on-screen unit as a FACT (not a guess), a probe read window.__game.enemies {kind,x} minus camera.x for the exact screen-x of every enemy at each frame (tools/mortar-probe.mjs).",
+  "identity_facts": {
+    "mortar_def": "config.js mortar: color #b98a4a (OLIVE-BRASS), w20 h12 (squat), fireEvery 150, shellVy 4.8 + shellGravity 0.16 = parabola. render.js:421 draws a distinct 'squat olive-brass emplacement + stubby barrel angled UP toward the player' — a SEPARATE draw path from turret.",
+    "turret_def": "config.js turret (Sentry): color #d08bff (MAGENTA/purple), w18 h16 — a dome + barrel aimed straight at the player.",
+    "screen_positions": "Probe FACTS (screenX = worldX - camera.x, native 480 wide): frame 540 cam807 -> mortar(x1040) screenX 233 [CENTER], turret(x1245) screenX 438 [right edge]; frame 600 cam929 -> mortar screenX 111, turret(x1245) screenX 316. So the CENTER unit is the mortar; the magenta right unit is the turret."
+  },
+  "CORRECTION": "A prior version of this file + ASSESS-21 labeled the MAGENTA upward-angled unit as 'the Mortar'. That was WRONG: magenta #d08bff is the TURRET (Sentry) at x=1245; the actual Mortar (#b98a4a olive-brass, small 20x12) sits center-screen at x=1040. Caught by reading render.js draw + config colors and probing exact screen-x. The behavioral evidence (parabolic lobbed shell) was correct; only the emplacement's on-screen identification was mislabeled. Fixed here and in ASSESS-21.",
+  "frames_kept": [
+    {"file": "mortar-centered-f540.png", "frames": 540, "note": "CORRECTED evidence: the Mortar at screenX 233 (dead center) on the mid grass platform — a small squat OLIVE-BRASS emplacement with a short stub barrel angled up. (The magenta unit at the right edge, screenX 438, is the Turret x1245 — NOT the mortar.)"},
+    {"file": "mortar-vs-turret-f600.png", "frames": 600, "note": "the two side by side with the coordinate map: Mortar (olive, small) at screenX 111 on the low-left platform vs the clearly MAGENTA Turret at screenX 316 on the elevated platform — makes the distinction unambiguous."},
+    {"file": "arc-shell-inflight.png", "frames": 524, "note": "the mortar's lobbed shell mid-arc — a bright projectile on a DESCENDING DIAGONAL/parabolic trajectory, clearly a different path from the flat horizontal machine-gun tracers = the 'arcing area-denial lob' behavior (code-confirmed: shellVy up + shellGravity down)."},
+    {"file": "telegraph-and-arc.png", "frames": 548, "note": "telegraph + a shell in flight — the 11-frame wind-up (TELEGRAPH_FRAMES) gives the player a fair 'reposition to dodge' tell."}
+  ],
+  "comparison_ref": "teardowns/blazing-chrome-2019.md + huntdown-2020 (enemy-variety bar); the competitor tier runs ~5-6 enemy types + hazards.",
+  "verdict": "VERIFIED (identity now a FACT, not a look-guess): the Mortar is a genuine 4th non-boss enemy type — a distinct kind (own config def, own render path, olive-brass vs the magenta turret) with a NEW threat AXIS: area-denial via a telegraphed parabolic lob that forces repositioning (distinct from ground-Grunt approach, fixed-Turret horizontal suppression, aerial-Drone strafe). Roster is now ground/fixed/aerial/area-denial + two-phase boss. dim-5 HOLDS at 4.0 (concurrent density ~3-5 unchanged — not inflated); the 4-type roster narrows the Huntdown 5-6-type headroom. Note (cosmetic, MORTAR-VIS-1): at native 480x270 the olive mortar is small/dark and less pop-off-the-bg legible than the magenta turret — a low-pri readability nit for the art loop, not a defect."
+}

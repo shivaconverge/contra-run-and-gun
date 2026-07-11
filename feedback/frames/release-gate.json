@@ -1,0 +1,57 @@
+{
+  "when": "2026-07-10T12:04:07.784Z",
+  "purpose": "parity: feedback/release-gate.mjs computeGate === shipped window.__approval.releaseApproved",
+  "passed": 8,
+  "failed": 0,
+  "verdict": "PASS",
+  "results": [
+    {
+      "case": "empty",
+      "shipped": false,
+      "consumer": false,
+      "parity": true
+    },
+    {
+      "case": "approve-unrated",
+      "shipped": true,
+      "consumer": true,
+      "parity": true
+    },
+    {
+      "case": "approve-5star",
+      "shipped": true,
+      "consumer": true,
+      "parity": true
+    },
+    {
+      "case": "approve-2star-contradictory",
+      "shipped": false,
+      "consumer": false,
+      "parity": true
+    },
+    {
+      "case": "reject",
+      "shipped": false,
+      "consumer": false,
+      "parity": true
+    },
+    {
+      "case": "approve-then-reject",
+      "shipped": false,
+      "consumer": false,
+      "parity": true
+    },
+    {
+      "case": "reject-then-approve",
+      "shipped": true,
+      "consumer": true,
+      "parity": true
+    },
+    {
+      "case": "approve-other-build-only",
+      "shipped": false,
+      "consumer": false,
+      "parity": true
+    }
+  ]
+}

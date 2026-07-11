@@ -1,0 +1,985 @@
+{
+  "when": "2026-07-10T08:16:22.600Z",
+  "passed": 64,
+  "failed": 0,
+  "criticalFailed": 0,
+  "results": [
+    {
+      "id": "boot.worldExists",
+      "ok": true,
+      "detail": "world present",
+      "critical": true
+    },
+    {
+      "id": "boot.noPageErrors",
+      "ok": true,
+      "detail": "errors=[]",
+      "critical": true
+    },
+    {
+      "id": "boot.spritesLoaded",
+      "ok": true,
+      "detail": "missing=[]",
+      "critical": true
+    },
+    {
+      "id": "title.startGateExists",
+      "ok": true,
+      "detail": "title/start gate present: status='title' (arcade insert-coin entry)",
+      "critical": true
+    },
+    {
+      "id": "title.bootsArcadeDefault",
+      "ok": true,
+      "detail": "mode=arcade lives=3 shield=0 (intended arcade/3/0)",
+      "critical": true
+    },
+    {
+      "id": "audio.hookPresent",
+      "ok": true,
+      "detail": "window.__audio.play present & wrapped=true",
+      "critical": false
+    },
+    {
+      "id": "title.modeSelectCasual",
+      "ok": true,
+      "detail": "after Digit2: status=title mode=casual lives=5 shield=2 (intended title/casual/5/2)",
+      "critical": true
+    },
+    {
+      "id": "title.modeSelectArcade",
+      "ok": true,
+      "detail": "after Digit1: status=title mode=arcade lives=3 (intended title/arcade/3)",
+      "critical": true
+    },
+    {
+      "id": "title.startTransitions",
+      "ok": true,
+      "detail": "START (Enter) on title → status=playing (intended playing)",
+      "critical": true
+    },
+    {
+      "id": "move.right",
+      "ok": true,
+      "detail": "x 40 -> 135",
+      "critical": true
+    },
+    {
+      "id": "move.facingRight",
+      "ok": true,
+      "detail": "facing=1",
+      "critical": true
+    },
+    {
+      "id": "jump.leavesGround",
+      "ok": true,
+      "detail": "vy 0->-5.6, y 216->175, grounded=false",
+      "critical": true
+    },
+    {
+      "id": "aim.up",
+      "ok": true,
+      "detail": "aim=(0,-1)",
+      "critical": true
+    },
+    {
+      "id": "prone.engages",
+      "ok": true,
+      "detail": "prone=true",
+      "critical": true
+    },
+    {
+      "id": "prone.shrinksHitbox",
+      "ok": true,
+      "detail": "h 20 -> 11",
+      "critical": true
+    },
+    {
+      "id": "fire.spawnsBullets",
+      "ok": true,
+      "detail": "peak player bullets in flight=4",
+      "critical": true
+    },
+    {
+      "id": "enemy.onScreen",
+      "ok": true,
+      "detail": "peak on-screen enemies=2",
+      "critical": true
+    },
+    {
+      "id": "enemy.killable",
+      "ok": true,
+      "detail": "score 0->200, alive 24->22",
+      "critical": true
+    },
+    {
+      "id": "flyer.spawnsInLevel",
+      "ok": true,
+      "detail": "a 'flyer' enemy is authored in level1 (x=900)",
+      "critical": true
+    },
+    {
+      "id": "flyer.onScreenAirborne",
+      "ok": true,
+      "detail": "flyer on-screen & airborne: {\"total\":2,\"alive\":2,\"onScreenAirborne\":1,\"minY\":115,\"firstX\":900} (aerial, y<200 vs ground 236)",
+      "critical": true
+    },
+    {
+      "id": "flyer.killable",
+      "ok": true,
+      "detail": "aimed-up fire dropped an aerial flyer: alive 2 -> killed=true",
+      "critical": true
+    },
+    {
+      "id": "weapon.spread.pickup",
+      "ok": true,
+      "detail": "walked onto spread pickup → weapon=spread, pickups 6->5",
+      "critical": true
+    },
+    {
+      "id": "weapon.spread.signature",
+      "ok": true,
+      "detail": "spread fires 7 bullets/volley (pellets=5), colors=[\"#8ef0ff\"]",
+      "critical": true
+    },
+    {
+      "id": "weapon.machine.pickup",
+      "ok": true,
+      "detail": "machine pickup → weapon=machine, pickups 6->5",
+      "critical": true
+    },
+    {
+      "id": "weapon.machine.signature",
+      "ok": true,
+      "detail": "machine fires (peak 2), colors=[\"#ffd27a\"]",
+      "critical": true
+    },
+    {
+      "id": "weapon.laser.pickup",
+      "ok": true,
+      "detail": "laser pickup → weapon=laser, pickups 6->5",
+      "critical": true
+    },
+    {
+      "id": "weapon.laser.signature",
+      "ok": true,
+      "detail": "laser bullets pierce=true dmg=3, colors=[\"#8affd6\"]",
+      "critical": true
+    },
+    {
+      "id": "weapon.fire.arm",
+      "ok": true,
+      "detail": "setWeapon('fire') → weapon=fire (elevated pickup; QA-armed)",
+      "critical": true
+    },
+    {
+      "id": "weapon.fire.signature",
+      "ok": true,
+      "detail": "fire bullets wave=true (corkscrew), colors=[\"#ff8a3c\"]",
+      "critical": true
+    },
+    {
+      "id": "death.oneHit",
+      "ok": true,
+      "detail": "dead=true lives=2 (was 3)",
+      "critical": true
+    },
+    {
+      "id": "death.iconicAnim",
+      "ok": true,
+      "detail": "dying=true flungUp(minY 176 < 212) spin(maxAngle=10.88) respawnTimer=48",
+      "critical": true
+    },
+    {
+      "id": "gameover.reached",
+      "ok": true,
+      "detail": "status=gameover lives=-1",
+      "critical": true
+    },
+    {
+      "id": "restart.backToPlaying",
+      "ok": true,
+      "detail": "status=playing",
+      "critical": true
+    },
+    {
+      "id": "restart.livesReset",
+      "ok": true,
+      "detail": "lives=3",
+      "critical": true
+    },
+    {
+      "id": "restart.playerReset",
+      "ok": true,
+      "detail": "x=40 dead=false",
+      "critical": true
+    },
+    {
+      "id": "bossEnrage.arenaReady",
+      "ok": true,
+      "detail": "boss authored in level1; enrageAt=0.4 maxHp=90",
+      "critical": true
+    },
+    {
+      "id": "bossEnrage.triggers",
+      "ok": true,
+      "detail": "boss entered phase-2 ENRAGE at hp=33 (threshold 36)",
+      "critical": true
+    },
+    {
+      "id": "bossEnrage.redVolley",
+      "ok": true,
+      "detail": "enraged phase fires the distinct RED volley (#ff5a6e): seen=true",
+      "critical": true
+    },
+    {
+      "id": "bossEnrage.glowMaskedToSprite",
+      "ok": true,
+      "detail": "enrage glow masked to sprite (BOSS-3 fixed): transparent-corner redness excess pre=7.8 → enraged=-2.9 (≈0 = no red rectangle; corners TL=-43.1 TR=-38.9)",
+      "critical": true
+    },
+    {
+      "id": "boss.telegraphAndWin",
+      "ok": true,
+      "detail": "status=cleared dead=false (deterministic scenario)",
+      "critical": true
+    },
+    {
+      "id": "boss.proneUsed",
+      "ok": true,
+      "detail": "prone=true (win path requires ducking cannon volleys)",
+      "critical": true
+    },
+    {
+      "id": "feel.simCadence",
+      "ok": true,
+      "detail": "live sim cadence 59.8 steps/s (intended STEP_HZ=60)",
+      "critical": true
+    },
+    {
+      "id": "feel.fireCadence",
+      "ok": true,
+      "detail": "median 7 sim-frames between rifle shots over 7 spawns (intended fireRate=7)",
+      "critical": true
+    },
+    {
+      "id": "feel.hitStopOnKill",
+      "ok": true,
+      "detail": "live hit-stop peak 7 frames on kill (intended hitStopKill=7)",
+      "critical": true
+    },
+    {
+      "id": "feel.traumaOnKill",
+      "ok": true,
+      "detail": "live trauma peak 0.68 on kill (intended traumaKill=0.5)",
+      "critical": true
+    },
+    {
+      "id": "feel.fpsTelemetryExposed",
+      "ok": true,
+      "detail": "KNOWN GAP: live fps/entity telemetry not exposed on window (__fps=60); measured sim cadence used instead",
+      "critical": false
+    },
+    {
+      "id": "audio.shootWired",
+      "ok": true,
+      "detail": "live SFX on fire: [shoot_rifle,shoot_rifle,shoot_rifle] (intended shoot_rifle)",
+      "critical": false
+    },
+    {
+      "id": "audio.jumpWired",
+      "ok": true,
+      "detail": "live SFX on jump: [jump] (intended jump)",
+      "critical": false
+    },
+    {
+      "id": "audio.killWired",
+      "ok": true,
+      "detail": "live SFX on kill: [shoot_rifle,enemyHit,explosion] (intended enemyHit/explosion)",
+      "critical": false
+    },
+    {
+      "id": "audio.hurtWired",
+      "ok": true,
+      "detail": "live SFX on death: [pickup,hurt,gameover] (intended hurt)",
+      "critical": false
+    },
+    {
+      "id": "audio.gameoverWired",
+      "ok": true,
+      "detail": "live SFX on game-over: includes gameover=true",
+      "critical": false
+    },
+    {
+      "id": "creatorApproval.panelExists",
+      "ok": true,
+      "detail": "panel present: DOM=true api=true",
+      "critical": true
+    },
+    {
+      "id": "creatorApproval.controllerSurface",
+      "ok": true,
+      "detail": "controller has toggle/submit/entries/latest/clear + releaseApproved: true",
+      "critical": true
+    },
+    {
+      "id": "creatorApproval.approveGatesRelease",
+      "ok": true,
+      "detail": "APPROVE (rating≥3) persists w/ full context and opens releaseApproved: true (err=none)",
+      "critical": true
+    },
+    {
+      "id": "creatorApproval.rejectRevokes",
+      "ok": true,
+      "detail": "a later REJECT flips releaseApproved back to false: true",
+      "critical": true
+    },
+    {
+      "id": "creatorApproval.contradictoryClosed",
+      "ok": true,
+      "detail": "APPROVE with rating 1-2 keeps releaseApproved=false: true",
+      "critical": true
+    },
+    {
+      "id": "creatorApproval.defaultClosed",
+      "ok": true,
+      "detail": "after clear(), releaseApproved=false (release closed by default): true",
+      "critical": true
+    },
+    {
+      "id": "creatorApproval.hotkeyToggles",
+      "ok": true,
+      "detail": "F toggles panel: closed→true→false",
+      "critical": true
+    },
+    {
+      "id": "creatorApproval.opensAndRenders",
+      "ok": true,
+      "detail": "F opened panel with verdict buttons + rating + notes: {\"open\":true,\"domVisible\":true,\"hasApprove\":true,\"hasReject\":true,\"hasStars\":true,\"hasNotes\":true}",
+      "critical": true
+    },
+    {
+      "id": "creatorApproval.pausesOnOpen",
+      "ok": true,
+      "detail": "sim frozen while panel open: frame 56→56, x 110→110, status=playing",
+      "critical": true
+    },
+    {
+      "id": "creatorApproval.noKeyLeak",
+      "ok": true,
+      "detail": "R/2 swallowed while open (no reset, mode stays arcade): x=110(frozen base 110) mode=arcade",
+      "critical": true
+    },
+    {
+      "id": "creatorApproval.approveButtonWorks",
+      "ok": true,
+      "detail": "clicking ★4 + APPROVE button → entry verdict=approve rating=4, releaseApproved=true",
+      "critical": true
+    },
+    {
+      "id": "creatorApproval.escCloses",
+      "ok": true,
+      "detail": "Escape closed the panel: isOpen=false",
+      "critical": true
+    },
+    {
+      "id": "creatorApproval.persistsAcrossReload",
+      "ok": true,
+      "detail": "after page RELOAD the approve survives (release gate readable by a ship step): releaseApproved=true, entries=1, latest=approve ★4",
+      "critical": true
+    }
+  ],
+  "snapshots": {
+    "boot": {
+      "status": "title",
+      "lives": 3,
+      "score": 100,
+      "frame": 62,
+      "onScreenEnemies": 1,
+      "enemiesAlive": 23,
+      "bullets": 5,
+      "playerBullets": 5,
+      "bossActive": false,
+      "bossAlive": true,
+      "px": 146,
+      "py": 216,
+      "pvx": 1.95,
+      "pvy": 0,
+      "ph": 20,
+      "prone": false,
+      "dead": false,
+      "aimx": 1,
+      "aimy": 0,
+      "facing": 1,
+      "grounded": true,
+      "weapon": "rifle",
+      "mode": "arcade",
+      "shield": 0,
+      "fps": 60,
+      "hitStop": 1,
+      "trauma": 0.5
+    },
+    "title-casual": {
+      "status": "title",
+      "lives": 5,
+      "score": 0,
+      "frame": 12,
+      "onScreenEnemies": 2,
+      "enemiesAlive": 24,
+      "bullets": 2,
+      "playerBullets": 2,
+      "bossActive": false,
+      "bossAlive": true,
+      "px": 58,
+      "py": 216,
+      "pvx": 2.3,
+      "pvy": 0,
+      "ph": 20,
+      "prone": false,
+      "dead": false,
+      "aimx": 1,
+      "aimy": 0,
+      "facing": 1,
+      "grounded": true,
+      "weapon": "rifle",
+      "mode": "casual",
+      "shield": 2,
+      "fps": 60,
+      "hitStop": 0,
+      "trauma": 0.473
+    },
+    "start-play": {
+      "status": "playing",
+      "lives": 3,
+      "score": 0,
+      "frame": 13,
+      "onScreenEnemies": 2,
+      "enemiesAlive": 24,
+      "bullets": 0,
+      "playerBullets": 0,
+      "bossActive": false,
+      "bossAlive": true,
+      "px": 40,
+      "py": 216,
+      "pvx": 0,
+      "pvy": 0,
+      "ph": 20,
+      "prone": false,
+      "dead": false,
+      "aimx": 1,
+      "aimy": 0,
+      "facing": 1,
+      "grounded": true,
+      "weapon": "rifle",
+      "mode": "arcade",
+      "shield": 0,
+      "fps": 60,
+      "hitStop": 0,
+      "trauma": 0.153
+    },
+    "run-right": {
+      "status": "playing",
+      "lives": 3,
+      "score": 0,
+      "frame": 61,
+      "onScreenEnemies": 2,
+      "enemiesAlive": 24,
+      "bullets": 0,
+      "playerBullets": 0,
+      "bossActive": false,
+      "bossAlive": true,
+      "px": 135,
+      "py": 216,
+      "pvx": 2.3,
+      "pvy": 0,
+      "ph": 20,
+      "prone": false,
+      "dead": false,
+      "aimx": 1,
+      "aimy": 0,
+      "facing": 1,
+      "grounded": true,
+      "weapon": "rifle",
+      "mode": "arcade",
+      "shield": 0,
+      "fps": 60,
+      "hitStop": 0,
+      "trauma": 0
+    },
+    "jump": {
+      "status": "playing",
+      "lives": 3,
+      "score": 0,
+      "frame": 25,
+      "onScreenEnemies": 2,
+      "enemiesAlive": 24,
+      "bullets": 0,
+      "playerBullets": 0,
+      "bossActive": false,
+      "bossAlive": true,
+      "px": 40,
+      "py": 175,
+      "pvx": 0,
+      "pvy": -5.6,
+      "ph": 20,
+      "prone": false,
+      "dead": false,
+      "aimx": 1,
+      "aimy": 0,
+      "facing": 1,
+      "grounded": false,
+      "weapon": "rifle",
+      "mode": "arcade",
+      "shield": 0,
+      "fps": 60,
+      "hitStop": 0,
+      "trauma": 0
+    },
+    "aim-up": {
+      "status": "playing",
+      "lives": 3,
+      "score": 0,
+      "frame": 30,
+      "onScreenEnemies": 2,
+      "enemiesAlive": 24,
+      "bullets": 0,
+      "playerBullets": 0,
+      "bossActive": false,
+      "bossAlive": true,
+      "px": 40,
+      "py": 216,
+      "pvx": 0,
+      "pvy": 0,
+      "ph": 20,
+      "prone": false,
+      "dead": false,
+      "aimx": 0,
+      "aimy": -1,
+      "facing": 1,
+      "grounded": true,
+      "weapon": "rifle",
+      "mode": "arcade",
+      "shield": 0,
+      "fps": 60,
+      "hitStop": 0,
+      "trauma": 0
+    },
+    "prone": {
+      "status": "playing",
+      "lives": 3,
+      "score": 0,
+      "frame": 31,
+      "onScreenEnemies": 2,
+      "enemiesAlive": 24,
+      "bullets": 0,
+      "playerBullets": 0,
+      "bossActive": false,
+      "bossAlive": true,
+      "px": 40,
+      "py": 225,
+      "pvx": 0,
+      "pvy": 0,
+      "ph": 11,
+      "prone": true,
+      "dead": false,
+      "aimx": 1,
+      "aimy": 0,
+      "facing": 1,
+      "grounded": true,
+      "weapon": "rifle",
+      "mode": "arcade",
+      "shield": 0,
+      "fps": 60,
+      "hitStop": 0,
+      "trauma": 0
+    },
+    "fire": {
+      "status": "playing",
+      "lives": 3,
+      "score": 0,
+      "frame": 44,
+      "onScreenEnemies": 2,
+      "enemiesAlive": 24,
+      "bullets": 5,
+      "playerBullets": 4,
+      "bossActive": false,
+      "bossAlive": true,
+      "px": 40,
+      "py": 216,
+      "pvx": 0,
+      "pvy": 0,
+      "ph": 20,
+      "prone": false,
+      "dead": false,
+      "aimx": 1,
+      "aimy": 0,
+      "facing": 1,
+      "grounded": true,
+      "weapon": "rifle",
+      "mode": "arcade",
+      "shield": 0,
+      "fps": 60,
+      "hitStop": 0,
+      "trauma": 0.053
+    },
+    "enemy-encounter": {
+      "status": "playing",
+      "lives": 3,
+      "score": 200,
+      "frame": 169,
+      "onScreenEnemies": 0,
+      "enemiesAlive": 22,
+      "bullets": 12,
+      "playerBullets": 12,
+      "bossActive": false,
+      "bossAlive": true,
+      "px": 40,
+      "py": 216,
+      "pvx": 0,
+      "pvy": 0,
+      "ph": 20,
+      "prone": false,
+      "dead": false,
+      "aimx": 1,
+      "aimy": 0,
+      "facing": 1,
+      "grounded": true,
+      "weapon": "rifle",
+      "mode": "arcade",
+      "shield": 0,
+      "fps": 60,
+      "hitStop": 0,
+      "trauma": 0.227
+    },
+    "flyer": {
+      "status": "playing",
+      "lives": 3,
+      "score": 200,
+      "frame": 55,
+      "onScreenEnemies": 6,
+      "enemiesAlive": 23,
+      "bullets": 2,
+      "playerBullets": 1,
+      "bossActive": false,
+      "bossAlive": true,
+      "px": 900,
+      "py": 216,
+      "pvx": 0,
+      "pvy": 0,
+      "ph": 20,
+      "prone": false,
+      "dead": false,
+      "aimx": 0,
+      "aimy": -1,
+      "facing": 1,
+      "grounded": true,
+      "weapon": "rifle",
+      "mode": "arcade",
+      "shield": 0,
+      "fps": 60,
+      "hitStop": 3,
+      "trauma": 0.473
+    },
+    "restart-fresh": {
+      "status": "playing",
+      "lives": 3,
+      "score": 0,
+      "frame": 19,
+      "onScreenEnemies": 2,
+      "enemiesAlive": 24,
+      "bullets": 0,
+      "playerBullets": 0,
+      "bossActive": false,
+      "bossAlive": true,
+      "px": 40,
+      "py": 216,
+      "pvx": 0,
+      "pvy": 0,
+      "ph": 20,
+      "prone": false,
+      "dead": false,
+      "aimx": 1,
+      "aimy": 0,
+      "facing": 1,
+      "grounded": true,
+      "weapon": "rifle",
+      "mode": "arcade",
+      "shield": 0,
+      "fps": 60,
+      "hitStop": 0,
+      "trauma": 0
+    },
+    "death": {
+      "status": "playing",
+      "lives": 2,
+      "score": 0,
+      "frame": 147,
+      "onScreenEnemies": 2,
+      "enemiesAlive": 24,
+      "bullets": 1,
+      "playerBullets": 0,
+      "bossActive": false,
+      "bossAlive": true,
+      "px": 177,
+      "py": 286,
+      "pvx": -1.6,
+      "pvy": 9,
+      "ph": 20,
+      "prone": false,
+      "dead": true,
+      "aimx": 1,
+      "aimy": 0,
+      "facing": 1,
+      "grounded": true,
+      "weapon": "rifle",
+      "mode": "arcade",
+      "shield": 0,
+      "fps": 60,
+      "hitStop": 0,
+      "trauma": 0
+    },
+    "game-over": {
+      "status": "gameover",
+      "lives": -1,
+      "score": 0,
+      "frame": 108,
+      "onScreenEnemies": 3,
+      "enemiesAlive": 24,
+      "bullets": 0,
+      "playerBullets": 0,
+      "bossActive": false,
+      "bossAlive": true,
+      "px": 232,
+      "py": 216,
+      "pvx": -1.6,
+      "pvy": -6.6,
+      "ph": 20,
+      "prone": false,
+      "dead": true,
+      "aimx": 1,
+      "aimy": 0,
+      "facing": 1,
+      "grounded": true,
+      "weapon": "rifle",
+      "mode": "arcade",
+      "shield": 0,
+      "fps": 60,
+      "hitStop": 5,
+      "trauma": 0.743
+    },
+    "restart-after-gameover": {
+      "status": "playing",
+      "lives": 3,
+      "score": 0,
+      "frame": 18,
+      "onScreenEnemies": 2,
+      "enemiesAlive": 24,
+      "bullets": 0,
+      "playerBullets": 0,
+      "bossActive": false,
+      "bossAlive": true,
+      "px": 40,
+      "py": 216,
+      "pvx": 0,
+      "pvy": 0,
+      "ph": 20,
+      "prone": false,
+      "dead": false,
+      "aimx": 1,
+      "aimy": 0,
+      "facing": 1,
+      "grounded": true,
+      "weapon": "rifle",
+      "mode": "arcade",
+      "shield": 0,
+      "fps": 60,
+      "hitStop": 0,
+      "trauma": 0.263
+    },
+    "boss-win": {
+      "frames": 1400,
+      "mode": "arcade",
+      "sfxCount": 116,
+      "playerShield": 0,
+      "playerX": 2281,
+      "playerDead": false,
+      "playerProne": true,
+      "playerH": 11,
+      "weapon": "spread",
+      "lives": 3,
+      "pickupsLeft": 6,
+      "enemiesAlive": 0,
+      "enemiesStart": 24,
+      "onScreenEnemies": 0,
+      "peakOnScreen": 1,
+      "bullets": 20,
+      "particles": 55,
+      "fx": 7,
+      "fxSpawned": 7,
+      "score": 3000,
+      "status": "cleared",
+      "bossDefeated": true,
+      "trauma": 0.493,
+      "hitStop": 0,
+      "spritesLoaded": [
+        "player_idle",
+        "player_run",
+        "player_prone",
+        "player_jump",
+        "grunt",
+        "turret",
+        "flyer",
+        "boss",
+        "mortar",
+        "boss_enraged",
+        "pickup",
+        "tiles",
+        "muzzle",
+        "explosion"
+      ],
+      "spritesMissing": []
+    }
+  },
+  "feel": {
+    "simCadenceFps": 59.8,
+    "fireSpawns": 7,
+    "fireIntervalFrames": 7,
+    "hitStopPeak": 7,
+    "traumaPeak": 0.68,
+    "fpsExposedOnWindow": true
+  },
+  "sfx": {
+    "shoot": [
+      "shoot_rifle",
+      "shoot_rifle",
+      "shoot_rifle"
+    ],
+    "jump": [
+      "jump"
+    ],
+    "kill": [
+      "shoot_rifle",
+      "shoot_rifle",
+      "shoot_rifle",
+      "shoot_rifle",
+      "shoot_rifle",
+      "enemyHit",
+      "shoot_rifle",
+      "enemyHit",
+      "shoot_rifle",
+      "explosion",
+      "shoot_rifle",
+      "shoot_rifle",
+      "shoot_rifle",
+      "enemyHit",
+      "shoot_rifle",
+      "enemyHit",
+      "shoot_rifle",
+      "explosion",
+      "shoot_rifle",
+      "shoot_rifle",
+      "shoot_rifle",
+      "shoot_rifle",
+      "shoot_rifle",
+      "shoot_rifle"
+    ],
+    "death": [
+      "pickup",
+      "hurt",
+      "gameover"
+    ]
+  },
+  "weapons": {
+    "spread": {
+      "peakCount": 7,
+      "colors": [
+        "#8ef0ff"
+      ],
+      "pierce": false,
+      "wave": false,
+      "maxDamage": 1
+    },
+    "machine": {
+      "peakCount": 2,
+      "colors": [
+        "#ffd27a"
+      ],
+      "pierce": false,
+      "wave": false,
+      "maxDamage": 1
+    },
+    "laser": {
+      "peakCount": 1,
+      "colors": [
+        "#8affd6"
+      ],
+      "pierce": true,
+      "wave": false,
+      "maxDamage": 3
+    },
+    "fire": {
+      "peakCount": 8,
+      "colors": [
+        "#ff8a3c"
+      ],
+      "pierce": false,
+      "wave": true,
+      "maxDamage": 1
+    }
+  },
+  "bossEnrage": {
+    "enraged": true,
+    "enrageHp": 33,
+    "redVolley": true,
+    "threshold": 36,
+    "maxHp": 90,
+    "glowPreExcess": 7.8,
+    "glowEnragedExcess": -2.9
+  },
+  "creatorApproval": {
+    "present": true,
+    "apiHit": true,
+    "domHit": true,
+    "functional": {
+      "surface": true,
+      "approveOk": true,
+      "rejectRevokes": true,
+      "contradictoryClosed": true,
+      "defaultClosed": true
+    },
+    "hotkey": {
+      "open1": true,
+      "open2": false
+    },
+    "uiApprove": {
+      "verdict": "approve",
+      "rating": 4,
+      "release": true
+    },
+    "persistedAcrossReload": {
+      "release": true,
+      "entries": 1,
+      "latest": "approve",
+      "rating": 4
+    }
+  },
+  "pageErrors": [],
+  "consoleErrors": [],
+  "consoleTail": [
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "url": "http://127.0.0.1:61622/favicon.ico"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "url": "http://127.0.0.1:61622/favicon.ico"
+    },
+    {
+      "type": "warning",
+      "text": "Canvas2D: Multiple readback operations using getImageData are faster with the willReadFrequently attribute set to true. See: https://html.spec.whatwg.org/multipage/canvas.html#concept-canvas-will-read-frequently",
+      "url": "pptr:evaluate;bossGlowExcess%20(file%3A%2F%2F%2FUsers%2Favinashsaxena%2Fmatrix-dfs-statemachine-pre-clock%2Floop_hierarchy%2Fruns%2Fcontra-live3%2Fwt%2Floop-root-B%2Fplaytest%2Fe2e%2Fplaythrough.mjs%3A207%3A15)"
+    }
+  ]
+}

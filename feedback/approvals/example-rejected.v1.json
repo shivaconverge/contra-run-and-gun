@@ -1,0 +1,16 @@
+[
+  {
+    "verdict": "approve",
+    "rating": 4,
+    "notes": "Looked good on first pass.",
+    "context": { "buildId": "v1", "status": "cleared", "mode": "arcade", "score": 24500, "lives": 2 },
+    "ts": 1778364000000
+  },
+  {
+    "verdict": "reject",
+    "rating": 2,
+    "notes": "Re-tested: boss phase-2 hitboxes feel unfair on mobile. Blocking until fixed.",
+    "context": { "buildId": "v1", "status": "gameover", "mode": "arcade", "score": 8100, "lives": -1 },
+    "ts": 1778364900000
+  }
+]

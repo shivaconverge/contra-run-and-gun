@@ -1,0 +1,19 @@
+{
+  "subject": "our-game (loop-root-B game/index.html) — SHIPPED multi-puff explosion (dim-2 pinnacle stretch)",
+  "build": "game HEAD post 6ea2a2d ('explosion: ship multi-puff density via post-pack compositing')",
+  "base": "http://localhost:8137",
+  "seed": "1234",
+  "native": [480, 270],
+  "purpose": "Verify BY LOOKING whether the shipped multi-puff explosion (6ea2a2d) reaches the organic multi-lobe billow bar I anchored in teardowns/metal-slug-3.md + the Blazing Chrome explosion ref — the dim-2 headroom carried since ASSESS-20. Re-ground SCORECARD dim-2.",
+  "method": "Two grounding paths: (1) live in-scene burst — headless deterministic showcase (?headless=1&frames=N&seed=1234), captured the first firefight kill (enemies 22->21 between frame 326-328), FX active 328-334; (2) sprite-sheet zoom — the in-scene FX is only 28x40 at native res, too small to judge lobe structure, so I upscaled the SHIPPED sprite game/assets/explosion.png (112x40 = 4 frames of 28x40) 6x nearest-neighbor over the game's night bg to read the per-frame lobe structure directly.",
+  "frames_kept": [
+    {"file": "explosion-sheet-6x.png", "note": "THE verdict frame — the shipped 4-frame explosion, 6x nearest-neighbor. Arc: (1) spark spray + impact flash; (2) white-hot fireball that is now clearly 2-3 OVERLAPPING ROUND LOBES with flame tongues curling off the edges = the multi-puff billow; (3) flame-tongue + grey-smoke breakup; (4) grey multi-lobe SMOKE billow with an ember base. Organic multi-lobe recipe (lobes + smoke tail + sparks), NOT the old single round puff."},
+    {"file": "kill-burst-peak-f328.png", "frames": 328, "note": "in-scene, the kill instant — bright-cored orange burst on the ground line (small at native res but consistent with the sheet)."},
+    {"file": "kill-burst-inscene-f330.png", "frames": 330, "note": "in-scene +2 frames — taller billowing flame mass with vertical lobes, reads punchier than the prior single burst."}
+  ],
+  "comparison_ref": {
+    "metal-slug-3": "teardowns/metal-slug-3.md — pinnacle recipe: layered offset lobes + smoke tail + sparks. OUR sheet now MATCHES this structure.",
+    "blazing-chrome": "frames/blazing-chrome-2019/motion/firefight-explosion-dashring-~85s.png — a DENSER, WIDER cluster of MANY lobes with smoke mixed into the fireball. OURS is a more COMPACT 2-3 lobe billow."
+  },
+  "verdict": "SHIPPED + VERIFIED by looking: the multi-puff landed and is real — OUR explosion is now an organic MULTI-LOBE billow (spark -> multi-lobe white-hot fireball -> flame+smoke breakup -> smoke billow), closing the structural half of the dim-2 headroom the single burst left open. dim-2 4.0 -> 4.5. Remaining pinnacle (5.0) gap is DENSITY/SCALE, not structure: Blazing Chrome/Metal Slug run more lobes, a wider/denser cluster, and stack multiple bursts; OURS is a compact fewer-lobe billow. Honest: structure reached, cluster-density is the smaller remaining stretch."
+}

@@ -1,0 +1,21 @@
+{
+  "buildId": "v1",
+  "artifactHash": "36824a438773e7e05c6b1f55fadba81b7ffbedb4f71c2cb9add51917646074f1",
+  "artifactFiles": 38,
+  "stampedAt": "2026-07-10T00:35:13.156Z",
+  "entries": [
+    {
+      "verdict": "approve",
+      "rating": 5,
+      "notes": "Boss enrage reads clearly; explosions feel great; run-cycle is crisp. Ship it.",
+      "context": {
+        "buildId": "v1",
+        "status": "cleared",
+        "mode": "arcade",
+        "score": 24500,
+        "lives": 2
+      },
+      "ts": 1778364000000
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "when": "2026-07-10T12:04:19.083Z",
+  "purpose": "artifact-bound release gate fail-closed behavior (OI-2 mitigation)",
+  "passed": 4,
+  "failed": 0,
+  "verdict": "PASS",
+  "results": [
+    {
+      "name": "bound-match-approves",
+      "exit": 0,
+      "expect": 0,
+      "ok": true
+    },
+    {
+      "name": "artifact-changed-blocks",
+      "exit": 1,
+      "expect": 1,
+      "ok": true
+    },
+    {
+      "name": "unbound-under-artifact-blocks",
+      "exit": 1,
+      "expect": 1,
+      "ok": true
+    },
+    {
+      "name": "legacy-no-artifact-approves",
+      "exit": 0,
+      "expect": 0,
+      "ok": true
+    }
+  ]
+}

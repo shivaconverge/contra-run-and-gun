@@ -1,0 +1,155 @@
+{
+  "subject": "our-game (loop-root-B game/index.html)",
+  "base": "http://localhost:8181",
+  "seed": "1234",
+  "native": [
+    480,
+    270
+  ],
+  "captures": [
+    {
+      "frames": 1000,
+      "file": "state-1000.png",
+      "bench": {
+        "frames": 1000,
+        "playerX": 1860,
+        "playerDead": false,
+        "playerProne": false,
+        "playerH": 20,
+        "weapon": "spread",
+        "lives": 3,
+        "pickupsLeft": 1,
+        "enemiesAlive": 8,
+        "enemiesStart": 21,
+        "onScreenEnemies": 2,
+        "peakOnScreen": 5,
+        "bullets": 23,
+        "particles": 27,
+        "fx": 0,
+        "fxSpawned": 13,
+        "score": 1450,
+        "status": "playing",
+        "trauma": 0.633,
+        "hitStop": 0,
+        "spritesLoaded": [
+          "player_idle",
+          "explosion",
+          "turret",
+          "player_run",
+          "tiles",
+          "grunt",
+          "muzzle"
+        ],
+        "spritesMissing": []
+      }
+    },
+    {
+      "frames": 1300,
+      "file": "state-1300.png",
+      "bench": {
+        "frames": 1300,
+        "playerX": 2000,
+        "playerDead": false,
+        "playerProne": false,
+        "playerH": 20,
+        "weapon": "rifle",
+        "lives": 2,
+        "pickupsLeft": 1,
+        "enemiesAlive": 6,
+        "enemiesStart": 21,
+        "onScreenEnemies": 1,
+        "peakOnScreen": 5,
+        "bullets": 8,
+        "particles": 4,
+        "fx": 0,
+        "fxSpawned": 15,
+        "score": 1650,
+        "status": "playing",
+        "trauma": 0.053,
+        "hitStop": 0,
+        "spritesLoaded": [
+          "player_idle",
+          "player_run",
+          "grunt",
+          "turret",
+          "tiles",
+          "explosion",
+          "muzzle"
+        ],
+        "spritesMissing": []
+      }
+    },
+    {
+      "frames": 1600,
+      "file": "state-1600.png",
+      "bench": {
+        "frames": 1600,
+        "playerX": 2145,
+        "playerDead": false,
+        "playerProne": false,
+        "playerH": 20,
+        "weapon": "rifle",
+        "lives": 1,
+        "pickupsLeft": 1,
+        "enemiesAlive": 6,
+        "enemiesStart": 21,
+        "onScreenEnemies": 2,
+        "peakOnScreen": 5,
+        "bullets": 12,
+        "particles": 11,
+        "fx": 0,
+        "fxSpawned": 15,
+        "score": 1650,
+        "status": "playing",
+        "trauma": 0.107,
+        "hitStop": 1,
+        "spritesLoaded": [
+          "player_idle",
+          "player_run",
+          "grunt",
+          "turret",
+          "tiles",
+          "explosion",
+          "muzzle"
+        ],
+        "spritesMissing": []
+      }
+    },
+    {
+      "frames": 1900,
+      "file": "state-1900.png",
+      "bench": {
+        "frames": 1900,
+        "playerX": 2220,
+        "playerDead": true,
+        "playerProne": false,
+        "playerH": 20,
+        "weapon": "rifle",
+        "lives": -1,
+        "pickupsLeft": 1,
+        "enemiesAlive": 6,
+        "enemiesStart": 21,
+        "onScreenEnemies": 2,
+        "peakOnScreen": 5,
+        "bullets": 5,
+        "particles": 5,
+        "fx": 0,
+        "fxSpawned": 15,
+        "score": 1650,
+        "status": "gameover",
+        "trauma": 0.317,
+        "hitStop": 0,
+        "spritesLoaded": [
+          "player_idle",
+          "player_run",
+          "grunt",
+          "turret",
+          "tiles",
+          "explosion",
+          "muzzle"
+        ],
+        "spritesMissing": []
+      }
+    }
+  ]
+}

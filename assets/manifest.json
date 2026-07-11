@@ -1,0 +1,407 @@
+{
+  "meta": {
+    "generator": "pixellab:pixflux+animate-with-text",
+    "style": "corpus-confirmed: Contra-lineage (arcade-1987 feel anchor + competitor visual-bar fidelity)",
+    "styleConfirmed": true,
+    "styleGrounding": "corpus (arcade-1987 stage1 frames + competitor stills), verified by looking",
+    "playerHitboxPx": {
+      "w": 12,
+      "h": 20
+    },
+    "viewPx": {
+      "w": 480,
+      "h": 270
+    },
+    "spriteNativePx": 32,
+    "knownIssues": [
+      "boss_enraged: real phase-2 enraged Sentinel sprite produced + synced + loads, but drawBoss doesn't swap to it yet -- wire it to blit assets.get('boss_enraged') during the enrage/phase-2 state (same 46x52 hitbox, faces left) so the escalation is a visible form change, not only a red tint (see QA-NOTES.md #11).",
+      "LOW/stretch (not blocking): weapon HUD icon (HUD-1, deferred pending a real icon slot -- current HUD is 8px text) and the arcade tucked-somersault jump (LEAP-1, stylistic). All other produced sprites are WIRED + LIVE."
+    ],
+    "palette": [
+      "#0f0f0d",
+      "#0f0c0a",
+      "#141212",
+      "#3c3982",
+      "#443e8d",
+      "#656cdc",
+      "#8a1313",
+      "#9e511a",
+      "#b35e21",
+      "#e8b098",
+      "#787678",
+      "#131417",
+      "#c46d36",
+      "#9b98f3",
+      "#736e6a",
+      "#e69e7f",
+      "#7e7d7d",
+      "#b86634",
+      "#ed1711",
+      "#938cef",
+      "#e7110e",
+      "#767ced",
+      "#f79b5e",
+      "#c9783c",
+      "#941416",
+      "#ed9c6c",
+      "#3c388c",
+      "#393182",
+      "#ffd89e",
+      "#7176dd",
+      "#a11a1d",
+      "#e3965b"
+    ]
+  },
+  "sprites": {
+    "player": {
+      "animations": {
+        "idle": {
+          "image": "sprites/player_idle.png",
+          "frameWidth": 20,
+          "frameHeight": 29,
+          "frames": [
+            {
+              "x": 0,
+              "y": 0,
+              "w": 20,
+              "h": 29
+            }
+          ],
+          "fps": 1,
+          "loop": true
+        },
+        "prone": {
+          "image": "sprites/player_prone.png",
+          "frameWidth": 28,
+          "frameHeight": 15,
+          "frames": [
+            {
+              "x": 0,
+              "y": 0,
+              "w": 28,
+              "h": 15
+            }
+          ],
+          "fps": 1,
+          "loop": true
+        },
+        "jump": {
+          "image": "sprites/player_jump.png",
+          "frameWidth": 25,
+          "frameHeight": 25,
+          "frames": [
+            {
+              "x": 0,
+              "y": 0,
+              "w": 25,
+              "h": 25
+            }
+          ],
+          "fps": 1,
+          "loop": true
+        },
+        "run": {
+          "image": "sprites/player_run.png",
+          "frameWidth": 22,
+          "frameHeight": 31,
+          "frames": [
+            {
+              "x": 0,
+              "y": 0,
+              "w": 22,
+              "h": 31
+            },
+            {
+              "x": 22,
+              "y": 0,
+              "w": 22,
+              "h": 31
+            },
+            {
+              "x": 44,
+              "y": 0,
+              "w": 22,
+              "h": 31
+            },
+            {
+              "x": 66,
+              "y": 0,
+              "w": 22,
+              "h": 31
+            }
+          ],
+          "fps": 10,
+          "loop": true
+        }
+      }
+    },
+    "grunt": {
+      "image": "sprites/grunt.png",
+      "frameWidth": 26,
+      "frameHeight": 26,
+      "hitboxPx": {
+        "w": 14,
+        "h": 18
+      },
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 26,
+          "h": 26
+        }
+      ]
+    },
+    "turret": {
+      "image": "sprites/turret.png",
+      "frameWidth": 26,
+      "frameHeight": 27,
+      "hitboxPx": {
+        "w": 18,
+        "h": 16
+      },
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 26,
+          "h": 27
+        }
+      ]
+    },
+    "flyer": {
+      "image": "sprites/flyer.png",
+      "frameWidth": 28,
+      "frameHeight": 17,
+      "hitboxPx": {
+        "w": 16,
+        "h": 14
+      },
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 28,
+          "h": 17
+        }
+      ]
+    },
+    "boss": {
+      "image": "sprites/boss.png",
+      "frameWidth": 57,
+      "frameHeight": 54,
+      "hitboxPx": {
+        "w": 46,
+        "h": 52
+      },
+      "facing": "left",
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 57,
+          "h": 54
+        }
+      ]
+    },
+    "boss_enraged": {
+      "image": "sprites/boss_enraged.png",
+      "frameWidth": 57,
+      "frameHeight": 54,
+      "hitboxPx": {
+        "w": 46,
+        "h": 52
+      },
+      "facing": "left",
+      "note": "swap in during the boss enrage/phase-2 state (same hitbox as boss)",
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 57,
+          "h": 54
+        }
+      ]
+    },
+    "pickup": {
+      "image": "sprites/pickup.png",
+      "frameWidth": 32,
+      "frameHeight": 15,
+      "hitboxPx": {
+        "w": 14,
+        "h": 12
+      },
+      "note": "engine overlays the per-weapon letter (S/M/L/R/F) on the dark center",
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 32,
+          "h": 15
+        }
+      ]
+    },
+    "explosion": {
+      "image": "sprites/explosion.png",
+      "type": "fx",
+      "frameWidth": 28,
+      "frameHeight": 40,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 28,
+          "h": 40
+        },
+        {
+          "x": 28,
+          "y": 0,
+          "w": 28,
+          "h": 40
+        },
+        {
+          "x": 56,
+          "y": 0,
+          "w": 28,
+          "h": 40
+        },
+        {
+          "x": 84,
+          "y": 0,
+          "w": 28,
+          "h": 40
+        }
+      ],
+      "fps": 18,
+      "loop": false
+    },
+    "muzzle": {
+      "image": "sprites/muzzle.png",
+      "type": "fx",
+      "frameWidth": 22,
+      "frameHeight": 25,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 22,
+          "h": 25
+        },
+        {
+          "x": 22,
+          "y": 0,
+          "w": 22,
+          "h": 25
+        }
+      ],
+      "fps": 18,
+      "loop": false
+    },
+    "tiles": {
+      "image": "sprites/tiles.png",
+      "type": "tileset",
+      "tileSize": 16,
+      "tiles": [
+        {
+          "name": "cap",
+          "role": "surface",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt",
+          "role": "fill",
+          "x": 16,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt2",
+          "role": "fill",
+          "x": 32,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        }
+      ]
+    },
+    "mortar": {
+      "image": "sprites/mortar.png",
+      "frameWidth": 30,
+      "frameHeight": 23,
+      "hitboxPx": {
+        "w": 20,
+        "h": 12
+      },
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 30,
+          "h": 23
+        }
+      ]
+    },
+    "theme_bridge": {
+      "image": "sprites/theme_bridge.png",
+      "type": "tileset",
+      "tileSize": 16,
+      "frameWidth": 16,
+      "frameHeight": 16,
+      "note": "creator #1 bridge-over-water theme tile (theme_bridge); wired via render.js drawBridge/drawWater assets.get('theme_bridge')."
+    },
+    "theme_water": {
+      "image": "sprites/theme_water.png",
+      "type": "tileset",
+      "tileSize": 16,
+      "frameWidth": 16,
+      "frameHeight": 16,
+      "note": "creator #1 bridge-over-water theme tile (theme_water); wired via render.js drawBridge/drawWater assets.get('theme_water')."
+    },
+    "theme_water_top": {
+      "image": "sprites/theme_water_top.png",
+      "type": "tileset",
+      "tileSize": 16,
+      "frameWidth": 16,
+      "frameHeight": 16,
+      "note": "creator #1 bridge-over-water theme tile (theme_water_top); wired via render.js drawBridge/drawWater assets.get('theme_water_top')."
+    },
+    "chopper": {
+      "image": "sprites/chopper.png",
+      "frameWidth": 76,
+      "frameHeight": 52,
+      "hitboxPx": {
+        "w": 62,
+        "h": 30
+      },
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 76,
+          "h": 52
+        }
+      ]
+    },
+    "chopper_enraged": {
+      "image": "sprites/chopper_enraged.png",
+      "frameWidth": 78,
+      "frameHeight": 51,
+      "hitboxPx": {
+        "w": 62,
+        "h": 30
+      },
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 78,
+          "h": 51
+        }
+      ]
+    }
+  }
+}

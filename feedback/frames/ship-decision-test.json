@@ -1,0 +1,39 @@
+{
+  "when": "2026-07-10T12:04:20.402Z",
+  "purpose": "composed ship gate = QA-green AND creator-approved-bound",
+  "passed": 5,
+  "failed": 0,
+  "verdict": "PASS",
+  "results": [
+    {
+      "name": "qaPass+approve=SHIP",
+      "exit": 0,
+      "expect": 0,
+      "ok": true
+    },
+    {
+      "name": "qaPass+reject=HOLD",
+      "exit": 1,
+      "expect": 1,
+      "ok": true
+    },
+    {
+      "name": "qaFail+approve=HOLD",
+      "exit": 1,
+      "expect": 1,
+      "ok": true
+    },
+    {
+      "name": "qaFail+reject=HOLD",
+      "exit": 1,
+      "expect": 1,
+      "ok": true
+    },
+    {
+      "name": "qaPass+UNBOUNDapprove+artifact=HOLD",
+      "exit": 1,
+      "expect": 1,
+      "ok": true
+    }
+  ]
+}

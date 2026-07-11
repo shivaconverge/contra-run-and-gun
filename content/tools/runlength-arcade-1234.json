@@ -1,0 +1,18 @@
+{
+  "mode": "arcade",
+  "seed": 1234,
+  "status": "gameover",
+  "frames": 1947,
+  "seconds": 32.5,
+  "reachedX": 2288,
+  "levelWidth": 2400,
+  "goalX": 2340,
+  "pctTraversed": 97.8,
+  "deaths": 4,
+  "livesLeft": -1,
+  "bossEngagedAtSec": 20.4,
+  "bossHp0": 90,
+  "bossHpLeft": 29,
+  "bossDead": false,
+  "stepHz": 60
+}

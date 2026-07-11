@@ -1,0 +1,45 @@
+{
+  "title": "",
+  "url": "http://localhost:8182/index.html?seed=1234",
+  "mode": "pptr",
+  "viewport": [
+    480,
+    270
+  ],
+  "settle_ms": 1200,
+  "frames": 6,
+  "interval_ms": 130,
+  "captured": [
+    {
+      "frame": 0,
+      "file": "frame-00.png",
+      "key": "ArrowRight"
+    },
+    {
+      "frame": 1,
+      "file": "frame-01.png",
+      "key": "ArrowRight"
+    },
+    {
+      "frame": 2,
+      "file": "frame-02.png",
+      "key": "ArrowRight"
+    },
+    {
+      "frame": 3,
+      "file": "frame-03.png",
+      "key": "ArrowRight"
+    },
+    {
+      "frame": 4,
+      "file": "frame-04.png",
+      "key": "ArrowRight"
+    },
+    {
+      "frame": 5,
+      "file": "frame-05.png",
+      "key": "ArrowRight"
+    }
+  ],
+  "tool": "capture-frames.mjs"
+}

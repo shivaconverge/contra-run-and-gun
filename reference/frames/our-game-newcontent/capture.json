@@ -1,0 +1,9 @@
+{
+  "subject": "our-game new content: Fire weapon + Drone flyer enemy",
+  "build": "a43e3e9",
+  "source": "live pptr (Fire via player.setWeapon('fire')) + deterministic headless (Drone on-screen @ player~x900)",
+  "frames": [
+    {"file": "fire-weapon.png", "shows": "Fire (F) weapon — orange corkscrew fireball spiral (arcade §3); completes M/S/L/F lineage (WEAP-1)"},
+    {"file": "drone-flyer.png", "shows": "Drone flyer (3rd enemy) — copper-orange hovering aerial drone w/ glowing red eye, distinct from grunt/turret; aerial threat variety (dim 5)"}
+  ]
+}

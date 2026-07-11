@@ -1,0 +1,27 @@
+{
+  "title": "Contra: Operation Galuga",
+  "steam_appid": 2235020,
+  "slug": "contra-operation-galuga-2024",
+  "source": "Steam store appdetails (official developer screenshots)",
+  "note": "STILLS not motion: grounds visual dims (sprite/palette/density), not cadence/hit-stop.",
+  "shots": [
+    {
+      "i": 0,
+      "file": "shot-00.jpg",
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2235020/ss_7cf25623bf7b9fc10d7c34dc273c4de0f20ab030.1920x1080.jpg?t=1747196458",
+      "bytes": 287401
+    },
+    {
+      "i": 1,
+      "file": "shot-01.jpg",
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2235020/ss_a8b62a8e4dfc34659d645a1a6bfd0baa7835c662.1920x1080.jpg?t=1747196458",
+      "bytes": 279929
+    },
+    {
+      "i": 2,
+      "file": "shot-02.jpg",
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2235020/ss_5e5f66d944f62b32e7fc97b27e589c1ca63f9ebb.1920x1080.jpg?t=1747196458",
+      "bytes": 205587
+    }
+  ]
+}

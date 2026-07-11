@@ -1,0 +1,27 @@
+{
+  "title": "Blazing Chrome",
+  "steam_appid": 609110,
+  "slug": "blazing-chrome-2019",
+  "source": "Steam store appdetails (official developer screenshots)",
+  "note": "STILLS not motion: grounds visual dims (sprite/palette/density), not cadence/hit-stop.",
+  "shots": [
+    {
+      "i": 0,
+      "file": "shot-00.jpg",
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/609110/ss_add23d42e3ed124f284ffd1ec893b338ebc6f942.1920x1080.jpg?t=1761905691",
+      "bytes": 769917
+    },
+    {
+      "i": 1,
+      "file": "shot-01.jpg",
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/609110/ss_f4b7c79eda82e04c8fb14e39e243f36c29e8b332.1920x1080.jpg?t=1761905691",
+      "bytes": 918121
+    },
+    {
+      "i": 2,
+      "file": "shot-02.jpg",
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/609110/ss_b311215c8a48934e4628d830d9c6403fa142a6c1.1920x1080.jpg?t=1761905691",
+      "bytes": 857594
+    }
+  ]
+}

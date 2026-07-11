@@ -1,0 +1,112 @@
+{
+  "when": "2026-07-10T12:04:18.358Z",
+  "target": "game/src/feedback.js (SHIPPED build, served unmodified)",
+  "passed": 17,
+  "failed": 0,
+  "criticalFailed": 0,
+  "verdict": "PASS",
+  "results": [
+    {
+      "id": "AC-8.defaultClosed",
+      "ok": true,
+      "critical": true,
+      "detail": "{\"open\":false,\"hidden\":true,\"gate\":false}"
+    },
+    {
+      "id": "AC-11.shipGatePredicate",
+      "ok": true,
+      "critical": true,
+      "detail": "apiHit=true domHit=true"
+    },
+    {
+      "id": "AC-1.toggleTitle",
+      "ok": true,
+      "critical": true,
+      "detail": "openAfter1=true openAfter2=false"
+    },
+    {
+      "id": "AC-2b.pauseAttractOnOpen",
+      "ok": true,
+      "critical": true,
+      "detail": "attractRan=true frozen=true attractOff=true"
+    },
+    {
+      "id": "AC-1.togglePlay",
+      "ok": true,
+      "critical": true,
+      "detail": "open during play=true"
+    },
+    {
+      "id": "AC-2.pauseOnOpen",
+      "ok": true,
+      "critical": true,
+      "detail": "x 178.95000000000013->178.95000000000013, status playing->playing"
+    },
+    {
+      "id": "AC-3.noKeyLeak",
+      "ok": true,
+      "critical": true,
+      "detail": "{\"status\":\"playing\",\"mode\":\"arcade\",\"score\":100,\"muted\":false,\"paused\":false}"
+    },
+    {
+      "id": "AC-7.contextCaptured",
+      "ok": true,
+      "critical": true,
+      "detail": "{\"buildId\":\"dev\",\"status\":\"playing\",\"mode\":\"arcade\",\"score\":100,\"lives\":3}"
+    },
+    {
+      "id": "AC-4.approveGates",
+      "ok": true,
+      "critical": true,
+      "detail": "{\"gate\":true,\"latest\":{\"verdict\":\"approve\",\"rating\":null,\"notes\":\"\",\"context\":{\"buildId\":\"dev\",\"status\":\"playing\",\"mode\":\"arcade\",\"score\":100,\"lives\":3},\"ts\":178368505615"
+    },
+    {
+      "id": "AC-4.persistsReload",
+      "ok": true,
+      "critical": true,
+      "detail": "{\"gate\":true,\"n\":1}"
+    },
+    {
+      "id": "AC-12.exportReturnsEntries",
+      "ok": true,
+      "critical": true,
+      "detail": "hasBtn=true matchesEntries=true"
+    },
+    {
+      "id": "AC-12.exportedRecordGatesShip",
+      "ok": true,
+      "critical": true,
+      "detail": "release-gate on exported approve record exit=0 (want 0 = APPROVED)"
+    },
+    {
+      "id": "AC-14.notesRoundTrip",
+      "ok": true,
+      "critical": true,
+      "detail": "latest.notes==typed:true inExportedRecord:true"
+    },
+    {
+      "id": "AC-5.rejectRevokes",
+      "ok": true,
+      "critical": true,
+      "detail": "gate after reject=false"
+    },
+    {
+      "id": "AC-6.lowStarApproveNoGate",
+      "ok": true,
+      "critical": true,
+      "detail": "gate after approve@2star=false"
+    },
+    {
+      "id": "AC-10.corruptStorageTolerated",
+      "ok": true,
+      "critical": true,
+      "detail": "{\"n\":0,\"gate\":false,\"err\":null}"
+    },
+    {
+      "id": "AC-9.noRegressionClosed",
+      "ok": true,
+      "critical": true,
+      "detail": "{\"status\":\"playing\",\"score\":0,\"open\":false}"
+    }
+  ]
+}

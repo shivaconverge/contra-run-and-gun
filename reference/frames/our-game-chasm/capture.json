@@ -1,0 +1,20 @@
+{
+  "subject": "our-game (loop-root-B game/index.html) — chasm HAZARD (dim-5) + Mortar real sprite (MORTAR-VIS-1)",
+  "build": "game HEAD post f0c4339 (58px chasm hazard) + 6ca9905 (mortar real sprite)",
+  "base": "http://localhost:8137",
+  "seed": "1234",
+  "native": [480, 270],
+  "purpose": "Verify two recently-landed fidelity changes in my domain by looking + running: (1) the 58px chasm pit-death HAZARD before the boss (dim-5 'hazards' headroom + arcade pit-death feel); (2) the Mortar's new real pixel-art sprite (closes/downgrades MORTAR-VIS-1, the readability nit I filed in ASSESS-21).",
+  "chasm": {
+    "layout_fact": "level1.js ground is TWO segments {x0 w2220} + {x2278 w122} = a 58px CHASM at x2220-2278, just before the boss (x2340). gravityFloor=268; falling below it triggers world._onPitFall (world.js:159 + 305): lose a life (arcade one-hit, same as a bullet), short trauma, respawn onto solid ground to the left.",
+    "visual": "chasm-before-boss-f1200.png (player x2209, at the left lip): the ground ends under the player, a dark GAP, then a tall bullet-blocking barrier pole (x2300) + the Sentinel boss arena. Reads clearly as a final pit you must leap.",
+    "behavioral_witness": "A live drive (tools/chasm-drive.mjs) positioned the player at the chasm and drove RIGHT off the edge; the REAL engine computed the result: player fell past the floor (py 239->274 > 268) and LOST A LIFE (lives 3->2), then respawned on solid ground (x~43, py216) — repeated to 3->2->1. So the pit is genuinely LETHAL + respawns, not decorative.",
+    "honest_caveat": "The forced-position state-set in the drive was racy (the player read at x=-12 during the fall frame), so this WITNESSES THE MECHANIC (fall past floor -> life loss -> respawn on ground), not a pixel-perfect edge-walk at x=2220. The deterministic showcase AI avoids the pit, so a NATURAL in-showcase pit-death isn't capturable (a capture-coverage note, cf. EXPL-1). No respawn bug claimed — respawn landed cleanly on the left ground."
+  },
+  "mortar_sprite": {
+    "fact": "game/assets/mortar.png is now a real 30x23 sprite (was procedural render). mortar-sprite-10x.png (10x nearest): an olive-brass ARTILLERY emplacement — squat armored base + an upward-angled cannon barrel + shading tiers (dark body, lighter barrel highlights, rounded mantlet). A genuine dim-1 upgrade over the old rectangle+line-barrel.",
+    "inscene": "mortar-inscene-f540.png (mortar at screenX~233, center platform): reads as a compact artillery piece; the raised angled barrel gives it a DISTINCT silhouette now.",
+    "verdict_MORTAR-VIS-1": "SUBSTANTIALLY RESOLVED — the real sprite gives the mortar a distinct raised-barrel artillery silhouette + real shading (no more small dark box). RESIDUAL (very low): the olive palette is still only mid-contrast against the night-jungle greens (less pop than the magenta turret) — an optional art-loop tweak, not a defect."
+  },
+  "scores": "dim-5 (enemy density & pacing): HOLDS 4.0 but with the arcade PIT-DEATH hazard now added (a new failure mode beyond enemies) — strengthens the pacing basis + adds an arcade-invariant (pits/falls). dim-1 (sprite quality): the mortar joins the real-sprite roster (no procedural placeholder enemies remain). No score inflation; grounding firmed."
+}

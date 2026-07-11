@@ -1,0 +1,710 @@
+{
+  "corpus": "contra-fidelity-feel-ground-truth",
+  "version": 36,
+  "updated": "2026-07-10",
+  "scorecard": "SCORECARD.md — consolidated 5-dim fidelity rubric scored + nostalgic-feel check vs the arcade anchor (the TEST/PLAYTEST GATE deliverable). Rolls up all assessments[]; current verdict: PASSES the feel + indie/mobile-tier fidelity gate; pinnacle (Blazing Chrome/Metal Slug) density is stretch.",
+  "purpose": "The single source of fidelity/feel ground-truth. Every judgment of whether a RENDERED frame of OUR game 'looks/feels like Contra and beats the modern competition' is made by comparing it against the frames + teardowns indexed here. CV metrics (palette counts, pixel sums) are advisory pre-filters ONLY; the verdict is a multimodal side-by-side look at these references.",
+  "subject_under_test": {
+    "what": "loop-root-B game/index.html — the browser-playable vertical slice we judge.",
+    "native_resolution": [
+      480,
+      270
+    ],
+    "confirmed_by": "parent (2026-07-09): loop-root-B renders a browser canvas at native 480x270; capture pipeline is compatible; size all captures & [MEASURE] targets to 480x270.",
+    "capture_tool": "reference/tools/capture-our-game.mjs (deterministic headless harness ?headless=1&frames=N&seed=S, reads canvas at native px via toDataURL)",
+    "frames": "reference/frames/our-game/ (deterministic static states) + reference/frames/our-game-motion/ (live pptr motion sequence: run/fire/jump/prone)",
+    "last_captured_commit": "3326880 (real grunt+turret sprites wired)",
+    "note": "Serve game/ (e.g. python3 -m http.server) then run capture-our-game.mjs (static) and capture-frames.mjs --mode pptr (motion) against it. Re-capture after art/render PRs — frames go stale fast."
+  },
+  "assessments": [
+    {
+      "id": "ASSESS-1",
+      "date": "2026-07-09",
+      "file": "assessments/2026-07-09-our-game-vs-anchor.md",
+      "subject": "our-game vertical slice vs arcade anchor + 5-dim rubric",
+      "headline": "Soul-level identity intact (8-way aim, spread fan, run-right, airborne fire); primary gap is placeholder sprites (FID-4). Recorded divergences from arcade HARD invariants: 4-hit health bar vs one-hit-death (FID-1), variable jump-cut vs fixed arc (FID-2), and light enemy density (FID-3). SUPERSEDED IN PART: FID-1 resolved (one-hit-death) and FID-4 resolved-for-characters — see ASSESS-2.",
+      "open_issues": [
+        "FID-2",
+        "FID-3",
+        "FID-4"
+      ]
+    },
+    {
+      "id": "ASSESS-2",
+      "date": "2026-07-09",
+      "file": "assessments/2026-07-09b-our-game-vs-competitor-bar.md",
+      "subject": "current build (real sprites @3326880) vs competitor visual BAR — pixel side-by-sides",
+      "headline": "Real hero+grunt+turret sprites landed and are Contra-authentic — they MEET/EXCEED the indie-tier character bar (Gunslugs 2's own hero is chunkier/simpler). Sprite score 1.5->3.0. The fidelity bottleneck MOVED from characters to ENVIRONMENT (FID-5: flat parallax + unauthored tiles) and animation frame-count (FID-4b: player_run disabled). FID-4 resolved-for-characters.",
+      "open_issues": [
+        "FID-5",
+        "FID-4b",
+        "FID-3",
+        "HUD-1",
+        "PRONE-1"
+      ]
+    },
+    {
+      "id": "ASSESS-3",
+      "date": "2026-07-09",
+      "file": "assessments/2026-07-09c-fid5-environment-verification.md",
+      "subject": "verify PR#14 environment response vs FID-5 target",
+      "headline": "PR#14 (5-layer parallax + moon, textured grassy-cap/speckled-dirt ground, grass-topped platforms) SUBSTANTIALLY CLOSED FID-5 — the stage now reads as a night-jungle place, not a gradient. Verified by ground zoom side-by-side vs Gunslugs 2. FID-5 downgraded MEDIUM-HIGH->LOW-MEDIUM; remaining = ground-cap bevel/contrast + denser fill + a few props (all procedural-tier). Sprite/whole-frame read 3.0->3.5.",
+      "open_issues": [
+        "FID-5",
+        "FID-4b",
+        "CAP-2"
+      ]
+    },
+    {
+      "id": "ASSESS-4",
+      "date": "2026-07-09",
+      "file": "assessments/2026-07-09d-verify-jump-density-tileset.md",
+      "subject": "verify FID-2 (fixed-arc jump), FID-3 (density), FID-5 (real 16px tileset) responses",
+      "headline": "Three corpus-filed issues got build responses, all verified: FID-2 RESOLVED (jumpCutEnabled=false -> fixed-arc jump, arcade §2; selftest tap-apex==hold-apex), FID-3 SUBSTANTIALLY ADDRESSED (spawns 12->20, now 3-5 concurrent threats + platform turrets; MEDIUM->LOW), FID-5 FURTHER CLOSED (real 16px tileset now blitted; dense dirt fill RESOLVED, cap-bevel partial; LOW-MEDIUM->LOW). Density 2.5->3.5, cadence 3->3.5. FID-4b (run-cycle) now the top character gap.",
+      "open_issues": [
+        "FID-4b",
+        "FID-5",
+        "CAP-2",
+        "HUD-1",
+        "PRONE-1"
+      ]
+    },
+    {
+      "id": "ASSESS-5",
+      "date": "2026-07-09",
+      "file": "assessments/2026-07-09e-verify-runcycle-and-boss.md",
+      "subject": "verify run-cycle (FID-4b) + Stage-1 Sentinel boss (arcade §4 climax)",
+      "headline": "FID-4b RESOLVED: player_run now loads (spritesMissing=[]), hero animates a real run cycle — all character-art gaps closed (sprite score 3.5->4.0). Stage-1 Sentinel boss delivers the arcade §4 fixed-boss climax invariant: SENTINEL HP bar + name callout, mechanical glowing-weak-point core, telegraphed chest-height cannon volleys that prone/jump duck (ties in prone, §2). Density/structure 3.5->4.0. Honest gap: boss is a single clean core, less spectacular than Blazing Chrome's multi-part beast (BOSS-1, low).",
+      "open_issues": [
+        "PRONE-1",
+        "CAP-2",
+        "HUD-1",
+        "FID-5",
+        "BOSS-1"
+      ]
+    },
+    {
+      "id": "ASSESS-6",
+      "date": "2026-07-09",
+      "file": "assessments/2026-07-09f-verify-title-and-leap.md",
+      "subject": "verify arcade title/attract screen (PR#34) + airborne leap sprite (PR#35)",
+      "headline": "Title screen is arcade-AUTHENTIC: 'RUN & GUN' over LIVE attract gameplay + ARCADE/CASUAL mode select with 'one hit = one life — the 1987 way' — this elegantly RESOLVES the long-standing FID-1 tension (arcade one-hit default + casual accessibility hedge, exactly as recommended). Airborne leap sprite is a clean distinct pose completing the sprite set (idle/run/leap/prone), minor note LEAP-1: it's a forward-bound not the arcade tucked somersault. Also honestly closed the dim-3 arcade-jump-measurement attempt (not reliably extractable — terraced terrain).",
+      "open_issues": [
+        "LEAP-1",
+        "BOSS-1",
+        "HUD-1"
+      ]
+    },
+    {
+      "id": "ASSESS-7",
+      "date": "2026-07-09",
+      "file": "assessments/2026-07-09g-verify-weapon-roster.md",
+      "subject": "verify new weapons Machine (M) + Laser (L) vs weapon-juice bar + arcade §3 lineage",
+      "headline": "Weapon roster now Rifle/Spread(S)/Machine(M)/Laser(L) — covers the arcade M/S/L lineage (only F/Fire missing, WEAP-1 optional). Verified by looking (each weapon set via real player.setWeapon + fired): Machine reads as a dense fast warm-gold stream, Laser as a long thin mint piercing beam; every gun has a distinct color+shape = legible weapon identity (arcade convention met). Weapon-juice 3.0->3.5; remaining headroom = projectile glow/tracer vs competitor bar.",
+      "open_issues": [
+        "WEAP-1",
+        "LEAP-1",
+        "BOSS-1",
+        "HUD-1"
+      ]
+    },
+    {
+      "id": "ASSESS-8",
+      "date": "2026-07-09",
+      "file": "assessments/2026-07-09h-adjudicate-fidelity-metrics.md",
+      "subject": "adjudicate the playtest fidelity CV metrics BY LOOKING (metrics are pre-filters, not the verdict)",
+      "headline": "A playtest loop composites OUR frames beside this corpus's competitor refs + computes CV metrics (color count/edge density) showing a large gap. LOOKED at the sheets: the deltas OVERSTATE the gap because the paired BEATS aren't comparable — calm mid-run OURS vs peak-explosion REF (firefight), and STAGE-CLEAR empty OURS vs BOSS-intro splash REF (boss). At matched beats (ASSESS-2/4/5/7) OURS is at/above the indie bar; the real residual is the known pinnacle headroom (explosion/particle + bg detail density). Recommends the harness sample OURS at matched beats (FIDHARNESS-1). Also confirmed CASUAL=lives5/shield2 (FID-1 hedge shipped) and that the competitor corpus IS committed (strategy's 'unsourced' obs is stale).",
+      "open_issues": [
+        "FIDHARNESS-1"
+      ]
+    },
+    {
+      "id": "ASSESS-9",
+      "date": "2026-07-09",
+      "file": "assessments/2026-07-09i-firefight-matched-beat-verdict.md",
+      "subject": "OUR firefight at a MATCHED beat vs Blazing Chrome ref — grounds FIDHARNESS-1's 'gap overstated' claim",
+      "headline": "Captured OURS at a real dense firefight beat (state-0340: 18 enemies, 24 particles = active explosion, tracers) and LOOKED beside the BC firefight ref. Verdict: at a matched beat OURS reads as a lively firefight that MEETS/EXCEEDS the indie/mobile bar (more on screen than the Gunslugs frames); the residual vs the BC pinnacle is explosion/particle + bg-detail density (confirmed STRETCH, not a defect). So the playtest firefight CV deltas (+545/+837) overstate the real gap — the corpus now supplies frames/our-game-firefight/state-0340.png for fair pairing. No score change (confirms SCORECARD).",
+      "open_issues": [
+        "FIDHARNESS-1"
+      ]
+    },
+    {
+      "id": "ASSESS-10",
+      "date": "2026-07-10",
+      "file": "assessments/2026-07-10-verify-fire-weapon-and-drone.md",
+      "subject": "verify Fire weapon (WEAP-1), Drone flyer enemy, + close FIDHARNESS-1",
+      "headline": "TWO open issues resolved + new enemy verified. Fire(F) gun landed — verified corkscrew fireball spiral (arcade §3); arcade M/S/L/F weapon lineage now COMPLETE (WEAP-1 resolved; weapon-juice 3.5->4.0). Drone flyer (3rd enemy) — copper-orange hovering aerial strafer, distinct sprite, adds the aerial threat axis (density 3.75->4.0; 23 spawns). FIDHARNESS-1 RESOLVED: playtest loop adopted a peak firefight beat (my ASSESS-9), CV deltas narrowed +545->+376/+837->+668. Boss phase-2 enrage landed (BOSS-1, re-verify next).",
+      "open_issues": [
+        "LEAP-1",
+        "BOSS-1",
+        "HUD-1"
+      ]
+    },
+    {
+      "id": "ASSESS-11",
+      "date": "2026-07-10",
+      "file": "assessments/2026-07-10b-verify-boss-enrage.md",
+      "subject": "verify boss phase-2 ENRAGE (BOSS-1 spectacle)",
+      "headline": "Drove the Sentinel to phase-2 (hp<=36, enrageAt 0.4) via real game state and LOOKED: enrage delivers a real two-phase escalation — red HP bar 'SENTINEL — ENRAGED' + ENRAGED! callout + denser RED chest-height volley (#ff5a6e, 82->46, still prone-duckable/fair) + a more detailed bipedal red-accented mech. BOSS-1 downgraded from 'single static core' to STRETCH (multi-part pinnacle set-piece). NEW LOW finding BOSS-2: the ENRAGED and BOSS callouts share a center slot and overlap ('ENBOSSD!') — likely a capture artifact (instant trigger) but can collide on a fast kill; flag to de-conflict.",
+      "open_issues": [
+        "BOSS-2",
+        "LEAP-1",
+        "HUD-1"
+      ]
+    },
+    {
+      "id": "ASSESS-12",
+      "date": "2026-07-10",
+      "file": "assessments/2026-07-10c-verify-enraged-sprite.md",
+      "subject": "verify distinct boss_enraged sprite (BOSS-1) — found matte-box defect (BOSS-3)",
+      "headline": "PR#63 distinct boss_enraged sprite verified BY LOOKING (after correcting a camera-lerp capture artifact): a scorched copper bipedal mech w/ glowing pink/red core + flaring belly-cannon + horned head — a real visual transformation from the grey base Sentinel (BOSS-1 further closes). DEFECT FOUND: the enraged sprite renders inside a hard-edged DARK RECTANGULAR MATTE box (non-transparent bg) that breaks its silhouette on the night-jungle — BOSS-3, MEDIUM (climactic boss), likely a transparency export issue. Enemy fire telegraph (PR#62) not verified this cycle (deferred). [BOSS-3 CAUSE CORRECTED in ASSESS-13: render.js:493 unmasked glow, not the sprite.]",
+      "open_issues": [
+        "BOSS-3",
+        "BOSS-2",
+        "LEAP-1",
+        "HUD-1"
+      ]
+    },
+    {
+      "id": "ASSESS-13",
+      "date": "2026-07-10",
+      "file": "assessments/2026-07-10d-telegraph-and-boss3-rootcause.md",
+      "subject": "verify enemy fire telegraph (PR#62) + correct BOSS-3 root cause",
+      "headline": "Enemy fire TELEGRAPH verified BY LOOKING: a yellow-white core wind-up glow appears on a turret/flyer ~0.18s before its aimed shot (dodgeable/fair; soft additive arcs, modest+appropriate for common enemies) — a real hit-feedback/readability feel win aligning OUR enemy fire with the competitor telegraph norm. BOSS-3 ROOT CAUSE CORRECTED: parent verified boss_enraged.png is fully transparent, so my 'sprite export' guess was WRONG — the reddish box is render.js:493's enrage heat-glow fillRect(dx,dy,dw,dh) additively tinting the whole sprite BOUNDING RECT (not masked to alpha); same latent pattern at :501 hit-flash. Re-attributed to render (root.B); fix = mask glow to sprite (source-atop/clip).",
+      "open_issues": [
+        "BOSS-3",
+        "BOSS-2",
+        "LEAP-1",
+        "HUD-1"
+      ]
+    },
+    {
+      "id": "ASSESS-14",
+      "date": "2026-07-10",
+      "file": "assessments/2026-07-10e-verify-touch-controls.md",
+      "subject": "verify on-screen touch controls (mobile/Android browser playability, PR#74)",
+      "headline": "Emulated a landscape Android phone (hasTouch) and LOOKED: the touch overlay mounts and renders a CLEAN, minimal arcade control scheme — cyan D-pad (move/aim/prone) + yellow JUMP + red FIRE (w/ ammo), semi-transparent, edge-positioned, gameplay stays fully readable. The game is now genuinely MOBILE-BROWSER-PLAYABLE (core web/Android goal criterion). CONFIRMS the positioning advantage: OUR touch UI is markedly cleaner/more arcade-authentic than Contra Returns' cluttered F2P touch overlay (side-by-side frames/our-game-touch vs frames/contra-returns-mobile). Minor: keyboard help text still shows on touch (TOUCH-2, low). [QUALIFIED by ASSESS-15: mobile-playable EXCEPT no touch restart after game-over (TOUCH-1).]",
+      "open_issues": [
+        "TOUCH-2",
+        "BOSS-3",
+        "BOSS-2",
+        "LEAP-1",
+        "HUD-1"
+      ]
+    },
+    {
+      "id": "ASSESS-15",
+      "date": "2026-07-10",
+      "file": "assessments/2026-07-10f-mobile-layout-and-restart-gap.md",
+      "subject": "verify mobile-first layout (PR#78) + confirm game-over touch-restart GAP (TOUCH-1)",
+      "headline": "Mobile-first layout (PR#78) VERIFIED: the canvas now fills 100% of viewport height (was letterboxed) — a proper mobile-first presentation. But CONFIRMED a real mobile-playability defect (TOUCH-1, MEDIUM-HIGH): at GAME OVER the prompt is 'press R to restart' (keyboard-only) and the touch overlay has NO restart control — a touchscreen player who dies is STRANDED. Qualifies the ASSESS-14 'mobile-playable' verdict: playable EXCEPT the game-over->restart loop is keyboard-only. Reconciled ids: restart gap = TOUCH-1 (aligns w/ playtest loop), cosmetic keyboard-hints = TOUCH-2.",
+      "open_issues": [
+        "TOUCH-1",
+        "TOUCH-2",
+        "BOSS-3",
+        "BOSS-2",
+        "LEAP-1",
+        "HUD-1"
+      ]
+    },
+    {
+      "id": "ASSESS-16",
+      "date": "2026-07-10",
+      "file": "assessments/2026-07-10g-verify-touch-restart-fix.md",
+      "subject": "verify the TOUCH-1 fix (PR#82) — touch restart from game-over",
+      "headline": "TOUCH-1 RESOLVED — verified the fix I filed (ASSESS-15) landed (PR#82). Ran it: forced game-over on an emulated Android phone, dispatched a touch press → status flipped gameover→playing, lives 0→3, player respawned at x=40 (FACT); and BY LOOKING the game-over now reads 'GAME OVER — TAP TO RESTART' (was 'press R'). The game-over→restart loop works on touch, so the game is now FULLY mobile-browser-playable — clears the ASSESS-15 caveat. In-canvas prompts also adapt to touch (TAP TO START/RESTART), partially addressing TOUCH-2 (bottom keyboard help line residual).",
+      "open_issues": [
+        "TOUCH-2",
+        "BOSS-3",
+        "BOSS-2",
+        "LEAP-1",
+        "HUD-1"
+      ]
+    },
+    {
+      "id": "ASSESS-17",
+      "date": "2026-07-10",
+      "file": "assessments/2026-07-10h-verify-boss3-fix.md",
+      "subject": "verify the BOSS-3 fix (PR#86) — enrage heat-glow no longer a bounding box",
+      "headline": "BOSS-3 RESOLVED — verified the fix I root-caused (ASSESS-13: render.js:493 unmasked enrage fillRect over the sprite bounding box) landed (PR#86, glow masked to sprite). BY LOOKING (frames/our-game-boss-enrage/enraged-fixed.png, 5x zoom): the enraged mech now sits CLEANLY on the night-jungle — NO reddish rectangular matte box; the red heat-glow is only on the mech's opaque pixels, clean silhouette (vs the pre-fix box in enraged-sprite-distinct.png). The exact source-atop/clip fix I specified. No medium+ fidelity defects now open in the corpus.",
+      "open_issues": [
+        "BOSS-2",
+        "TOUCH-2",
+        "LEAP-1",
+        "HUD-1"
+      ]
+    },
+    {
+      "id": "ASSESS-18",
+      "date": "2026-07-10",
+      "file": "assessments/2026-07-10i-pacing-constant-danger.md",
+      "subject": "ground the arcade 'constant danger' pacing (dim 5) via a non-firing run + adjudicate feedback OI-1",
+      "headline": "Drove a NON-FIRING forward run (hold right, no fire — root.E's DIE scenario) and measured (FACT): lives lost at 1.6s/4.0s/8.8s, GAME OVER at 11.6s; by looking (nofire-run-danger.png) the hero runs straight into a grunt swarm + turret. So OUR early level delivers the arcade CONSTANT-DANGER / one-hit-tension pacing even without firing — grounds dim-5 (density/pacing) on the THREAT axis (not just on-screen count); density holds 4.0. Adjudicated feedback/FINDINGS.md OI-1 ('no death in ~10s') as a drive-WINDOW artifact (final game-over is ~11.6s, just past their window; the player IS being killed throughout) — NOT a density gap. (root.E's feedback/ is a creator-approval PANEL, a product-UI concern outside the fidelity/feel corpus.)",
+      "open_issues": [
+        "BOSS-2",
+        "TOUCH-2",
+        "LEAP-1",
+        "HUD-1"
+      ]
+    },
+    {
+      "id": "ASSESS-19",
+      "date": "2026-07-10",
+      "file": "assessments/2026-07-10j-web-html5-competitive-set.md",
+      "subject": "capture the itch.io/CrazyGames HTML5 web competitive set (the direct browser head-to-head) — last un-grounded goal-named category",
+      "headline": "Closed the corpus's last un-grounded goal-named competitor category: the itch.io/CrazyGames HTML5 browser run-and-gun tier. Sampled the itch HTML5 run-and-gun tag (popular), captured GUN N' RUN (egunan.itch.io) gameplay stills, LOOKED: minimalist stark mono+pink jam-quality pixel art (blocky chars, girder platforms, ammo-pip HUD). POSITIONING: this browser tier is typically LOWER fidelity than OUR detailed 16-bit night-jungle Contra — OURS EXCEEDS the typical itch/CrazyGames HTML5 run-and-gun on visual fidelity + content (the literal browser win axis). Competitor corpus now spans all goal-named tiers (console-pixel / official-mobile-3D / browser-HTML5); 8 titles, within '6-12'. Sample not exhaustive.",
+      "open_issues": [
+        "BOSS-2",
+        "TOUCH-2",
+        "LEAP-1",
+        "HUD-1"
+      ]
+    },
+    {
+      "id": "ASSESS-20",
+      "date": "2026-07-10",
+      "file": "assessments/2026-07-10k-verify-explosion-punch-dim2.md",
+      "subject": "verify the explosion-punch change (dim 2, hit feedback) on the CURRENT build",
+      "headline": "Re-grounded dim-2 against the current build (game @ e6a4621, post b1fa0df 'explosion punch'). Served + ran the live headless showcase, swept frame-counts to catch the transient FX, and LOOKED: a kill now produces a bright white-cored additive FLASH-POP + expanding SHOCK-RING + orange fireball (multi-frame; engine-backed by trauma/hitStop/particles in bench). Direct compare vs Blazing Chrome's explosion ref: OURS is a strong SINGLE burst at the competitor bar; BC's denser MULTI-PUFF billowing cluster remains the pinnacle stretch. VERDICT: dim-2 3.5 -> 4.0. Honest gap EXPL-1 (low): boss-death 'bigger fireball' un-witnessed — the showcase player dies to the boss before the boss dies, so that path isn't capturable in the deterministic timeline (reported, not faked).",
+      "open_issues": [
+        "EXPL-1",
+        "BOSS-2",
+        "TOUCH-2",
+        "LEAP-1",
+        "HUD-1"
+      ]
+    },
+    {
+      "id": "ASSESS-21",
+      "date": "2026-07-10",
+      "file": "assessments/2026-07-10l-verify-mortar-enemy-variety-dim5.md",
+      "subject": "verify the Mortar (4th non-boss enemy type) on the CURRENT build (dim 5, enemy variety)",
+      "headline": "Re-grounded dim-5 against the current build (post 592be76 'widen enemy set — Mortar arcing area-denial lob'). FACT: live bench enemiesStart 23 -> 24. The Mortar is a DISTINCT 4th threat — its OWN config def (#b98a4a olive-brass, 20x12, parabolic shell) + OWN render path (render.js:421), that TELEGRAPHS (11 frames) then LOBS a parabolic shell (descending-diagonal arc, unlike flat tracers), adding a NEW area-denial axis (reposition-to-dodge) the other 3 types lacked. Roster now ground/fixed/aerial/area-denial + two-phase boss. dim-5 HOLDS at 4.0 (concurrent density ~3-5 unchanged — not inflated); the 4-type roster narrows the Huntdown 5-6-type headroom. SELF-CORRECTION (same day): the first pass mislabeled the on-screen MAGENTA angled unit as the mortar — that's the TURRET (#d08bff x=1245); a code+color read and an exact screen-x probe (tools/mortar-probe.mjs) relocated the real olive mortar to center-screen (x=1040). Behavioral evidence was correct; only the in-frame identity was fixed. Filed MORTAR-VIS-1 (low): the small dark olive mortar is less legible than the turret at native res.",
+      "open_issues": [
+        "MORTAR-VIS-1",
+        "EXPL-1",
+        "BOSS-2",
+        "TOUCH-2",
+        "LEAP-1",
+        "HUD-1"
+      ]
+    },
+    {
+      "id": "ASSESS-22",
+      "date": "2026-07-10",
+      "file": "assessments/2026-07-10m-verify-multipuff-explosion-dim2.md",
+      "subject": "verify the SHIPPED multi-puff explosion on the CURRENT build (dim 2, hit feedback)",
+      "headline": "Verified the multi-puff explosion (post 6ea2a2d 'ship multi-puff density via post-pack compositing') — my longest-carried dim-2 headroom (flagged ASSESS-20, recipe formalized in teardowns/metal-slug-3.md). The in-scene FX is only 28x40 at native res, so I upscaled the SHIPPED sprite (game/assets/explosion.png, 4x28x40) 6x nearest-neighbor and LOOKED: the arc is now an organic MULTI-LOBE billow — spark -> 2-3-lobe white-hot fireball -> flame+smoke breakup -> grey smoke billow — matching the MS3 recipe (layered offset lobes + smoke tail + sparks), NOT the old single round puff. Direct compare vs Blazing Chrome: OURS is a compact 2-3 lobe billow, BC a denser wider many-lobe cluster. VERDICT: dim-2 4.0 -> 4.5 (structure reached, above the popular-competitor bar); remaining pinnacle gap is cluster DENSITY/SCALE (more lobes + stacked bursts), a smaller stretch. Top pinnacle-headroom item substantially closed.",
+      "open_issues": [
+        "EXPL-1",
+        "MORTAR-VIS-1",
+        "BOSS-2",
+        "TOUCH-2",
+        "LEAP-1",
+        "HUD-1"
+      ]
+    },
+    {
+      "id": "ASSESS-23",
+      "date": "2026-07-10",
+      "file": "assessments/2026-07-10n-verify-chasm-hazard-and-mortar-sprite.md",
+      "subject": "verify the chasm PIT-DEATH hazard (dim 5) + the Mortar real sprite (MORTAR-VIS-1) on the CURRENT build",
+      "headline": "Verified two landed changes by looking + RUNNING. (1) CHASM HAZARD (post f0c4339): level1.js has a 58px pit-death gap at x2220-2278 before the boss (FACT); reads clearly as a final pit to leap (chasm-before-boss-f1200.png); and a LIVE DRIVE (tools/chasm-drive.mjs) drove the player off the edge — the real engine made the fall LETHAL (py past gravityFloor 268 -> lives 3->2->1, respawn on solid ground). A Contra-staple lethal-fall + the '+ hazards' dim-5 headroom item. Honest caveat: the forced-position drive was racy (witnesses the MECHANIC, not a pixel-perfect edge-walk; showcase AI avoids the pit, cf EXPL-1); no respawn bug (respawn landed cleanly). (2) MORTAR real sprite (post 6ca9905): game/assets/mortar.png is now a real 30x23 olive-brass ARTILLERY emplacement (squat base + raised angled barrel + shading, mortar-sprite-10x.png) — MORTAR-VIS-1 SUBSTANTIALLY RESOLVED (distinct silhouette; residual = olive/night-jungle contrast, very low). dim-5 holds 4.0 (hazard broadens the threat model); no procedural placeholder enemies remain (dim-1).",
+      "open_issues": [
+        "EXPL-1",
+        "BOSS-2",
+        "TOUCH-2",
+        "LEAP-1",
+        "HUD-1"
+      ]
+    },
+    {
+      "id": "ASSESS-24",
+      "date": "2026-07-10",
+      "file": "assessments/2026-07-10o-verify-bosskill-finale-expl1.md",
+      "subject": "witness the boss-death MULTI-BLAST finale via scenario=bosskill — closes EXPL-1 (dim 2)",
+      "headline": "CLOSED EXPL-1 (my longest-open item). The engine added a scenario=bosskill headless beat (d6a8146) that resolves the boss fight (iframe+laser) so the death FX are witnessable — the normal showcase player always died first. Ran it + LOOKED (frames/our-game-bosskill/): the finale is a genuine MULTI-BLAST — fx=7 live explosion strips, particles=63, trauma 0.867, hitStop 13 — a wide cluster of 3-4 white-cored flame plumes over a billowing base, clearly bigger/denser than a grunt kill. Confirms my ASSESS-22 prediction that boss-death uses the SHARED drawFx multi-lobe billow (here x7). Delivers the 'stacked bursts' element I'd flagged as remaining dim-2 pinnacle stretch, at the climax. dim-2 HOLDS 4.5 (stronger basis; not inflated for one scripted climax — per-kill density + hand-drawn scale remain the residual).",
+      "open_issues": [
+        "BOSS-2",
+        "TOUCH-2",
+        "LEAP-1",
+        "HUD-1",
+        "MORTAR-VIS-1"
+      ]
+    }
+  ],
+  "consumption_contract": {
+    "who_uses_this": "Build/QA loops that render OUR game and need a target to compare against.",
+    "how": "1) Read teardowns/<title>.md for the invariants of a dimension. 2) Load reference/frames/<slug>/*.png next to OUR rendered frame and judge the two side by side. 3) Use dimensions[] as the fixed scoring rubric so every loop scores the same axes.",
+    "authority": "The arcade-contra-1987 teardown defines the NOSTALGIC-FEEL invariants (non-negotiable). The competitor teardowns define the FIDELITY BAR we must match or exceed."
+  },
+  "dimensions": [
+    {
+      "id": "sprite_animation_quality",
+      "label": "Sprite & animation quality",
+      "measures": [
+        "frames-per-action (run cycle, jump/somersault, prone, death)",
+        "pixel density & outline treatment",
+        "palette discipline (count + coherence)",
+        "readability at gameplay zoom",
+        "silhouette clarity of hero vs enemies vs background"
+      ]
+    },
+    {
+      "id": "hit_feedback_hitstop",
+      "label": "Hit feedback & hit-stop",
+      "measures": [
+        "flash/tint on hit",
+        "hit-stop / freeze-frame duration on impactful hits",
+        "knockback & death reaction",
+        "screen shake magnitude & decay",
+        "damage number / spark clarity"
+      ]
+    },
+    {
+      "id": "movement_cadence",
+      "label": "Movement cadence",
+      "measures": [
+        "run speed (px/frame @ native res)",
+        "jump apex height & airtime",
+        "jump arc shape (fixed vs variable)",
+        "acceleration/turnaround snappiness",
+        "prone/roll transition timing",
+        "input-to-move latency feel"
+      ]
+    },
+    {
+      "id": "weapon_juice",
+      "label": "Weapon juice",
+      "measures": [
+        "muzzle flash & spawn spark",
+        "projectile speed & size",
+        "fire rate & cadence per weapon (M/S/L/F/R/B lineage)",
+        "spread pattern legibility",
+        "impact spark & enemy dissolve",
+        "audio-visual sync of shot"
+      ]
+    },
+    {
+      "id": "enemy_density_pacing",
+      "label": "Enemy density & pacing",
+      "measures": [
+        "on-screen enemy/projectile count during a firefight",
+        "spawn cadence & wave structure",
+        "bullet-hell vs run-and-gun balance",
+        "boss screen composition",
+        "safe-lane readability under load"
+      ]
+    }
+  ],
+  "capture_pipeline": {
+    "tool": "reference/tools/capture-frames.mjs",
+    "engine": "headless Chrome (local binary) + puppeteer-core for input injection",
+    "modes": {
+      "pptr": "DEFAULT. Live page + keyboard injection. PROVEN 2026-07-09: injected ArrowRight moved a canvas actor x=464 -> x=1616 across 4 frames (real gameplay sequence). Needs one-time `npm install` in reference/tools (node_modules gitignored).",
+      "cli": "Zero-dependency single settled still. PROVEN via reference/frames/_probe/capture-pipeline-ok.png. Does NOT advance a rAF loop across frames (virtual-time pauses while the page is busy) — use pptr for motion."
+    },
+    "note": "Console titles (Blazing Chrome, Galuga, Huntdown) are not browser-playable — seed those from official gameplay-footage frame-grabs with a hand-written capture.json. Web/HTML5 titles use pptr mode with --click to punch through the play overlay."
+  },
+  "titles": [
+    {
+      "slug": "arcade-contra-1987",
+      "title": "Contra (Arcade, 1987)",
+      "developer": "Konami",
+      "platform": "arcade (Nintendo VS. System)",
+      "year": 1987,
+      "role": "NOSTALGIC-FEEL ANCHOR — the origin invariants all judgments preserve",
+      "why": "Defines the non-negotiable feel: one-hit death, 8-way aim, somersault jump, prone, spread-gun fantasy, run-right pacing.",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Contra_(video_game)"
+      ],
+      "teardown": "teardowns/arcade-contra-1987.md",
+      "frames_dir": "frames/arcade-contra-1987",
+      "capture_status": "teardown_grounded; real Stage-1 gameplay frames captured (frames/arcade-contra-1987/stage1/, archive.org Contraarcade1cc) — cadence anchor, see teardowns/cadence-dim3.md"
+    },
+    {
+      "slug": "blazing-chrome-2019",
+      "title": "Blazing Chrome (2019)",
+      "developer": "JoyMasher",
+      "platform": "PC/consoles",
+      "year": 2019,
+      "role": "PIXEL-REVIVAL TIER BAR — the top of OUR competitive tier and the primary 'match-or-exceed' head-to-head anchor (the console-pinnacle hand-drawn ceiling is Metal Slug 3, a separate tier)",
+      "why": "Widely cited as the best modern Contra-successor; the fidelity target for pixel-art run-and-gun feel & boss design. Parent-confirmed as OUR tier (Gunslugs/Blazing-Chrome class), so it is the concrete bar the SCORECARD scores against, not an unreachable ceiling. The single most-cited reference in the corpus.",
+      "steam_appid": 609110,
+      "sources": [
+        "https://store.steampowered.com/app/609110/"
+      ],
+      "teardown": "teardowns/blazing-chrome-2019.md",
+      "frames_dir": "frames/blazing-chrome-2019",
+      "capture_status": "captured: 3 official Steam stills (appid 609110) + 2 trailer motion frames (motion/); ALL 5 axes now graded in the dedicated per-title teardown (motion axes 2,3 gradeable from the motion frames; exact run-cycle frame-count is the only CAP-2 residual)"
+    },
+    {
+      "slug": "contra-operation-galuga-2024",
+      "title": "Contra: Operation Galuga (2024)",
+      "developer": "WayForward / Konami",
+      "platform": "PC/consoles",
+      "year": 2024,
+      "role": "OFFICIAL MODERN CONTRA — 2.5D reimagining of the 1987 original",
+      "why": "The current official interpretation of Contra feel; direct comparand for weapon lineage & stage structure fidelity.",
+      "steam_appid": 2235020,
+      "sources": [
+        "https://store.steampowered.com/app/2235020/"
+      ],
+      "teardown": "teardowns/competitors-visual-bar.md",
+      "frames_dir": "frames/contra-operation-galuga-2024",
+      "capture_status": "captured: 3 official Steam stills (appid 2235020); shows M/S/F falcon weapon-slot HUD + health bars; visual dims grounded; motion pending CAP-2"
+    },
+    {
+      "slug": "contra-returns-mobile",
+      "title": "Contra Returns / Garena Contra Returns (mobile)",
+      "developer": "Konami / TiMi / Garena",
+      "platform": "Android/iOS (com.garena.game.hdltw)",
+      "year": 2021,
+      "role": "OFFICIAL MOBILE CONTRA — the goal-named recent web/Android Contra-like players actually play",
+      "why": "The current Konami mobile Contra; the touch-era product a browser Contra is compared against. KEY: it's 3D-HD + heavy F2P touch UI, NOT pixel — a DIFFERENT tier from OUR game; OURS competes on nostalgic pixel feel + clean HUD + instant browser play, NOT 3D-gacha (see teardown).",
+      "sources": [
+        "https://contra-return.en.uptodown.com/android (official store screenshots)"
+      ],
+      "teardown": "teardowns/contra-returns-mobile.md",
+      "frames_dir": "frames/contra-returns-mobile",
+      "capture_status": "captured: 2 official store gameplay screenshots (Uptodown, 1280px); teardown + positioning insight written"
+    },
+    {
+      "slug": "metal-slug-3",
+      "title": "Metal Slug 3 (SNK)",
+      "developer": "SNK",
+      "platform": "arcade/consoles/Android/web ports",
+      "year": 2000,
+      "role": "ANIMATION/JUICE PINNACLE — the '5=pinnacle' ceiling that DEFINES the top of every look-axis (a separate tier ABOVE OUR pixel-revival bar; not required by the stated goal)",
+      "why": "Gold standard for sprite animation density, explosion juice, and comedic death frames in the run-and-gun genre. Concretely the grounded target for the dim-2 multi-puff explosion stretch that the assets loop is chasing (assets/pipeline/experiments/explosion-multipuff/ compares its candidates vs frames/metal-slug-3/).",
+      "steam_appid": 250180,
+      "sources": [
+        "https://store.steampowered.com/app/250180/"
+      ],
+      "teardown": "teardowns/metal-slug-3.md",
+      "frames_dir": "frames/metal-slug-3",
+      "capture_status": "captured: 3 official Steam stills (appid 250180); dedicated per-title teardown grades look axes (1,2-appearance,4,5) — the multi-puff/glow/density ceiling; timing axes (3, hit-stop) NOT gradeable from stills (MS3 motion frame-grab = optional CAP-2 extension)"
+    },
+    {
+      "slug": "gunslugs-2",
+      "title": "Gunslugs 2 (Orangepixel)",
+      "developer": "Orangepixel",
+      "platform": "Android/web/PC",
+      "year": 2015,
+      "role": "INDIE MOBILE/WEB FEEL BENCHMARK — the most realistic bar for a small-team browser title",
+      "why": "A shipped, popular mobile/web run-and-gun; realistic bar for what a small-team browser title can match on feel & juice.",
+      "steam_appid": 340750,
+      "sources": [
+        "https://store.steampowered.com/app/340750/"
+      ],
+      "teardown": "teardowns/competitors-visual-bar.md",
+      "frames_dir": "frames/gunslugs-2",
+      "capture_status": "captured: 3 official Steam stills (appid 340750); chunky low-res pixel bar; visual dims grounded; motion pending CAP-2"
+    },
+    {
+      "slug": "huntdown-2020",
+      "title": "Huntdown (2020)",
+      "developer": "Easy Trigger Games",
+      "platform": "PC/consoles/mobile",
+      "year": 2020,
+      "role": "HIT-FEEDBACK & JUICE BENCHMARK",
+      "why": "Exemplary hit-stop, screen shake, and cover-based run-and-gun feedback; strong comparand for the juice dimension.",
+      "steam_appid": 598550,
+      "sources": [
+        "https://store.steampowered.com/app/598550/"
+      ],
+      "teardown": "teardowns/competitors-visual-bar.md",
+      "frames_dir": "frames/huntdown-2020",
+      "capture_status": "captured: 3 official Steam stills (appid 598550); flamethrower/juice bar + health/revive HUD; visual dims grounded; motion pending CAP-2"
+    },
+    {
+      "slug": "web-html5-competitive-set",
+      "title": "itch.io / CrazyGames HTML5 run-and-gun set",
+      "developer": "various",
+      "platform": "web (HTML5)",
+      "year": 2022,
+      "role": "DIRECT WEB COMPETITIVE SET — the titles a browser player would pick INSTEAD of ours",
+      "why": "The actual browser alternatives; matching/exceeding their in-browser fidelity & feel is the literal win condition. KEY: this tier (itch/CrazyGames HTML5 run-and-gun) is typically MINIMALIST/jam-quality — sampled GUN N' RUN is stark mono+pink pixel art. OUR detailed 16-bit Contra EXCEEDS the typical tier on fidelity + content (see capture.json).",
+      "sources": [
+        "https://itch.io/games/html5/tag-run-and-gun",
+        "https://egunan.itch.io/gun-n-run"
+      ],
+      "teardown": null,
+      "frames_dir": "frames/web-html5-competitive-set",
+      "capture_status": "captured: GUN N' RUN (egunan.itch.io) 2 official itch gameplay stills; sampled the itch HTML5 run-and-gun tag (popular). Tier is minimalist/jam-quality — OURS exceeds it on fidelity. Sample, not exhaustive."
+    }
+  ],
+  "open_issues": [
+    {
+      "id": "CAP-1",
+      "opened": "2026-07-09",
+      "resolved": "2026-07-09",
+      "severity": "resolved-for-visual-dims",
+      "title": "Competitor reference frames — VISUAL dims now grounded",
+      "detail": "RESOLVED for the look dimensions: 5 benchmark titles captured as official Steam gameplay stills (15 shots total) via reference/tools/fetch-steam-shots.mjs — Blazing Chrome (609110), Contra: Operation Galuga (2235020), Metal Slug 3 (250180), Huntdown (598550), Gunslugs 2 (340750). Each verified BY LOOKING (caught + fixed a wrong appid: 716010 was 'Inline', not Blazing Chrome — corrected to 609110). teardowns/competitors-visual-bar.md sets the per-dimension bar. Dimensions 1/4/5 (sprite/juice/density) are now pixel-comparable to OUR game.",
+      "repro": "node reference/tools/fetch-steam-shots.mjs --out reference/frames --n 3 609110:blazing-chrome-2019 2235020:contra-operation-galuga-2024 250180:metal-slug-3 598550:huntdown-2020 340750:gunslugs-2",
+      "note": "Still-not-motion: see CAP-2. Not yet captured: Contra Returns (mobile, no Steam) and the web-HTML5 competitive set (itch/CrazyGames, click-to-play)."
+    },
+    {
+      "id": "CAP-2",
+      "opened": "2026-07-09",
+      "substantially_resolved": "2026-07-09",
+      "severity": "low",
+      "title": "Competitor/anchor MOTION — feedback (dim2) + cadence (dim3) grounded; one precise arcade number is the residual",
+      "detail": "Dim-2 (hit-feedback/juice): grounded via official Steam trailers for Blazing Chrome + Huntdown (frames/*/motion/; MOTION section in teardowns/competitors-visual-bar.md). Dim-3 (movement cadence): grounded this cycle — the correct anchor is ARCADE Contra (nostalgic feel), and real arcade Stage-1 gameplay frames are now in the corpus (frames/arcade-contra-1987/stage1/ from archive.org Contraarcade1cc). OUR cadence measured exactly in scale-invariant units (0.573s airtime, ~2.5 sprite-heights apex, fixed-arc, 138px/s) and is arcade-plausible (fixed-arc jump, 8-way aim, brisk run, steady trickle — all observed in the arcade frames). See teardowns/cadence-dim3.md. FINDING: competitor Steam trailers are boss/title montages and CANNOT ground cadence (no clean isolated jump). RESIDUAL (refinement, not blocker): one pixel-precise arcade apex/airtime number — exact frame-step repro is in cadence-dim3.md.",
+      "repro": "look frames/arcade-contra-1987/stage1/*.png; cadence math in teardowns/cadence-dim3.md; precise-number repro (ffmpeg frame-step of Contraarcade1cc) documented there.",
+      "intended": "Optional refinement: pin the single arcade apex/airtime number via native-fps frame-step of a clean isolated jump.",
+      "teardown": "teardowns/cadence-dim3.md",
+      "next": "Optional: complete the arcade frame-step measurement when convenient; OUR cadence is already grounded + arcade-plausible."
+    },
+    {
+      "id": "FID-1",
+      "opened": "2026-07-09",
+      "resolved": "2026-07-09",
+      "severity": "resolved",
+      "title": "One-hit-death — RESOLVED: game adopted the arcade invariant",
+      "detail": "RESOLVED. The parent's earlier 'maxHp=4' note was STALE: PR#5 ('Enforced Contra one-hit-death') already changed the game to ONE-HIT DEATH — game/data/config.js PLAYER now has `lives:3` + `respawnProtect:90` (spawn-in blink, NOT a health bar) and cites this corpus by name: 'Contra HARD INVARIANT (reference/teardowns/arcade-contra-1987.md §1): ONE-HIT DEATH — no health bar.' Verified by code (player.takeHit -> this.dead=true) and by looking (re-captured frames/our-game show LIVES-only HUD, no health pips; bench playerHp is gone). The game matches the arcade anchor. DESIGN NUANCE (still worth tracking, not a defect): the modern competitive set (Operation Galuga, Huntdown) uses health bars — so one-hit-death is a purist bet (arcade authenticity) that diverges from the modern-accessibility norm. Track against player preference; consider an optional health/casual mode if data favors it. UPDATE (ASSESS-6): the recommended hedge SHIPPED — PR#34's title screen offers ARCADE ('one hit = one life — the 1987 way') vs CASUAL mode select, turning the purist-vs-accessibility tension into a player-facing choice. Fully resolved.",
+      "repro": "grep maxHp game/data/config.js (absent); look frames/our-game/state-0300.png (LIVES-only HUD) + frames/our-game-title/title-0.png (ARCADE/CASUAL select).",
+      "owner": "resolved by loop-root-B (PR#5) + PR#34 mode select."
+    },
+    {
+      "id": "FID-4",
+      "opened": "2026-07-09",
+      "resolved": "2026-07-09",
+      "severity": "resolved-for-characters",
+      "title": "Placeholder character sprites — RESOLVED for hero/grunt/turret",
+      "detail": "RESOLVED for characters (ASSESS-2). Real player_idle + grunt + turret sprites landed and are Contra-authentic (hero: red bandana/harness/rifle+muzzle flash; grunt: red-armored soldier). Verified BY LOOKING at 5x zoom crops side-by-side vs Gunslugs 2 — OUR character sprites MEET/EXCEED that indie-tier bar. Remaining sprite work reclassified into FID-4b (run animation) and FID-5 (environment).",
+      "repro": "bench.spritesLoaded=[player_idle,grunt,turret]; look frames/our-game/state-0001.png + 5x crop.",
+      "owner": "characters resolved by assets/root.C + loop-root-B wiring."
+    },
+    {
+      "id": "FID-5",
+      "opened": "2026-07-09",
+      "downgraded": "2026-07-09 (again, ASSESS-4)",
+      "severity": "low",
+      "title": "Environment art — FURTHER CLOSED (real 16px tileset); optional cap-bevel polish only",
+      "detail": "Progression: MEDIUM-HIGH (flat) -> PR#14 procedural richness (ASSESS-3, LOW-MEDIUM) -> PR#21 real 16px AUTHORED TILESET now blitted in drawGround/drawPlatform (ASSESS-4, LOW). Verified BY LOOKING (3x ground zoom, state-0240): dense multi-tone dirt fill with tan/yellow clods (dirt2 kills the repeating-clod motif) — the 'denser fill' ask is RESOLVED; grass-cap has proper blade texture + platforms tiled to match (material coherence). RESIDUAL (optional polish only): a stronger cap highlight-top + dark-under-lip bevel so it reads as raised chunky tiles like Gunslugs-2's cap (currently a textured surface, modest lip). The engine gained the authored-tileset path (teardown TIER-2).",
+      "repro": "look frames/our-game/state-0240.png + 3x ground crop (tiled grass-cap + dense brick/dirt fill) vs frames/gunslugs-2/shot-00.jpg (chunky beveled cap).",
+      "intended": "Optional: stronger cap bevel (highlight-top + dark-under-lip) for extra 'chunk'. Core FID-5 gap is closed.",
+      "teardown": "teardowns/environment-tileset-bar.md",
+      "owner": "assets/render (root.C/root.B) — optional polish."
+    },
+    {
+      "id": "FID-4b",
+      "opened": "2026-07-09",
+      "resolved": "2026-07-09",
+      "severity": "resolved",
+      "title": "player_run animation — RESOLVED (real 4-beat run cycle wired)",
+      "detail": "RESOLVED (ASSESS-5). PR#24 produced a real native 4-beat run cycle (/animate-with-skeleton) and wired it into drawPlayer. Verified: fresh bench spritesLoaded now includes 'player_run' and spritesMissing is [] (ALL sprites load); a live hold-Right capture shows the hero animating distinct stride poses, not a static idle. All character-art gaps (FID-4 + FID-4b) are now closed; sprite score 3.5->4.0.",
+      "repro": "fresh bench: spritesMissing=[] incl. player_run; look frames/our-game-run/ (live run stride poses).",
+      "owner": "resolved by assets (root.C, PR#24) + render wiring."
+    },
+    {
+      "id": "BOSS-1",
+      "opened": "2026-07-09",
+      "downgraded": "2026-07-10",
+      "severity": "low-stretch",
+      "title": "Boss spectacle — SUBSTANTIALLY ADDRESSED (now two-phase enrage); multi-part set-piece is the stretch residual",
+      "detail": "Progression: ASSESS-5 delivered the arcade §4 fixed-boss climax (Sentinel HP bar + weak-point core + telegraphed prone-duckable volleys). ASSESS-11 verified the PHASE-2 ENRAGE: at hp<=36 (enrageAt 0.4) the HP bar turns red 'SENTINEL — ENRAGED' + ENRAGED! callout + denser RED chest-height volley (#ff5a6e, fireEvery 82->46, still prone-fair) + a more detailed bipedal red-accented mech. So the boss now has a real two-phase escalation + red-alert framing — substantially closed. RESIDUAL (STRETCH, not required at the confirmed indie tier): a screen-filling multi-part set-piece like Blazing Chrome's beast.",
+      "repro": "look frames/our-game-boss-enrage/enraged-volley.png (red HP bar + dense red volley + detailed mech) vs frames/blazing-chrome-2019/motion/boss-composition-~65s.png.",
+      "owner": "game/art (stretch)."
+    },
+    {
+      "id": "BOSS-2",
+      "opened": "2026-07-10",
+      "severity": "low",
+      "title": "ENRAGED and BOSS callouts share a center screen slot — latent overlap ('ENBOSSD!')",
+      "detail": "Observed (ASSESS-11): both callouts draw at the SAME center position — parent-confirmed at render.js:909 and :916 (both VIEW_W/2, VIEW_H/2-30). In NATURAL play the bossCallout fades before HP reaches the enrage threshold, so they do NOT normally co-occur (parent-confirmed) — my overlap was a forced instant-trigger capture artifact. LATENT RISK only: a fast kill to 40% before the BOSS callout times out would collide. LOW. FIX (defensive): stagger the two callouts' Y positions or suppress the BOSS callout while ENRAGED.",
+      "repro": "trigger enrage while the BOSS intro callout is still showing (instant-trigger); render.js:909/916 share the center slot.",
+      "owner": "game render (root.B) — optional defensive de-conflict."
+    },
+    {
+      "id": "BOSS-3",
+      "opened": "2026-07-10",
+      "root_cause_corrected": "2026-07-10",
+      "resolved": "2026-07-10",
+      "severity": "resolved",
+      "title": "Reddish box around the enraged boss — RESOLVED (enrage glow now masked to the sprite)",
+      "detail": "RESOLVED (ASSESS-17). History: filed ASSESS-12 (reddish rectangular box around the enraged mech breaking its silhouette); root-caused ASSESS-13 to render.js:493 — the phase-2 enrage heat-glow was ctx.fillRect(dx,dy,dw,dh) with 'lighter' compositing, additively tinting the ENTIRE sprite bounding rectangle (not masked to alpha), so the transparent margins got a red wash = the box (same latent pattern at :501 hit-flash). root.B fixed it (PR#86) by masking the enrage glow (and boss hit-flash) to the sprite. VERIFIED BY LOOKING (frames/our-game-boss-enrage/enraged-fixed.png, 5x zoom): the mech now sits cleanly on the night-jungle — NO bounding-box matte; the red glow is only on the mech's opaque pixels; clean silhouette. The exact fix I specified (source-atop/clip).",
+      "repro": "trigger enrage + look: frames/our-game-boss-enrage/enraged-fixed.png (no box) vs enraged-sprite-distinct.png (pre-fix box).",
+      "owner": "resolved by render (root.B, PR#86)."
+    },
+    {
+      "id": "TOUCH-1",
+      "opened": "2026-07-10",
+      "resolved": "2026-07-10",
+      "severity": "resolved",
+      "title": "Touch restart after GAME OVER — RESOLVED (touch press restarts + 'TAP TO RESTART' prompt)",
+      "detail": "RESOLVED (ASSESS-16). Filed ASSESS-15 (touch player stranded after death). root.B fixed it (PR#82): touch.js on status 'gameover'/'cleared' → world.reset() on a touch press, and render.js:1051 now shows 'TAP TO RESTART' on touch (was 'press R'). VERIFIED by running: forced game-over on an emulated phone, dispatched a touch press → status flipped gameover→playing, lives 0→3, player respawned at x=40 (FACT); and BY LOOKING the game-over screen now reads 'GAME OVER — TAP TO RESTART' (frames/our-game-mobile/mobile-gameover-fixed.png). The game is now FULLY mobile-browser-playable (the game-over→restart loop works on touch).",
+      "repro": "emulate a touch phone; die -> GAME OVER 'TAP TO RESTART' -> a touch press restarts (status->playing, lives->3). frames/our-game-mobile/mobile-gameover-fixed.png.",
+      "owner": "resolved by game (root.B, PR#82)."
+    },
+    {
+      "id": "TOUCH-2",
+      "opened": "2026-07-10",
+      "severity": "low",
+      "title": "Keyboard help text (+ 'TOUCH' label) shown on touch devices (in-canvas prompts now adapt)",
+      "detail": "Cosmetic. PARTIAL improvement: the in-canvas START/RESTART prompts now adapt to touch ('TAP TO START' / 'TAP TO RESTART', render.js:1033/1051). Residual: the bottom keyboard help LINE ('A/D move · aim · prone · Z/Space jump · X fire · R restart') and a 'TOUCH' label may still render on touch — redundant on a phone. FIX: hide the keyboard help line when the touch overlay is active.",
+      "repro": "emulate a touch phone (hasTouch) + load; frames/our-game-touch/touch-play.png (keyboard help line under the overlay).",
+      "owner": "game (root.B)."
+    },
+    {
+      "id": "HUD-1",
+      "opened": "2026-07-09",
+      "severity": "low",
+      "title": "Weapon indicator is text-only vs competitors' icon/falcon slots",
+      "detail": "OUR HUD shows the weapon as text (RIFLE/SPREAD). Every competitor uses a weapon-slot icon; Operation Galuga uses the classic M/S/F falcon icons — a free nostalgia signal. Cheap fidelity win.",
+      "repro": "look frames/our-game/state-0001.png (text 'RIFLE') vs frames/contra-operation-galuga-2024/shot-00.jpg (falcon M/S/F slots).",
+      "owner": "game HUD/render."
+    },
+    {
+      "id": "PRONE-1",
+      "opened": "2026-07-09",
+      "resolved": "2026-07-09",
+      "severity": "resolved",
+      "title": "Prone stance — RESOLVED (clean capture verifies arcade §2 duck)",
+      "detail": "RESOLVED (ASSESS-5 addendum). Clean prone capture (live pptr, hold-Down at spawn before contact, canvas via toDataURL): the hero ducks flat with the gun dropped LOW + muzzle flash — matches arcade §2 ('duck under over-fire, hit low targets'). Corroborated by the game's selftest: boss.volleyProneDuckable=PASS + boss.volleyHitsStanding=PASS (prone genuinely ducks the chest-height volley). Evidence: frames/our-game-prone/prone-fire.png.",
+      "repro": "frames/our-game-prone/prone-fire.png; selftest boss.volleyProneDuckable=PASS.",
+      "owner": "resolved by reference (this loop)."
+    },
+    {
+      "id": "VERIFY-boss-winpath",
+      "opened": "2026-07-09",
+      "resolved": "2026-07-09",
+      "severity": "resolved",
+      "title": "Boss win-path + run-cycle quality — CONFIRMED (ASSESS-5 assumptions grounded)",
+      "detail": "ASSESS-5 left two premises unconfirmed; grounded this cycle by RUNNING the deliverable. (1) Boss win-path: ?selftest=1 -> 32/32 pass incl victory.bossDefeatClears, boss.beatableByProne, boss.volleyProneDuckable, boss.volleyHitsStanding, victory.notByGoalWhileBossAlive — the boss is beatable and defeat clears the stage (real behavior test, not a mock). (2) player_run cleanliness: clean 5x canvas zoom shows crisp palette-locked stride, no blur (frames/our-game-run/run-*.png).",
+      "repro": "node <puppeteer> load ?selftest=1 -> window.__selftest (32/32); look frames/our-game-run/run-*.png.",
+      "owner": "verified by reference (this loop)."
+    },
+    {
+      "id": "FIDHARNESS-1",
+      "opened": "2026-07-09",
+      "resolved": "2026-07-10",
+      "severity": "resolved",
+      "title": "Playtest fidelity sheets — RESOLVED (boss + firefight pairs now sample matched beats)",
+      "detail": "RESOLVED (ASSESS-10). History: flagged the harness paired non-comparable beats (calm/empty OURS vs peak/intro REF), inflating CV deltas; corrected a mild 'resolved' overclaim when only the boss pair was fixed. NOW both are fixed: boss pair samples mid-fight (PR#48; +249->+105), and the FIREFIGHT pairs now sample a peak beat (PR#60/5febed6, oursLabel 'firefight peak beat (live sim)', showcase @frame300: 4 enemies+explosion, gated) — CV color deltas narrowed +545->+376 and +837->+668 as predicted. Verified this cycle via metrics.json. Residual delta maps to the confirmed-stretch pinnacle explosion/particle density (a pre-filter signal, not a defect).",
+      "repro": "metrics.json firefight pairs now oursLabel 'firefight peak beat (live sim)', delta colors +376/+668 (was +545/+837).",
+      "owner": "resolved by playtest loop (root.D) acting on ASSESS-9's matched-frame + verdict."
+    },
+    {
+      "id": "WEAP-1",
+      "opened": "2026-07-09",
+      "resolved": "2026-07-10",
+      "severity": "resolved",
+      "title": "Fire (F, corkscrew) — RESOLVED: arcade M/S/L/F weapon lineage now COMPLETE",
+      "detail": "RESOLVED (ASSESS-10). The Fire (F) gun landed (PR#59-era). Verified BY LOOKING (frames/our-game-newcontent/fire-weapon.png): HUD 'FIRE'; fires orange CORKSCREW fireball projectiles in a spiral — matches arcade §3 Fire ('rounds in a corkscrew pattern'), distinct from Rifle/Spread/Machine/Laser. The full arcade weapon lineage M/S/L/F is now present (5 guns total incl. default Rifle). NOTE: projectile glow/tracer polish vs the competitor bar remains a low weapon-juice headroom item (carried).",
+      "repro": "look frames/our-game-newcontent/fire-weapon.png (corkscrew spiral) + config.js WEAPONS.fire.",
+      "owner": "resolved by game/assets."
+    },
+    {
+      "id": "LEAP-1",
+      "opened": "2026-07-09",
+      "severity": "low",
+      "title": "Airborne leap is a forward-bound, not the arcade tucked somersault",
+      "detail": "PR#35's airborne leap sprite is clean, distinct, palette-locked (completes the sprite set idle/run/leap/prone; verified ASSESS-6). Minor divergence from the arcade anchor: the 1987 jump is a TUCKED SOMERSAULT (§2 signature silhouette); OUR leap is a forward-bound (more Metal-Slug/Blazing-Chrome). Defensible modern style, not a defect — noted for anchor fidelity. Optional: a somersault/tuck variant would read more arcade-authentic.",
+      "repro": "look frames/our-game-jump/leap-rising.png (5x) vs arcade §2 somersault (teardowns/arcade-contra-1987.md).",
+      "owner": "assets/game (optional stylistic)."
+    }
+  ]
+}

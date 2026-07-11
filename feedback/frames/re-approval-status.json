@@ -1,0 +1,40 @@
+{
+  "when": "2026-07-10T12:04:36.607Z",
+  "ready": true,
+  "inBuild": 4,
+  "verdict": "READY for creator re-review (all 4 addressed in-build; needs a bound APPROVE)",
+  "defects": [
+    {
+      "n": 1,
+      "title": "Environment/theme: bridge over water + multi-height traversal",
+      "owner": "art assets/ + engine game/",
+      "commit": "6c95802 feedback: re-ground #1 visually on the churned build — re-captured + looked at the bridge-water set-piece on the CURRENT build (render.js +80 since fix); renders cleanly, NO regression, re-review reference frame refreshed. verify-all green 6/6, gate HELD-READY, still blocked on human re-review",
+      "inBuild": true,
+      "status": "in-build"
+    },
+    {
+      "n": 2,
+      "title": "Hero firing origin → the hands (was waist)",
+      "owner": "engine game/ + art",
+      "commit": "15bd63e merge PR#247 from root.E: Processed the creator's round-2 RE-REJECT (firing-origin fix",
+      "inBuild": true,
+      "status": "in-build"
+    },
+    {
+      "n": 3,
+      "title": "Tank/turret firing origin → the visible barrel",
+      "owner": "engine + art",
+      "commit": "fc7b1a1 creator ROUND 2: still REJECT — CR-2/CR-3 fixes were cosmetic; root cause is TWO weapons per entity (baked sprite gun + procedural aiming gun) on hero AND purple turret",
+      "inBuild": true,
+      "status": "in-build"
+    },
+    {
+      "n": 4,
+      "title": "Boss movement (static → real movement)",
+      "owner": "engine game/",
+      "commit": null,
+      "inBuild": true,
+      "status": "in-build"
+    }
+  ]
+}

@@ -1,0 +1,332 @@
+// Boot + main loop. Live mode uses a fixed-timestep accumulator driven by
+// rAF; headless mode (?headless=1&frames=N) steps the sim synchronously with a
+// scripted input timeline and renders one deterministic frame for capture.
+import { SIM } from '../data/config.js';
+import { LEVEL1 } from '../data/level1.js';
+import { LEVEL2 } from '../data/level2.js';
+import { ASSET_MANIFEST } from '../data/assets.js';
+import { World } from './world.js';
+import { KeyboardInput, ScriptedInput, CombinedInput } from './input.js';
+import { AssetStore } from './assets.js';
+import { render } from './render.js';
+import { runSelfTest } from './selftest.js';
+import { AudioKit } from './audio.js';
+import { mountTouchControls } from './touch.js';
+import { mountFeedback } from './feedback.js';
+
+const STEP = 1 / SIM.STEP_HZ;
+
+function setupCanvas() {
+  const canvas = document.getElementById('game');
+  canvas.width = SIM.VIEW_W;
+  canvas.height = SIM.VIEW_H;
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  return { canvas, ctx };
+}
+
+// A canned "showcase" run for headless verification: sprint right, fire the
+// whole time, pulse jumps, aim up briefly, and swap weapons once.
+function showcaseTimeline() {
+  const tl = [{ at: 0, set: { right: true, fire: true } }];
+  for (let j = 40; j < 900; j += 70) {
+    tl.push({ at: j, set: { jump: true } });
+    tl.push({ at: j + 4, set: { jump: false } });
+  }
+  tl.push({ at: 150, set: { up: true } });
+  tl.push({ at: 185, set: { up: false } });
+  // Spread is acquired by grabbing the on-path pickup (~x=210), not by swapping.
+  return tl;
+}
+
+// Prone demo: run right briefly, halt, then hold Down (go prone) while firing.
+function proneTimeline() {
+  return [
+    { at: 0,  set: { right: true } },
+    { at: 40, set: { right: false } },   // stop so Down triggers prone (dir === 0)
+    { at: 46, set: { down: true, fire: true } },
+  ];
+}
+
+function timelineFor(name) {
+  return name === 'prone' ? proneTimeline() : showcaseTimeline();
+}
+
+function main() {
+  window.__booted = true; // signals the index.html boot guard that modules loaded
+  var bh = document.getElementById('boot-help'); // hide the "serve me" card if it showed on a slow load
+  if (bh) bh.hidden = true;
+  const params = new URLSearchParams(location.search);
+  const headless = params.get('headless') === '1';
+  const selftest = params.get('selftest') === '1';
+  const seed = parseInt(params.get('seed') || '1234', 10);
+
+  if (selftest) { publishSelfTest(); return; }
+
+  const { ctx } = setupCanvas();
+  const assets = new AssetStore();
+  // Stage select: default is Stage 1. `?level=2` boots the Stage-2 "Cascade Base"
+  // (chopper boss) directly — a de-risking hook (content/stage2/WIRE.md) so the new
+  // stage + boss are live-verifiable NOW, ahead of the Stage-1→2 auto-transition.
+  // The gate harnesses never pass ?level=2, so the default build stays byte-identical.
+  const STAGES = [LEVEL1, LEVEL2];
+  let stageIndex = params.get('level') === '2' ? 1 : 0;
+  const world = new World(STAGES[stageIndex], seed, params.get('mode') || undefined);
+  window.__game = world;
+  window.__assets = assets; // exposed so a harness can confirm real art loaded
+
+  // Player-INITIATED Stage-1→Stage-2 transition (content/stage2/WIRE.md §5, made
+  // gate-safe): clearing a stage leaves status='cleared' (the playthrough gate is
+  // unaffected — it never presses continue); the player then chooses to advance via
+  // N / the touch CONTINUE tap. loadStage() keeps the SAME world object so all the
+  // live-loop closures (feedback/audio/HI-score) stay valid. Score/lives carry over.
+  world.hasNextStage = stageIndex < STAGES.length - 1;
+  world.requestNextStage = () => {
+    if (world.status !== 'cleared' || stageIndex >= STAGES.length - 1) return;
+    stageIndex++;
+    world.loadStage(STAGES[stageIndex], { score: world.score, lives: world.lives });
+    world.hasNextStage = stageIndex < STAGES.length - 1;
+  };
+
+  assets.load(ASSET_MANIFEST).then(() => {
+    if (headless) runHeadless(ctx, world, assets, params);
+    else runLive(ctx, world, assets);
+  });
+}
+
+function publishSelfTest() {
+  const report = runSelfTest();
+  window.__selftest = report;
+  const flag = document.createElement('div');
+  flag.id = 'selftest-done';
+  flag.textContent = JSON.stringify(report);
+  document.body.appendChild(flag);
+}
+
+function runHeadless(ctx, world, assets, params) {
+  const frames = parseInt(params.get('frames') || '200', 10);
+  if (params.get('scenario') === 'boss') {
+    // Boss-arena demo: drop the player at the barrier vs the boss, prone + fire.
+    // Verifies/visualizes the win path without needing a bot to survive the level.
+    world.enemies = world.enemies.filter((e) => e.kind === 'boss');
+    world.boss = world.enemies[0];
+    world.player.setWeapon(params.get('weapon') || 'spread'); // QA: test any weapon vs boss
+    world.player.x = 2285; world.player.y = 210;
+    world.camera.follow(world.player, true);
+    const bossInput = new ScriptedInput([{ at: 0, set: { down: true, fire: true } }]);
+    for (let i = 0; i < frames && world.status === 'playing'; i++) world.step(bossInput.poll());
+  } else if (params.get('scenario') === 'bosskill') {
+    // Boss-DEATH finale demo (EXPL-1): make the boss actually DIE so its multi-blast
+    // finale FX are witnessable/capturable — the normal showcase can't out-damage
+    // 90 HP in the frame budget, so the climax was never seen end-to-end. The demo
+    // player is invincible (iframe held) + laser so the fight resolves determin-
+    // istically; we run until the boss dies, then hold ~6 frames so the explosion
+    // cluster is on-screen (still inside the death hit-stop freeze → FX at peak).
+    world.enemies = world.enemies.filter((e) => e.kind === 'boss');
+    world.boss = world.enemies[0];
+    world.player.setWeapon('laser'); // strong + piercing → kills within the budget
+    world.player.x = 2285; world.player.y = 210;
+    world.camera.follow(world.player, true);
+    const bossInput = new ScriptedInput([{ at: 0, set: { down: true, fire: true } }]);
+    const maxF = Math.max(frames, 1500);
+    let held = 0;
+    for (let i = 0; i < maxF; i++) {
+      world.player.iframe = 999; // demo-only invincibility so the fight always resolves
+      world.step(bossInput.poll());
+      if (world.boss.dead) { if (++held >= 6) break; } // hold past death so the FX render
+    }
+  } else {
+    // Showcase demo (fidelity firefight capture). Keep the demo player ALIVE so it
+    // pushes into a DENSE cluster and the captured beat is reliably BUSY — a
+    // death+respawn-near-spawn demo makes the fixed-frame fidelity capture fragile
+    // to tiny combat-timing shifts. Invincibility is a capture-only concern; the
+    // real arcade one-hit death is unaffected (live play never runs this branch).
+    const input = new ScriptedInput(timelineFor(params.get('script')));
+    for (let i = 0; i < frames; i++) { world.player.iframe = 999; world.step(input.poll()); }
+  }
+  render(ctx, world, assets);
+
+  // Publish a machine-readable summary for the verification harness.
+  window.__bench = {
+    frames,
+    mode: world.modeKey,
+    sfxCount: world.sfxEvents.length, // cumulative SFX events emitted this run
+    playerShield: world.player.shield,
+    playerX: Math.round(world.player.x),
+    playerDead: world.player.dead,
+    playerProne: world.player.prone,
+    playerH: world.player.h,
+    weapon: world.player.weaponKey,
+    lives: world.lives,
+    pickupsLeft: world.pickups.length,
+    enemiesAlive: world.enemies.length,
+    enemiesStart: LEVEL1.spawns.length,
+    onScreenEnemies: world.onScreenEnemies,
+    peakOnScreen: world.peakOnScreen, // max concurrent on-screen enemies this run (FID-3)
+    bullets: world.bullets.length,
+    particles: world.particles.length,
+    fx: world.fx.length, // live explosion strips this frame
+    fxSpawned: world.fxSpawned, // cumulative explosions blitted over the run
+    score: world.score,
+    status: world.status,
+    bossDefeated: !!(world.boss && world.boss.dead), // explicit finale signal (scenario=bosskill)
+    trauma: +world.feel.trauma.toFixed(3),
+    hitStop: world.feel.hitStop,
+    spritesLoaded: Object.keys(assets.images),
+    spritesMissing: assets.missing,
+  };
+  const flag = document.createElement('div');
+  flag.id = 'headless-done';
+  flag.textContent = JSON.stringify(window.__bench);
+  document.body.appendChild(flag);
+}
+
+const START_KEYS = ['Space', 'KeyZ', 'KeyX', 'Enter'];
+
+function runLive(ctx, world, assets) {
+  const audio = new AudioKit();
+  window.__audio = audio;
+  world.toTitle(); // arcade "insert coin": boot onto a title/start screen
+  // Keyboard (desktop) + on-screen touch (phones/Android) feed one merged input,
+  // so both work. Touch mounts only on touch devices, or forced via ?touch=1.
+  const keyboard = new KeyboardInput(window);
+  const forceTouch = new URLSearchParams(location.search).get('touch') === '1';
+  const touch = mountTouchControls(world, audio, { force: forceTouch });
+  const input = new CombinedInput([keyboard, touch]);
+  window.__touch = touch; // exposed so a harness can drive/verify the overlay
+
+  // Creator-approval feedback panel (feedback/SPEC.md). Reachable from any state
+  // via F; its verdict persists as the machine-readable release gate. Both API
+  // handles the shipped QA gate reads are set (window.__approval / world.approval).
+  const feedback = mountFeedback(world, { buildId: window.__buildId });
+  window.__feedback = feedback;   // rich controller alias
+  window.__approval = feedback;   // REQUIRED — the name the QA gate reads
+  world.approval = feedback;      // so window.__game.approval is truthy too
+
+  window.addEventListener('keydown', (e) => {
+    // Feedback panel owns the keyboard first: F toggles it from anywhere, and
+    // while open it swallows the game keys (R/1/2/M/start) so they don't leak.
+    if (e.code === 'KeyF') { feedback.toggle(); e.preventDefault(); return; }
+    if (feedback.isOpen()) { if (e.code === 'Escape') feedback.close(); return; }
+    audio.resume(); // browsers gate audio until the first user gesture
+    const onTitle = world.status === 'title';
+    if (e.code === 'Digit1') world.setMode('arcade'); // one-hit death (default)
+    else if (e.code === 'Digit2') world.setMode('casual');  // shield + extra lives
+    else if (e.code === 'KeyM') audio.toggleMute();
+    else if (e.code === 'KeyR') world.reset();          // R always → fresh playing
+    else if (e.code === 'KeyP' && world.status === 'playing') world.paused = !world.paused; // pause/resume
+    else if (e.code === 'KeyN' && world.status === 'cleared' && world.hasNextStage) world.requestNextStage(); // continue to next stage
+    else if (onTitle && START_KEYS.includes(e.code)) world.start();
+  });
+
+  // Persisted HI-SCORE — the arcade "beat your best" hook (attract screen + end
+  // screen). LIVE-ONLY: localStorage, never read/written by the sim, so
+  // determinism + headless are untouched. Exposed on the world for the renderer.
+  const HS_KEY = 'contra:highscore:v1';
+  const loadHigh = () => { try { return parseInt(localStorage.getItem(HS_KEY), 10) || 0; } catch (_) { return 0; } };
+  const saveHigh = (v) => { try { localStorage.setItem(HS_KEY, String(v)); } catch (_) {} };
+  let high = loadHigh();
+  world.highScore = high;
+  world.newHigh = false;
+  let prevStatus = world.status;
+
+  let last = performance.now();
+  let acc = 0;
+  let fps = 60, fpsT = 0, fpsN = 0;
+
+  function frame(now) {
+    let dt = (now - last) / 1000;
+    last = now;
+    if (dt > 0.25) dt = 0.25; // tab-switch guard
+    if (feedback.isOpen()) {
+      acc = 0; // panel open → freeze the whole scene while the creator types
+      world.attract = false;
+    } else if (world.status === 'title') {
+      // ATTRACT MODE (arcade): a self-playing bot demos the run-and-gun behind the
+      // title overlay so the screen is ALIVE, not a dead frozen frame. Loops the
+      // opening before the chasm/boss. SFX drained-but-silent (calm title); music
+      // stays off (scene-gated to 'playing'). LIVE-only; sim determinism untouched.
+      world.attract = true;
+      acc += dt;
+      let steps = 0;
+      while (acc >= STEP && steps < SIM.MAX_FRAME_STEPS) {
+        const p = world.player;
+        p.iframe = 999; // demo player never dies → a clean continuous loop
+        const aheadX = p.x + p.w + 10, footY = p.y + p.h + 4;
+        const groundAhead = world.solids.some((s) => s.kind === 'ground' && aheadX >= s.x && aheadX <= s.x + s.w && footY >= s.y && footY <= s.y + s.h + 4);
+        const jump = p.grounded && !groundAhead;
+        world.step({ left: false, right: true, up: false, down: false, jump, fire: true, swap: false, jumpPressed: jump, swapPressed: false });
+        if (world.player.x > 2000) world.toTitle(); // loop the demo before the chasm/boss
+        acc -= STEP; steps++;
+      }
+      if (acc > STEP * SIM.MAX_FRAME_STEPS) acc = 0;
+      world.drainSfx(); // discard demo SFX — keep the title quiet
+    } else if (world.paused) {
+      // PAUSED (P / touch Pause): freeze the sim but keep rendering (frozen frame +
+      // PAUSED overlay). Drop accumulated time so resume doesn't burst-catch-up, and
+      // poll input so releasing keys mid-pause doesn't leave a control stuck held.
+      acc = 0;
+      input.poll();
+    } else {
+      world.attract = false;
+      acc += dt;
+      let steps = 0;
+      while (acc >= STEP && steps < SIM.MAX_FRAME_STEPS) {
+        world.step(input.poll());
+        acc -= STEP;
+        steps++;
+      }
+      if (acc > STEP * SIM.MAX_FRAME_STEPS) acc = 0;
+      // Play any SFX the sim queued this frame (sim stays silent + deterministic).
+      for (const ev of world.drainSfx()) audio.play(ev);
+      audio.duck(world.feel.hitStop > 0); // dip music while the sim is hit-stop-frozen
+      audio.setSection(world.bossActive && world.boss && !world.boss.dead ? 'boss' : 'stage'); // hard-cut to the boss theme in the arena
+      audio.setIntensity(!!(world.boss && world.boss.enraged)); // phase-2 ENRAGE: hotter mix + double-time hats
+    }
+
+    // HI-SCORE: best-so-far ticks up live once you pass it; on the transition
+    // INTO a terminal state, lock + persist it and flag a fresh record for the
+    // end screen. Resets the flag when a new run begins. On the TITLE (attract
+    // demo) show the persisted best, NOT the bot's demo score.
+    world.highScore = world.status === 'playing' ? Math.max(high, world.score) : high;
+    if ((world.status === 'gameover' || world.status === 'cleared') && prevStatus === 'playing') {
+      world.newHigh = world.score > high;
+      high = world.highScore;
+      saveHigh(high);
+    } else if (world.status === 'playing' && prevStatus !== 'playing') {
+      world.newHigh = false;
+    }
+    prevStatus = world.status;
+
+    render(ctx, world, assets);
+
+    // Scene-gate the BGM: play only while a run is live; fade out under title /
+    // game-over / victory so the 'gameover'/'clear' sting reads clean. Runs every
+    // frame (outside the play branch) so it also covers the frozen title screen.
+    audio.setPlaying(world.status === 'playing');
+
+    // fps meter — also PUBLISHED on the world so a perf/QA harness can read live
+    // telemetry (window.__game.__fps), not just the on-screen number. Entity
+    // counts ride along for perf grounding (draw-load without re-reading arrays).
+    fpsN++; fpsT += dt;
+    if (fpsT >= 0.5) { fps = Math.round(fpsN / fpsT); fpsN = 0; fpsT = 0; }
+    world.__fps = fps;
+    world.__perf = { fps, enemies: world.enemies.length, bullets: world.bullets.length, particles: world.particles.length, fx: world.fx.length };
+    drawFps(ctx, fps);
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+function drawFps(ctx, fps) {
+  ctx.save();
+  ctx.font = '7px monospace';
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'bottom';
+  ctx.fillText(fps + 'fps', 4, SIM.VIEW_H - 2);
+  ctx.restore();
+}
+
+main();

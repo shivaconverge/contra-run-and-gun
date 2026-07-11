@@ -1,0 +1,53 @@
+[
+  {
+    "verdict": "reject",
+    "rating": 3,
+    "notes": "backgroung looks very simple.. compared to other games... also theme of this level is not clear... original one had bridge and water..and you can move at mutiple levles(heights).... also charector firing looks to be firing from a secodary gun wich is at it waist but not it hands... similarly tanks looks like have secondary turret not the one in sprite and firing from it... also boos has no movement",
+    "context": {
+      "buildId": "dev",
+      "status": "playing",
+      "mode": "arcade",
+      "score": 2150,
+      "lives": 0
+    },
+    "ts": 1783645535565
+  },
+  {
+    "verdict": "reject",
+    "rating": 3,
+    "notes": "backgroung looks very simple.. compared to other games... also theme of this level is not clear... original one had bridge and water..and you can move at mutiple levles(heights).... also charector firing looks to be firing from a secodary gun wich is at it waist but not it hands... similarly tanks looks like have secondary turret not the one in sprite and firing from it... also boos has no movement",
+    "context": {
+      "buildId": "dev",
+      "status": "playing",
+      "mode": "arcade",
+      "score": 2150,
+      "lives": 0
+    },
+    "ts": 1783645537992
+  },
+  {
+    "verdict": "reject",
+    "rating": null,
+    "notes": "backgroung looks very simple.. compared to other games... also theme of this level is not clear... original one had bridge and water..and you can move at mutiple levles(heights).... also charector firing looks to be firing from a secodary gun wich is at it waist but not it hands... similarly tanks looks like have secondary turret not the one in sprite and firing from it... also boos has no movement",
+    "context": {
+      "buildId": "dev",
+      "status": "cleared",
+      "mode": "casual",
+      "score": 6200,
+      "lives": 0
+    },
+    "ts": 1783652411794
+  },
+  {
+    "verdict": "reject",
+    "rating": 3,
+    "notes": "ROUND 2 \u2014 turret STILL wrong. The CR-2/CR-3 fixes were cosmetic (code-only). Root cause on BOTH the main-character sprite AND the purple cannon/turret (fires straight): each has its OWN weapon baked into the sprite AND a procedural drawn-over weapon that moves/aims -> TWO guns visible. REMEDY (needs new sprites AND the build showing the right sprite/frame + firing from its real muzzle, done together): regenerate the hero and turret sprites with NO baked-in weapon (or proper directional/rotating art), and have the build show the matching sprite and spawn the shot from that sprite's muzzle -> exactly ONE weapon per entity, drawn where it fires. Not another code-offset nudge.",
+    "context": {
+      "buildId": "dev",
+      "status": "playing",
+      "mode": "arcade",
+      "round": 2
+    },
+    "ts": 1783682770327
+  }
+]

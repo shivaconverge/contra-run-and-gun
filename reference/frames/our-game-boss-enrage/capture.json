@@ -1,0 +1,12 @@
+{
+  "subject": "our-game Stage-1 boss PHASE-2 ENRAGE (BOSS-1) + distinct enraged sprite",
+  "build": "a92423b",
+  "source": "live pptr; player teleported to boss arena + boss.hp set below enrageAt(0.4) + boss.enraged=true via real game state; camera lerped to arena; player iframe held to observe",
+  "note": "Enrage spectacle verified: red HP bar 'SENTINEL — ENRAGED' + dense RED chest-height volley (#ff5a6e, prone-fair) + a DISTINCT enraged sprite (boss_enraged): a scorched copper bipedal mech w/ glowing pink/red core + flaring belly-cannon + horned head — a real visual transformation from the grey base Sentinel. DEFECT (BOSS-3): the enraged sprite renders inside a hard-edged DARK RECTANGULAR MATTE box (non-transparent background) that breaks its silhouette against the night-jungle. Also BOSS-2 (ENRAGED/BOSS callout share a center slot; overlap only if concurrent — bossCallout normally fades first per parent).",
+  "frames": [
+    {"file": "enraged-volley.png", "shows": "red HP bar + dense red volley (base-sprite red-tint era)"},
+    {"file": "enraged-volley-2.png", "shows": "enrage sustained; callout overlap (BOSS-2)"},
+    {"file": "enraged-sprite-distinct.png", "shows": "BEFORE fix: the distinct boss_enraged sprite with the reddish rectangular matte box around it (BOSS-3)"},
+    {"file": "enraged-fixed.png", "shows": "AFTER fix (PR#86): enrage heat-glow now MASKED to the mech silhouette — no bounding-box matte, clean silhouette on the night-jungle. BOSS-3 RESOLVED (verified by looking)."}
+  ]
+}

@@ -1,0 +1,21 @@
+import { createRequire } from 'node:module';
+import { writeFile, mkdir } from 'node:fs/promises';
+import { execSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import { Buffer } from 'node:buffer';
+import path from 'node:path'; import os from 'node:os';
+const require = createRequire(import.meta.url);
+const sleep=(ms)=>new Promise(r=>setTimeout(r,ms));
+function findChrome(){const c=['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'];const cache=path.join(os.homedir(),'.cache','puppeteer');for(const k of ['chrome-headless-shell','chrome']){const b=path.join(cache,k);if(existsSync(b)){try{const h=execSync(`ls ${b}/*/*/${k}* 2>/dev/null|head -1`).toString().trim();if(h)c.push(h);}catch{}}}for(const x of c)if(existsSync(x))return x;throw new Error('no chrome');}
+const pptr=require('puppeteer-core');
+const out=process.argv[2]; await mkdir(out,{recursive:true});
+const browser=await pptr.launch({executablePath:findChrome(),headless:'new',args:['--no-sandbox','--disable-gpu'],defaultViewport:{width:640,height:400}});
+const page=await browser.newPage();
+await page.goto('http://localhost:8137/index.html?headless=1&scenario=bosskill&seed=1234',{waitUntil:'networkidle2',timeout:30000});
+await page.waitForSelector('#headless-done',{timeout:20000}).catch(()=>{});
+await sleep(200);
+const bench=await page.evaluate(()=>window.__bench||null);
+const dataUrl=await page.evaluate(()=>{const c=document.getElementById('game');return c?c.toDataURL('image/png'):null;});
+if(dataUrl) await writeFile(path.join(out,'bosskill-finale.png'),Buffer.from(dataUrl.replace(/^data:image\/png;base64,/,''),'base64'));
+console.log('bench:',JSON.stringify({bossDefeated:bench&&bench.bossDefeated,status:bench&&bench.status,fx:bench&&bench.fx,fxSpawned:bench&&bench.fxSpawned,particles:bench&&bench.particles,trauma:bench&&bench.trauma,hitStop:bench&&bench.hitStop,score:bench&&bench.score}));
+await browser.close();

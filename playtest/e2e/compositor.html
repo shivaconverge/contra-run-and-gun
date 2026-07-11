@@ -1,0 +1,10 @@
+<!doctype html>
+<html>
+  <head><meta charset="utf-8"><title>fidelity compositor</title></head>
+  <body>
+    <!-- Blank same-origin canvas host. fidelity.mjs injects all compositing +
+         measurement logic via page.evaluate; images load same-origin so the
+         canvas is never tainted and getImageData/toDataURL both work. -->
+    <canvas id="stage"></canvas>
+  </body>
+</html>

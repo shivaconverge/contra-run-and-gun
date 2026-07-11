@@ -1,0 +1,22 @@
+{
+  "when": "2026-07-10T12:04:20.399Z",
+  "record": "/Users/avinashsaxena/matrix-dfs-statemachine-pre-clock/loop_hierarchy/runs/contra-live3/wt/loop-root-E/feedback/approvals/example-approved.v1.json",
+  "qaPath": "/var/folders/37/lkxpnz6547jd3lbfm2zbr8140000gn/T/fb-ship-test/qa-pass.json",
+  "artifactDir": "/Users/avinashsaxena/matrix-dfs-statemachine-pre-clock/loop_hierarchy/runs/contra-live3/wt/loop-root-E/game",
+  "qa": {
+    "pass": true,
+    "detail": "verdict=PASS criticalFailed=0 (/var/folders/37/lkxpnz6547jd3lbfm2zbr8140000gn/T/fb-ship-test/qa-pass.json)",
+    "when": "2026-07-10T12:04:19.184Z",
+    "totals": {
+      "passed": 91,
+      "failed": 0,
+      "criticalFailed": 0
+    },
+    "ageMin": 0
+  },
+  "creator": {
+    "pass": false,
+    "detail": "RELEASE-GATE  build=v1  ->  BLOCKED ✗ (wider release denied)"
+  },
+  "decision": "HOLD"
+}

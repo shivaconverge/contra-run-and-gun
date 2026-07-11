@@ -1,0 +1,12 @@
+{
+  "title": "Contra Returns / Garena Contra Returns (mobile, 2021+)",
+  "developer": "Konami / TiMi / Garena",
+  "platform": "Android/iOS (com.garena.game.hdltw)",
+  "role": "OFFICIAL MOBILE CONTRA — the goal-named 'recent web/Android Contra-like' players actually play; the touch-era product OUR browser Contra is compared against.",
+  "source": "Official store gameplay screenshots via Uptodown listing (img.utdstc.com/screen/*, 1280px); the Google Play page was not directly fetchable (consent gate).",
+  "note": "KEY FINDING: Contra Returns is 3D-HD-rendered (detailed 3D Bill Rizer + 3D jungle w/ waterfall/foliage) with a HEAVY F2P touch UI (virtual d-pad, JUMP button, grenade/special icons, operator-dialogue portraits, mission objectives, ammo counters, gacha overlays) — NOT pixel art. So the OFFICIAL mobile Contra chose HD-3D + monetization UI, a DIFFERENT visual tier from OUR pixel-art game and the pixel-art revival competitors (Blazing Chrome/Gunslugs).",
+  "frames": [
+    {"file": "jungle-firefight-helicopter.jpg", "shows": "Stage-1 jungle firefight: 3D Bill on a crate firing; reinforcement helicopter; golden turret-mech; operator portrait; boss HP bar; full F2P touch HUD"},
+    {"file": "platform-turret-mech.jpg", "shows": "3D Bill on a grassy platform, 'Low Ammo', burning turret-mech enemy w/ HP+shield bars, 3D waterfall jungle bg, touch controls"}
+  ]
+}

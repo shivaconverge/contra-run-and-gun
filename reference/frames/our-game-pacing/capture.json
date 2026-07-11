@@ -1,0 +1,10 @@
+{
+  "subject": "our-game enemy density/PACING — arcade constant-danger check (dim 5)",
+  "build": "current",
+  "source": "live pptr; player HELD ArrowRight with NO fire / NO jump (like root.E's feedback/drive.mjs DIE stage); polled window.__game lives/status every 400ms",
+  "role": "ground the arcade 'constant danger / one-hit tension' pacing invariant from the non-firing angle (my prior density assessments used the FIRING showcase). Also adjudicates feedback/FINDINGS.md OI-1.",
+  "measured": "non-firing forward runner loses lives at 1.6s, 4.0s, 8.8s and reaches GAME OVER at 11.6s (respawn pushes x back to spawn, then killed again). Arcade-appropriate constant threat.",
+  "frames": [
+    {"file": "nofire-run-danger.png", "shows": "~1.3s into a non-firing run: hero already among red grunts + a platform turret — running straight into the enemy stream; constant contact danger"}
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "subject": "our-game (loop-root-B game/index.html) — explosion-punch hit-feedback (dim-2)",
+  "build": "game HEAD e6a4621 (post b1fa0df 'explosion punch')",
+  "base": "http://localhost:8137",
+  "seed": "1234",
+  "native": [480, 270],
+  "purpose": "Ground scorecard dim-2 (hit feedback & hit-stop) after the b1fa0df explosion-punch change (additive flash-pop + shock ring + bigger fireball on kills/boss-death). Captured a fine frame-sweep across a firefight kill window and LOOKED.",
+  "method": "Headless deterministic showcase (?headless=1&frames=N&seed=1234), canvas toDataURL at native 480x270. Kill lands between frame 324 (21 enemies alive) and 328 (20 alive); explosion FX active 328-332.",
+  "frames_kept": [
+    {"file": "pre-kill-baseline-f324.png", "frames": 324, "note": "just BEFORE the kill (21 enemies alive, no explosion) — before/after baseline."},
+    {"file": "kill-flashpop-f328.png", "frames": 328, "note": "PEAK: grunt just died (20 alive) — bright white-cored additive FLASH-POP + orange fireball + starburst, plus a muzzle/tracer trail. The money frame for the explosion-punch change."},
+    {"file": "kill-shockring-f332.png", "frames": 332, "note": "+4 frames: flash faded, expanding SHOCK-RING streaks + fireball remnant still visible — multi-frame FX, not a single-frame pop."}
+  ],
+  "engine_facts_from_bench": "Bench snapshots (window.__bench) corroborate the visual read: the death/kill punch drives real screen-shake + hit-stop + particle bursts, not just a static flash. At the scripted player-death punch (frame 1720): trauma=1.0, hitStop=9, particles=54, fx=1. 'explosion' + 'muzzle' sprites both in spritesLoaded; fxSpawned counter climbs across the run (17->18). So the flash-pop/shock-ring is backed by actual fx/particle spawns + trauma, not a one-frame overlay.",
+  "boss_death_note": "The boss-death 'bigger fireball' path (also in b1fa0df) is NOT reachable in this deterministic showcase: the scripted player dies to the boss (~frame 1720 -> status gameover, 9 enemies still alive) BEFORE the boss is killed. So the boss-death fireball is code-present but un-captured here — reported honestly, not faked. Grounding rests on the grunt-kill explosion, which exercises the same flash-pop + shock-ring + fireball FX.",
+  "comparison_ref": "frames/blazing-chrome-2019/motion/firefight-explosion-dashring-~85s.png",
+  "verdict": "Explosion punch VERIFIED by looking: kills now produce a punchy white-cored flash-pop + expanding shock ring + orange fireball (multi-frame). This lifts per-hit juice to the popular-competitor bar. Vs Blazing Chrome: BC's explosion is a denser MULTI-PUFF billowing cluster (many overlapping fireballs); OURS is a strong SINGLE burst. So the per-hit punch reaches the competitor bar; the multi-puff particle DENSITY remains the pinnacle stretch. dim-2 3.5 -> 4.0."
+}

@@ -1,0 +1,18 @@
+{
+  "mode": "casual",
+  "seed": 1234,
+  "status": "cleared",
+  "frames": 2518,
+  "seconds": 42,
+  "reachedX": 2288,
+  "levelWidth": 2400,
+  "goalX": 2340,
+  "pctTraversed": 97.8,
+  "deaths": 5,
+  "livesLeft": 0,
+  "bossEngagedAtSec": 20.4,
+  "bossHp0": 90,
+  "bossHpLeft": 0,
+  "bossDead": true,
+  "stepHz": 60
+}

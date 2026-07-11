@@ -1,0 +1,25 @@
+{
+  "when": "2026-07-10T12:04:32.644Z",
+  "scope": "behavioral grounding of measurable creator defects #2 (firing origin) + #4 (boss movement); #1/#3 are judgment/geometry, tracker+creator own those",
+  "note": "grounding evidence, NOT a creator close — only a creator APPROVE reopens the gate",
+  "passed": 3,
+  "failed": 0,
+  "verdict": "PASS",
+  "results": [
+    {
+      "id": "defect4.bossMoves",
+      "ok": true,
+      "detail": "boss.y over 40..200f = [190.94, 182.55, 177.2, 185.51, 190.7], range 13.74px (>2 ⇒ MOVES; creator said \"boss has no movement\")"
+    },
+    {
+      "id": "defect2.firingFromHands",
+      "ok": true,
+      "detail": "bullet spawns 28% down body (<55% ⇒ hands/upper, not waist)"
+    },
+    {
+      "id": "defect1.multiHeightPresent",
+      "ok": true,
+      "detail": "bridge=2 catwalk=3 heightSpread=124px (⇒ multi-height traversal; THEME legibility is the creator's call)"
+    }
+  ]
+}

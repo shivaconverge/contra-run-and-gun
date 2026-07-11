@@ -1,0 +1,51 @@
+{
+  "when": "2026-07-10T08:16:22.790Z",
+  "entrypoint": "game/serve.mjs (npm start)",
+  "url": "http://localhost:8137",
+  "realErrors": [],
+  "allBadResponses": [
+    {
+      "url": "http://localhost:8137/favicon.ico",
+      "status": 404
+    }
+  ],
+  "boot": {
+    "status": "title",
+    "mode": "arcade",
+    "hasPlayer": true
+  },
+  "results": [
+    {
+      "id": "golive.serverBinds",
+      "ok": true,
+      "detail": "shipped serve.mjs → http://localhost:8137"
+    },
+    {
+      "id": "golive.rootServes200",
+      "ok": true,
+      "detail": "GET http://localhost:8137/ → 200"
+    },
+    {
+      "id": "golive.gameBoots",
+      "ok": true,
+      "detail": "window.__game present: {\"status\":\"title\",\"mode\":\"arcade\",\"hasPlayer\":true}"
+    },
+    {
+      "id": "golive.landsOnTitle",
+      "ok": true,
+      "detail": "status='title' (README: opens on title screen)"
+    },
+    {
+      "id": "golive.spritesLoaded",
+      "ok": true,
+      "detail": "missing=[]"
+    },
+    {
+      "id": "golive.noErrors",
+      "ok": true,
+      "detail": "real errors=[] (favicon.ico 404 excluded as benign)"
+    }
+  ],
+  "passed": 6,
+  "failed": 0
+}

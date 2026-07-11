@@ -1,0 +1,12 @@
+{
+  "subject": "our-game MATCHED firefight beats (for fair fidelity pairing — FIDHARNESS-1)",
+  "build": "current (post night-jungle atmosphere + weapons)",
+  "source": "deterministic headless harness (?headless=1&frames=N&seed=1234), canvas native 480x270",
+  "role": "the matched OURS firefight frame the playtest fidelity harness should pair against the Blazing Chrome/Huntdown firefight refs (instead of a calm mid-run). Grounds FIDHARNESS-1.",
+  "recommended_pairing_frame": "state-0340.png",
+  "frames": [
+    {"file": "state-0150.png", "shows": "firefight: hero fire + 20 enemies alive, 9 particles, 8 bullets"},
+    {"file": "state-0280.png", "shows": "firefight: 20 enemies, 9 particles, 12 bullets"},
+    {"file": "state-0340.png", "shows": "PEAK BEAT (use this): explosion (24 particles, enemy died) + 2 platform turrets + grunt + muzzle spray + night-jungle atmosphere — a real dense firefight"}
+  ]
+}

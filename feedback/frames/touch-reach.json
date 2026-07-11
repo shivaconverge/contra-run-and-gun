@@ -1,0 +1,23 @@
+{
+  "when": "2026-07-10T12:04:36.144Z",
+  "intended": "creator can open the feedback panel on a touch-only device (no keyboard)",
+  "knownBug": "OI-5",
+  "passed": false,
+  "detail": "no on-screen affordance opened the panel; tried 14 controls: [game, glyph, ROTATE TO LANDSC, Run & Gun plays , cluster dpad, up, left, right, down, cluster actions, jump, fire, lbl, pause]",
+  "affordancesTried": [
+    "game",
+    "glyph",
+    "ROTATE TO LANDSC",
+    "Run & Gun plays ",
+    "cluster dpad",
+    "up",
+    "left",
+    "right",
+    "down",
+    "cluster actions",
+    "jump",
+    "fire",
+    "lbl",
+    "pause"
+  ]
+}

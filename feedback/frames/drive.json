@@ -1,0 +1,103 @@
+{
+  "when": "2026-07-10T04:23:18.089Z",
+  "url": "http://127.0.0.1:50704",
+  "diedViaRealPlay": false,
+  "forcedDeath": true,
+  "panelProbes": {
+    "titlePanel": {
+      "panelOpen": true,
+      "playerX": 40,
+      "status": "title",
+      "ctxState": "suspended",
+      "musicRunning": false,
+      "muted": false
+    },
+    "playPanelA": {
+      "panelOpen": true,
+      "playerX": 379.95,
+      "status": "playing",
+      "ctxState": "running",
+      "musicRunning": true,
+      "muted": false
+    },
+    "playPanelB": {
+      "panelOpen": true,
+      "playerX": 379.95,
+      "status": "playing",
+      "ctxState": "running",
+      "musicRunning": true,
+      "muted": false
+    },
+    "simFrozenWhilePanelOpen": true,
+    "goPanel": {
+      "panelOpen": true,
+      "playerX": 668.77,
+      "status": "gameover",
+      "ctxState": "running",
+      "musicRunning": true,
+      "muted": false
+    }
+  },
+  "snaps": [
+    {
+      "name": "1-title",
+      "state": {
+        "status": "title",
+        "mode": "arcade",
+        "lives": 3,
+        "playerDead": false,
+        "score": 0,
+        "hasLocalStorage": true,
+        "feedbackGlobal": "object"
+      }
+    },
+    {
+      "name": "2-playing-start",
+      "state": {
+        "status": "playing",
+        "mode": "arcade",
+        "lives": 3,
+        "playerDead": false,
+        "score": 0,
+        "hasLocalStorage": true,
+        "feedbackGlobal": "object"
+      }
+    },
+    {
+      "name": "3-playing-firefight",
+      "state": {
+        "status": "playing",
+        "mode": "arcade",
+        "lives": 3,
+        "playerDead": false,
+        "score": 200,
+        "hasLocalStorage": true,
+        "feedbackGlobal": "object"
+      }
+    },
+    {
+      "name": "4-gameover",
+      "state": {
+        "status": "gameover",
+        "mode": "arcade",
+        "lives": -1,
+        "playerDead": false,
+        "score": 200,
+        "hasLocalStorage": true,
+        "feedbackGlobal": "object"
+      }
+    },
+    {
+      "name": "5-restart-playing",
+      "state": {
+        "status": "playing",
+        "mode": "arcade",
+        "lives": 3,
+        "playerDead": false,
+        "score": 0,
+        "hasLocalStorage": true,
+        "feedbackGlobal": "object"
+      }
+    }
+  ]
+}

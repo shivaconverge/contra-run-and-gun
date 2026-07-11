@@ -1,0 +1,72 @@
+{
+  "when": "2026-07-10T12:04:36.610Z",
+  "verdict": "PASS",
+  "green": [
+    {
+      "name": "parity",
+      "exit": 0,
+      "ok": true,
+      "tail": "=== RELEASE-GATE PARITY: 8/8 match shipped panel ===",
+      "issue": null,
+      "note": "consumer verdict == shipped releaseApproved"
+    },
+    {
+      "name": "conformance",
+      "exit": 0,
+      "ok": true,
+      "tail": "=== CONFORMANCE (shipped build): 17 passed, 0 failed (0 critical) ===",
+      "issue": null,
+      "note": "AC-1..14 (+AC-2b) against the live shipped panel"
+    },
+    {
+      "name": "artifact-gate",
+      "exit": 0,
+      "ok": true,
+      "tail": "=== ARTIFACT-GATE: 4/4 PASS ===",
+      "issue": null,
+      "note": "artifact-bound gate fails closed"
+    },
+    {
+      "name": "ship-decision",
+      "exit": 0,
+      "ok": true,
+      "tail": "=== SHIP-DECISION: 5/5 PASS ===",
+      "issue": null,
+      "note": "SHIP iff QA-green AND creator-approved"
+    },
+    {
+      "name": "defect-behavior",
+      "exit": 0,
+      "ok": true,
+      "tail": "=== DEFECT-BEHAVIOR: 3/3 behaviorally confirmed ===",
+      "issue": null,
+      "note": "creator fixes #2/#4 still behave (boss moves, fires from hands)"
+    }
+  ],
+  "trackedOpen": [
+    {
+      "name": "touch-reach",
+      "exit": 1,
+      "ok": false,
+      "tail": "=== TOUCH-REACH (OI-5 acceptance gate): FAIL — KNOWN BUG OI-5 (panel unreachable on touch) ===",
+      "issue": "OI-5",
+      "note": "panel reachable on touch (KNOWN RED until root.B adds touch button)"
+    },
+    {
+      "name": "multistage-context",
+      "exit": 1,
+      "ok": false,
+      "tail": "=== MULTISTAGE-CONTEXT: FAIL (tripwire) ===",
+      "issue": "OI-7",
+      "note": "context.stage missing on the now-multi-stage build (root.B: add it)"
+    }
+  ],
+  "reapproval": {
+    "name": "re-approval",
+    "exit": 0,
+    "ok": true,
+    "tail": "=== RE-APPROVAL: 4/4 defects in-build — READY for creator re-review (all 4 addressed in-build; needs a bound APPROVE) ===",
+    "issue": null,
+    "note": "which of the 4 rejected defects are in the served build"
+  }
+}

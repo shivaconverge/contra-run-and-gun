@@ -1,0 +1,11 @@
+{
+  "title": "itch.io / CrazyGames HTML5 web run-and-gun set — the DIRECT browser head-to-head",
+  "role": "The actual browser games a player would pick INSTEAD of ours (the goal's 'itch.io/CrazyGames HTML5 titles'). Sampled from the itch.io HTML5 run-and-gun tag (sorted popular).",
+  "source": "Official itch.io game-page screenshots (img.itch.zone/original). Sample title: GUN N' RUN (egunan.itch.io/gun-n-run), a top-listed HTML5 run-and-gun.",
+  "sampled": ["GUN N' RUN (egunan.itch.io/gun-n-run)"],
+  "note": "KEY FINDING: the itch.io/CrazyGames HTML5 run-and-gun tier is typically MINIMALIST / jam-quality — GUN N' RUN is stark near-monochrome+pink pixel art (small blocky characters, girder platforms, ammo-pip HUD, big muzzle blasts). This is a LOWER fidelity than OUR detailed 16-bit night-jungle Contra (real hero/enemy sprites, tiled environment, 5-layer parallax, weapon roster, two-phase boss). So on the DIRECT browser competitive axis, OUR game EXCEEDS the typical itch/CrazyGames HTML5 run-and-gun on visual fidelity + content. (Sample, not exhaustive — the tag spans jam entries of varying quality; the tier skews minimalist.)",
+  "frames": [
+    {"file": "gun-n-run/firefight-muzzle.png", "shows": "GUN N' RUN: player firing a big pink muzzle blast, enemy dying, floating + ground enemies; minimalist mono+pink pixel art, girder platforms, ammo-pip HUD"},
+    {"file": "gun-n-run/duel-laser.png", "shows": "GUN N' RUN: player vs enemy exchanging pink projectiles/laser, platform enemy above; stark low-palette browser run-and-gun"}
+  ]
+}

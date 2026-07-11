@@ -1,0 +1,44 @@
+{
+  "when": "2026-07-10T08:15:41.156Z",
+  "harnesses": [
+    {
+      "name": "playthrough",
+      "exit": 0,
+      "passed": 64,
+      "failed": 0,
+      "criticalFailed": 0,
+      "reds": []
+    },
+    {
+      "name": "go-live",
+      "exit": 0,
+      "passed": 6,
+      "failed": 0,
+      "criticalFailed": 0,
+      "reds": []
+    },
+    {
+      "name": "touch",
+      "exit": 0,
+      "passed": 16,
+      "failed": 0,
+      "criticalFailed": 0,
+      "reds": []
+    },
+    {
+      "name": "fidelity",
+      "exit": 0,
+      "passed": 5,
+      "failed": 0,
+      "criticalFailed": 0,
+      "reds": []
+    }
+  ],
+  "totals": {
+    "passed": 91,
+    "failed": 0,
+    "criticalFailed": 0
+  },
+  "reds": [],
+  "verdict": "PASS"
+}

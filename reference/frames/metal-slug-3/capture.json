@@ -1,0 +1,27 @@
+{
+  "title": "METAL SLUG 3",
+  "steam_appid": 250180,
+  "slug": "metal-slug-3",
+  "source": "Steam store appdetails (official developer screenshots)",
+  "note": "STILLS not motion: grounds visual dims (sprite/palette/density), not cadence/hit-stop.",
+  "shots": [
+    {
+      "i": 0,
+      "file": "shot-00.jpg",
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/250180/ss_7f06da79cf2ca61497cf5c51488cd31bc33e1382.1920x1080.jpg?t=1727159336",
+      "bytes": 303437
+    },
+    {
+      "i": 1,
+      "file": "shot-01.jpg",
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/250180/ss_19c59f4376e371ff399f0561a863c3a91cc84138.1920x1080.jpg?t=1727159336",
+      "bytes": 238555
+    },
+    {
+      "i": 2,
+      "file": "shot-02.jpg",
+      "url": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/250180/ss_daa0c5ba302b9171fa1bb68d62ebbcf22ebe9687.1920x1080.jpg?t=1727159336",
+      "bytes": 351972
+    }
+  ]
+}
