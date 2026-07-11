@@ -402,6 +402,21 @@ def gen_pixflux(description: str, size: int, seed: int, tag: str,
     return strip_background(_decode(out["image"]["base64"]))
 
 
+def gen_pixflux_wh(description: str, w: int, h: int, seed: int, tag: str) -> Image.Image:
+    """Non-square pixflux gen (transparent). For WIDE background scenery strips that a
+    square canvas can't frame (a distant mountain range / skyline). Proven usable by
+    looking (experiments/backgrounds/): pixflux renders detailed distant silhouettes at
+    ~128x56 far better than the engine's procedural sine-band."""
+    body = {
+        "description": description,
+        "image_size": {"width": w, "height": h},
+        "no_background": True,
+        "seed": seed,
+    }
+    out = _post_cached("/generate-image-pixflux", body, tag)
+    return strip_background(_decode(out["image"]["base64"]))
+
+
 # --------------------------------------------------------------------------- #
 # Ground tileset (FID-5, reference/teardowns/environment-tileset-bar.md).
 # Authored on a 16px grid per the bar; generated at 32px (pixflux native
@@ -673,6 +688,193 @@ def gen_biome_tilesets(only: str | None = None) -> None:
     fragpath = Path(__file__).resolve().parent / "biome-tilesets.json"
     fragpath.write_text(json.dumps({"sprites": frag}, indent=2))
     print(f"Wrote {fragpath.name} ({len(frag)} biome tileset(s))")
+    bal1 = balance()
+    print(f"Balance: ${bal1:.2f}  (spent ${bal0 - bal1:.2f})")
+
+
+# --------------------------------------------------------------------------- #
+# PER-STAGE SET-DRESSING PROPS  (deliverable #2 — the next art class after tilesets)
+# --------------------------------------------------------------------------- #
+# The GOAL wants each stage to have "its own set-dressing"; the creator's ROUND-1 note
+# was literally "background looks very simple". Right now the biome distinctness is the
+# tileset + a PROCEDURAL parallax band (render.js drawParallax recolours 2 sine-band
+# silhouettes off world.theme.back) -- no generated decoration in the playfield. This
+# recipe adds the missing class: one SIGNATURE prop per biome, a transparent free-
+# standing pixel-art object the engine can place on the ground line for readable, biome-
+# specific dressing (snow pine, desert cactus, foundry vat, cavern crystal, ...).
+#
+# ROUGH PASS (proportional to confidence): one prop per biome PROVES the recipe scales
+# 1->7 and reads distinct-yet-coherent, WITHOUT mass-producing a guessed-size set before
+# the engine's placement hook (a level `decor:[{x,key,...}]` array + a render blit) is
+# confirmed. Authored transparent at a per-prop native size (props are taller than the
+# 32px character tier -- a tree ~56px). Feet/base-anchored: the engine sits the prop's
+# BOTTOM on the ground y. Same coherent style discipline as the tilesets (bold outline,
+# chunky, on the biome's config palette). STAGED (fragment + assets/sprites, NOT manifest
+# /game-assets) until the engine adds the decor hook -- keeps the contract gate green.
+PROP_STYLE_BASE = (", single object centered, transparent background, no ground, no "
+                   "character, bold near-black outline, chunky 16-bit pixel art, "
+                   "high contrast, clear readable silhouette, side view")
+
+SET_DRESSING = {
+    # biome id -> signature prop {name, size, seed, prompt}. Palette keyed to the
+    # biome's config THEMES ground/accent so props sit in their scene.
+    "cascade": {"name": "valve", "size": 48, "seed": 511,
+                "prompt": "a rusty industrial pipe junction with a large round red "
+                "valve wheel and riveted blue-grey steel pipes, teal water stains, "
+                "standing on the ground"},
+    "snow":    {"name": "pine", "size": 56, "seed": 512,
+                "prompt": "a tall snow-laden evergreen pine tree, dark green needles "
+                "heavy with bright white snow, thin brown trunk, cold winter"},
+    "desert":  {"name": "cactus", "size": 56, "seed": 513,
+                "prompt": "a tall green saguaro desert cactus with two raised arms and "
+                "small spines, warm sun-lit, standing in sand"},
+    "foundry": {"name": "vat", "size": 48, "seed": 514,
+                "prompt": "a heavy riveted dark steel industrial smelting vat brimming "
+                "with glowing molten-orange metal, gunmetal grey, hot glow"},
+    "caverns": {"name": "crystal", "size": 52, "seed": 515,
+                "prompt": "a cluster of tall glowing violet-purple crystal shards "
+                "growing up from a dark rock base, luminous lavender"},
+    "fortress":{"name": "brazier", "size": 48, "seed": 516,
+                "prompt": "a dark iron fortress brazier fire-basket on a stand with "
+                "bright orange-red flames, grey-red stone base, riveted metal"},
+}
+
+
+def gen_set_dressing(only: str | None = None) -> None:
+    """Deliverable #2 set-dressing driver: produce one signature transparent prop per
+    biome (real PixelLab pixflux), staged for the engine's placement hook.
+
+    Writes assets/sprites/decor_<biome>_<name>.png + a fragment set-dressing.json with
+    manifest-ready records (key `decor_<biome>_<name>`, native frame dims, base-anchored
+    note). NOT synced to game/assets or manifest.json -- there is no engine decor hook
+    yet, so shipping would trip the cross-source gate (orphan). Same produce-ahead-of-
+    wire pattern the biome tilesets used before the engine wired them. RESUMABLE: every
+    API result is cached immediately, so a re-run after any interruption costs $0 and
+    picks up where it left off (mitigates the full-kit-gen timeout risk)."""
+    bal0 = balance()
+    print(f"Balance: ${bal0:.2f}")
+    if bal0 < MIN_BALANCE_USD:
+        sys.exit(f"Balance below ${MIN_BALANCE_USD}; aborting.")
+    SPRITES.mkdir(parents=True, exist_ok=True)
+    ids = [only] if only else list(SET_DRESSING)
+    frag = {}
+    for tid in ids:
+        if tid not in SET_DRESSING:
+            sys.exit(f"unknown biome '{tid}'; known: {', '.join(SET_DRESSING)}")
+        spec = SET_DRESSING[tid]
+        key = f"decor_{tid}_{spec['name']}"
+        print(f"[decor] {tid}: {spec['name']} ({spec['size']}px native)")
+        im = gen_pixflux(spec["prompt"] + PROP_STYLE_BASE, spec["size"],
+                         seed=spec["seed"], tag=key)
+        pack = pack_strip([im], SPRITES / f"{key}.png", tighten=True)
+        frag[key] = {
+            "image": f"sprites/{key}.png",
+            "type": "decor",
+            "biome": tid,
+            "frameWidth": pack["frameWidth"],
+            "frameHeight": pack["frameHeight"],
+            "frames": pack["frames"],
+            "anchor": "bottom-center",
+            "note": (f"biome set-dressing prop for '{tid}'. Base-anchored: engine sits "
+                     f"the prop BOTTOM on the ground y. Place via a level "
+                     f"decor:[{{x, key:'{key}', parallax?}}] array + a render blit."),
+        }
+    fragpath = Path(__file__).resolve().parent / "set-dressing.json"
+    fragpath.write_text(json.dumps({"sprites": frag}, indent=2))
+    print(f"Wrote {fragpath.name} ({len(frag)} prop(s))")
+    bal1 = balance()
+    print(f"Balance: ${bal1:.2f}  (spent ${bal0 - bal1:.2f})")
+
+
+# --------------------------------------------------------------------------- #
+# PER-STAGE BACKGROUND PARALLAX ART  (deliverable #2 — "background layers")
+# --------------------------------------------------------------------------- #
+# render.js drawParallax is EXPLICITLY a "Procedural placeholder for the environment
+# until authored background art lands" -- it recolours shared sine-band silhouettes off
+# world.theme.back. The creator's ROUND-1 note was "background looks very simple". This
+# recipe produces the authored art the engine is waiting for: one detailed DISTANT-
+# SCENERY far-layer strip per biome, a transparent silhouette (sky area = alpha) the
+# engine blits at the far parallax rate (drawParallax camx*0.15) over the sky gradient.
+#
+# PROVEN by looking (experiments/backgrounds/snow_far_strip): pixflux renders a detailed
+# snow-capped mountain range + pine treeline at 128x56 -- far richer than the sine-band.
+# So the wide-strip approach WORKS (a "hazy/flat" prompt gave a featureless band -> the
+# prompt must name concrete distant landmarks). Authored transparent + wide (128x56) so
+# the engine tiles it horizontally at the far rate; a per-biome palette keyed to config
+# THEMES.back ridge colours keeps it coherent. Scope: the FAR layer only (the biggest
+# fidelity carrier) -- the engine can keep its procedural near/canopy/foliage bands; a
+# near-layer strip is an obvious follow-up. STAGED (fragment + assets/sprites, NOT
+# manifest/game-assets) until the engine adds a background-image blit hook.
+BG_STYLE_BASE = (", distant background scenery silhouette, two-to-three tone values, "
+                 "misty and hazy, flat, chunky pixel art, bold outline, no characters, "
+                 "no foreground, no ground line")
+BG_W, BG_H = 128, 56
+
+BIOME_BACKDROPS = {
+    # biome id -> {seed, scene}. Scene must name CONCRETE distant landmarks (a vague
+    # "hazy flat" prompt renders a featureless band -- verified by looking).
+    "cascade": {"seed": 621, "scene": "seamless tileable horizontal strip of a distant "
+        "concrete dam wall and industrial water towers with cascading blue-grey "
+        "waterfalls, teal mist"},
+    "snow":    {"seed": 622, "scene": "seamless tileable horizontal strip of a distant "
+        "mountain range, jagged snow-capped blue-grey peaks with a dark pine treeline "
+        "at the base"},
+    "desert":  {"seed": 623, "scene": "seamless tileable horizontal strip of distant "
+        "desert mesas and sandstone buttes with rolling dunes, warm tan and gold, a "
+        "faint pyramid"},
+    "foundry": {"seed": 624, "scene": "seamless tileable horizontal strip of a distant "
+        "industrial skyline, dark steel smokestacks and factory towers with glowing "
+        "molten-orange windows and rising smoke"},
+    "caverns": {"seed": 625, "scene": "seamless tileable horizontal strip of a distant "
+        "underground cavern wall, dark purple rock spires and hanging stalactites with "
+        "glowing violet crystal veins"},
+    "fortress":{"seed": 626, "scene": "seamless tileable horizontal strip of a distant "
+        "dark fortress skyline, grey-red castle towers battlements and spires with red "
+        "banners against a smoky sky"},
+}
+
+
+def gen_biome_backdrops(only: str | None = None) -> None:
+    """Deliverable #2 background driver: produce one detailed far-layer parallax scenery
+    strip per biome (real PixelLab pixflux, 128x56 transparent), staged for the engine's
+    background-image blit hook. Writes assets/sprites/bg_<biome>.png + a fragment
+    backgrounds.json. Same produce-ahead-of-wire pattern as tilesets/decor (kept out of
+    manifest/game-assets so the contract gate stays green). RESUMABLE via the cache."""
+    bal0 = balance()
+    print(f"Balance: ${bal0:.2f}")
+    if bal0 < MIN_BALANCE_USD:
+        sys.exit(f"Balance below ${MIN_BALANCE_USD}; aborting.")
+    SPRITES.mkdir(parents=True, exist_ok=True)
+    ids = [only] if only else list(BIOME_BACKDROPS)
+    frag = {}
+    for tid in ids:
+        if tid not in BIOME_BACKDROPS:
+            sys.exit(f"unknown biome '{tid}'; known: {', '.join(BIOME_BACKDROPS)}")
+        spec = BIOME_BACKDROPS[tid]
+        key = f"bg_{tid}"
+        print(f"[backdrop] {tid} far-layer ({BG_W}x{BG_H})")
+        im = gen_pixflux_wh(spec["scene"] + BG_STYLE_BASE, BG_W, BG_H,
+                            seed=spec["seed"], tag=key)
+        # DO NOT trim/pack: a background strip must keep its full authored width so it
+        # tiles horizontally on a fixed period; content sits transparent above the ridge.
+        out = SPRITES / f"{key}.png"
+        im.save(out)
+        frag[key] = {
+            "image": f"sprites/{key}.png",
+            "type": "background",
+            "biome": tid,
+            "layer": "far",
+            "frameWidth": im.width,
+            "frameHeight": im.height,
+            "parallax": 0.15,   # mirrors render.js drawParallax far-ridge rate
+            "anchor": "horizon",
+            "note": (f"biome far-parallax scenery for '{tid}'. Blit tiled horizontally "
+                     f"at camx*0.15 over the sky gradient, ridge base ~y=158 "
+                     f"(drawParallax far-ridge). Transparent above the silhouette."),
+        }
+    fragpath = Path(__file__).resolve().parent / "backgrounds.json"
+    fragpath.write_text(json.dumps({"sprites": frag}, indent=2))
+    print(f"Wrote {fragpath.name} ({len(frag)} backdrop(s))")
     bal1 = balance()
     print(f"Balance: ${bal1:.2f}  (spent ${bal0 - bal1:.2f})")
 
@@ -1668,5 +1870,13 @@ if __name__ == "__main__":
         # produce the per-stage biome tilesets (deliverable #2). `biomes` = all 6;
         # `biomes <id>` = just that biome (e.g. `biomes snow`).
         gen_biome_tilesets(sys.argv[2] if len(sys.argv) > 2 else None)
+    elif cmd == "decor":
+        # produce the per-stage set-dressing props (deliverable #2). `decor` = all 6;
+        # `decor <id>` = just that biome (e.g. `decor snow`). Staged for the engine hook.
+        gen_set_dressing(sys.argv[2] if len(sys.argv) > 2 else None)
+    elif cmd == "backdrops":
+        # produce the per-stage background parallax scenery (deliverable #2). `backdrops`
+        # = all 6; `backdrops <id>` = one biome. Staged for the engine bg-blit hook.
+        gen_biome_backdrops(sys.argv[2] if len(sys.argv) > 2 else None)
     else:
         run()

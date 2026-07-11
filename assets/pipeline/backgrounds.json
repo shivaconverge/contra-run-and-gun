@@ -1,0 +1,70 @@
+{
+  "sprites": {
+    "bg_cascade": {
+      "image": "sprites/bg_cascade.png",
+      "type": "background",
+      "biome": "cascade",
+      "layer": "far",
+      "frameWidth": 128,
+      "frameHeight": 56,
+      "parallax": 0.15,
+      "anchor": "horizon",
+      "note": "biome far-parallax scenery for 'cascade'. Blit tiled horizontally at camx*0.15 over the sky gradient, ridge base ~y=158 (drawParallax far-ridge). Transparent above the silhouette."
+    },
+    "bg_snow": {
+      "image": "sprites/bg_snow.png",
+      "type": "background",
+      "biome": "snow",
+      "layer": "far",
+      "frameWidth": 128,
+      "frameHeight": 56,
+      "parallax": 0.15,
+      "anchor": "horizon",
+      "note": "biome far-parallax scenery for 'snow'. Blit tiled horizontally at camx*0.15 over the sky gradient, ridge base ~y=158 (drawParallax far-ridge). Transparent above the silhouette."
+    },
+    "bg_desert": {
+      "image": "sprites/bg_desert.png",
+      "type": "background",
+      "biome": "desert",
+      "layer": "far",
+      "frameWidth": 128,
+      "frameHeight": 56,
+      "parallax": 0.15,
+      "anchor": "horizon",
+      "note": "biome far-parallax scenery for 'desert'. Blit tiled horizontally at camx*0.15 over the sky gradient, ridge base ~y=158 (drawParallax far-ridge). Transparent above the silhouette."
+    },
+    "bg_foundry": {
+      "image": "sprites/bg_foundry.png",
+      "type": "background",
+      "biome": "foundry",
+      "layer": "far",
+      "frameWidth": 128,
+      "frameHeight": 56,
+      "parallax": 0.15,
+      "anchor": "horizon",
+      "note": "biome far-parallax scenery for 'foundry'. Blit tiled horizontally at camx*0.15 over the sky gradient, ridge base ~y=158 (drawParallax far-ridge). Transparent above the silhouette."
+    },
+    "bg_caverns": {
+      "image": "sprites/bg_caverns.png",
+      "type": "background",
+      "biome": "caverns",
+      "layer": "far",
+      "frameWidth": 128,
+      "frameHeight": 56,
+      "parallax": 0.15,
+      "anchor": "horizon",
+      "note": "biome far-parallax scenery for 'caverns'. Blit tiled horizontally at camx*0.15 over the sky gradient, ridge base ~y=158 (drawParallax far-ridge). Transparent above the silhouette."
+    },
+    "bg_fortress": {
+      "image": "sprites/bg_fortress.png",
+      "type": "background",
+      "biome": "fortress",
+      "layer": "far",
+      "frameWidth": 128,
+      "frameHeight": 56,
+      "parallax": 0.15,
+      "anchor": "horizon",
+      "note": "biome far-parallax scenery for 'fortress'. Blit tiled horizontally at camx*0.15 over the sky gradient, ridge base ~y=158 (drawParallax far-ridge). Transparent above the silhouette."
+    }
+  }
+}
