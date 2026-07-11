@@ -63,8 +63,11 @@ pass "src/main.js reachable (HTTP 200, JS payload)"
 #    back to the default sheet — a distinct-theme fidelity regression that a plain
 #    "site is 200" check misses. We assert HTTP 200 for each referenced path.
 ASSETS_JS="$(cd "$(dirname "$0")/.." && pwd)/game/data/assets.js"
+ASSET_PATHS=()
 if [ -f "$ASSETS_JS" ]; then
-  mapfile -t ASSET_PATHS < <(grep -oE "'assets/[^']+'" "$ASSETS_JS" | tr -d "'" | sort -u)
+  # bash 3.2 (macOS default) has no mapfile — read line by line.
+  while IFS= read -r p; do ASSET_PATHS+=("$p"); done \
+    < <(grep -oE "'assets/[^']+'" "$ASSETS_JS" | tr -d "'" | sort -u)
 else
   # Deploy dir checked out without game/ alongside — fall back to a core sprite.
   ASSET_PATHS=(assets/player_idle.png)
