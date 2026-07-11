@@ -333,20 +333,41 @@ def tighten_palette(im: Image.Image, min_count: int = 3) -> Image.Image:
     return ni
 
 
-def pack_strip(frames: list[Image.Image], out: Path, tighten: bool = False) -> dict:
+def pack_strip(frames: list[Image.Image], out: Path, tighten: bool = False,
+               cell: tuple[int, int] | None = None) -> dict:
     """Trim frames to a common content bbox, lay them out in a horizontal strip.
 
     tighten=True snaps AA speckle to the dominant palette (character/enemy/boss/
     pickup sprites); leave False for FX + tiles where fine colour variation is
     intentional.
+
+    cell=(fw,fh) FORCES a fixed frame-cell size instead of the content bbox. This is
+    the DROP-IN lever for a multi-frame sprite whose slice geometry the engine
+    HARDCODES (render.js PLAYER_RUN {fw,fh}): the strip must be exactly fw*n wide or
+    the engine mis-slices it (blit-meta gate). Content is bottom-CENTRE anchored in
+    the cell (feet on the floor, matching drawPlayerSprite's feet-anchored draw), so a
+    slightly-larger regenerated body stays a byte-compatible drop-in with NO engine
+    change. Overflow is clipped symmetrically; use only when the clip is verified
+    lossless by looking (else keep honest dims and coordinate the engine geometry).
     """
     if tighten:
         frames = [tighten_palette(f) for f in frames]
     box = content_bbox(frames)
     if box:
         frames = [f.crop(box) for f in frames]
-    fw = max(f.width for f in frames)
-    fh = max(f.height for f in frames)
+    if cell:
+        fw, fh = cell
+        fitted = []
+        for f in frames:
+            c = Image.new("RGBA", (fw, fh), (0, 0, 0, 0))
+            dx = (fw - f.width) // 2          # horizontal centre
+            dy = fh - f.height               # bottom (feet) anchored
+            c.paste(f, (dx, dy), f)          # paste clips overflow (neg offset ok)
+            fitted.append(c)
+        frames = fitted
+    else:
+        fw = max(f.width for f in frames)
+        fh = max(f.height for f in frames)
     strip = Image.new("RGBA", (fw * len(frames), fh), (0, 0, 0, 0))
     rects = []
     for i, f in enumerate(frames):
@@ -635,23 +656,38 @@ def gen_run_cycle6(idle_raw: Image.Image) -> list[Image.Image]:
 # display size -- judged by eye, raw + engine-sim + real in-engine render (see
 # QA-NOTES.md). Bright tan bare arms against the dark backdrop are what make the
 # hero pop; keep them explicit.
+# WEAPONLESS hero body (creator round-2 fix — CREATOR_FEEDBACK.md §"ROUND 2"). The
+# armed idle held "a rifle at his side pointing right"; combined with the engine's
+# procedural aiming gun (render.js drawGun) that put TWO guns on screen (the creator's
+# "second gun at the waist"). render.js:1169 explicitly waits for "weaponless hero
+# sprites (same keys)" so drawGun becomes the SOLE weapon. So the hero art now carries
+# NO baked weapon — just the body; the engine draws the one aiming rifle at the hands
+# (gx=x+w/2, gy=y+h*0.28). Prompt+seed LOCKED after a 4-candidate bake-off judged by
+# looking (experiments/weaponless/: hero_A..D) — hero_C won: cleanest 19-colour read,
+# unmistakably unarmed, classic Contra proportions, clear silhouette for /estimate-
+# skeleton (the run cycle derives from it).
 STYLE = (
-    "classic Contra arcade commando, muscular hero, bright tan skin bare arms, "
-    "blue tank top, red headband, holding a rifle at his side pointing right, "
-    "facing right, bold black outline, high contrast, saturated palette, "
-    "clear readable silhouette, side view, full body standing"
+    "classic Contra arcade commando hero, muscular, bright tan bare muscular "
+    "arms, blue tank top, red headband, dark green combat pants, brown boots, "
+    "both arms extended straight forward to the right with empty open hands "
+    "gripping nothing, unarmed, no weapon no gun no rifle, side view facing "
+    "right, bold black outline, high contrast, saturated palette, clear "
+    "readable silhouette, full body standing"
 )
-IDLE_SEED = 7
+IDLE_SEED = 212
 
 # Prone/duck frame (cycle 8). Gameplay-critical: the Stage-1 SENTINEL boss fires
 # chest-height cannon volleys the player must go PRONE to duck (config.js proneH=11,
 # level1 boss note). render.js drawProne is a procedural placeholder awaiting this.
 # A low, flat lying-prone commando aiming right, palette-locked to the idle so it
 # is the same character. Picked candidate A over a too-tall kneel by looking.
-PRONE_SEED = 31
+# WEAPONLESS (same round-2 fix): the prone body must not carry a rifle either, or the
+# procedural drawGun re-introduces the two-gun defect while ducking. Arms propped on
+# elbows, empty hands. Seed re-locked to 33 after looking (31 leaked a barrel silhouette).
+PRONE_SEED = 33
 PRONE_PROMPT = (
     "classic Contra arcade commando lying prone flat on the ground propped on his "
-    "elbows, aiming a rifle forward to the right, red headband, blue tank top, "
+    "elbows, empty hands no weapon no gun no rifle, red headband, blue tank top, "
     "bare tan muscular arms, very low flat horizontal silhouette, side view, bold "
     "black outline, high contrast"
 )
@@ -666,9 +702,9 @@ PRONE_PROMPT = (
 JUMP_SEED = 61
 JUMP_PROMPT = (
     "classic Contra arcade commando in a mid-air somersault jump, body tucked and "
-    "curled into a ball, knees pulled up to chest, holding a rifle, red headband, "
-    "blue tank top, bare tan arms, compact round silhouette, side view, bold black "
-    "outline, high contrast"
+    "curled into a ball, knees pulled up to chest, empty hands no weapon no gun no "
+    "rifle, red headband, blue tank top, bare tan arms, compact round silhouette, "
+    "side view, bold black outline, high contrast"
 )
 
 # Weapon pickup pod (cycle 12). render.js drawPickup is an explicit placeholder --
@@ -702,14 +738,26 @@ ENEMY_SPECS = {
             "standing"
         ),
     },
+    # WEAPONLESS dome (creator round-2 fix). The armed turret's baked "single thick
+    # cannon barrel" + the engine's rotating drawTurretBarrel = the creator's "phantom
+    # turret" (two guns). render.js already draws a pixel-art-quality aiming barrel over
+    # this sprite, so the art is now a BARE purple dome + base with an empty central
+    # mount socket — the drawn barrel is the sole cannon. Prompt+seed = turret_A, the
+    # cleaner of two candidates by looking (experiments/weaponless/turret_A|B).
     "turret": {
-        "seed": 5,
+        "seed": 220,
         "hitbox": {"w": 18, "h": 16},
+        "weaponless": True,
+        "note": ("WEAPONLESS purple dome (no baked barrel) — the engine's rotating "
+                 "drawTurretBarrel is the sole cannon. Fixes the CREATOR_FEEDBACK "
+                 "round-2 phantom-turret (two-gun) defect. Barrel pivot is engine "
+                 "data (config barrelPivotFromBottom/barrelLen), not baked in art."),
         "prompt": (
-            "classic Contra arcade metal sentry gun emplacement, dark purple "
-            "armored dome turret with a single thick cannon barrel, mounted on "
-            "a bolted base, menacing, side view, bold black outline, high "
-            "contrast, clear readable silhouette"
+            "classic Contra arcade sentry turret base, dark purple armored "
+            "rounded dome housing with no barrel and no gun, a bare bolted metal "
+            "dome emplacement on a heavy riveted base plate, a small empty round "
+            "socket mount in the center of the dome, menacing, side view, bold "
+            "black outline, high contrast, clear readable silhouette"
         ),
     },
     # 3rd enemy (parent-confirmed content need). Adds the AERIAL threat axis the
@@ -893,6 +941,10 @@ def run() -> None:
             "playerHitboxPx": PLAYER_HITBOX,
             "viewPx": VIEW,
             "spriteNativePx": PLAYER_NATIVE,
+            # CREATOR_FEEDBACK round-2 two-gun defect fix: hero + turret sprites are
+            # WEAPONLESS bodies (no baked weapon). The engine's procedural drawGun /
+            # drawTurretBarrel is the SOLE weapon per entity. Same sprite keys.
+            "weaponlessContract": True,
         },
         "sprites": {},
     }
@@ -912,7 +964,14 @@ def run() -> None:
     # gen_run_cycle returns a 4-beat loop [contactL, pass, contactR, pass].
     print("[player] run cycle (skeleton, native scale)")
     run_frames = gen_run_cycle(idle)
-    run_pack = pack_strip(run_frames, SPRITES / "player_run.png", tighten=True)
+    # Pin the run to the engine's HARDCODED slice cell (render.js PLAYER_RUN {fw:22,
+    # fh:31}) so the weaponless regen is a byte-compatible DROP-IN with NO engine
+    # change — a larger regenerated body would otherwise mis-slice the strip (blit-meta
+    # gate). Feet-anchored fit; verified the clip is lossless by looking (cycle: weapon-
+    # defect). If a future gait needs more width, coordinate a PLAYER_RUN bump instead.
+    ENGINE_RUN_CELL = (22, 31)
+    run_pack = pack_strip(run_frames, SPRITES / "player_run.png", tighten=True,
+                          cell=ENGINE_RUN_CELL)
     sync_to_engine(SPRITES / "player_run.png")
 
     # 2b) Prone/duck frame -- gameplay-critical for ducking the boss cannon.
@@ -930,6 +989,12 @@ def run() -> None:
     sync_to_engine(SPRITES / "player_jump.png")
 
     manifest["sprites"]["player"] = {
+        "weaponless": True,
+        "note": ("WEAPONLESS hero body across ALL poses (idle/run/prone/jump) — no "
+                 "baked rifle. The engine's procedural drawGun (render.js) is the sole "
+                 "aiming weapon, mounted at the hands (gx=x+w/2, gy=y+h*0.28). Fixes "
+                 "the CREATOR_FEEDBACK round-2 two-gun defect; same sprite keys, so no "
+                 "engine wiring change — dropping these in removes the second gun."),
         "animations": {
             "idle": {
                 "image": "sprites/player_idle.png",
@@ -985,6 +1050,8 @@ def run() -> None:
             "frameWidth": em_pack["frameWidth"],
             "frameHeight": em_pack["frameHeight"],
             "hitboxPx": spec["hitbox"],   # engine draw size (from config.js)
+            **({"note": spec["note"]} if spec.get("note") else {}),
+            **({"weaponless": True} if spec.get("weaponless") else {}),
             "frames": em_pack["frames"],
         }
 
@@ -1034,6 +1101,42 @@ def run() -> None:
         "hitboxPx": PICKUP_HITBOX,
         "note": "engine overlays the per-weapon letter (S/M/L/R/F) on the dark center",
         "frames": pod_pack["frames"],
+    }
+
+    # 3d) Stage-2 2nd boss -- chopper GUNSHIP (FINALIZED + LIVE cycle 48). The engine
+    # added the `chopper` kind (config/assets.js/enemy.js/world.js/render.js) and spawns
+    # it in level2; drawEnemy routes kind==='chopper' through drawBoss, swapping to
+    # chopper_enraged on the enrage phase. Both phases regenerate from cached gens ($0):
+    # base is a wide gunmetal+red attack helicopter facing left (76x52); enraged is
+    # init-anchored to it (78x51). Hitbox 62x30 = the fuselage (rotor/boom excluded).
+    # This block lives in run() so the canonical pipeline reproduces the FULL shipped
+    # manifest (previously chopper was finalized outside run(), so a bare run() dropped
+    # it -- fixed here). See READY-TO-WIRE.md + content/stage2/WIRE.md.
+    print("[boss2] chopper gunship (80px native, wide)")
+    chopper = gen_pixflux(CHOPPER_PROMPT, CHOPPER_NATIVE, seed=CHOPPER_SEED,
+                          tag="chopper")
+    chop_pack = pack_strip([chopper], SPRITES / "chopper.png", tighten=True)
+    sync_to_engine(SPRITES / "chopper.png")
+    manifest["sprites"]["chopper"] = {
+        "image": "sprites/chopper.png",
+        "frameWidth": chop_pack["frameWidth"],
+        "frameHeight": chop_pack["frameHeight"],
+        "hitboxPx": CHOPPER_HITBOX,
+        "frames": chop_pack["frames"],
+    }
+    print("[boss2] chopper ENRAGED phase-2 (init-anchored)")
+    chopper_rage = gen_pixflux(CHOPPER_ENRAGED_PROMPT, CHOPPER_NATIVE,
+                               seed=CHOPPER_ENRAGED_SEED, tag="chopper_enraged",
+                               init_image=chopper, init_strength=180)
+    chrage_pack = pack_strip([chopper_rage], SPRITES / "chopper_enraged.png",
+                             tighten=True)
+    sync_to_engine(SPRITES / "chopper_enraged.png")
+    manifest["sprites"]["chopper_enraged"] = {
+        "image": "sprites/chopper_enraged.png",
+        "frameWidth": chrage_pack["frameWidth"],
+        "frameHeight": chrage_pack["frameHeight"],
+        "hitboxPx": CHOPPER_HITBOX,
+        "frames": chrage_pack["frames"],
     }
 
     # 4) Weapon-juice FX -- explosion + muzzle flash strips. Synced for the engine

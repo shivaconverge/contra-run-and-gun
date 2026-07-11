@@ -1,5 +1,17 @@
 # READY-TO-WIRE — art-slice fidelity levers awaiting an engine greenlight
 
+## 🔧 SHIPPED — WEAPONLESS hero + turret (creator round-2 two-gun defect fix)
+**Unblocks the weapon-defect loop.** `player_idle/run/prone/jump` and `turret` are
+regenerated as **weaponless bodies (no baked weapon)** — same keys, byte-compatible
+**drop-in, NO engine change**. The engine's existing `drawGun`/`drawTurretBarrel` is now
+the SOLE gun per entity (render.js:1169 was already waiting on "weaponless hero sprites,
+same keys"). Contract gate green (19/19, 0 violations); real PixelLab art.
+- Evidence + candidate bake-off + before/after: `assets/pipeline/experiments/weaponless/`
+  (`COMPARE-*.png`, `MOCK-one-gun.png`, `README.md`).
+- Run strip pinned to the engine's `PLAYER_RUN {fw:22,fh:31}` cell so it slices right.
+- **Still engine-side for a creator re-APPROVE (NOT art):** 8-way directional gun/frame
+  per aim + fire from that muzzle (CR-2/CR-3), and boss MOVEMENT (CR-4).
+
 ## ✅ DONE — Creator #1 theme (bridge-over-water)
 WIRED + finalized + verified live (cycle 45). Engine consumes `theme_bridge`/
 `theme_water`/`theme_water_top` (drawBridge/drawWater) and picked my NIGHT-muted water
