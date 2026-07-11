@@ -285,14 +285,28 @@ export const FEEL = {
 // distinct. Palettes here are PROVISIONAL art direction (pipeline owns final art);
 // `tileset`/`music` are the asset-key contracts those loops fill in.
 // ============================================================================
+// `back` is the RENDER contract the procedural backdrop reads (render.js
+// drawSky/drawParallax consume world.theme.back). `sky` = 3 vertical gradient
+// stops (top→horizon); `haze` = distance band tint; `ridgeFar`/`ridgeNear` =
+// the two parallax hill silhouettes; `canopy`/`foliage` = the two near bump
+// bands. JUNGLE's values are the EXACT pixels the renderer hardcoded before this
+// wiring, so Stage 1 stays byte-identical (fixed-frame gate captures unmoved);
+// every other biome supplies its own palette so the stage reads distinct.
 export const THEMES = {
-  jungle:   { id: 'jungle',   name: 'Jungle Approach',  sky: ['#12321f', '#1d5233'], ground: '#2c3b24', accent: '#6fae4a', fog: '#14361f', tileset: 'theme_jungle',   music: 'jungle' },
-  cascade:  { id: 'cascade',  name: 'Cascade Base',     sky: ['#0f2634', '#164055'], ground: '#26343d', accent: '#4aa6c0', fog: '#123040', tileset: 'theme_cascade',  music: 'cascade' },
-  snow:     { id: 'snow',     name: 'Frozen Ridge',     sky: ['#1b2a3a', '#33506b'], ground: '#4a5a6a', accent: '#bfe0f5', fog: '#2a3f52', tileset: 'theme_snow',     music: 'snow' },
-  desert:   { id: 'desert',   name: 'Scorched Dunes',   sky: ['#3a2a16', '#7a5326'], ground: '#8a6a38', accent: '#e6c072', fog: '#5a3f1e', tileset: 'theme_desert',   music: 'desert' },
-  foundry:  { id: 'foundry',  name: 'Iron Foundry',     sky: ['#241014', '#4a1e18'], ground: '#33272a', accent: '#ff7a3c', fog: '#3a1a1a', tileset: 'theme_foundry',  music: 'foundry' },
-  caverns:  { id: 'caverns',  name: 'Crystal Caverns',  sky: ['#160f2a', '#2a1e52'], ground: '#2c2440', accent: '#b98ad9', fog: '#1c1436', tileset: 'theme_caverns',  music: 'caverns' },
-  fortress: { id: 'fortress', name: 'Red Falcon Keep',  sky: ['#2a0f12', '#5a161c'], ground: '#33202a', accent: '#ff5a6e', fog: '#3a1216', tileset: 'theme_fortress', music: 'fortress' },
+  jungle:   { id: 'jungle',   name: 'Jungle Approach',  sky: ['#12321f', '#1d5233'], ground: '#2c3b24', accent: '#6fae4a', fog: '#14361f', tileset: 'theme_jungle',   music: 'jungle',
+    back: { sky: ['#0f2036', '#1a2f4a', '#3a5f6b'], haze: 'rgba(120,160,170,0.10)', ridgeFar: '#23405a', ridgeNear: '#1c3446', canopy: '#173026', foliage: '#0e2119' } },
+  cascade:  { id: 'cascade',  name: 'Cascade Base',     sky: ['#0f2634', '#164055'], ground: '#26343d', accent: '#4aa6c0', fog: '#123040', tileset: 'theme_cascade',  music: 'cascade',
+    back: { sky: ['#0b1c2a', '#12384a', '#2a6a72'], haze: 'rgba(120,185,195,0.11)', ridgeFar: '#1d4a5a', ridgeNear: '#163c48', canopy: '#123a38', foliage: '#0b2a2a' } },
+  snow:     { id: 'snow',     name: 'Frozen Ridge',     sky: ['#1b2a3a', '#33506b'], ground: '#4a5a6a', accent: '#bfe0f5', fog: '#2a3f52', tileset: 'theme_snow',     music: 'snow',
+    back: { sky: ['#1b2a3a', '#3a5a78', '#8fb2cf'], haze: 'rgba(205,224,240,0.16)', ridgeFar: '#5a748c', ridgeNear: '#7690a8', canopy: '#a8c2d8', foliage: '#c8dcec' } },
+  desert:   { id: 'desert',   name: 'Scorched Dunes',   sky: ['#3a2a16', '#7a5326'], ground: '#8a6a38', accent: '#e6c072', fog: '#5a3f1e', tileset: 'theme_desert',   music: 'desert',
+    back: { sky: ['#3a2916', '#8a5e28', '#d69a44'], haze: 'rgba(232,204,150,0.14)', ridgeFar: '#8a6636', ridgeNear: '#a07a40', canopy: '#b88a48', foliage: '#7a5628' } },
+  foundry:  { id: 'foundry',  name: 'Iron Foundry',     sky: ['#241014', '#4a1e18'], ground: '#33272a', accent: '#ff7a3c', fog: '#3a1a1a', tileset: 'theme_foundry',  music: 'foundry',
+    back: { sky: ['#180a0e', '#3a1418', '#742a1e'], haze: 'rgba(210,120,80,0.13)', ridgeFar: '#382a2c', ridgeNear: '#46332e', canopy: '#52281f', foliage: '#2c1613' } },
+  caverns:  { id: 'caverns',  name: 'Crystal Caverns',  sky: ['#160f2a', '#2a1e52'], ground: '#2c2440', accent: '#b98ad9', fog: '#1c1436', tileset: 'theme_caverns',  music: 'caverns',
+    back: { sky: ['#120b22', '#241844', '#3e2c6e'], haze: 'rgba(160,124,205,0.13)', ridgeFar: '#2c2444', ridgeNear: '#382c56', canopy: '#48376c', foliage: '#241a3a' } },
+  fortress: { id: 'fortress', name: 'Red Falcon Keep',  sky: ['#2a0f12', '#5a161c'], ground: '#33202a', accent: '#ff5a6e', fog: '#3a1216', tileset: 'theme_fortress', music: 'fortress',
+    back: { sky: ['#1a080c', '#3a0f14', '#701c22'], haze: 'rgba(210,96,116,0.13)', ridgeFar: '#35212b', ridgeNear: '#442730', canopy: '#4e2028', foliage: '#2a1216' } },
 };
 export const THEME_DEFAULT = 'jungle';
 export function resolveTheme(id) { return THEMES[id] || THEMES[THEME_DEFAULT]; }

@@ -8,6 +8,14 @@ import { HERO_GUN } from './player.js';
 const SKY_TOP = '#1a2f4a';
 const SKY_BOT = '#3a6b6e';
 const TAU = Math.PI * 2;
+// Fallback backdrop palette (== the JUNGLE biome). Used when a world has no
+// resolved theme (defensive) so the backdrop is never blank; live stages pass
+// their own world.theme.back so each biome reads distinct. See config THEMES.
+const DEFAULT_BACK = {
+  sky: ['#0f2036', '#1a2f4a', '#3a5f6b'], haze: 'rgba(120,160,170,0.10)',
+  ridgeFar: '#23405a', ridgeNear: '#1c3446', canopy: '#173026', foliage: '#0e2119',
+};
+const themeBack = (theme) => (theme && theme.back) || DEFAULT_BACK;
 // True when the on-screen touch overlay is active (touch.js flags the body), so
 // prompts can say "TAP" instead of naming keyboard keys a phone player lacks.
 // Headless capture has no such class → keeps the keyboard wording (desktop).
@@ -47,8 +55,8 @@ export function render(ctx, world, assets) {
 
   ctx.save();
   ctx.clearRect(0, 0, SIM.VIEW_W, SIM.VIEW_H);
-  drawSky(ctx, world.frame);
-  drawParallax(ctx, cam.x);
+  drawSky(ctx, world.frame, world.theme);
+  drawParallax(ctx, cam.x, world.theme);
   drawAmbient(ctx, cam.x, world.frame); // fireflies behind the action (depth/atmosphere)
 
   ctx.translate(-Math.round(cam.x) + shake.x, -Math.round(cam.y) + shake.y);
@@ -111,11 +119,16 @@ function hash1(n) {
   return s - Math.floor(s);
 }
 
-function drawSky(ctx, frame) {
+function drawSky(ctx, frame, theme) {
+  // Backdrop gradient is DATA-DRIVEN off the stage's biome (world.theme.back.sky).
+  // Jungle's stops reproduce the pre-wiring hardcoded values byte-for-byte, so
+  // Stage 1 is unchanged; every other biome supplies its own sky.
+  const back = themeBack(theme);
+  const sky = back.sky;
   const g = ctx.createLinearGradient(0, 0, 0, SIM.VIEW_H);
-  g.addColorStop(0, '#0f2036');
-  g.addColorStop(0.55, SKY_TOP);
-  g.addColorStop(1, '#3a5f6b'); // hazy horizon
+  g.addColorStop(0, sky[0]);
+  g.addColorStop(0.55, sky[1]);
+  g.addColorStop(1, sky[2]); // hazy horizon
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, SIM.VIEW_W, SIM.VIEW_H);
 
@@ -155,21 +168,25 @@ function drawSky(ctx, frame) {
 // Multi-layer parallax jungle: distant ridges → treeline canopy → foreground
 // ferns, each scrolling at its own rate for depth. Procedural placeholder for
 // the environment until authored background art lands.
-function drawParallax(ctx, camx) {
+function drawParallax(ctx, camx, theme) {
+  // Layer COLORS come from the biome (world.theme.back); the silhouette SHAPES/
+  // parallax rates are shared across stages. Jungle's palette is the pre-wiring
+  // hardcoded set, so Stage 1 is byte-identical.
+  const back = themeBack(theme);
   ctx.save();
   // distance haze band above the horizon
-  ctx.fillStyle = 'rgba(120,160,170,0.10)';
+  ctx.fillStyle = back.haze;
   ctx.fillRect(0, 150, SIM.VIEW_W, 90);
   // far ridge (slow)
-  ctx.fillStyle = '#23405a';
+  ctx.fillStyle = back.ridgeFar;
   drawHills(ctx, camx * 0.15, 158, 46, 260);
   // near ridge
-  ctx.fillStyle = '#1c3446';
+  ctx.fillStyle = back.ridgeNear;
   drawHills(ctx, camx * 0.3, 182, 40, 190);
-  // jungle treeline canopy (bumpy, denser)
-  drawBumpBand(ctx, camx * 0.5, 206, '#173026', 0.05, 0.13, 12, 6);
-  // foreground fern/foliage line just behind the ground front
-  drawBumpBand(ctx, camx * 0.78, 232, '#0e2119', 0.09, 0.21, 10, 5);
+  // treeline canopy (bumpy, denser)
+  drawBumpBand(ctx, camx * 0.5, 206, back.canopy, 0.05, 0.13, 12, 6);
+  // foreground foliage line just behind the ground front
+  drawBumpBand(ctx, camx * 0.78, 232, back.foliage, 0.09, 0.21, 10, 5);
   ctx.restore();
 }
 
