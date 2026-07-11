@@ -476,4 +476,69 @@ export class World {
       errors,
     };
   }
+
+  // ==========================================================================
+  // BOSS DEFEATABILITY DRIVE (headless, aim-tracking spread bot at the barrier).
+  // A COMPLETABILITY oracle: does a competent player actually kill this stage's
+  // boss from the firing line, or does the fight STALL? Reproduces CHOP-1 — at
+  // chopper sweepAmp 90 the enraged low-hover sweep sits outside the spread cone
+  // and the fight stalls at the enrage threshold (31 HP) forever. Pins the player
+  // at the barrier, 8-way aims the fan at the boss each frame, holds i-frames (we
+  // measure damage output, not survival), and steps until the boss dies or the
+  // frame budget runs out. Returns {defeated, killFrame, killSec, minHp, enraged}.
+  //
+  // FACTS-vs-judgments: this proves "can it die under continuous competent fire"
+  // (a completability FACT), NOT the fight's FEEL/balance (a live-human judgment —
+  // see content/stage2/WIRE.md instrument caveat). Fixed-position single-stream
+  // weapons are noisy here; spread is the fair oracle (it's the fan this arena
+  // wants + a Stage-2 pickup).
+  static bossDefeatableTest(level, opts = {}) {
+    const { weapon = 'spread', maxFrames = 5200, seed = 1234 } = opts;
+    const w = new World(level, seed, 'arcade');
+    w.enemies = w.enemies.filter((e) => e.def && e.def.isBoss);
+    w.boss = w.enemies[0] || null;
+    if (!w.boss) return { defeated: false, error: 'no boss', killFrame: -1, minHp: null };
+    w.boss.active = true;
+    // Firing line: just left of the arena barrier (bullets pass it, the player
+    // does not). Grounded on the floor beneath that x.
+    const barrier = level.solids.find((s) => s.kind === 'barrier');
+    const lineX = barrier ? barrier.x - PLAYER.w - 4 : w.boss.x - 200;
+    const ground = level.solids.find((s) => s.kind === 'ground' && lineX >= s.x && lineX <= s.x + s.w);
+    const groundY = ground ? ground.y - PLAYER.h : 216;
+    const p = w.player;
+    p.setWeapon(weapon);
+    p.x = lineX; p.y = groundY; p.vx = 0; p.vy = 0;
+    w.camera.follow(p, true);
+    let minHp = w.boss.hp, killFrame = -1;
+    for (let i = 0; i < maxFrames; i++) {
+      p.iframe = 999; // measure DPS/reach, not survival
+      const bcx = w.boss.x + w.boss.w / 2, bcy = w.boss.y + w.boss.h / 2;
+      const pcx = p.x + p.w / 2, pcy = p.y + p.h / 2;
+      w.step({
+        left: bcx < pcx - 6, right: bcx > pcx + 6,
+        up: bcy < pcy - 6, down: bcy > pcy + 6,
+        fire: true, jump: false, swap: false, jumpPressed: false, swapPressed: false,
+      });
+      if (!w.boss.dead) minHp = Math.min(minHp, w.boss.hp);
+      if (w.boss.dead) { killFrame = i; break; }
+    }
+    return {
+      defeated: killFrame >= 0,
+      killFrame,
+      killSec: killFrame >= 0 ? +(killFrame / SIM.STEP_HZ).toFixed(1) : null,
+      minHp,
+      enraged: !!w.boss.enraged,
+      bossName: w.boss.def.name,
+    };
+  }
+
+  // Run the defeatability drive across the whole ladder. Asserts EVERY stage's boss
+  // is killable with spread from the barrier inside the budget — the regression
+  // guard that keeps the campaign actually completable to victory (would FAIL if the
+  // chopper sweepAmp stall, or any future unwinnable boss, returns).
+  static campaignDefeatabilityTest(stages, opts = {}) {
+    const results = stages.map((lvl, i) => ({ stage: i + 1, name: lvl.name, ...World.bossDefeatableTest(lvl, opts) }));
+    const undefeated = results.filter((r) => !r.defeated);
+    return { pass: undefeated.length === 0, results, undefeated };
+  }
 }

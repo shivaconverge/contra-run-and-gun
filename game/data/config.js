@@ -243,8 +243,8 @@ export const ENEMIES = {
     name: 'Gunship',
     w: 62, h: 30,            // SIM hitbox = fuselage (rotor/boom excluded from collision)
     // BAL-1 (content/stage2/WIRE.md): the authored 110hp/y96/sweep120 made a ~63s kill;
-    // applied the content loop's suggested tuning (hp~78, hoverY~120, sweepAmp~90) so it
-    // dies in a Stage-1-comparable window. STILL PLAYTEST-GATED (feel is human-judged).
+    // applied the content loop's suggested tuning (hp~78, hoverY~120) so it dies in a
+    // Stage-1-comparable window. Feel still human-playtest-gated.
     hp: 78,
     speed: 0,
     contactDamage: 1,
@@ -254,7 +254,16 @@ export const ENEMIES = {
     shotSpeed: 2.6,
     fireEvery: 70, enrageFireEvery: 44,
     bombEvery: 130, enrageBombEvery: 90,
-    sweepAmp: 90, sweepFreq: 0.018, enrageSweepFreq: 0.03,
+    // CHOP-1 COMPLETABILITY FIX (root.C 2026-07-12): sweepAmp was 90 — REPRODUCED as
+    // UNBEATABLE at the barrier firing line (headless aim-tracking spread bot STALLS at
+    // exactly 31 HP = the enrage threshold; the enraged low-hover chopper sweeps ~30px
+    // outside the spread cone). That made the chopper stages (2/4/6) impossible to clear
+    // in normal play → the campaign could never reach VICTORY. Restored to 120 (WIRE.md
+    // CHOP-1's data-backed value): spread now kills ~48s, laser ~56s (both are Stage-2
+    // pickups). Guarded by World.bossDefeatableTest so the stall cannot silently return.
+    // NOTE (open, live-playtest): single-stream machine/rifle still struggle under the
+    // crude fixed-position bot — a human leads/repositions; final FEEL is human-judged.
+    sweepAmp: 120, sweepFreq: 0.018, enrageSweepFreq: 0.03,
     hoverY: 120, enrageHoverY: 150,
     enrageAt: 0.4,
     // bomb arc (reuses Enemy._lobShell — same fields as mortar)
