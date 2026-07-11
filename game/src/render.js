@@ -285,9 +285,17 @@ function drawWater(ctx, world, assets) {
 function drawSolids(ctx, world, assets) {
   const camx = world.camera.x;
   const vx0 = camx - 8, vx1 = camx + SIM.VIEW_W + 8;
-  const tiles = assets && assets.get('tiles');
+  // Per-stage BIOME tileset: resolve the theme's tileset key first, fall back to the
+  // jungle default `tiles` when a biome has no dedicated sheet (jungle) or it hasn't
+  // loaded. Same 48×16 [cap,dirt,dirt2] format, so blitTiles/TILES slicing is unchanged.
+  const themeKey = world.theme && world.theme.tileset;
+  const biomeTiles = themeKey && assets && assets.get(themeKey);
+  const tiles = (biomeTiles || (assets && assets.get('tiles'))) || null;
+  // Green grass tufts read as jungle set-dressing; only sprout them on the jungle
+  // default sheet, not on a distinct biome tileset (snow/desert/foundry/etc.).
+  const tufts = !biomeTiles;
   for (const s of world.solids) {
-    if (s.kind === 'ground') drawGround(ctx, s, vx0, vx1, tiles, assets);
+    if (s.kind === 'ground') drawGround(ctx, s, vx0, vx1, tiles, assets, tufts);
     else if (s.kind === 'barrier') drawBarrier(ctx, s, world.frame);
     else drawPlatform(ctx, s, vx0, vx1, tiles);
   }
@@ -335,7 +343,7 @@ function blitTiles(ctx, img, s, vx0, vx1) {
   ctx.restore();
 }
 
-function drawGround(ctx, s, vx0, vx1, tiles, assets) {
+function drawGround(ctx, s, vx0, vx1, tiles, assets, tufts) {
   // Bridge span: a plank deck on trusses over the water channel (CR-1). Only the
   // deck + supports are painted (no dirt column) so the water behind shows below.
   if (s.bridge) { drawBridge(ctx, s, vx0, vx1, assets && assets.get('theme_bridge')); return; }
@@ -343,13 +351,15 @@ function drawGround(ctx, s, vx0, vx1, tiles, assets) {
   if (tiles) {
     blitTiles(ctx, tiles, s, vx0, vx1);
     // grass tufts sticking up above the tiled cap — same juice as the fallback,
-    // keyed to world position so they don't flicker.
-    const gx0 = Math.max(s.x, vx0), gx1 = Math.min(s.x + s.w, vx1);
-    for (let x = Math.floor(gx0 / 6) * 6; x < gx1; x += 6) {
-      const r = hash1(x);
-      const th = 1 + Math.floor(r * 3);
-      ctx.fillStyle = r > 0.5 ? '#6ba045' : '#588a3a';
-      ctx.fillRect(x + (r * 3 | 0), s.y - th, 2, th);
+    // keyed to world position so they don't flicker. Jungle-only (see drawSolids).
+    if (tufts) {
+      const gx0 = Math.max(s.x, vx0), gx1 = Math.min(s.x + s.w, vx1);
+      for (let x = Math.floor(gx0 / 6) * 6; x < gx1; x += 6) {
+        const r = hash1(x);
+        const th = 1 + Math.floor(r * 3);
+        ctx.fillStyle = r > 0.5 ? '#6ba045' : '#588a3a';
+        ctx.fillRect(x + (r * 3 | 0), s.y - th, 2, th);
+      }
     }
     return;
   }

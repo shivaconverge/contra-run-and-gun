@@ -146,4 +146,16 @@ export const ASSET_MANIFEST = {
   theme_bridge: 'assets/theme_bridge.png',
   theme_water: 'assets/theme_water.png',
   theme_water_top: 'assets/theme_water_top.png',
+  // Per-stage BIOME TILESETS (deliverable #2, from assets/pipeline/generate.py biomes).
+  // One distinct on-palette 48×16 [cap,dirt,dirt2] sheet per themed stage, in the SAME
+  // format as `tiles` (the jungle default). config.js THEMES.<id>.tileset names these
+  // keys; render.js drawSolids resolves assets.get(world.theme.tileset) and swaps it in
+  // for the ground/platform blit (falling back to `tiles` when a biome has no sheet —
+  // e.g. jungle's theme_jungle is intentionally absent so Stage 1 keeps `tiles`). WIRED.
+  theme_cascade: 'assets/theme_cascade.png',
+  theme_snow: 'assets/theme_snow.png',
+  theme_desert: 'assets/theme_desert.png',
+  theme_foundry: 'assets/theme_foundry.png',
+  theme_caverns: 'assets/theme_caverns.png',
+  theme_fortress: 'assets/theme_fortress.png',
 };
