@@ -834,12 +834,42 @@ BIOME_BACKDROPS = {
 }
 
 
+def gen_backdrop(tid: str, spec: dict) -> dict:
+    """Produce ONE biome far-layer parallax strip from a spec; save + sync; return a
+    manifest-ready record. Shared by run() (canonical fold-in) and gen_biome_backdrops
+    (fast iterator) -- mirrors gen_theme_tileset."""
+    key = f"bg_{tid}"
+    im = gen_pixflux_wh(spec["scene"] + BG_STYLE_BASE, BG_W, BG_H,
+                        seed=spec["seed"], tag=key)
+    # DO NOT trim/pack: a background strip must keep its full authored width so it
+    # tiles horizontally on a fixed period; content sits transparent above the ridge.
+    out = SPRITES / f"{key}.png"
+    im.save(out)
+    sync_to_engine(out)   # engine keys bg_<biome> in assets.js (WIRED, commit 43d2db2)
+    return {
+        "image": f"sprites/{key}.png",
+        "type": "background",
+        "biome": tid,
+        "layer": "far",
+        "frameWidth": im.width,
+        "frameHeight": im.height,
+        "parallax": 0.15,   # mirrors render.js drawParallax far-ridge rate (BG.parallax)
+        "anchor": "horizon",
+        "note": (f"biome far-parallax scenery for '{tid}'. render.js drawParallax blits "
+                 f"assets.get('bg_{tid}') tiled at camx*0.15, ridge base y=158, over the "
+                 f"sky gradient; transparent above the silhouette; procedural fallback."),
+    }
+
+
 def gen_biome_backdrops(only: str | None = None) -> None:
-    """Deliverable #2 background driver: produce one detailed far-layer parallax scenery
-    strip per biome (real PixelLab pixflux, 128x56 transparent), staged for the engine's
-    background-image blit hook. Writes assets/sprites/bg_<biome>.png + a fragment
-    backgrounds.json. Same produce-ahead-of-wire pattern as tilesets/decor (kept out of
-    manifest/game-assets so the contract gate stays green). RESUMABLE via the cache."""
+    """Deliverable #2 background FAST ITERATOR: regenerate one/all far-layer parallax
+    scenery strips without a full run(). Writes assets/sprites/bg_<biome>.png (synced to
+    game/assets via gen_backdrop) + a fragment backgrounds.json for review.
+
+    NOW FINALIZED + WIRED (commit 43d2db2): the engine keys bg_<biome> in
+    game/data/assets.js and render.js drawParallax blits assets.get('bg_'+theme.id) at the
+    far rate with a procedural fallback. The canonical manifest.json entries are produced
+    by run() (fold-in, section 5d); this command is the quick per-biome loop."""
     bal0 = balance()
     print(f"Balance: ${bal0:.2f}")
     if bal0 < MIN_BALANCE_USD:
@@ -850,28 +880,8 @@ def gen_biome_backdrops(only: str | None = None) -> None:
     for tid in ids:
         if tid not in BIOME_BACKDROPS:
             sys.exit(f"unknown biome '{tid}'; known: {', '.join(BIOME_BACKDROPS)}")
-        spec = BIOME_BACKDROPS[tid]
-        key = f"bg_{tid}"
         print(f"[backdrop] {tid} far-layer ({BG_W}x{BG_H})")
-        im = gen_pixflux_wh(spec["scene"] + BG_STYLE_BASE, BG_W, BG_H,
-                            seed=spec["seed"], tag=key)
-        # DO NOT trim/pack: a background strip must keep its full authored width so it
-        # tiles horizontally on a fixed period; content sits transparent above the ridge.
-        out = SPRITES / f"{key}.png"
-        im.save(out)
-        frag[key] = {
-            "image": f"sprites/{key}.png",
-            "type": "background",
-            "biome": tid,
-            "layer": "far",
-            "frameWidth": im.width,
-            "frameHeight": im.height,
-            "parallax": 0.15,   # mirrors render.js drawParallax far-ridge rate
-            "anchor": "horizon",
-            "note": (f"biome far-parallax scenery for '{tid}'. Blit tiled horizontally "
-                     f"at camx*0.15 over the sky gradient, ridge base ~y=158 "
-                     f"(drawParallax far-ridge). Transparent above the silhouette."),
-        }
+        frag[f"bg_{tid}"] = gen_backdrop(tid, BIOME_BACKDROPS[tid])
     fragpath = Path(__file__).resolve().parent / "backgrounds.json"
     fragpath.write_text(json.dumps({"sprites": frag}, indent=2))
     print(f"Wrote {fragpath.name} ({len(frag)} backdrop(s))")
@@ -1576,6 +1586,18 @@ def run() -> None:
         rec = gen_theme_tileset(tid, spec)           # writes assets/sprites + syncs
         manifest["sprites"][f"theme_{tid}"] = rec
 
+    # 5d) PER-STAGE BACKGROUND parallax strips (deliverable #2) -- FINALIZED + WIRED (the
+    # engine keys bg_<biome> in assets.js and render.js drawParallax blits
+    # assets.get('bg_'+theme.id) at the far rate over the sky, procedural fallback, commit
+    # 43d2db2). Fold the 6 far-layer scenery strips into the canonical run so manifest.json
+    # is the complete shipped source of truth (like the tileset finalize). `python
+    # generate.py backdrops [id]` stays the fast per-biome iterator. Jungle keeps the
+    # procedural ridge (no bg_jungle key).
+    print("[backdrops] per-stage far-parallax scenery (6 biomes, 128x56)")
+    for tid, spec in BIOME_BACKDROPS.items():
+        rec = gen_backdrop(tid, spec)                # writes assets/sprites + syncs
+        manifest["sprites"][f"bg_{tid}"] = rec
+
     manifest["meta"]["knownIssues"] = [
         "boss_enraged: real phase-2 enraged Sentinel sprite produced + synced + "
         "loads, but drawBoss doesn't swap to it yet -- wire it to blit "
@@ -1635,7 +1657,9 @@ def verify_contract() -> int:
                 items.append((f"{key}.{an}", a["image"], "char",
                               a.get("frameWidth"), a.get("frameHeight")))
         else:
-            klass = "tile" if spec.get("tileSize") else ("fx" if spec.get("type") == "fx" else "char")
+            _t = spec.get("type")
+            klass = ("tile" if spec.get("tileSize") else "bg" if _t == "background"
+                     else "fx" if _t == "fx" else "char")
             items.append((key, spec.get("image"), klass,
                           spec.get("frameWidth"), spec.get("frameHeight")))
 
@@ -1668,8 +1692,10 @@ def verify_contract() -> int:
         # the 32/16px display tier -> <=64px. BOSS-class set-pieces are a larger tier:
         # the Sentinel is native 64, the WIDE chopper gunship is native 80 (62x30
         # fuselage hitbox + rotor/boom overhang) -> allow <=80 for boss/chopper keys.
+        # BACKGROUND far-layer strips are intentionally WIDE (authored 128x56 to tile
+        # horizontally), so they are exempt from the character/sprite frame-tier cap.
         frame_cap = 80 if ("boss" in name or "chopper" in name) else 64
-        if maxframe > frame_cap:
+        if klass != "bg" and maxframe > frame_cap:
             probs.append(f"OVERSIZE-FRAME({fdim}>{frame_cap})")
         verdict = "OK" if not probs else "FAIL " + ",".join(probs)
         if probs:
@@ -1747,6 +1773,13 @@ def verify_contract() -> int:
         tileset_vars = set(_re.findall(r"(\w+)\s*=\s*[^;\n]*\.tileset\b", render_src))
         has_theme_tileset_path = any(f"assets.get({v})" in render_src
                                      for v in tileset_vars)
+        # PER-STAGE BACKGROUND path: render.js drawParallax resolves the biome's far-
+        # layer via `assets.get('bg_' + theme.id)` (commit 43d2db2) -- a 'bg_'+var concat,
+        # not a literal. Model it: if that concat form is present, every engine key with a
+        # `bg_` prefix is reachable via that path. (Same shape the parent confirmed.)
+        has_bg_path = "assets.get('bg_'" in render_src.replace(" ", "")
+        bg_arg_forms = {a for a in _re.findall(r"assets\.get\(([^)]*)\)", render_src)
+                        if a.replace(" ", "").startswith("'bg_'")}
         # Self-grounding guard: this reachability model KNOWS only two consumption
         # forms -- a literal 'key' and the dynamic e.kind. If the engine later adds
         # ANY other dynamic argument form (a var, a lookup, fx.kind, ...), the model
@@ -1756,7 +1789,8 @@ def verify_contract() -> int:
         # cycle 26). This is not a violation (no false red) -- it's a staleness alarm.
         all_args = {a.strip() for a in _re.findall(r"assets\.get\(([^)]*)\)", render_src)}
         modeled = ({"e.kind"} | {f"'{k}'" for k in literal} | wrapper_params
-                   | (tileset_vars if has_theme_tileset_path else set()))
+                   | (tileset_vars if has_theme_tileset_path else set())
+                   | {a.strip() for a in bg_arg_forms})
         unmodeled = {a for a in all_args if a not in modeled}
         if unmodeled:
             print("\n  MODEL-WARN: unmodeled assets.get() arg form(s) in render.js "
@@ -1767,6 +1801,8 @@ def verify_contract() -> int:
                 continue
             if has_theme_tileset_path and key in theme_tileset_keys:
                 continue   # drawn via assets.get(world.theme.tileset)
+            if has_bg_path and key.startswith("bg_"):
+                continue   # drawn via assets.get('bg_' + theme.id) in drawParallax
             how = "spawned-enemy-kind" if has_dynamic_kind else "no dynamic e.kind path"
             rprob.append(f"engine key '{key}' NOT blitted by render.js "
                          f"(no literal assets.get; {how}) -> shipped-but-unreachable")

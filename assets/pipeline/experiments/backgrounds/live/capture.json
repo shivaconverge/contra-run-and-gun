@@ -1,0 +1,38 @@
+[
+  {
+    "lvl": 1,
+    "theme": "jungle",
+    "tilesetKey": "theme_jungle",
+    "tilesetLoaded": false,
+    "missing": 0,
+    "errors": 0,
+    "file": "assets/pipeline/experiments/backgrounds/live/level1-jungle.png"
+  },
+  {
+    "lvl": 3,
+    "theme": "snow",
+    "tilesetKey": "theme_snow",
+    "tilesetLoaded": true,
+    "missing": 0,
+    "errors": 0,
+    "file": "assets/pipeline/experiments/backgrounds/live/level3-snow.png"
+  },
+  {
+    "lvl": 5,
+    "theme": "foundry",
+    "tilesetKey": "theme_foundry",
+    "tilesetLoaded": true,
+    "missing": 0,
+    "errors": 0,
+    "file": "assets/pipeline/experiments/backgrounds/live/level5-foundry.png"
+  },
+  {
+    "lvl": 6,
+    "theme": "caverns",
+    "tilesetKey": "theme_caverns",
+    "tilesetLoaded": true,
+    "missing": 0,
+    "errors": 0,
+    "file": "assets/pipeline/experiments/backgrounds/live/level6-caverns.png"
+  }
+]
