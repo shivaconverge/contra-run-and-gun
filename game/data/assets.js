@@ -103,6 +103,27 @@ export const ASSET_MANIFEST = {
   //   the 14×12 pickup rect (keep the blink + the per-weapon LETTER overlaid on the
   //   dark center); procedural pill fallback. See assets/QA-NOTES.md OPEN ISSUE #8.
   pickup: 'assets/pickup.png',
+  // WEAPONLESS bodies — the DURABLE fix for the creator's ROUND-2 REJECT (exactly
+  // ONE weapon per armed entity). The current player_*/turret sprites carry a
+  // BAKED weapon; drawn under the procedural aiming weapon that produced the
+  // "two guns on screen" defect. These keys let the art pipeline drop in
+  // weapon-FREE bodies (same silhouette/palette, just no gun/barrel) so the single
+  // procedural rifle (render.js drawGun) / turret barrel (drawTurretBarrel) is the
+  // only weapon shown. render.js PREFERS these when loaded; until they land it
+  // draws a procedural weaponless commando (hero) and strips the baked barrel
+  // (turret) at runtime. OPEN NEED (pipeline loop): author these at native size —
+  //   player_idle_noweapon  ~20×29 (1 frame, aim-neutral, NO rifle)
+  //   player_run_noweapon   ~22×31 ×4-frame strip (NO rifle)
+  //   player_jump_noweapon  ~25×25 (NO rifle)
+  //   player_prone_noweapon ~28×15 (NO rifle)
+  //   turret_base           ~26×27 (purple dome, NO barrel — barrel is procedural)
+  // Palette-locked to the existing bodies (STYLE-BIBLE §5). Absent keys are simply
+  // skipped by the tolerant loader, so shipping them is a pure drop-in upgrade.
+  player_idle_noweapon: 'assets/player_idle_noweapon.png',
+  player_run_noweapon: 'assets/player_run_noweapon.png',
+  player_jump_noweapon: 'assets/player_jump_noweapon.png',
+  player_prone_noweapon: 'assets/player_prone_noweapon.png',
+  turret_base: 'assets/turret_base.png',
   tiles: 'assets/tiles.png',
   explosion: 'assets/explosion.png',
   muzzle: 'assets/muzzle.png',

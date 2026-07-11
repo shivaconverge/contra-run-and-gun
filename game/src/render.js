@@ -3,6 +3,7 @@
 // Nostalgic arcade look: parallax jungle, chunky pixels, muzzle flashes.
 import { SIM, WEAPONS } from '../data/config.js';
 import { TELEGRAPH_FRAMES } from './enemy.js';
+import { HERO_GUN } from './player.js';
 
 const SKY_TOP = '#1a2f4a';
 const SKY_BOT = '#3a6b6e';
@@ -573,10 +574,17 @@ function drawEnemy(ctx, e, world, assets) {
   }
 
   if (img) {
-    drawEnemySprite(ctx, e, img, white);
-    // Turrets keep a dynamic barrel drawn over the sprite so the shot direction
-    // stays telegraphed toward the player (the static sprite cannon can't aim).
-    if (e.kind === 'turret') drawTurretBarrel(ctx, e, world);
+    // Turret: draw a WEAPONLESS dome (real turret_base sprite if the pipeline
+    // shipped it, else the baked barrel stripped at runtime) so the ONLY weapon
+    // is the single procedural rotating barrel — the CREATOR round-2 fix for CR-3.
+    // The baked sprite barrel can't aim, so leaving it in read as a second turret.
+    if (e.kind === 'turret') {
+      const base = (assets && assets.get('turret_base')) || weaponlessTurret(img);
+      drawEnemySprite(ctx, e, base, white);
+      drawTurretBarrel(ctx, e, world);
+    } else {
+      drawEnemySprite(ctx, e, img, white);
+    }
     if (e.telegraph > 0) drawFireTelegraph(ctx, e, world);
     return;
   }
@@ -997,24 +1005,145 @@ function whiteTinted(img) { return tintedSilhouette(_flashScratch, img, '#ffffff
 // as player flashes, so a shared canvas would clobber).
 const _bossScratch = {};
 
+// Strip the turret sprite's BAKED cannon barrel so the only weapon on screen is
+// the ONE procedural rotating barrel (drawTurretBarrel) — the CREATOR round-2 fix
+// for CR-3. The baked barrel is a fixed LEFT-pointing appendage the static art
+// can't aim, so it read as a second "phantom" turret beside the aiming one. We
+// erase that protruding barrel and fill its dark bore, leaving a clean weaponless
+// dome; the aiming barrel is drawn on top. Region is proportional to the sprite
+// (verified against the native 26×27 art) and cached per source image. The art
+// pipeline's real weaponless `turret_base` sprite supersedes this automatically
+// when it lands (drawEnemy prefers it). open_need: assets/turret_base.png.
+const _turretBaseCache = new WeakMap();
+function weaponlessTurret(img) {
+  if (!img) return null;
+  const hit = _turretBaseCache.get(img);
+  if (hit) return hit;
+  const w = img.width, h = img.height;
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const g = c.getContext('2d');
+  g.drawImage(img, 0, 0);
+  let data;
+  try { data = g.getImageData(0, 0, w, h); } catch (e) { return img; } // tainted → leave as-is
+  const d = data.data;
+  const y0 = Math.round(h * 0.22), y1 = Math.round(h * 0.52); // barrel vertical band
+  const bx = Math.round(w * 0.31);   // dome left edge — barrel protrudes left of this
+  const fx = Math.round(w * 0.56);   // bore depth into the dome face
+  for (let y = y0; y < y1; y++) {
+    for (let x = 0; x < fx; x++) {
+      const i = (y * w + x) * 4;
+      if (x < bx) { d[i + 3] = 0; }   // erase the protruding barrel
+      else if (d[i + 3] > 8 && d[i] < 55 && d[i + 1] < 55 && d[i + 2] < 55) {
+        d[i] = 96; d[i + 1] = 55; d[i + 2] = 116; // fill the dark bore with dome purple
+      }
+    }
+  }
+  g.putImageData(data, 0, 0);
+  _turretBaseCache.set(img, c);
+  return c;
+}
+
+// STYLE-BIBLE hero palette (assets/STYLE-BIBLE.md §2) for the procedural
+// weaponless commando body used until the pipeline ships weaponless hero art.
+const HERO_PAL = {
+  outline: '#0f0f0d', boot: '#141212', pants: '#443e8d', pantsHi: '#656cdc',
+  pantsSh: '#3c3982', vest: '#443e8d', vestHi: '#656cdc', vestSh: '#3c3982',
+  armSh: '#9e511a', arm: '#b86634', armHi: '#e69e7f', skin: '#e8b098',
+  skinHi: '#ffd89e', band: '#ed1711', bandSh: '#a11a1d',
+};
+
+// Draw the hero as a WEAPONLESS commando (no baked gun) so the single procedural
+// rifle (drawGun) is the only weapon in every one of the 8 aim directions — a
+// baked sprite gun points one fixed way and reads as a SECOND gun whenever the
+// aim differs, so the body must carry none. Feet-anchored + mirrored by facing,
+// drawn to the STYLE-BIBLE palette (hero blues + bare tan arms + red bandana,
+// near-black outline). `pose` ∈ idle|run|jump; `frame` drives the run stride.
+// This is the interim; a weaponless `player_*_noweapon` sprite supersedes it.
+function drawHeroBody(ctx, p, x, y, pose, frame) {
+  const H = p.h * 1.3;                 // on-screen height (feet-anchored, ~26px standing)
+  const white = p.flash > 0;
+  const C = (c) => (white ? '#ffffff' : c);
+  const P = HERO_PAL;
+  ctx.save();
+  ctx.translate(Math.round(x + p.w / 2), Math.round(y + p.h)); // origin at feet-centre
+  if (p.facing < 0) ctx.scale(-1, 1);                          // +x = facing-forward
+  // rect in the feet-origin frame: (leftX, topAboveFeet, w, h). y grows UP.
+  const R = (lx, top, w, h, c) => { ctx.fillStyle = C(c); ctx.fillRect(Math.round(lx), Math.round(-top), Math.round(w), Math.round(h)); };
+
+  // proportions (px above the feet)
+  const hipY = H * 0.44, waistY = H * 0.50, chestY = H * 0.74, shoulderY = H * 0.70, headTop = H;
+  const legW = 3;
+
+  // --- legs + boots (stride/tuck by pose) ---
+  let fX = 1, bX = -legW - 1, fTop = hipY, bTop = hipY;   // idle default
+  if (pose === 'run') {
+    const s = (frame === 1 ? 1 : frame === 3 ? -1 : 0) * (H * 0.11);
+    fX = 1 + Math.max(0, s); bX = -legW - 1 + Math.min(0, s);
+    fTop = hipY - Math.abs(s) * 0.3; bTop = hipY - Math.abs(s) * 0.3;
+  } else if (pose === 'jump') {
+    fX = 0; bX = -legW - 1; fTop = hipY * 0.62; bTop = hipY * 0.5;   // tucked knees
+  }
+  R(bX - 1, bTop, legW + 1, bTop - 3, P.outline);        // back leg outline
+  R(bX, bTop, legW, bTop - 3, P.pantsSh);
+  R(bX - 1, 3, legW + 2, 3, P.boot);                     // back boot
+  R(fX - 1, fTop, legW + 1, fTop - 3, P.outline);        // front leg outline
+  R(fX, fTop, legW, fTop - 3, P.pants);
+  R(fX, fTop, 1, fTop - 3, P.pantsHi);                   // knee highlight
+  R(fX - 1, 3, legW + 2, 3, P.boot);                     // front boot
+
+  // --- torso / vest ---
+  const tH = chestY - hipY, tHalf = H * 0.20;
+  R(-tHalf - 1, chestY, tHalf * 2 + 2, tH + 2, P.outline);   // torso outline
+  R(-tHalf, chestY, tHalf * 2, tH, P.vest);
+  R(-tHalf, chestY, tHalf * 2, 2, P.vestHi);                 // top-lit shoulders line
+  R(tHalf - 2, chestY - 1, 2, tH - 1, P.vestSh);             // back-edge shade
+  R(-1, chestY - 2, 2, tH - 2, P.vestHi);                    // centre seam highlight
+
+  // --- back arm (tan, along the torso) ---
+  R(-tHalf - 2, shoulderY, 2, shoulderY - waistY, P.armSh);
+
+  // --- head: skin face + red bandana + dark hair ---
+  const hW = H * 0.22, hH = headTop - chestY + 1;
+  R(-hW / 2 - 1, headTop, hW + 2, hH + 1, P.outline);        // head outline
+  R(-hW / 2, headTop, hW, hH, P.skin);                       // face
+  R(-hW / 2, headTop, hW, 2, P.bandSh);                      // bandana band
+  R(-hW / 2, headTop - 1, hW, 1, P.band);                    // bandana lit edge
+  R(hW / 2 - 2, headTop - 2, 2, hH - 1, P.skinHi);           // cheek highlight (facing side)
+  R(-hW / 2, headTop - hH + 1, 2, 2, P.outline);             // back-of-head hair
+
+  // --- front shoulder/upper-arm stub (bare tan). The forearm + gripping hands
+  //     travel WITH the rifle in drawGun (rotated to the aim), so they always
+  //     connect to the single weapon no matter which way it points — no floating
+  //     forearm on the up/down aims. ---
+  const armY = p.h * (1 - HERO_GUN.pivotY);   // gun pivot height above feet (matches drawGun)
+  R(-1, shoulderY, 3, shoulderY - armY + 1, P.outline);      // shoulder outline
+  R(0, shoulderY, 2, shoulderY - armY, P.arm);
+  R(0, shoulderY, 1, shoulderY - armY, P.armHi);             // top-lit
+
+  ctx.restore();
+}
+
+// The hero body is drawn WEAPONLESS in every branch and the ONE rifle is added
+// by drawGun — the CREATOR round-2 invariant (exactly one weapon, aiming). We
+// prefer a weaponless SPRITE from the art pipeline (player_*_noweapon keys) when
+// it has loaded, and otherwise draw the procedural weaponless commando
+// (drawHeroBody / drawProne). The gun-baked sprites (player_idle/run/jump/prone)
+// are NEVER drawn for the hero, so no baked gun can appear beside the aiming one.
 function drawPlayer(ctx, p, assets) {
+  const get = (k) => (assets && assets.get(k)) || null;
+
   // Death throw: the flung commando spins around its centre as it arcs (Contra's
-  // signature death). Drawn EVERY frame — it's a payoff, not an i-frame blink —
-  // rotated by p.deathAngle. Uses the idle sprite (procedural body fallback).
+  // signature death). Weapon reverts on death, so NO gun overlay here.
   if (p.dying) {
     const cx = p.x + p.w / 2, cy = p.y + p.h / 2;
     ctx.save();
     ctx.translate(cx, cy);
     ctx.rotate(p.deathAngle);
     ctx.translate(-cx, -cy);
-    const idle = assets && assets.get('player_idle');
-    if (idle) {
-      drawPlayerSprite(ctx, p, idle, p.x, p.y);
-    } else {
-      ctx.fillStyle = '#3f7bd6'; ctx.fillRect(p.x, p.y + 4, p.w, p.h - 8);
-      ctx.fillStyle = '#e8c39a'; ctx.fillRect(p.x + 3, p.y, p.w - 6, 6);
-      ctx.fillStyle = '#d23b3b'; ctx.fillRect(p.x + 2, p.y + 1, p.w - 4, 2);
-    }
+    const nw = get('player_idle_noweapon');
+    if (nw) drawPlayerSprite(ctx, p, nw, p.x, p.y);
+    else drawHeroBody(ctx, p, p.x, p.y, 'idle', 0);
     ctx.restore();
     return;
   }
@@ -1026,35 +1155,22 @@ function drawPlayer(ctx, p, assets) {
   const ky = -p.aim.y * p.recoilKick;
   const x = p.x + kx, y = p.y + ky;
 
-  // Prone uses a purpose-built low silhouette (the tall idle sprite would read
-  // as a crouch, not a lie-down). Blits the real prone commando frame
-  // (assets.get('player_prone'), native 28×15, rifle aimed right → mirrored by
-  // facing like the other player art) when loaded; falls back to the procedural
-  // low silhouette otherwise. drawPlayerSprite scales by p.h*1.4 = ~15px, so the
-  // frame stays low — the flat silhouette that ducks the boss's chest cannon.
+  // Prone: a purpose-built low silhouette (drawProne is already weaponless), or a
+  // weaponless prone sprite if the pipeline ships one. The ONE gun on top.
   if (p.prone) {
-    const prone = assets && assets.get('player_prone');
-    if (prone) drawPlayerSprite(ctx, p, prone, x, y);
+    const nw = get('player_prone_noweapon');
+    if (nw) drawPlayerSprite(ctx, p, nw, x, y);
     else drawProne(ctx, p, x, y);
     drawGun(ctx, p, x, y, assets);
     return;
   }
 
-  // Real sprites (from the art pipeline) if loaded; otherwise fall back to the
-  // procedural placeholder below. When grounded and moving, play the 4-beat run
-  // cycle (frame off walkPhase); otherwise stand on the idle sprite.
-  const run = assets && assets.get('player_run');
-  const idle = assets && assets.get('player_idle');
-  const jump = assets && assets.get('player_jump');
-  // Airborne (jumping/falling): blit the real leap frame (native 25×25, rifle
-  // aimed forward → mirrored by facing) so the commando reads as mid-air rather
-  // than a static idle stance frozen off the ground. Checked before run/idle;
-  // falls back to the idle sprite (then the procedural body) when absent.
-  if (jump && !p.grounded) {
-    // Somersault on the RISE (Contra tuck): spin the leap frame one full forward
-    // rotation over SOMERSAULT_FRAMES while ascending. On the way down settle to
-    // the upright aimed leap so aim stays readable + the gun shows. The tuck is a
-    // clean spinning silhouette, so the separate gun overlay is suppressed there.
+  // Airborne (jumping/falling): weaponless leap sprite if present, else the
+  // procedural jump body. Somersault on the RISE (Contra tuck) spins a clean
+  // silhouette with the gun suppressed; on descent the gun shows again.
+  const jumpNw = get('player_jump_noweapon');
+  if (!p.grounded) {
+    const drawBody = () => jumpNw ? drawPlayerSprite(ctx, p, jumpNw, x, y) : drawHeroBody(ctx, p, x, y, 'jump', 0);
     const tucking = p.vy < 0 && p.airborneT <= SOMERSAULT_FRAMES;
     if (tucking) {
       const prog = Math.min(1, p.airborneT / SOMERSAULT_FRAMES);
@@ -1063,14 +1179,15 @@ function drawPlayer(ctx, p, assets) {
       ctx.translate(cx, cy);
       ctx.rotate(p.facing * prog * TAU); // forward roll in the travel direction
       ctx.translate(-cx, -cy);
-      drawPlayerSprite(ctx, p, jump, x, y);
+      drawBody();
       ctx.restore();
     } else {
-      drawPlayerSprite(ctx, p, jump, x, y);
+      drawBody();
       drawGun(ctx, p, x, y, assets);
     }
     return;
   }
+
   // Landing SQUASH (movement-cadence feel): on touchdown after a jump/fall the
   // commando briefly compresses vertically + bulges out, anchored at the feet,
   // easing out over landT. Applies only to the grounded stances below (the prone
@@ -1082,39 +1199,20 @@ function drawPlayer(ctx, p, assets) {
     const fxc = x + p.w / 2, fyc = y + p.h;      // feet anchor
     ctx.translate(fxc, fyc); ctx.scale(sx, sy); ctx.translate(-fxc, -fyc);
   }
-  if (run && p.grounded && Math.abs(p.vx) > 0.2) {
-    // walkPhase advances ~vx*0.25/step; a quarter-turn per frame gives a full
-    // 4-beat loop every 2π and keeps cadence tied to run speed.
+
+  // Grounded: run cycle when moving, else idle stance. Weaponless sprite (with
+  // the 4-beat run strip) if the pipeline ships it, else the procedural body.
+  const running = p.grounded && Math.abs(p.vx) > 0.2;
+  if (running) {
     const frame = Math.floor(p.walkPhase / (Math.PI / 2)) % PLAYER_RUN.frames;
-    drawPlayerSprite(ctx, p, run, x, y, PLAYER_RUN, frame);
-    drawGun(ctx, p, x, y, assets);
-    return;
+    const runNw = get('player_run_noweapon');
+    if (runNw) drawPlayerSprite(ctx, p, runNw, x, y, PLAYER_RUN, frame);
+    else drawHeroBody(ctx, p, x, y, 'run', frame);
+  } else {
+    const idleNw = get('player_idle_noweapon');
+    if (idleNw) drawPlayerSprite(ctx, p, idleNw, x, y);
+    else drawHeroBody(ctx, p, x, y, 'idle', 0);
   }
-  if (idle) {
-    drawPlayerSprite(ctx, p, idle, x, y);
-    drawGun(ctx, p, x, y, assets);
-    return;
-  }
-
-  // legs (simple 2-frame stride from walkPhase)
-  const stride = Math.sin(p.walkPhase) * 3;
-  ctx.fillStyle = '#20304a';
-  ctx.fillRect(x + 1, y + p.h - 6, 4, 6 + (p.grounded ? Math.max(0, stride) : 0));
-  ctx.fillRect(x + p.w - 5, y + p.h - 6, 4, 6 + (p.grounded ? Math.max(0, -stride) : 0));
-
-  // body
-  ctx.fillStyle = p.flash > 0 ? '#ffffff' : '#3f7bd6';
-  ctx.fillRect(x, y + 4, p.w, p.h - 8);
-  // vest highlight
-  ctx.fillStyle = p.flash > 0 ? '#ffffff' : '#5b9bff';
-  ctx.fillRect(x + 2, y + 6, p.w - 4, 4);
-  // head
-  ctx.fillStyle = p.flash > 0 ? '#ffffff' : '#e8c39a';
-  ctx.fillRect(x + (p.facing > 0 ? 3 : 3), y, p.w - 6, 6);
-  // headband
-  ctx.fillStyle = '#d23b3b';
-  ctx.fillRect(x + 2, y + 1, p.w - 4, 2);
-
   drawGun(ctx, p, x, y, assets);
 }
 
@@ -1167,35 +1265,53 @@ function drawProne(ctx, p, x, y) {
 // Aim indicator + muzzle flash, drawn on top of body/sprite so the 8-way aim
 // stays readable regardless of which art is underneath.
 function drawGun(ctx, p, x, y, assets) {
-  // The hero's rifle, drawn along the 8-way AIM at the HANDS (chest height ~28% down),
-  // matching player.shoot()'s muzzle origin (CREATOR_FEEDBACK #2). This is the aiming
-  // weapon; per CREATOR_FEEDBACK ROUND 2 it is meant to be the ONLY gun once the art
-  // loop ships weaponless hero sprites (same keys) — so it's authored to real pixel-
-  // art quality (shaded gunmetal receiver + barrel + stock + mag), not a bare line.
-  const gx = x + p.w / 2, gy = y + p.h * 0.28;
+  // The hero's ONE rifle, drawn along the 8-way AIM from the chest/hands pivot
+  // (HERO_GUN, the SAME geometry player.shoot() spawns the bullet from), so the
+  // weapon you SEE and the weapon that FIRES are the same one — the CREATOR
+  // round-2 fix for CR-2. The body underneath is weaponless (drawHeroBody /
+  // weaponless sprite), so this is the ONLY gun on the hero. Authored to real
+  // pixel-art quality (shaded gunmetal receiver + barrel + stock + fore-grip),
+  // muzzle ending exactly at HERO_GUN.muzzle so the shot leaves the drawn tip.
+  const gx = x + p.w / 2, gy = y + p.h * HERO_GUN.pivotY;
   const ang = Math.atan2(p.aim.y, p.aim.x);
-  const barrelLen = 8; // muzzle sits ~9px out (matches shoot()'s hand origin span)
+  const muzzle = HERO_GUN.muzzle; // barrel tip distance from the pivot (== bullet spawn)
   ctx.save();
   ctx.translate(gx, gy);
   ctx.rotate(ang);
   if (p.aim.x < 0) ctx.scale(1, -1); // keep the rifle upright when aiming left
-  // barrel points +x; slim pixel rifle in local space (dark base → mid → light top)
-  ctx.fillStyle = '#20242b';                 // under-shadow silhouette
-  ctx.fillRect(-3, -1, 4 + barrelLen, 4);
-  ctx.fillStyle = '#454e58';                 // receiver body (mid gunmetal)
-  ctx.fillRect(-3, -1, 6, 3);
-  ctx.fillStyle = '#5a6470';                 // barrel (thin)
-  ctx.fillRect(3, -1, barrelLen - 2, 1);
-  ctx.fillStyle = '#8b95a2';                 // top highlight edge
-  ctx.fillRect(-3, -1, 4 + barrelLen, 1);
+  // Local space: barrel points +x, tip at `muzzle`. Layered dark→mid→light for
+  // shading (no flat outline-following — STYLE-BIBLE §hue-shift discipline).
+  ctx.fillStyle = '#181b21';                 // under-shadow silhouette (stock→muzzle)
+  ctx.fillRect(-5, -1, muzzle + 6, 4);
+  ctx.fillStyle = '#3d444e';                 // wooden/dark stock behind the grip
+  ctx.fillRect(-5, 0, 4, 3);
+  ctx.fillStyle = '#4c5560';                 // receiver body (mid gunmetal)
+  ctx.fillRect(-1, -1, 5, 4);
+  ctx.fillStyle = '#5a6470';                 // barrel (thin, to the tip)
+  ctx.fillRect(4, -1, muzzle - 4, 2);
+  ctx.fillStyle = '#828d9a';                 // top highlight edge along the whole gun
+  ctx.fillRect(-4, -1, muzzle + 4, 1);
   ctx.fillStyle = '#2b313a';                 // magazine below the receiver
-  ctx.fillRect(-1, 2, 2, 2);
+  ctx.fillRect(0, 3, 2, 2);
   ctx.fillStyle = '#c9d2dc';                 // muzzle tip glint
-  ctx.fillRect(2 + barrelLen, -1, 1, 1);
+  ctx.fillRect(muzzle - 1, -1, 1, 1);
+  // gripping hands + forearm — bare tan, drawn IN the gun's frame so they follow
+  // the aim and always connect the body to the single rifle (no floating arm on
+  // up/down aims). Rear hand at the trigger, front hand on the fore-grip.
+  if (p.flash <= 0) {
+    ctx.fillStyle = '#9e511a';               // forearm underside (shade)
+    ctx.fillRect(-5, 1, 8, 2);
+    ctx.fillStyle = '#b86634';               // forearm
+    ctx.fillRect(-5, 1, 8, 1);
+    ctx.fillStyle = '#e69e7f';               // rear fist (trigger hand)
+    ctx.fillRect(-2, 0, 2, 3);
+    ctx.fillStyle = '#e8b098';               // front fist (fore-grip hand)
+    ctx.fillRect(3, 0, 2, 3);
+  }
   ctx.restore();
 
   if (p.muzzle > 0) {
-    const mx = gx + Math.cos(ang) * (barrelLen + 1), my = gy + Math.sin(ang) * (barrelLen + 1);
+    const mx = gx + Math.cos(ang) * (muzzle + 1), my = gy + Math.sin(ang) * (muzzle + 1);
     const flash = assets && assets.get('muzzle');
     // Real 2-frame muzzle strip if it loaded, sliced off the p.muzzle timer
     // (set to 4 on fire, counts down): frame 0 for the hot first steps, then 1.
