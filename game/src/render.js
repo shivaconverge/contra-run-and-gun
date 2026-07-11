@@ -1057,6 +1057,18 @@ function weaponlessTurret(img) {
   const y0 = Math.round(h * 0.22), y1 = Math.round(h * 0.52); // barrel vertical band
   const bx = Math.round(w * 0.31);   // dome left edge — barrel protrudes left of this
   const fx = Math.round(w * 0.56);   // bore depth into the dome face
+  // IDEMPOTENT / DUAL-CONTRACT SAFE: the pipeline plans to ship the weaponless
+  // turret at the SAME `turret` key (byte-compatible drop-in, per
+  // assets/pipeline/experiments/weaponless/README.md), so this may receive an
+  // ALREADY barrel-less dome. PROBE the far-left protrusion zone for opaque
+  // pixels: a barrel muzzle sticks out here, a bare dome leaves it transparent.
+  // No protrusion ⇒ the art is already weaponless ⇒ return it untouched (never
+  // chop a clean dome). Works whether the pipeline overwrites `turret` weaponless
+  // OR ships a distinct `turret_base` (drawEnemy prefers that key when present).
+  const probeX = Math.round(w * 0.18);
+  let protrude = 0;
+  for (let y = y0; y < y1; y++) for (let x = 0; x < probeX; x++) if (d[(y * w + x) * 4 + 3] > 8) protrude++;
+  if (protrude < 3) { _turretBaseCache.set(img, img); return img; }
   for (let y = y0; y < y1; y++) {
     for (let x = 0; x < fx; x++) {
       const i = (y * w + x) * 4;
