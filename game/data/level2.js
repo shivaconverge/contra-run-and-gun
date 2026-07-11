@@ -132,6 +132,15 @@ export const LEVEL2 = {
     { weapon: 'spread',  x: 2020, y: 218 }, // pre-boss safety net
   ],
 
+  // Biome SET-DRESSING (contract in config.js): rusty pipe-valve props base-anchored on
+  // the ground, giving the Cascade Base its industrial read. x over ground, clear of the
+  // water gap (x1290–1346) and the boss arena (x>2140). Inert until render blits it.
+  decor: [
+    { x: 400,  key: 'decor_cascade_valve' },
+    { x: 980,  key: 'decor_cascade_valve' },
+    { x: 1650, key: 'decor_cascade_valve' },
+  ],
+
   playerStart: { x: 40, y: 200 },
   goalX: 2340, // chopper's x is the fight trigger; boss.dead = stage clear
 };

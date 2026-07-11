@@ -367,8 +367,32 @@ function bossVariant(base, spec) {
     if (bi >= 0) spawns.splice(bi, 0, ...spec.mix);
     else spawns.push(...spec.mix);
   }
-  return { ...base, name: spec.name, theme: spec.theme, spawns };
+  // `decor` is set EXPLICITLY (not inherited via ...base) so a variant built on LEVEL2
+  // does NOT leak the cascade base's set-dressing — each biome gets ITS own props or none.
+  return { ...base, name: spec.name, theme: spec.theme, spawns, decor: spec.decor || [] };
 }
+
+// ============================================================================
+// SET-DRESSING placement hook — CONFIRMED CONTRACT (campaign loop answers the
+// pipeline's "confirm the placement-hook shape + prop SIZE" ask in
+// assets/pipeline/experiments/set-dressing/README.md).
+//   Level field:  decor: [{ x:<worldX>, key:<spriteKey>, parallax?:<factor, default 1> }]
+//   Anchor:       BASE — the prop's BOTTOM sits on the ground y beneath `x` (like an
+//                 enemy's feet). x MUST be over ground (validated: World.validateDecor).
+//   Size:         render at NATIVE resolution (1×) — the props are authored 28–48px,
+//                 already scaled for the 480×270 view (a 48px pine ≈ 2.4× the 20px hero).
+//   parallax:     omit/1 = foreground playfield plane (moves with the world). A factor
+//                 <1 pushes a prop into the mid-ground (scrolls slower) for depth.
+// Biome → prop key (assets/pipeline/set-dressing.json; jungle intentionally has none —
+// Stage 1 keeps render.js's procedural grass tufts):
+//   cascade→decor_cascade_valve  snow→decor_snow_pine  desert→decor_desert_cactus
+//   foundry→decor_foundry_vat  caverns→decor_caverns_crystal  fortress→decor_fortress_brazier
+// OPEN NEEDS to finish the wire (this loop owns only the DATA half): (1) assets owner —
+// key decor_*.png into game/data/assets.js + sync/manifest (pipeline is staged, waiting
+// on this hook confirmation); (2) render.js (weapon-defect) — after drawParallax/before
+// entities, blit each level.decor prop base-anchored to the ground y. Until both land the
+// arrays are inert (render ignores unknown level fields), so this is gate-safe.
+// ============================================================================
 
 // Ground-emplacement Y helpers (base ground top = y236): a gravity-less turret (h16)
 // sits at 220, a mortar (h12) at 224; grunts spawn at 210 and fall onto the ground.
@@ -384,6 +408,12 @@ const CAMPAIGN = [
       { type: 'flyer', x: 1120, y: 115 },
       { type: 'flyer', x: 1500, y: 120 },
       { type: 'grunt', x: 1150, y: 210 },
+    ],
+    decor: [ // snow-laden pines lining the ridge (x over LEVEL1 ground [0,1700])
+      { x: 360, key: 'decor_snow_pine' },
+      { x: 780, key: 'decor_snow_pine' },
+      { x: 1280, key: 'decor_snow_pine' },
+      { x: 1640, key: 'decor_snow_pine' },
     ] },
   // Stage 4 — Scorched Dunes (ARTILLERY: mortar bombardment denies the open flats).
   { base: LEVEL2, theme: 'desert', name: 'Scorched Dunes',
@@ -393,6 +423,12 @@ const CAMPAIGN = [
       { type: 'mortar', x: 1560, y: 224 },
       { type: 'grunt',  x: 1000, y: 210 },
       { type: 'grunt',  x: 1700, y: 210 },
+    ],
+    decor: [ // saguaro cacti on the flats (x over LEVEL2 ground, clear of the gap 1290–1346)
+      { x: 300,  key: 'decor_desert_cactus' },
+      { x: 900,  key: 'decor_desert_cactus' },
+      { x: 1620, key: 'decor_desert_cactus' },
+      { x: 1980, key: 'decor_desert_cactus' },
     ] },
   // Stage 5 — Iron Foundry (TURRET fortress: automated sentries lock the lanes).
   { base: LEVEL1, theme: 'foundry', name: 'Iron Foundry',
@@ -403,6 +439,11 @@ const CAMPAIGN = [
       { type: 'turret', x: 1950, y: 169 }, // on the 1900 platform (top y185)
       { type: 'grunt',  x: 1000, y: 210 },
       { type: 'grunt',  x: 1980, y: 210 },
+    ],
+    decor: [ // molten smelting vats along the foundry floor
+      { x: 450,  key: 'decor_foundry_vat' },
+      { x: 1080, key: 'decor_foundry_vat' },
+      { x: 1600, key: 'decor_foundry_vat' },
     ] },
   // Stage 6 — Crystal Caverns (MIXED ambush: aerial + artillery crossfire).
   { base: LEVEL2, theme: 'caverns', name: 'Crystal Caverns',
@@ -413,6 +454,12 @@ const CAMPAIGN = [
       { type: 'mortar', x: 1000, y: 224 },
       { type: 'mortar', x: 1750, y: 224 },
       { type: 'grunt',  x: 1560, y: 210 },
+    ],
+    decor: [ // glowing violet crystal clusters (clear of the gap 1290–1346)
+      { x: 380,  key: 'decor_caverns_crystal' },
+      { x: 950,  key: 'decor_caverns_crystal' },
+      { x: 1640, key: 'decor_caverns_crystal' },
+      { x: 2000, key: 'decor_caverns_crystal' },
     ] },
   // Stage 7 — Red Falcon Keep (GAUNTLET: every threat axis at once, densest run).
   { base: LEVEL1, theme: 'fortress', name: 'Red Falcon Keep',
@@ -426,6 +473,12 @@ const CAMPAIGN = [
       { type: 'flyer',  x: 1100, y: 110 },
       { type: 'flyer',  x: 1550, y: 110 },
       { type: 'mortar', x: 1250, y: 224 },
+    ],
+    decor: [ // flaming iron braziers lining the keep approach
+      { x: 420,  key: 'decor_fortress_brazier' },
+      { x: 920,  key: 'decor_fortress_brazier' },
+      { x: 1500, key: 'decor_fortress_brazier' },
+      { x: 1960, key: 'decor_fortress_brazier' },
     ] },
 ];
 
