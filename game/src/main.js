@@ -1,9 +1,8 @@
 // Boot + main loop. Live mode uses a fixed-timestep accumulator driven by
 // rAF; headless mode (?headless=1&frames=N) steps the sim synchronously with a
 // scripted input timeline and renders one deterministic frame for capture.
-import { SIM } from '../data/config.js';
+import { SIM, STAGES } from '../data/config.js';
 import { LEVEL1 } from '../data/level1.js';
-import { LEVEL2 } from '../data/level2.js';
 import { ASSET_MANIFEST } from '../data/assets.js';
 import { World } from './world.js';
 import { KeyboardInput, ScriptedInput, CombinedInput } from './input.js';
@@ -65,27 +64,44 @@ function main() {
 
   const { ctx } = setupCanvas();
   const assets = new AssetStore();
-  // Stage select: default is Stage 1. `?level=2` boots the Stage-2 "Cascade Base"
-  // (chopper boss) directly — a de-risking hook (content/stage2/WIRE.md) so the new
-  // stage + boss are live-verifiable NOW, ahead of the Stage-1→2 auto-transition.
-  // The gate harnesses never pass ?level=2, so the default build stays byte-identical.
-  const STAGES = [LEVEL1, LEVEL2];
-  let stageIndex = params.get('level') === '2' ? 1 : 0;
+  // 7-STAGE CAMPAIGN LADDER (data-driven, from config.STAGES). Default boots Stage 1.
+  // `?level=N` (1..7) is a DEV shortcut to boot any stage directly — de-risking hook
+  // (content/stage2/WIRE.md), NOT the normal play path (which is clear→CONTINUE). The
+  // gate harnesses never pass ?level, so the default build stays byte-identical and
+  // STAGES[0] === LEVEL1 by identity (fidelity captures untouched).
+  const lvl = parseInt(params.get('level') || '1', 10);
+  let stageIndex = lvl >= 1 && lvl <= STAGES.length ? lvl - 1 : 0;
   const world = new World(STAGES[stageIndex], seed, params.get('mode') || undefined);
   window.__game = world;
   window.__assets = assets; // exposed so a harness can confirm real art loaded
 
-  // Player-INITIATED Stage-1→Stage-2 transition (content/stage2/WIRE.md §5, made
-  // gate-safe): clearing a stage leaves status='cleared' (the playthrough gate is
-  // unaffected — it never presses continue); the player then chooses to advance via
-  // N / the touch CONTINUE tap. loadStage() keeps the SAME world object so all the
-  // live-loop closures (feedback/audio/HI-score) stay valid. Score/lives carry over.
-  world.hasNextStage = stageIndex < STAGES.length - 1;
+  // Publish the progression metadata the renderer/HUD reads (dynamic — no hardcoded
+  // "STAGE 2"). `isFinalStage` + status==='cleared' == final VICTORY (render open
+  // need: show a VICTORY screen for that pair). `nextStageLabel` names the stage the
+  // CONTINUE prompt advances to.
+  const syncStageMeta = () => {
+    world.stageIndex = stageIndex;
+    world.stageNum = stageIndex + 1;
+    world.stageCount = STAGES.length;
+    world.hasNextStage = stageIndex < STAGES.length - 1;
+    world.isFinalStage = !world.hasNextStage;
+    world.nextStageLabel = world.hasNextStage
+      ? `STAGE ${stageIndex + 2}` + (STAGES[stageIndex + 1].name ? ` — ${STAGES[stageIndex + 1].name}` : '')
+      : null;
+  };
+  syncStageMeta();
+
+  // Player-INITIATED stage transition (content/stage2/WIRE.md §5, made gate-safe):
+  // clearing a stage leaves status='cleared' (the playthrough gate never presses
+  // continue); the player then advances via N / the touch CONTINUE tap. loadStage()
+  // keeps the SAME world object so all the live-loop closures (feedback/audio/
+  // HI-score) stay valid. Score/lives carry over; clearing the LAST stage is the
+  // campaign VICTORY (no next stage, so CONTINUE is not offered).
   world.requestNextStage = () => {
     if (world.status !== 'cleared' || stageIndex >= STAGES.length - 1) return;
     stageIndex++;
     world.loadStage(STAGES[stageIndex], { score: world.score, lives: world.lives });
-    world.hasNextStage = stageIndex < STAGES.length - 1;
+    syncStageMeta();
   };
 
   assets.load(ASSET_MANIFEST).then(() => {

@@ -4,6 +4,10 @@
 
 export const LEVEL1 = {
   name: 'Jungle Approach',
+  // Biome id → resolved to a THEMES record (config.js) exposed on world.theme for
+  // render/audio to pick this stage's backdrop/tileset/music (data-driven, no
+  // per-stage hardcoding). Additive field; the current renderer ignores it safely.
+  theme: 'jungle',
   width: 2400,
   height: 270,
   // Vertical world bound; falling below this y is a PIT DEATH (see world._onPitFall).

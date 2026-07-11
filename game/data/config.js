@@ -2,6 +2,12 @@
 // All units are pixels-per-fixed-step (the sim runs at STEP_HZ). Edit freely;
 // nothing here is hardcoded in the engine — the engine reads these values.
 // Strategy: task_data_driven_content_arch (config, not hardcoded).
+//
+// This file also assembles the 7-stage CAMPAIGN ladder (bottom of file) from the
+// authored geometries + a data-driven per-stage THEME descriptor, so the campaign
+// spine (clear N → N+1 → … → VICTORY) is pure data the engine reads, not hardcoded.
+import { LEVEL1 } from './level1.js';
+import { LEVEL2 } from './level2.js';
 
 export const SIM = {
   STEP_HZ: 60,          // fixed-timestep updates per second
@@ -266,3 +272,74 @@ export const FEEL = {
   shakeMax: 9,          // px at full trauma
   traumaDecay: 1.6,     // trauma units per second
 };
+
+// ============================================================================
+// THEMES — per-stage biome descriptor (DATA-DRIVEN). Each stage's level carries a
+// `theme` id; the engine resolves it to one of these records so RENDER (backdrop
+// gradient / ground tint / set-dressing accent / tileset key) and AUDIO (music
+// track) pick the right look+sound WITHOUT hardcoding per-stage branches.
+//
+// Consumer status (2026-07-12): the SPINE reads `theme` and exposes the resolved
+// record on `world.theme`. render.js/audio (owned by other loops) do NOT yet branch
+// on it — that wiring is declared as an OPEN NEED so each biome renders/sounds
+// distinct. Palettes here are PROVISIONAL art direction (pipeline owns final art);
+// `tileset`/`music` are the asset-key contracts those loops fill in.
+// ============================================================================
+export const THEMES = {
+  jungle:   { id: 'jungle',   name: 'Jungle Approach',  sky: ['#12321f', '#1d5233'], ground: '#2c3b24', accent: '#6fae4a', fog: '#14361f', tileset: 'theme_jungle',   music: 'jungle' },
+  cascade:  { id: 'cascade',  name: 'Cascade Base',     sky: ['#0f2634', '#164055'], ground: '#26343d', accent: '#4aa6c0', fog: '#123040', tileset: 'theme_cascade',  music: 'cascade' },
+  snow:     { id: 'snow',     name: 'Frozen Ridge',     sky: ['#1b2a3a', '#33506b'], ground: '#4a5a6a', accent: '#bfe0f5', fog: '#2a3f52', tileset: 'theme_snow',     music: 'snow' },
+  desert:   { id: 'desert',   name: 'Scorched Dunes',   sky: ['#3a2a16', '#7a5326'], ground: '#8a6a38', accent: '#e6c072', fog: '#5a3f1e', tileset: 'theme_desert',   music: 'desert' },
+  foundry:  { id: 'foundry',  name: 'Iron Foundry',     sky: ['#241014', '#4a1e18'], ground: '#33272a', accent: '#ff7a3c', fog: '#3a1a1a', tileset: 'theme_foundry',  music: 'foundry' },
+  caverns:  { id: 'caverns',  name: 'Crystal Caverns',  sky: ['#160f2a', '#2a1e52'], ground: '#2c2440', accent: '#b98ad9', fog: '#1c1436', tileset: 'theme_caverns',  music: 'caverns' },
+  fortress: { id: 'fortress', name: 'Red Falcon Keep',  sky: ['#2a0f12', '#5a161c'], ground: '#33202a', accent: '#ff5a6e', fog: '#3a1216', tileset: 'theme_fortress', music: 'fortress' },
+};
+export const THEME_DEFAULT = 'jungle';
+export function resolveTheme(id) { return THEMES[id] || THEMES[THEME_DEFAULT]; }
+
+// ============================================================================
+// CAMPAIGN — the 7-stage progression ladder (the spine root.C owns). Clearing a
+// stage advances to the next; clearing the LAST reaches VICTORY. Assembled as DATA
+// so main.js reads a ready STAGES array (no hardcoded 2-stage cap).
+//
+// Stages 1–2 are the AUTHORED geometries (LEVEL1 / LEVEL2) passed through by
+// IDENTITY — byte-identical, so the shipped fidelity/gate captures are unaffected.
+// Stages 3–7 are THEMED variants of those two geometries: each boss keeps its
+// PROVEN arena+behavior (Sentinel on LEVEL1's barrier@2300, Gunship on LEVEL2's
+// barrier@2140) and only the theme + the boss's identity/stats (name/hp/color/
+// cadence, via a per-spawn `override` world.js merges into the enemy def) change —
+// so every stage still ends on a boss that registers via the isBoss finder and is
+// defeatable on a geometry we've already validated live.
+//
+// OPEN NEEDS (declared, not worked around): (1) distinct GEOMETRY + set-dressing per
+// biome (pipeline/content) so stages 3–7 stop reusing two layouts; (2) distinct boss
+// MECHANICS beyond stat re-skins (weapon-defect owns enemy.js behavior branches);
+// (3) render/audio consuming `world.theme`. The spine below is correct and live now;
+// those layer in without changing this ladder's shape.
+// ============================================================================
+function bossVariant(base, spec) {
+  // Clone the base level, retag its theme/name, and fold the boss stat override
+  // onto whichever spawn is a boss archetype (isBoss). Geometry is untouched.
+  const spawns = base.spawns.map((sp) => {
+    const arche = ENEMIES[sp.type];
+    if (arche && arche.isBoss && spec.boss) {
+      return { ...sp, override: { ...(sp.override || {}), ...spec.boss } };
+    }
+    return sp;
+  });
+  return { ...base, name: spec.name, theme: spec.theme, spawns };
+}
+
+// One row per stage. `boss` overrides fold onto the base geometry's boss spawn.
+const CAMPAIGN = [
+  { base: LEVEL1 },  // Stage 1 — Jungle Approach (authored; theme in level1.js)
+  { base: LEVEL2 },  // Stage 2 — Cascade Base   (authored; theme in level2.js)
+  { base: LEVEL1, theme: 'snow',     name: 'Frozen Ridge',    boss: { name: 'Ice Sentinel',  hp: 72,  color: '#7fb6d9', enrageFireEvery: 42 } },
+  { base: LEVEL2, theme: 'desert',   name: 'Scorched Dunes',  boss: { name: 'Sand Gunship',  hp: 88,  color: '#d9b06a', enrageFireEvery: 42 } },
+  { base: LEVEL1, theme: 'foundry',  name: 'Iron Foundry',    boss: { name: 'Foundry Core',  hp: 104, color: '#9aa4b0', fireEvery: 74, enrageFireEvery: 40 } },
+  { base: LEVEL2, theme: 'caverns',  name: 'Crystal Caverns', boss: { name: 'Crystal Wing',  hp: 96,  color: '#b98ad9', enrageFireEvery: 40 } },
+  { base: LEVEL1, theme: 'fortress', name: 'Red Falcon Keep', boss: { name: 'Red Falcon',    hp: 128, color: '#ff5a6e', fireEvery: 68, enrageFireEvery: 36 } },
+];
+
+// The playable ladder: stages 1–2 pass through by identity; 3–7 are themed variants.
+export const STAGES = CAMPAIGN.map((c) => (c.boss ? bossVariant(c.base, c) : c.base));
