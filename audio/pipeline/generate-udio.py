@@ -37,11 +37,13 @@ TRACKS_DIR = os.path.normpath(os.path.join(HERE, "..", "tracks"))
 MANIFEST = os.path.join(TRACKS_DIR, "manifest.json")
 
 # ---------------------------------------------------------------------------
-# Biome -> theme spec.  stage_id is the campaign-loop-facing key (declared as an
-# open_need for the campaign loop to confirm/rename).  `section` is the engine
-# MusicKit section name this track supersedes when a stage selects it.  `style`
-# is the Udio style/genre string; `prompt` steers arrangement + mood; `key`
-# keeps each biome harmonically distinct.  All INSTRUMENTAL, arcade run-and-gun.
+# Biome -> theme spec, ALIGNED TO THE CAMPAIGN THEMES REGISTRY (game/data/config.js
+# THEMES + STAGES, confirmed by parent 2026-07-12). Campaign stage order is:
+#   1 jungle · 2 cascade · 3 snow · 4 desert · 5 foundry · 6 caverns · 7 fortress
+# `stage_id` keeps the s<N>_ prefix main.js sorts on (index i === campaign stage i)
+# AND encodes the config THEMES `theme` id; `theme` is that exact id (jungle/cascade/…)
+# so the manifest maps 1:1 onto world.level.theme. `key` keeps each biome harmonically
+# distinct. All INSTRUMENTAL, arcade run-and-gun.
 # ---------------------------------------------------------------------------
 _CORE = ("fast driving 16-bit arcade run-and-gun chiptune, ~150 BPM, relentless "
          "galloping bassline, punchy march drums, heroic minor-key lead, seamless "
@@ -49,7 +51,7 @@ _CORE = ("fast driving 16-bit arcade run-and-gun chiptune, ~150 BPM, relentless 
 
 BIOMES = [
     {
-        "stage_id": "s1_jungle", "biome": "jungle", "section": "stage",
+        "stage_id": "s1_jungle", "biome": "jungle", "theme": "jungle",
         "level": "Jungle Approach", "key": "E minor",
         "style": "16-bit chiptune, action, run-and-gun, driving, heroic, 150 bpm, instrumental",
         "prompt": ("Stage 1 JUNGLE assault. " + _CORE + ". E minor, brisk heroic march, "
@@ -57,52 +59,52 @@ BIOMES = [
                    "the classic Contra opening-stage energy."),
     },
     {
-        "stage_id": "s2_base", "biome": "base interior", "section": "stage_base",
-        "level": "Base Interior", "key": "D minor",
-        "style": "16-bit chiptune, industrial action, tense, mechanical, 152 bpm, instrumental",
-        "prompt": ("Stage 2 enemy BASE INTERIOR infiltration. " + _CORE + ". D minor, "
-                   "tenser and more mechanical, metallic percussion, pulsing arpeggios, "
-                   "corridors-of-a-fortress menace, still fast and propulsive."),
-    },
-    {
-        "stage_id": "s3_waterfall", "biome": "waterfall", "section": "stage2",
+        "stage_id": "s2_cascade", "biome": "cascade waterfall base", "theme": "cascade",
         "level": "Cascade Base", "key": "A minor",
         "style": "16-bit chiptune, action, flowing, driving, 150 bpm, instrumental",
-        "prompt": ("Stage 3 WATERFALL cascade climb. " + _CORE + ". A minor, "
+        "prompt": ("Stage 2 CASCADE waterfall base climb. " + _CORE + ". A minor, "
                    "flowing shimmering arpeggios over the gallop, a sense of rushing water "
-                   "and vertical ascent, bright but urgent, heroic run-and-gun."),
+                   "and vertical ascent past a river base, bright but urgent, heroic run-and-gun."),
     },
     {
-        "stage_id": "s4_snowfield", "biome": "snowfield", "section": "stage_snow",
-        "level": "Snowfield", "key": "C minor",
+        "stage_id": "s3_snow", "biome": "snow", "theme": "snow",
+        "level": "Frozen Ridge", "key": "C minor",
         "style": "16-bit chiptune, action, cold, crystalline, driving, 148 bpm, instrumental",
-        "prompt": ("Stage 4 frozen SNOWFIELD advance. " + _CORE + ". C minor, "
+        "prompt": ("Stage 3 FROZEN RIDGE snowfield advance. " + _CORE + ". C minor, "
                    "crystalline bell-like lead, a colder crisp timbre, howling-blizzard tension "
                    "under a still-relentless march, wintry heroic action."),
     },
     {
-        "stage_id": "s5_energy", "biome": "energy zone", "section": "stage_energy",
-        "level": "Energy Zone", "key": "F# minor",
-        "style": "16-bit chiptune, synthwave action, electric, pulsing, 154 bpm, instrumental",
-        "prompt": ("Stage 5 ENERGY ZONE reactor run. " + _CORE + ". F# minor, "
-                   "electric buzzing synth-lead, high-voltage pulsing arpeggios, neon-reactor "
-                   "danger, fastest and most charged of the stages, hyper-driving."),
+        "stage_id": "s4_desert", "biome": "desert", "theme": "desert",
+        "level": "Scorched Dunes", "key": "D minor",
+        "style": "16-bit chiptune, action, exotic, arid, driving, 150 bpm, instrumental",
+        "prompt": ("Stage 4 SCORCHED DUNES desert march. " + _CORE + ". D minor with a "
+                   "phrygian exotic-scale lead, sun-baked shimmering heat, a caravan-of-war "
+                   "swagger over the gallop, sandstorm urgency, heroic run-and-gun."),
     },
     {
-        "stage_id": "s6_hangar", "biome": "hangar", "section": "stage_hangar",
-        "level": "Hangar", "key": "G minor",
-        "style": "16-bit chiptune, military action, driving, brassy, 150 bpm, instrumental",
-        "prompt": ("Stage 6 military HANGAR assault. " + _CORE + ". G minor, "
-                   "brassy militaristic stabs, mechanized march, jet-launch urgency, "
-                   "the penultimate-stage push, powerful and relentless."),
+        "stage_id": "s5_foundry", "biome": "foundry", "theme": "foundry",
+        "level": "Iron Foundry", "key": "G minor",
+        "style": "16-bit chiptune, industrial metal action, heavy, mechanical, 152 bpm, instrumental",
+        "prompt": ("Stage 5 IRON FOUNDRY assault. " + _CORE + ". G minor, heavy detuned "
+                   "industrial-metal lead, clanging molten-metal percussion, pounding "
+                   "machine-press rhythm, red-hot furnace menace, powerful and relentless."),
     },
     {
-        "stage_id": "s7_alienlair", "biome": "alien lair", "section": "stage_alien",
-        "level": "Alien Lair", "key": "B minor",
-        "style": "16-bit chiptune, dark action, alien, ominous, driving, 156 bpm, instrumental",
-        "prompt": ("Stage 7 final ALIEN LAIR descent. " + _CORE + ". B minor, "
-                   "dark dissonant chromatic tension, organic-alien dread over the fastest "
-                   "gallop, biomechanical horror, the climactic final-stage theme."),
+        "stage_id": "s6_caverns", "biome": "caverns", "theme": "caverns",
+        "level": "Crystal Caverns", "key": "F# minor",
+        "style": "16-bit chiptune, action, mysterious, crystalline, echoing, 150 bpm, instrumental",
+        "prompt": ("Stage 6 CRYSTAL CAVERNS descent. " + _CORE + ". F# minor, glassy "
+                   "chiming crystalline lead with cavern-echo space, an eerie subterranean "
+                   "beauty over the driving gallop, deep and mysterious, still propulsive."),
+    },
+    {
+        "stage_id": "s7_fortress", "biome": "fortress", "theme": "fortress",
+        "level": "Red Falcon Keep", "key": "B minor",
+        "style": "16-bit chiptune, dark militaristic action, epic, ominous, driving, 156 bpm, instrumental",
+        "prompt": ("Stage 7 final RED FALCON KEEP fortress assault. " + _CORE + ". B minor, "
+                   "dark epic militaristic brass-stab lead, chromatic final-boss-approach tension "
+                   "over the fastest gallop, the climactic last-stage theme, powerful and grim."),
     },
 ]
 
@@ -246,7 +248,7 @@ def main():
             "file": "tracks/" + spec["stage_id"] + ".mp3",
             "biome": spec["biome"],
             "level": spec["level"],
-            "section": spec["section"],
+            "theme": spec["theme"],
             "key": spec["key"],
             "source_url": url,
             "workId": wid,

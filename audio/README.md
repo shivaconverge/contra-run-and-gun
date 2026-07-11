@@ -43,6 +43,36 @@ Copy `music.js` → `game/src/music.js`, then in `AudioKit`:
 to it, add `duck(active)`, and add one `audio.duck(world.feel.hitStop > 0)` line to the
 main.js render loop. Full patch in **INTEGRATION.md**.
 
+## ✅ REAL GENERATED PER-BIOME CAMPAIGN TRACKS (7/7) — the primary deliverable
+**Real Udio-generated instrumental loops, one per campaign stage/biome** (via
+`pipeline/generate-udio.py` → udioapi.pro/chirp-v4-5). These are the required *real
+generated* audio — the procedural synth (`music.js`) is now only the fallback when a
+track is still decoding or fails to load. Source of truth: `audio/tracks/`; served copy:
+`game/assets/audio/`. The engine loads them (`MusicKit.loadTracks`/`useTrack`, added this
+workstream) and **hard-cuts to each stage's biome loop** on stage change (`main.js`
+`world.onStageChange`). `stage_id` order (`s<N>_`) === campaign stage index; `theme` ===
+`game/data/config.js` THEMES id (confirmed against the real STAGES registry):
+
+| stage | theme id | track file | key | status |
+|---:|---|---|---|---|
+| 1 | `jungle`   | `s1_jungle.mp3`   | E min  | generated |
+| 2 | `cascade`  | `s2_cascade.mp3`  | A min  | generated |
+| 3 | `snow`     | `s3_snow.mp3`     | C min  | generated |
+| 4 | `desert`   | `s4_desert.mp3`   | D min  | generated |
+| 5 | `foundry`  | `s5_foundry.mp3`  | G min  | generated |
+| 6 | `caverns`  | `s6_caverns.mp3`  | F# min | generated |
+| 7 | `fortress` | `s7_fortress.mp3` | B min  | generated |
+
+Grounded by `pipeline/analyze-tracks.py` → `TRACK-ANALYSIS.md` (numpy/ffmpeg measurement
+of the real files): all 7 are real/non-silent (RMS ≈ −12…−14 dB), each in a distinct key,
+min pairwise timbre distance 0.017 (none identical), and every `theme` matches the campaign
+stage order (7/7 OK). Regenerate/extend: `source ../../.provider_secrets.env && python3
+audio/pipeline/generate-udio.py`; re-verify: `python3 audio/pipeline/analyze-tracks.py`.
+
+> Open need (parent to confirm): the boss fight currently keeps the stage's real biome
+> loop (no per-biome *boss* track yet). If a distinct boss cue per stage is wanted, that's
+> a follow-up generation pass — flag it and I'll produce boss loops keyed `s<N>_..._boss`.
+
 ## Status: LIVE ✅ (integrated by root.B, commit `89f6f80`)
 The music is wired into the shipped build and **verified live end-to-end** by
 `verify/live-check.mjs` (boots `game/serve.mjs` in real Chromium):
