@@ -75,9 +75,17 @@ to 3.4 s of dead air** before restarting (a broken loop; the corpus anti-pattern
 trims each track to its sustained-energy region with click-safe fades. Measured after
 (`TRACK-ANALYSIS.md §1b`): worst trailing silence **10.6 ms** (was 3374 ms), worst end→start
 discontinuity **0.001** (click-free), and every loop wraps on live music (end RMS ≫ 0). Run
-`generate-udio.py` (raw download) → `make-seamless.py` (loop-trim, overwrites + syncs
-`game/assets/audio/`) → `analyze-tracks.py` (verify). The raw Udio render stays reproducible
-via each track's `source_url` in the manifest.
+`generate-udio.py` (raw download) → `make-seamless.py` (loop-trim) → `normalize-loudness.py`
+(loudness-match) → `analyze-tracks.py` (verify), each overwriting + syncing
+`game/assets/audio/`. The raw Udio render stays reproducible via each track's `source_url`.
+
+**CONSISTENT LOUDNESS (`pipeline/normalize-loudness.py`).** The campaign hard-cuts between
+stages, so a loudness mismatch = an audible volume jump at every transition. The raw tracks
+spanned **2.2 LU** (−12.3…−14.5 LUFS) and two peaked at **0.0 dBFS** (clipping). This step
+EBU-R128 loudness-matches all 7 to −15 LUFS via **linear gain** (preserves the seamless-loop
+waveform exactly — no dynamic compression) with true-peak headroom. Measured after
+(`TRACK-ANALYSIS.md §1c`): spread **0.10 LU** (inaudible step) and worst true peak **−1.7
+dBFS** (no clipping). So stage→stage transitions no longer jump in volume.
 
 **LIVE-VERIFIED in a real browser (`verify/campaign-tracks-live.mjs`, all-pass):** boots the
 SHIPPED build (`game/serve.mjs`) in Chromium, fires the autoplay gesture, and asserts that

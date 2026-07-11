@@ -44,6 +44,17 @@ def decode(path):
     return np.frombuffer(p.stdout, dtype=np.float32)
 
 
+def lufs_and_peak(path):
+    """EBU R128 integrated loudness (LUFS) + true peak (dBFS) via ffmpeg ebur128."""
+    import re
+    r = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", path,
+                        "-af", "ebur128=peak=true", "-f", "null", "-"],
+                       capture_output=True, text=True)
+    I = re.findall(r"I:\s*(-?\d+\.?\d*)\s*LUFS", r.stderr)
+    TP = re.findall(r"Peak:\s*(-?\d+\.?\d*)\s*dBFS", r.stderr)
+    return (float(I[-1]) if I else None), (float(TP[-1]) if TP else None)
+
+
 def fingerprint(x):
     """Return (duration_s, rms_dbfs, peak_dbfs, centroid_hz, band_energy[9])."""
     dur = len(x) / SR
@@ -85,6 +96,7 @@ def main():
     rows = []
     fps = {}
     seams = {}
+    loud = {}
     for tid, meta in tracks.items():
         path = os.path.join(AUDIO_DIR, meta["file"])
         if not os.path.exists(path):
@@ -102,6 +114,7 @@ def main():
         w = int(0.05 * SR)
         end_rms = float(np.sqrt(np.mean(x[-w:] ** 2))) if n >= w else 0.0
         seams[tid] = (tail / SR * 1000.0, abs(float(x[-1]) - float(x[0])), end_rms)
+        loud[tid] = lufs_and_peak(path)
         low_frac = float(band[0] + band[1])  # <250 Hz = the driving-bass floor
         rows.append((tid, meta["biome"], meta["key"], dur, rms_db, peak_db, cen, low_frac))
         print(f"{tid:14s} {meta['biome']:14s} {dur:6.1f}s  rms={rms_db:6.1f}dB  "
@@ -175,6 +188,27 @@ def main():
                  f"silence {worst_tail:.1f} ms and worst wrap discontinuity {worst_jump:.4f}; "
                  f"every loop wraps on live music (end RMS ≫ 0), so no track goes silent "
                  f"mid-loop and no wrap clicks.\n")
+
+    lines.append("## 1c. Consistent loudness across stages (EBU R128)\n")
+    lines.append("The campaign hard-cuts stage N→N+1, so the 7 tracks must sit at the SAME "
+                 "integrated loudness or the player hears a volume jump. `pipeline/"
+                 "normalize-loudness.py` matches them (linear gain, so the seamless loop is "
+                 "preserved) with true-peak headroom. Measured (ffmpeg `ebur128`):\n")
+    lines.append("| stage_id | integrated | true peak |")
+    lines.append("|---|---:|---:|")
+    lus = []
+    worst_peak = -99.0
+    for tid in tracks:
+        li, tp = loud[tid]
+        lus.append(li)
+        worst_peak = max(worst_peak, tp)
+        lines.append(f"| `{tid}` | {li:.1f} LUFS | {tp:.1f} dBFS |")
+    spread = (max(lus) - min(lus)) if lus else 0.0
+    lines.append("")
+    loud_ok = spread <= 1.0 and worst_peak <= -0.5
+    lines.append(f"**Loudness verdict: {'PASS' if loud_ok else 'REVIEW'}** — spread "
+                 f"{spread:.2f} LU (≤1 LU = inaudible stage-to-stage step) and worst true "
+                 f"peak {worst_peak:.1f} dBFS (headroom, no clipping).\n")
 
     lines.append("## 2. Distinct per biome (band-fingerprint cosine distance)\n")
     lines.append("Pairwise cosine distance between 8-band spectral fingerprints "

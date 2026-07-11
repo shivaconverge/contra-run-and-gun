@@ -107,16 +107,20 @@ const CAMPAIGN = ['jungle', 'cascade', 'snow', 'desert', 'foundry', 'caverns', '
         `active=${r.active} trackGain=${r.trackGain} synthGain=${r.synthGain} src=${r.srcLive} themeMatch=${themeOk}`);
     }
 
-    // return to synth (useTrack(null)) — proves the fallback path still works. Audible
-    // contract = real-track source stopped + synth restored; trackGain's numeric value on
-    // the now-sourceless bus is not asserted (headless-shell readback artifact, inaudible).
+    // return to synth (useTrack(null)) — proves the fallback path still works. Deterministic
+    // contract: the real-track source is STOPPED (active===null, srcLive===false) and the
+    // synth is re-selected (muted===false). We wait >1 bar (~1.58s @152 BPM) before reading
+    // musicGain so the synth scheduler has resumed feeding it — otherwise headless-shell
+    // returns a stale value for a momentarily source-less gain node (an inaudible artifact,
+    // not a defect). trackGain's numeric value on the now-sourceless bus is not asserted.
     const back = await page.evaluate(`(async () => {
       const m = window.__audio.music; window.__audio.useTrack(null);
-      await new Promise((res) => setTimeout(res, 180));
-      return { active: m.track, srcLive: !!m._trackSource, synthGain: +m.musicGain.gain.value.toFixed(3) };
+      await new Promise((res) => setTimeout(res, 1900)); // let the synth scheduler resume a bar
+      return { active: m.track, srcLive: !!m._trackSource, muted: m.muted, synthGain: +m.musicGain.gain.value.toFixed(3) };
     })()`);
-    pass &= ok('useTrack(null) returns to the procedural synth fallback', back.active === null && back.srcLive === false && back.synthGain > 0.1,
-      `active=${back.active} src=${back.srcLive} synthGain=${back.synthGain}`);
+    pass &= ok('useTrack(null) returns to the procedural synth fallback',
+      back.active === null && back.srcLive === false && back.muted === false && back.synthGain > 0.1,
+      `active=${back.active} src=${back.srcLive} muted=${back.muted} synthGain=${back.synthGain}`);
 
     await page.close();
   } catch (e) {
