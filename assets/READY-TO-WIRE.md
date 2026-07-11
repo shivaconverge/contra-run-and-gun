@@ -1,5 +1,23 @@
 # READY-TO-WIRE — art-slice fidelity levers awaiting an engine greenlight
 
+## 🎨 STAGED — per-stage SET-DRESSING props (6 biomes, deliverable #2 next art class)
+`python assets/pipeline/generate.py decor` produces one signature transparent prop per
+biome — real PixelLab art (snow pine / desert cactus / cavern crystal / foundry molten
+vat / fortress brazier / cascade valve). Adds the "set-dressing" the GOAL wants per stage
+and answers the creator's "background looks very simple" note; today biome distinctness is
+only the tileset + a procedural parallax band. Proven distinct-yet-coherent AND composited
+onto the REAL live biome frames (they ground + read in-scene): `assets/pipeline/
+experiments/set-dressing/` (`props-montage.png`, `props-in-context.png`, `README.md`).
+
+**Engine placement hook to wire (then I finalize sync+manifest, ~5 min $0):**
+1. `game/data/assets.js` — key the props (`decor_snow_pine: 'assets/decor_snow_pine.png'`, …).
+2. Level data — a `decor: [{ x, key, parallax? }]` array per stage.
+3. `game/src/render.js` — blit each decor sprite base-anchored to the ground y (after
+   `drawParallax`, before entities; mirror `drawEnemySprite`'s feet-anchor).
+STAGED out of manifest/game-assets on purpose (no decor hook yet → keeps the gate green).
+**NEED:** confirm the placement-hook shape + intended on-screen prop SIZE before I expand
+past one prop per biome (authored ~28–48px native — a rough proportional pass).
+
 ## ✅ DONE — per-stage BIOME TILESETS (6 biomes, deliverable #2 scaling engine) — FINALIZED + LIVE
 WIRED by the engine (commit 41e9563: `assets.js` keys `theme_cascade..theme_fortress`,
 `render.js drawGround` blits `assets.get(world.theme.tileset)` with the jungle `tiles`

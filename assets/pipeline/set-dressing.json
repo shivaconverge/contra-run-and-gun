@@ -1,0 +1,106 @@
+{
+  "sprites": {
+    "decor_cascade_valve": {
+      "image": "sprites/decor_cascade_valve.png",
+      "type": "decor",
+      "biome": "cascade",
+      "frameWidth": 42,
+      "frameHeight": 44,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 42,
+          "h": 44
+        }
+      ],
+      "anchor": "bottom-center",
+      "note": "biome set-dressing prop for 'cascade'. Base-anchored: engine sits the prop BOTTOM on the ground y. Place via a level decor:[{x, key:'decor_cascade_valve', parallax?}] array + a render blit."
+    },
+    "decor_snow_pine": {
+      "image": "sprites/decor_snow_pine.png",
+      "type": "decor",
+      "biome": "snow",
+      "frameWidth": 28,
+      "frameHeight": 48,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 28,
+          "h": 48
+        }
+      ],
+      "anchor": "bottom-center",
+      "note": "biome set-dressing prop for 'snow'. Base-anchored: engine sits the prop BOTTOM on the ground y. Place via a level decor:[{x, key:'decor_snow_pine', parallax?}] array + a render blit."
+    },
+    "decor_desert_cactus": {
+      "image": "sprites/decor_desert_cactus.png",
+      "type": "decor",
+      "biome": "desert",
+      "frameWidth": 30,
+      "frameHeight": 46,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 30,
+          "h": 46
+        }
+      ],
+      "anchor": "bottom-center",
+      "note": "biome set-dressing prop for 'desert'. Base-anchored: engine sits the prop BOTTOM on the ground y. Place via a level decor:[{x, key:'decor_desert_cactus', parallax?}] array + a render blit."
+    },
+    "decor_foundry_vat": {
+      "image": "sprites/decor_foundry_vat.png",
+      "type": "decor",
+      "biome": "foundry",
+      "frameWidth": 42,
+      "frameHeight": 38,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 42,
+          "h": 38
+        }
+      ],
+      "anchor": "bottom-center",
+      "note": "biome set-dressing prop for 'foundry'. Base-anchored: engine sits the prop BOTTOM on the ground y. Place via a level decor:[{x, key:'decor_foundry_vat', parallax?}] array + a render blit."
+    },
+    "decor_caverns_crystal": {
+      "image": "sprites/decor_caverns_crystal.png",
+      "type": "decor",
+      "biome": "caverns",
+      "frameWidth": 40,
+      "frameHeight": 48,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 40,
+          "h": 48
+        }
+      ],
+      "anchor": "bottom-center",
+      "note": "biome set-dressing prop for 'caverns'. Base-anchored: engine sits the prop BOTTOM on the ground y. Place via a level decor:[{x, key:'decor_caverns_crystal', parallax?}] array + a render blit."
+    },
+    "decor_fortress_brazier": {
+      "image": "sprites/decor_fortress_brazier.png",
+      "type": "decor",
+      "biome": "fortress",
+      "frameWidth": 30,
+      "frameHeight": 44,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 30,
+          "h": 44
+        }
+      ],
+      "anchor": "bottom-center",
+      "note": "biome set-dressing prop for 'fortress'. Base-anchored: engine sits the prop BOTTOM on the ground y. Place via a level decor:[{x, key:'decor_fortress_brazier', parallax?}] array + a render blit."
+    }
+  }
+}

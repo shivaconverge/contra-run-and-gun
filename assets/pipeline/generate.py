@@ -677,6 +677,100 @@ def gen_biome_tilesets(only: str | None = None) -> None:
     print(f"Balance: ${bal1:.2f}  (spent ${bal0 - bal1:.2f})")
 
 
+# --------------------------------------------------------------------------- #
+# PER-STAGE SET-DRESSING PROPS  (deliverable #2 — the next art class after tilesets)
+# --------------------------------------------------------------------------- #
+# The GOAL wants each stage to have "its own set-dressing"; the creator's ROUND-1 note
+# was literally "background looks very simple". Right now the biome distinctness is the
+# tileset + a PROCEDURAL parallax band (render.js drawParallax recolours 2 sine-band
+# silhouettes off world.theme.back) -- no generated decoration in the playfield. This
+# recipe adds the missing class: one SIGNATURE prop per biome, a transparent free-
+# standing pixel-art object the engine can place on the ground line for readable, biome-
+# specific dressing (snow pine, desert cactus, foundry vat, cavern crystal, ...).
+#
+# ROUGH PASS (proportional to confidence): one prop per biome PROVES the recipe scales
+# 1->7 and reads distinct-yet-coherent, WITHOUT mass-producing a guessed-size set before
+# the engine's placement hook (a level `decor:[{x,key,...}]` array + a render blit) is
+# confirmed. Authored transparent at a per-prop native size (props are taller than the
+# 32px character tier -- a tree ~56px). Feet/base-anchored: the engine sits the prop's
+# BOTTOM on the ground y. Same coherent style discipline as the tilesets (bold outline,
+# chunky, on the biome's config palette). STAGED (fragment + assets/sprites, NOT manifest
+# /game-assets) until the engine adds the decor hook -- keeps the contract gate green.
+PROP_STYLE_BASE = (", single object centered, transparent background, no ground, no "
+                   "character, bold near-black outline, chunky 16-bit pixel art, "
+                   "high contrast, clear readable silhouette, side view")
+
+SET_DRESSING = {
+    # biome id -> signature prop {name, size, seed, prompt}. Palette keyed to the
+    # biome's config THEMES ground/accent so props sit in their scene.
+    "cascade": {"name": "valve", "size": 48, "seed": 511,
+                "prompt": "a rusty industrial pipe junction with a large round red "
+                "valve wheel and riveted blue-grey steel pipes, teal water stains, "
+                "standing on the ground"},
+    "snow":    {"name": "pine", "size": 56, "seed": 512,
+                "prompt": "a tall snow-laden evergreen pine tree, dark green needles "
+                "heavy with bright white snow, thin brown trunk, cold winter"},
+    "desert":  {"name": "cactus", "size": 56, "seed": 513,
+                "prompt": "a tall green saguaro desert cactus with two raised arms and "
+                "small spines, warm sun-lit, standing in sand"},
+    "foundry": {"name": "vat", "size": 48, "seed": 514,
+                "prompt": "a heavy riveted dark steel industrial smelting vat brimming "
+                "with glowing molten-orange metal, gunmetal grey, hot glow"},
+    "caverns": {"name": "crystal", "size": 52, "seed": 515,
+                "prompt": "a cluster of tall glowing violet-purple crystal shards "
+                "growing up from a dark rock base, luminous lavender"},
+    "fortress":{"name": "brazier", "size": 48, "seed": 516,
+                "prompt": "a dark iron fortress brazier fire-basket on a stand with "
+                "bright orange-red flames, grey-red stone base, riveted metal"},
+}
+
+
+def gen_set_dressing(only: str | None = None) -> None:
+    """Deliverable #2 set-dressing driver: produce one signature transparent prop per
+    biome (real PixelLab pixflux), staged for the engine's placement hook.
+
+    Writes assets/sprites/decor_<biome>_<name>.png + a fragment set-dressing.json with
+    manifest-ready records (key `decor_<biome>_<name>`, native frame dims, base-anchored
+    note). NOT synced to game/assets or manifest.json -- there is no engine decor hook
+    yet, so shipping would trip the cross-source gate (orphan). Same produce-ahead-of-
+    wire pattern the biome tilesets used before the engine wired them. RESUMABLE: every
+    API result is cached immediately, so a re-run after any interruption costs $0 and
+    picks up where it left off (mitigates the full-kit-gen timeout risk)."""
+    bal0 = balance()
+    print(f"Balance: ${bal0:.2f}")
+    if bal0 < MIN_BALANCE_USD:
+        sys.exit(f"Balance below ${MIN_BALANCE_USD}; aborting.")
+    SPRITES.mkdir(parents=True, exist_ok=True)
+    ids = [only] if only else list(SET_DRESSING)
+    frag = {}
+    for tid in ids:
+        if tid not in SET_DRESSING:
+            sys.exit(f"unknown biome '{tid}'; known: {', '.join(SET_DRESSING)}")
+        spec = SET_DRESSING[tid]
+        key = f"decor_{tid}_{spec['name']}"
+        print(f"[decor] {tid}: {spec['name']} ({spec['size']}px native)")
+        im = gen_pixflux(spec["prompt"] + PROP_STYLE_BASE, spec["size"],
+                         seed=spec["seed"], tag=key)
+        pack = pack_strip([im], SPRITES / f"{key}.png", tighten=True)
+        frag[key] = {
+            "image": f"sprites/{key}.png",
+            "type": "decor",
+            "biome": tid,
+            "frameWidth": pack["frameWidth"],
+            "frameHeight": pack["frameHeight"],
+            "frames": pack["frames"],
+            "anchor": "bottom-center",
+            "note": (f"biome set-dressing prop for '{tid}'. Base-anchored: engine sits "
+                     f"the prop BOTTOM on the ground y. Place via a level "
+                     f"decor:[{{x, key:'{key}', parallax?}}] array + a render blit."),
+        }
+    fragpath = Path(__file__).resolve().parent / "set-dressing.json"
+    fragpath.write_text(json.dumps({"sprites": frag}, indent=2))
+    print(f"Wrote {fragpath.name} ({len(frag)} prop(s))")
+    bal1 = balance()
+    print(f"Balance: ${bal1:.2f}  (spent ${bal0 - bal1:.2f})")
+
+
 def gen_anim_text(description: str, action: str, ref: Image.Image,
                   seed: int, tag: str, n_frames: int = 4) -> list[Image.Image]:
     body = {
@@ -1668,5 +1762,9 @@ if __name__ == "__main__":
         # produce the per-stage biome tilesets (deliverable #2). `biomes` = all 6;
         # `biomes <id>` = just that biome (e.g. `biomes snow`).
         gen_biome_tilesets(sys.argv[2] if len(sys.argv) > 2 else None)
+    elif cmd == "decor":
+        # produce the per-stage set-dressing props (deliverable #2). `decor` = all 6;
+        # `decor <id>` = just that biome (e.g. `decor snow`). Staged for the engine hook.
+        gen_set_dressing(sys.argv[2] if len(sys.argv) > 2 else None)
     else:
         run()
