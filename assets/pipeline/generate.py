@@ -1301,12 +1301,17 @@ BIOME_BOSSES = {
         "sentinel emplacement, blood-red armored hull with gold trim and a fierce bird-of-"
         "prey faceplate, a massive central cannon barrel aimed to the left, glowing red eye, "
         "side view, bold black outline, high contrast, intimidating"},
+    # v2 (seed 184): the v1 "dusty sun-bleached weathered" prompt gave a mottled/muddy
+    # camo surface (the weakest boss). Re-seeded to CLEAN flat panels — crisper by looking
+    # (experiments/bosses/desert-reseed/compare.png): sharp silhouette, defined cockpit +
+    # chin cannon + rotor, on-theme tan/ochre. Same chopper family/hitbox.
     "desert":  {"name": "Sand Gunship", "family": "chopper", "native": CHOPPER_NATIVE,
-        "hitbox": CHOPPER_HITBOX, "seed": 172,
-        "prompt": "classic Contra arcade attack helicopter gunship boss, wide armored "
-        "aerial silhouette facing left, tan and ochre DESERT SAND camo armor, dusty sun-"
-        "bleached weathered hull, spinning rotor on top, twin chin cannons pointing left, "
-        "glowing cockpit, side view, bold black outline, high contrast"},
+        "hitbox": CHOPPER_HITBOX, "seed": 184,
+        "prompt": "classic Contra arcade attack helicopter gunship boss, wide heavy "
+        "armored aerial silhouette facing left, clean flat tan and ochre desert camo "
+        "armor panels, smooth hull with bold black panel lines, spinning rotor on top, "
+        "twin chin cannons pointing left, glowing red cockpit, side view, bold black "
+        "outline, high contrast, crisp pixel art"},
     "caverns": {"name": "Crystal Wing", "family": "chopper", "native": CHOPPER_NATIVE,
         "hitbox": CHOPPER_HITBOX, "seed": 176,
         "prompt": "classic Contra arcade attack helicopter gunship boss, wide armored aerial "

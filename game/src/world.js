@@ -650,7 +650,20 @@ export class World {
     ck(bossHp[6] === Math.max(...bossHp),
       `finale boss HP ${bossHp[6]} is not the campaign max (${Math.max(...bossHp)})`);
 
-    return { pass: errors.length === 0, errors, density, bossHp };
+    // Fold in the FAST data guards (footing, decor) so they run through THIS entry
+    // point — it's the one wired into selftest.js (block 29). Previously validateFooting
+    // + validateDecor were dormant (defined but never called by the gate), so a spawn
+    // floated over a pit or a decor prop placed over a gap would ship unchecked. Both
+    // are cheap pure-data scans; rolling them in makes the single wired call assert
+    // footing + set-dressing placement too. (Defeatability + respawn-safety stay
+    // separate: defeatability is covered live by the scenario=campaign oracle, and
+    // respawn-safety is already wired into selftest block 30.)
+    const foot = World.validateFooting(stages);
+    ck(foot.pass, `footing: ${JSON.stringify(foot.violations.slice(0, 3))}`);
+    const dec = World.validateDecor(stages);
+    ck(dec.pass, `decor: ${JSON.stringify(dec.violations.slice(0, 3))}`);
+
+    return { pass: errors.length === 0, errors, density, bossHp, footing: foot.pass, decor: dec.pass };
   }
 
   // RESPAWN-SAFETY guard — a pit death must NEVER respawn the player back into a pit,

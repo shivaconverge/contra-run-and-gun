@@ -323,10 +323,18 @@ async function main() {
         const w = window.__game;
         const boss = w.boss;
         const a = window.__audio;
+        // Themed boss ART fact: the EXACT sprite render.js drawEnemy resolves for this
+        // stage's boss — assets.get('boss_'+theme.id) (the themedBoss that wins over the
+        // base boss/chopper). Recorded per stage so a regression to an unwired key or a
+        // stale/degenerate boss sprite (e.g. a re-seed that dropped the file) is VISIBLE
+        // in the gate output, not silently masked by the base-art fallback. Untamed
+        // stages (jungle/cascade — no boss_<id> key) legitimately resolve null.
+        const themeId = w.level && w.level.theme;
+        const bImg = window.__assets && themeId && window.__assets.get('boss_' + themeId);
         return {
           stageNum: w.stageNum,
           name: w.level && w.level.name,
-          theme: w.level && w.level.theme,
+          theme: themeId,
           status: w.status,
           hasNextStage: w.hasNextStage,
           isFinalStage: w.isFinalStage,
@@ -335,6 +343,9 @@ async function main() {
           bossName: boss && boss.def && boss.def.name,
           bossKind: boss && boss.kind,
           bossHp: boss && boss.hp,
+          themedBossKey: themeId ? 'boss_' + themeId : null,
+          themedBossLoaded: !!bImg,
+          themedBossDims: bImg ? { w: bImg.naturalWidth, h: bImg.naturalHeight } : null,
           playerX: Math.round(w.player.x),
           audioLayerPresent: !!(a && a.music),
           audioTrack: a ? a.track : null,        // real biome loop id, or null (synth fallback)
@@ -503,6 +514,18 @@ async function main() {
   // closure instead (still normal progression, never a param skip).
   run.transitions = run.stages.filter((s) => s.transitionVia).map((s) => ({ from: s.stage, via: s.transitionVia, keyPresses: s.transitionKeyPresses }));
   run.keyBindingProven = run.transitions.some((t) => t.via === 'KeyN(real-key)');
+  // Themed-boss ART fact: every stage with a DEDICATED per-biome boss sprite must have
+  // that themedBoss image LOADED, so the per-stage boss art (incl. the re-seeded
+  // boss_desert Sand Gunship) is proven ACTIVE — not silently falling back to the base
+  // boss/chopper. The two UNTAMED stages (jungle/cascade) intentionally have NO
+  // boss_<id> key and reuse the base art (game/data/assets.js contract), so they are
+  // exempt. Recorded as a first-class fact + surfaced.
+  const UNTAMED_THEMES = new Set(['jungle', 'cascade']); // no dedicated boss_<id> sprite
+  run.themedBossArt = run.stages
+    .filter((s) => s.bossName && !UNTAMED_THEMES.has(s.theme))
+    .map((s) => ({ stage: s.stage, theme: s.theme, key: s.themedBossKey, loaded: !!s.themedBossLoaded, dims: s.themedBossDims }));
+  run.themedBossArtProblems = run.themedBossArt.filter((b) => !b.loaded).map((b) => b.stage);
+  run.themedBossArtOk = run.themedBossArtProblems.length === 0;
   run.verdict = scopeServed === EXPECTED_STAGES && run.victory ? 'PASS' : 'INCOMPLETE';
 
   const outJson = path.join(HERE, outName);
@@ -519,8 +542,10 @@ async function main() {
   const viaClosure = run.transitions.filter((t) => t.via === 'requestNextStage()-closure').length;
   console.log(`  transitions: ${viaKey} via real KeyN, ${viaClosure} via requestNextStage() fallback; keyBindingProven=${run.keyBindingProven}`);
   for (const s of run.stages) {
-    console.log(`  stage ${s.stage} [${s.theme}] boss=${s.bossName || '—'} vis=${s.visuallyDistinct} music=${s.audioTrack || 'synth'}(${s.musicDistinct}) pass=${s.pass}${s.reasons.length ? ' (' + s.reasons.join(',') + ')' : ''}`);
+    const bd = s.themedBossDims ? `${s.themedBossDims.w}x${s.themedBossDims.h}` : (s.bossName ? 'ART-MISSING' : 'base');
+    console.log(`  stage ${s.stage} [${s.theme}] boss=${s.bossName || '—'} art=${bd} vis=${s.visuallyDistinct} music=${s.audioTrack || 'synth'}(${s.musicDistinct}) pass=${s.pass}${s.reasons.length ? ' (' + s.reasons.join(',') + ')' : ''}`);
   }
+  console.log(`  themedBossArt: ${run.themedBossArtOk ? 'all themed bosses loaded their sprite' : 'MISSING on stages ' + run.themedBossArtProblems.join(',')}`);
   if (run.consoleErrors.length) console.log(`  consoleErrors: ${run.consoleErrors.length}`);
   if (run.pageErrors.length) console.log(`  pageErrors: ${run.pageErrors.length}`);
   console.log(`  wrote ${path.relative(REPO, outJson)} + ${run.stages.length} frames`);
