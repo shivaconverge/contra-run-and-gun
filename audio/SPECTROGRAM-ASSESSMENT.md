@@ -1,4 +1,39 @@
-# Multimodal (visual) fidelity assessment of the music — 2026-07-10
+# Multimodal (visual) fidelity assessment of the music
+
+**JUDGE BY LOOKING** — spectrograms read directly as independent grounding beyond the scalar
+metrics (loudness/seam/timbre in `TRACK-ANALYSIS.md`). NOT a substitute for a human *listen*
+(melody/harmony taste — see caveat).
+
+## PART 1 — the 7 REAL Udio biome tracks (the shipped deliverable, 2026-07-12)
+Spectrograms of the actual shipped `.mp3`s (not the synth): `spectrograms/real/s{1..7}_*.png`,
+generated `ffmpeg -i audio/tracks/<id>.mp3 -lavfi
+"showspectrumpic=s=1100x340:mode=combined:legend=1:scale=log:color=intensity" out.png`.
+I read 4 contrasting biomes directly; all 7 share the health traits (same pipeline).
+
+**Common health (all):** full spectrum up to the **~16 kHz mp3 lowpass** (expected at ~120 kbps
+VBR — inaudible ceiling for game BGM), a **strong continuous bass floor** (bright DC–2.5 kHz
+band), **dense regular rhythmic striations** (the driving pulse), and **no dead air** anywhere —
+i.e. real, driving, structurally-complete music, consistent with the seamless-loop trim.
+
+**Visually DISTINCT per biome (read directly):**
+- **`s1_jungle`** — uniform dense rhythmic striations, moderate even bass, brief sparser intro
+  then full density. A steady driving march.
+- **`s5_foundry`** — the heaviest/widest **bass wall** + clear **sectional** structure (a sparser
+  breakdown ~28–42 s) and punchy **industrial transients** (strong vertical hits). Reads "heavy".
+- **`s3_snow`** — even **mid-high shimmer**, thinner bass, sustained rather than sectional texture.
+  Reads "crystalline/cold" — the opposite spectral weighting to foundry.
+- **`s7_fortress`** — rich **harmonic banding** (sustained brass stripes ~43–58 s, ~72–102 s),
+  layered and epic with sectional dynamics. The densest/most-orchestral of the four.
+
+So the visual signatures differ markedly biome-to-biome (heavy-bass vs shimmer vs harmonic-layered
+vs steady-march), corroborating the scalar timbre-distinctness (`TRACK-ANALYSIS.md §2`, no near-
+duplicates) with an independent modality. Health + distinctness confirmed on the REAL deliverable.
+
+---
+
+## PART 2 — the procedural synth FALLBACK (reference, 2026-07-10)
+The sections below assess the `music.js` synth (now only the decode-time fallback), kept for
+reference. This was the earlier cycle's work before the 7 real tracks shipped.
 
 Every prior cycle judged the music with **scalar metrics** (RMS, per-bar energy, D#
 tension, high-pass hat energy). This cycle I did the thing the mandate calls for —
