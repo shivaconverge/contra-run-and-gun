@@ -7,8 +7,7 @@ re-encode → loudnorm re-encode → outlier touch-up → …), and the payload 
 player downloads all 7 at boot). This regenerates each final file from its ORIGINAL Udio
 master (manifest `source_url`) through a SINGLE ffmpeg encode that does everything at once:
   trim to the sustained-energy loop region  +  click-safe fades  +  EBU R128 loudnorm
-  (linear gain, target -15 LUFS / -1.5 dBFS TP)  +  web-appropriate VBR bitrate (q:a 6 ≈
-  120 kbps).
+  (linear gain, target -15 LUFS / -1.5 dBFS TP)  +  web-appropriate VBR (q:a 6 → measured 83–121 kbps content-adaptive, mean ~99).
 Net: ONE lossy generation from the master (higher fidelity than the stacked chain) AND a
 smaller download. Overwrites audio/tracks/<id>.mp3 + syncs game/assets/audio/.
 
@@ -36,7 +35,7 @@ SR = 44100
 FRAC = 0.5          # sustained-energy threshold = FRAC × median envelope
 FADE_IN, FADE_OUT = 0.010, 0.060
 TARGET_I, TARGET_TP, TARGET_LRA = -15.0, -1.5, 11.0
-QUALITY = "6"       # libmp3lame VBR quality (~120 kbps) — transparent for looped BGM under SFX
+QUALITY = "6"       # libmp3lame VBR quality (measured 83–121 kbps, mean ~99) — transparent for looped BGM under SFX
 WIN = int(0.050 * SR)
 
 
