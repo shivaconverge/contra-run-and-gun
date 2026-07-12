@@ -27,6 +27,15 @@ bug. This is the GOAL's "7-stage campaign in which every stage has
 a DISTINCT theme/biome with its own high-quality generated tileset ... boss" — LIVE at a
 public URL real players can reach, and it matches the local finalized art (no deploy drift).
 
+## ✅ SET-DRESSING verified LIVE on the PUBLIC PRODUCTION URL (all 6 decor stages)
+Definitive prod acceptance (`../set-dressing/live-prod/MONTAGE-decor-live-prod.png`): driving
+the DEPLOYED site `shivaconverge.github.io/contra-run-and-gun` at `?level=2..7`, every decor-
+bearing stage renders its prop on the ground for real players — cascade valves / snow pines /
+desert cacti / foundry vats / cavern crystals / fortress braziers; 0 page errors, 0 missing.
+Prod is byte-current with local (boss_desert v2 + decor PNGs md5-match live==local). So the
+full distinct-per-stage art kit (tileset + background + set-dressing + boss) is LIVE for real
+players — grounded by looking, not asserted.
+
 ## ✅ SET-DRESSING now WIRED + LIVE (was pending when this montage was captured)
 When this montage was taken the decor wire didn't exist yet; the engine has since wired it
 (`assets.js` keys 6 `decor_*` + `render.js drawDecor` over `world.decor`). All 6 decor-

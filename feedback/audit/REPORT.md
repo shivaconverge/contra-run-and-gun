@@ -1,8 +1,10 @@
 # Weapon-Defect Audit — creator round-2 (all 7 stages)
 
-_Generated 2026-07-12T05:43:28.887Z by `feedback/audit/weapon-defect-audit.mjs`. Regenerate: `node feedback/audit/weapon-defect-audit.mjs`._
+_Generated 2026-07-12T06:21:47.932Z by `feedback/audit/weapon-defect-audit.mjs`. Regenerate: `node feedback/audit/weapon-defect-audit.mjs`._
 
 **VERDICT: PASS** — 7/7 stages clean. Muzzle tolerance 2px.
+
+> ✅ **Layer B (runtime grounding) RAN** — every stage driven in a real headless browser build.
 
 The creator round-2 REJECT is a FACT: does any armed entity show TWO weapons (a
 gun baked into the sprite art AND a procedural code-drawn one)? The two entities

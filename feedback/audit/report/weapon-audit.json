@@ -1,8 +1,13 @@
 {
-  "when": "2026-07-12T05:43:28.887Z",
+  "when": "2026-07-12T06:21:47.932Z",
   "tool": "feedback/audit/weapon-defect-audit.mjs",
   "scope": "creator round-2 two-weapon defect (hero drawGun + turret drawTurretBarrel) across all 7 stages",
   "epsPx": 2,
+  "layerB": {
+    "grounded": true,
+    "skipped": false,
+    "skipReason": null
+  },
   "staticLayer": {
     "ok": true,
     "checks": [
