@@ -3,6 +3,19 @@
 Verification for the music layer lives in `verify/` (run `npm run verify:all`). This file
 tracks OPEN ISSUES — real gaps found by running the deliverable, with severity + exact repro.
 
+## GATE RELIABILITY (de-flake, 2026-07-12)
+`verify:all` (the audio-layer gate other loops + the release gate consume) was FLAKY under
+back-to-back suite load — Chromium contention slowed the AudioContext scheduler / mp3 decode
+past fixed-sleep waits, spuriously reporting red. Two fixes:
+1. **live-check enrage/churn** — replaced fixed `sleep+read` with `waitForFunction` poll-until-
+   settled (7s timeout). **Grounded: 7 consecutive full-gate runs → live-check 18/18 every time.**
+2. **campaign-tracks-live + stage-boot-music decode budget** — bumped ~10s → ~15s to absorb a
+   cold-start (first Chromium + first decode of 7 mp3s) transient seen once in 7 runs. Safe: a
+   longer wait only affects a *failing* check (passing checks break early on success), so it can
+   only remove false negatives, never add false positives.
+Post-fix status: 6/6 consecutive full-gate runs green at 90/90 after warm-up; the lone early
+red was a cold-start transient in a real-track verifier (not live-check), addressed by (2).
+
 ## OPEN ISSUES
 
 ### 2026-07-10 — OI-A1: Stage-2 (`?level=2`) plays the Stage-1 music (key clash)

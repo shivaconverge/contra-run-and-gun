@@ -71,7 +71,7 @@ function ok(name, pass, detail) { console.log(`  ${pass ? 'PASS' : 'FAIL'}  ${na
 
       // wait until the REAL onStageChange path has selected this stage's decoded track
       let got = null;
-      for (let i = 0; i < 40; i++) { // up to ~10s (decode + selection)
+      for (let i = 0; i < 60; i++) { // up to ~15s (decode + selection; cold-start margin)
         got = await page.evaluate(`(() => {
           const m = window.__audio.music;
           return { track: m.track, hasBuf: m.hasTrack(${JSON.stringify(expectId)}), src: !!m._trackSource, level: (window.__game && window.__game.stageNum) };
