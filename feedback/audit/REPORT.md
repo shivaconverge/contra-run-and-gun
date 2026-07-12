@@ -1,6 +1,6 @@
 # Weapon-Defect Audit — creator round-2 (all 7 stages)
 
-_Generated 2026-07-12T06:21:47.932Z by `feedback/audit/weapon-defect-audit.mjs`. Regenerate: `node feedback/audit/weapon-defect-audit.mjs`._
+_Generated 2026-07-12T06:44:18.542Z by `feedback/audit/weapon-defect-audit.mjs`. Regenerate: `node feedback/audit/weapon-defect-audit.mjs`._
 
 **VERDICT: PASS** — 7/7 stages clean. Muzzle tolerance 2px.
 
@@ -23,6 +23,7 @@ fires from where that weapon is drawn.
 | `A4.heroShotFromDrawnMuzzle` | ✅ PASS | HERO_GUN{pivotY:0.30,muzzle:11} shared: render.drawGun uses .muzzle=true, player.shoot via heroMuzzle=true |
 | `A5.turretShotFromDrawnBarrel` | ✅ PASS | render.drawTurretBarrel uses e.def.barrel{Pivot,Len}=true; enemy.js fire uses this.def.barrel{Pivot,Len}=true |
 | `A6.otherArmedEnemiesWeaponless` | ✅ PASS | drawBoss weaponCalls={gun:0,barrel:0}, drawChopper weaponCalls={gun:0,barrel:0}, drawGun-in-drawEnemy=0 ⇒ boss/chopper/flyer/mortar/grunt carry no procedural overlay |
+| `A7.everyConfigKindModeled` | ✅ PASS | all 6 config ENEMIES kinds modeled: [grunt, flyer, turret, mortar, boss, chopper] (+hero) — no unaudited kind |
 
 ## Layer B — per-stage FACTS
 
@@ -55,7 +56,8 @@ Every armed enemy — procedural weapon TYPE (static, from `render.js`; hero=gun
 - ✅ `mortar` ×1 → draws `none` (`drawEnemy→drawEnemySprite/placeholder`, expected `none`)
 - ✅ `boss` ×1 → draws `none` (`drawBoss`, expected `none`)
 
-- ✅ `static.renderPathInvariants` — LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)
+- ✅ `static.renderPathInvariants` — LAYER A A1..A7 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free, every config kind modeled)
+- ✅ `keys.allSpawnsModeled` — all 5 spawned kinds modeled: [grunt, turret, flyer, mortar, boss]
 - ✅ `keys.noBakedWeaponBody` — two-weapon entities [turret, hero] resolve to weaponless bodies only
 - ✅ `keys.everyArmedEnemyOneWeapon` — all 5 armed kinds draw one weapon type: hero→gun, turret→barrel, flyer→none, mortar→none, boss→none (hero=gun, turret=barrel, rest=none; none draws two)
 - ✅ `runtime.themeBoots` — booted theme='jungle' (config='jungle'), status=playing
@@ -81,7 +83,8 @@ Every armed enemy — procedural weapon TYPE (static, from `render.js`; hero=gun
 - ✅ `mortar` ×2 → draws `none` (`drawEnemy→drawEnemySprite/placeholder`, expected `none`)
 - ✅ `chopper` ×1 → draws `none` (`drawChopper`, expected `none`)
 
-- ✅ `static.renderPathInvariants` — LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)
+- ✅ `static.renderPathInvariants` — LAYER A A1..A7 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free, every config kind modeled)
+- ✅ `keys.allSpawnsModeled` — all 5 spawned kinds modeled: [grunt, turret, flyer, mortar, chopper]
 - ✅ `keys.noBakedWeaponBody` — two-weapon entities [turret, hero] resolve to weaponless bodies only
 - ✅ `keys.everyArmedEnemyOneWeapon` — all 5 armed kinds draw one weapon type: hero→gun, turret→barrel, flyer→none, mortar→none, chopper→none (hero=gun, turret=barrel, rest=none; none draws two)
 - ✅ `runtime.themeBoots` — booted theme='cascade' (config='cascade'), status=playing
@@ -105,7 +108,8 @@ Every armed enemy — procedural weapon TYPE (static, from `render.js`; hero=gun
 - ✅ `turret` ×3 → draws `barrel` (`drawEnemy(turret)→drawTurretBarrel`, expected `barrel`)
 - ✅ `boss` ×1 → draws `none` (`drawBoss`, expected `none`)
 
-- ✅ `static.renderPathInvariants` — LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)
+- ✅ `static.renderPathInvariants` — LAYER A A1..A7 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free, every config kind modeled)
+- ✅ `keys.allSpawnsModeled` — all 4 spawned kinds modeled: [grunt, flyer, turret, boss]
 - ✅ `keys.noBakedWeaponBody` — two-weapon entities [turret, hero] resolve to weaponless bodies only
 - ✅ `keys.everyArmedEnemyOneWeapon` — all 4 armed kinds draw one weapon type: hero→gun, flyer→none, turret→barrel, boss→none (hero=gun, turret=barrel, rest=none; none draws two)
 - ✅ `runtime.themeBoots` — booted theme='snow' (config='snow'), status=playing
@@ -129,7 +133,8 @@ Every armed enemy — procedural weapon TYPE (static, from `render.js`; hero=gun
 - ✅ `mortar` ×4 → draws `none` (`drawEnemy→drawEnemySprite/placeholder`, expected `none`)
 - ✅ `chopper` ×1 → draws `none` (`drawChopper`, expected `none`)
 
-- ✅ `static.renderPathInvariants` — LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)
+- ✅ `static.renderPathInvariants` — LAYER A A1..A7 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free, every config kind modeled)
+- ✅ `keys.allSpawnsModeled` — all 4 spawned kinds modeled: [grunt, turret, mortar, chopper]
 - ✅ `keys.noBakedWeaponBody` — two-weapon entities [turret, hero] resolve to weaponless bodies only
 - ✅ `keys.everyArmedEnemyOneWeapon` — all 4 armed kinds draw one weapon type: hero→gun, turret→barrel, mortar→none, chopper→none (hero=gun, turret=barrel, rest=none; none draws two)
 - ✅ `runtime.themeBoots` — booted theme='desert' (config='desert'), status=playing
@@ -153,7 +158,8 @@ Every armed enemy — procedural weapon TYPE (static, from `render.js`; hero=gun
 - ✅ `mortar` ×2 → draws `none` (`drawEnemy→drawEnemySprite/placeholder`, expected `none`)
 - ✅ `boss` ×1 → draws `none` (`drawBoss`, expected `none`)
 
-- ✅ `static.renderPathInvariants` — LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)
+- ✅ `static.renderPathInvariants` — LAYER A A1..A7 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free, every config kind modeled)
+- ✅ `keys.allSpawnsModeled` — all 4 spawned kinds modeled: [grunt, turret, mortar, boss]
 - ✅ `keys.noBakedWeaponBody` — two-weapon entities [turret, hero] resolve to weaponless bodies only
 - ✅ `keys.everyArmedEnemyOneWeapon` — all 4 armed kinds draw one weapon type: hero→gun, turret→barrel, mortar→none, boss→none (hero=gun, turret=barrel, rest=none; none draws two)
 - ✅ `runtime.themeBoots` — booted theme='foundry' (config='foundry'), status=playing
@@ -179,7 +185,8 @@ Every armed enemy — procedural weapon TYPE (static, from `render.js`; hero=gun
 - ✅ `mortar` ×5 → draws `none` (`drawEnemy→drawEnemySprite/placeholder`, expected `none`)
 - ✅ `chopper` ×1 → draws `none` (`drawChopper`, expected `none`)
 
-- ✅ `static.renderPathInvariants` — LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)
+- ✅ `static.renderPathInvariants` — LAYER A A1..A7 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free, every config kind modeled)
+- ✅ `keys.allSpawnsModeled` — all 5 spawned kinds modeled: [grunt, turret, flyer, mortar, chopper]
 - ✅ `keys.noBakedWeaponBody` — two-weapon entities [turret, hero] resolve to weaponless bodies only
 - ✅ `keys.everyArmedEnemyOneWeapon` — all 5 armed kinds draw one weapon type: hero→gun, turret→barrel, flyer→none, mortar→none, chopper→none (hero=gun, turret=barrel, rest=none; none draws two)
 - ✅ `runtime.themeBoots` — booted theme='caverns' (config='caverns'), status=playing
@@ -205,7 +212,8 @@ Every armed enemy — procedural weapon TYPE (static, from `render.js`; hero=gun
 - ✅ `mortar` ×3 → draws `none` (`drawEnemy→drawEnemySprite/placeholder`, expected `none`)
 - ✅ `boss` ×1 → draws `none` (`drawBoss`, expected `none`)
 
-- ✅ `static.renderPathInvariants` — LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)
+- ✅ `static.renderPathInvariants` — LAYER A A1..A7 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free, every config kind modeled)
+- ✅ `keys.allSpawnsModeled` — all 5 spawned kinds modeled: [grunt, turret, flyer, mortar, boss]
 - ✅ `keys.noBakedWeaponBody` — two-weapon entities [turret, hero] resolve to weaponless bodies only
 - ✅ `keys.everyArmedEnemyOneWeapon` — all 5 armed kinds draw one weapon type: hero→gun, turret→barrel, flyer→none, mortar→none, boss→none (hero=gun, turret=barrel, rest=none; none draws two)
 - ✅ `runtime.themeBoots` — booted theme='fortress' (config='fortress'), status=playing
