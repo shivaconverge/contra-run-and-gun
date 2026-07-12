@@ -55,9 +55,20 @@ log "browser: $CHROME"
 log "driving $BASE/?selftest=1"
 
 DOM="$(mktemp)"; trap 'rm -f "$DOM"' EXIT
-"$CHROME" --headless --disable-gpu --no-sandbox --virtual-time-budget=12000 \
-  --dump-dom "${BASE}/?selftest=1" >"$DOM" 2>/dev/null || fail "browser run failed"
-
+# RETRY on transient browser-run/parse misses: a single headless drive can come
+# back with a blank DOM (slow load / connection blip → the #selftest-done div
+# never appears) and produce a FALSE gate FAIL that BLOCKS a healthy deploy —
+# observed the dump-dom come back empty while an immediate re-run passed 119/119.
+# The parser exits 2 for "report not captured" (transient → retry) vs 1 for a
+# REAL parsed regression (definitive → never retried).
+attempt=0; parse_rc=2
+while [ "$attempt" -lt 3 ]; do
+  attempt=$((attempt+1))
+  : >"$DOM"
+  if ! "$CHROME" --headless --disable-gpu --no-sandbox --virtual-time-budget=12000 \
+       --dump-dom "${BASE}/?selftest=1" >"$DOM" 2>/dev/null; then
+    log "browser run failed (attempt ${attempt}/3) — retrying"; sleep 3; continue
+  fi
 python3 - "$DOM" "$OUT" <<'PY'
 import re, json, sys, html as H
 dom = open(sys.argv[1]).read()
@@ -95,7 +106,16 @@ if missing: print("VERDICT: required campaign tests MISSING:", missing); bad = T
 if notpass: print("VERDICT: required campaign tests FAILING:", notpass); bad = True
 sys.exit(1 if bad else 0)
 PY
-rc=$?
-[ "$rc" -eq 0 ] || fail "live self-test did not fully pass (see above); report saved to $OUT"
+  parse_rc=$?
+  # 0 = full pass, 1 = REAL regression (report parsed) → both definitive, stop.
+  # 2 = report not captured (transient) → retry.
+  [ "$parse_rc" -ne 2 ] && break
+  log "self-test report not captured (attempt ${attempt}/3) — retrying"; sleep 3
+done
+case "$parse_rc" in
+  0) : ;;
+  1) fail "live self-test found a REAL regression on the deployed build (see above); report saved to $OUT" ;;
+  *) fail "live self-test report could not be captured after 3 attempts (transient browser/load failure); reachability is still covered by verify.sh" ;;
+esac
 pass "deployed build passes its OWN regression suite incl. 7-distinct-stage campaign invariants"
 log "report -> $OUT"
