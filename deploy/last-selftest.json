@@ -1,6 +1,6 @@
 {
-  "passed": 118,
-  "total": 118,
+  "passed": 119,
+  "total": 119,
   "ok": true,
   "results": [
     {
@@ -592,6 +592,11 @@
       "name": "campaign.finaleIsDensestAndHardest",
       "pass": true,
       "detail": "density=[23,20,20,20,21,23,27] bossHp=[90,78,86,88,104,96,128]"
+    },
+    {
+      "name": "campaign.respawnNeverIntoPit",
+      "pass": true,
+      "detail": "7 stages clean"
     }
   ]
 }
