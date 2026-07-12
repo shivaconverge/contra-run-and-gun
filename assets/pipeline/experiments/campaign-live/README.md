@@ -27,13 +27,12 @@ bug. This is the GOAL's "7-stage campaign in which every stage has
 a DISTINCT theme/biome with its own high-quality generated tileset ... boss" — LIVE at a
 public URL real players can reach, and it matches the local finalized art (no deploy drift).
 
-## Honest exception (tracked, engine-owned): SET-DRESSING props not yet on-screen
-The montage shows distinct tileset+bg+boss per stage, but **no set-dressing props** render
-yet on ANY stage. The campaign now PLACES decor on all 6 themed stages (`config.js
-CAMPAIGN[].decor` + `level2.js`: snow pines / desert cacti / foundry vats / cavern crystals
-/ fortress braziers / cascade valves) but `assets.js`/`render.js` don't load/blit
-`level.decor` — so `Decor-reachability` = **6 WONT-RENDER** (see `../../GATE-NOTES.md`).
-Live-confirmed: `../set-dressing/live/level3-snow.png` shows no `decor_snow_pine` where
-config places one. The prop ART is produced + ready (`../set-dressing/`); it needs the
-engine's decor wire, then it renders per stage. Everything else the GOAL enumerates for
-per-stage ART distinctness is LIVE.
+## ✅ SET-DRESSING now WIRED + LIVE (was pending when this montage was captured)
+When this montage was taken the decor wire didn't exist yet; the engine has since wired it
+(`assets.js` keys 6 `decor_*` + `render.js drawDecor` over `world.decor`). All 6 decor-
+bearing stages now render their prop (snow pines / desert cacti / foundry vats / cavern
+crystals / fortress braziers / cascade valves), verified this cycle by engine state
+(`world.decor.length=7` on Cascade) + looking (`../set-dressing/live-wired/
+MONTAGE-decor-live.png`). The gate's `Decor-reachability` = **"6 → all render"** and the new
+`Kit-completeness` roll-up shows `decor:ok` for every biome. Every per-stage ART class the
+GOAL enumerates — distinct tileset + background + set-dressing + boss — is now LIVE.

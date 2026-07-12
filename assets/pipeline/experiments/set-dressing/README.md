@@ -39,17 +39,17 @@ STAGED only: `assets/sprites/decor_*.png` + fragment `assets/pipeline/set-dressi
 NOT synced to `game/assets/` and NOT in `manifest.json` — held back so the cross-source
 gate stays green until the engine LOADS + DRAWS decor.
 
-## ⚠️ PARTIAL WIRE — Stage-2 places my decor but it renders NOTHING (OPEN ISSUE)
-The engine started wiring decor: `config.js` documents the `decor:[{x,key,parallax}]`
-level field, `world.js validateDecor` enforces the `decor_` contract, and **`level2.js`
-now places `decor_cascade_valve ×3`** (Cascade). BUT `assets.js` doesn't key it (no LOAD)
-and `render.js` has no `level.decor` blit (no DRAW) → **Stage 2 shows zero props**.
-Verified LIVE (`live/level2-cascade.png`: tileset + `bg_cascade` render, no valve). My new
-`Decor-reachability` gate check catches this ("1 WONT-RENDER"); full repro + the 3-step
-fix are in `assets/pipeline/GATE-NOTES.md` (dated 2026-07-12). Remaining engine steps:
-1. `game/data/assets.js` — `decor_cascade_valve: 'assets/decor_cascade_valve.png'` (+ others as placed).
-2. `game/src/render.js` — iterate `world.decor` and blit `assets.get(d.key)` base-anchored
-   to the ground y at `d.x` (parallax `d.parallax ?? 1`), mirroring `drawEnemySprite`.
-Then I sync + manifest-finalize (like the tileset/bg finalize) and verify LIVE by looking.
-The other 5 biome props are produced + staged, awaiting per-biome `decor:[]` placement.
-**Confirmed:** ~28–48px native prop size is fine for the 480×270 view (parent).
+## ✅ WIRED + LIVE on ALL 6 decor-bearing stages (verified this cycle)
+Fully wired end-to-end: `assets.js:194-199` keys all 6 `decor_*`, `render.js drawDecor`
+iterates `world.decor` and blits `assets.get(d.key)` base-anchored, and `world.js` binds
+`this.decor = this.level.decor`. Placement: stages 3-7 via `config.js CAMPAIGN[].decor`
+(snow pine / desert cactus / foundry vat / cavern crystal / fortress brazier) + Stage-2
+Cascade via `level2.js` (`decor_cascade_valve ×7`).
+
+**Cascade (parent-flagged) is LIVE — verified by FACT + looking this cycle:** engine state
+`window.__game.decor.length = 7`, `decor0 = {x:200, key:'decor_cascade_valve'}`,
+`assets.get('decor_cascade_valve')` truthy; and a start-frame capture shows two big red-wheel
+valve props on the ground (distinct from the small purple turret — the valve blits at native
+42×44, ~2× the turret's ~22px). The gate's `Decor-reachability` reads **"6 → all render"** and
+`Kit-completeness` shows `decor:ok` for every biome. Earlier "renders nothing" notes were the
+PRE-wiring state (superseded). All 6 art props are finalized (synced + in manifest).
