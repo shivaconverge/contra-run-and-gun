@@ -28,7 +28,11 @@ generation** (no init, strong biome-themed prompt) DOES produce a genuinely dist
 on-palette boss — `fresh-vs-base.png` (ice = blue-white, sand = tan/ochre). So the recipe
 is fresh-gen, not re-theme. (Evidence kept: `tune_*`, `*_fresh`, the sweeps.)
 
-## Known: `boss_desert` (Sand Gunship) reads slightly mushy — a re-seed/polish candidate.
+## ✅ RESOLVED: `boss_desert` (Sand Gunship) re-seeded (v1 was mushy)
+v1 (seed 172, "dusty sun-bleached weathered" prompt) had a mottled/muddy camo surface —
+the weakest boss. v2 (seed 184, CLEAN flat-panel prompt) is crisper: sharp silhouette,
+defined cockpit + chin cannon + rotor. Judged by looking (`desert-reseed/compare.png`)
++ verified LIVE (`desert-reseed/level4-desert.png` boss scenario). Finalized + synced.
 
 ## HANDOFF — engine per-stage boss swap hook (produce-ahead-of-wire, gate-safe)
 STAGED: `assets/sprites/boss_*.png` + fragment `assets/pipeline/bosses.json`. NOT synced /
