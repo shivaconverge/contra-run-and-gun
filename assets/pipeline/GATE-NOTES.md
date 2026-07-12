@@ -23,14 +23,17 @@ tileset + `bg_snow` mountains render, but no `decor_snow_pine` at x=360 (placed 
 prop(s) (…) → 6 WONT-RENDER". (The gate now scans ALL of `game/data/` — the campaign
 placements live in `config.js`, not just `level*.js`; a level-only scan under-reported 1/6.)
 
-**Fix (3 steps; ALL 6 art props are READY in `assets/sprites/`):**
+**Fix — pipeline side DONE, only 2 engine lines remain:**
+- ✅ **(me, done this cycle)** All 6 props FINALIZED: synced to `game/assets/` + folded
+  into `run()`/`manifest.json` (§5f). The art the engine needs is now present where the
+  loader reads it. Placed decor is excluded from the cross-source orphan rule (it is
+  referenced by level data, not dead weight), so the gate stays green (42/42) while
+  Decor-reachability keeps honestly reporting the render gap.
 1. **(engine)** `game/data/assets.js` — key all 6 (`decor_snow_pine: 'assets/decor_snow_pine.png'`, …).
 2. **(engine)** `game/src/render.js` — after `drawParallax`/`drawGround`, iterate
    `world.decor` and blit each `assets.get(d.key)` BASE-anchored to the ground y at `d.x`
    (parallax `d.parallax ?? 1`); mirror `drawEnemySprite`'s feet-anchor.
-3. **(me, on the engine's go)** sync `decor_*.png` → `game/assets/` + fold decor into
-   `run()`/manifest (mirroring the tileset/bg/boss finalize) + verify LIVE by looking.
-Held back from sync/manifest now so the cross-source gate stays green until the loader/blit exist.
+Once those 2 lines land, the props render (I verify LIVE by looking + close this issue).
 
 ### 2026-07-12 — 4 superseded armed `player_*` keys are shipped-but-unreachable  (owner: engine loop / game/data/assets.js)
 **Severity:** low (dead weight, not a visible bug). **Status:** OPEN — surfaced by the gate, not maskable here.

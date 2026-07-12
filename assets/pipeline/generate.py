@@ -763,13 +763,21 @@ SET_DRESSING = {
 
 
 def gen_decor(tid: str, spec: dict) -> dict:
-    """Produce ONE biome set-dressing prop; save to assets/sprites; return a manifest-ready
-    record. Shared by gen_set_dressing (driver) and gen_stage. NOT synced to game/assets
-    (decor is STAGED -- the engine's level.decor render blit is unwired; see GATE-NOTES)."""
+    """Produce ONE biome set-dressing prop; save + sync; return a manifest-ready record.
+    Shared by gen_set_dressing (driver), gen_stage, and run() (fold-in). The campaign now
+    PLACES these props (config.js CAMPAIGN[].decor + level2.js), so the art is FINALIZED
+    (synced to game/assets + in manifest) so the engine's remaining wire is just 2 lines:
+    key decor_* in assets.js + iterate world.decor in render.js. Until then they don't
+    render -- tracked by the Decor-reachability gate check (WONT-RENDER). See GATE-NOTES."""
     key = f"decor_{tid}_{spec['name']}"
     im = gen_pixflux(spec["prompt"] + PROP_STYLE_BASE, spec["size"],
                      seed=spec["seed"], tag=key)
-    pack = pack_strip([im], SPRITES / f"{key}.png", tighten=True)
+    # detailed props (valve/brazier) carry AA edge speckle over the palette cap; snap it to
+    # budget adaptively (verified by looking = no detail loss, experiments/set-dressing/
+    # decor_*-tighten.png), like the bosses. Then pack (tighten=False, already tightened).
+    im = tighten_to_budget(im, cap=44)
+    pack = pack_strip([im], SPRITES / f"{key}.png", tighten=False)
+    sync_to_engine(SPRITES / f"{key}.png")
     return {
         "image": f"sprites/{key}.png",
         "type": "decor",
@@ -779,8 +787,10 @@ def gen_decor(tid: str, spec: dict) -> dict:
         "frames": pack["frames"],
         "anchor": "bottom-center",
         "note": (f"biome set-dressing prop for '{tid}'. Base-anchored: engine sits the "
-                 f"prop BOTTOM on the ground y. Place via a level "
-                 f"decor:[{{x, key:'{key}', parallax?}}] array + a render blit."),
+                 f"prop BOTTOM on the ground y at d.x. ENGINE WIRE (2 lines): key "
+                 f"'{key}': 'assets/{key}.png' in assets.js + iterate world.decor in "
+                 f"render.js (blit assets.get(d.key) feet-anchored). Placed in config.js "
+                 f"CAMPAIGN[].decor; not yet loaded/blitted (Decor-reachability WONT-RENDER)."),
     }
 
 
@@ -1824,6 +1834,19 @@ def run() -> None:
         rec = gen_boss(tid, spec)                    # writes assets/sprites + syncs
         manifest["sprites"][f"boss_{tid}"] = rec
 
+    # 5f) PER-STAGE SET-DRESSING props (deliverable #2) -- FINALIZED (synced + manifest)
+    # so the engine's remaining decor wire is just 2 lines. The campaign PLACES all 6
+    # props (config.js CAMPAIGN[].decor stages 3-7 + level2.js cascade), but assets.js
+    # keys none + render.js has no level.decor blit, so they DON'T render yet (tracked by
+    # the Decor-reachability gate = WONT-RENDER; GATE-NOTES OPEN ISSUE). Producing the art
+    # in game/assets + manifest here removes the pipeline as the blocker: the engine adds
+    # the assets.js key + the world.decor blit and they render. Placed decor is excluded
+    # from the cross-source orphan rule (it is referenced by level data, not dead weight).
+    print("[decor] per-stage set-dressing props (6, finalized for the engine wire)")
+    for tid, spec in SET_DRESSING.items():
+        rec = gen_decor(tid, spec)                   # writes assets/sprites + syncs
+        manifest["sprites"][f"decor_{tid}_{spec['name']}"] = rec
+
     manifest["meta"]["knownIssues"] = [
         "boss_enraged: real phase-2 enraged Sentinel sprite produced + synced + "
         "loads, but drawBoss doesn't swap to it yet -- wire it to blit "
@@ -1945,9 +1968,22 @@ def verify_contract() -> int:
                 man_imgs |= {Path(a["image"]).name for a in spec["animations"].values()}
             elif spec.get("image"):
                 man_imgs.add(Path(spec["image"]).name)
+        # DECOR is a produce-ahead class: the campaign PLACES decor_* props in
+        # game/data (config.js CAMPAIGN[].decor + level*.js), so the art is synced +
+        # manifested (finalized) AHEAD of the engine keying/blitting it. A placed decor
+        # PNG is therefore NOT an orphan (it is referenced by the level data, awaiting the
+        # loader key) -- its load/blit status is governed by the dedicated Decor-
+        # reachability check below. Exclude placed decor from the flat-loader orphan rule.
+        try:
+            _ddir = (ROOT.parent / "game" / "data")
+            _dsrc = "".join(f.read_text() for f in sorted(_ddir.glob("*.js")))
+            placed_decor_files = {f"{k}.png" for k in
+                                  _re.findall(r"key:\s*'(decor_\w+)'", _dsrc)}
+        except FileNotFoundError:
+            placed_decor_files = set()
         for f in sorted(eng_files - shipped):
             xprob.append(f"engine key -> MISSING shipped PNG: {f}")
-        for f in sorted(shipped - eng_files):
+        for f in sorted((shipped - eng_files) - placed_decor_files):
             xprob.append(f"shipped PNG not referenced by engine (orphan): {f}")
         for f in sorted(eng_files - man_imgs):
             xprob.append(f"engine-referenced file not in manifest: {f}")
