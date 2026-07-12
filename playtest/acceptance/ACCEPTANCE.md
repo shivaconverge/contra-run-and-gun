@@ -133,6 +133,45 @@ pre-filter. No stage reuses another's art.
 
 ---
 
+## BOSS axis — the 7 bosses are PRESENT + visibly distinct (by looking)
+
+`scope-served` asserts each stage's boss is *registered in state* (`world.boss`,
+`def.isBoss`) but its per-stage frame is captured at SPAWN, where the boss — parked
+past the arena barrier — is off-screen and never rendered. So the boss was never
+actually LOOKED at. `boss-fidelity.mjs` closes that: it plays 1→7 via NORMAL
+progression, and for each stage drives the player to the boss firing line,
+**activates the boss, snaps the camera to center it**, and captures a zoomed frame
+of the rendered boss off the live `<canvas>` (`frames/boss/…`, public under
+`frames/boss/public/…`). Latest run: **7/7 bosses captured, 7 distinct names**, on
+both local and the public URL.
+
+**By-looking verdict (2026-07-12): all 7 bosses PRESENT and visibly distinct.** Two
+design families — a walker MECH and a flying CHOPPER — each themed per biome:
+
+| # | Boss | Family | What I see |
+|---|------|--------|-----------|
+| 1 | Sentinel     | mech    | steel-grey walker mech, **red** eye/core, big cannon arm (jungle) |
+| 2 | Gunship      | chopper | **dark** military attack helicopter, rotor + chin gun (cascade teal) |
+| 3 | Ice Sentinel | mech    | **ice-blue** walker, **cyan** core, rounded armor (snow) |
+| 4 | Sand Gunship | chopper | **tan/sand-camo** helicopter, pink tracers (desert dunes) |
+| 5 | Foundry Core | mech    | squat industrial **cannon-turret tower**, **orange furnace** glow (molten foundry) |
+| 6 | Crystal Wing | chopper | **purple** sleek jet-gunship, pointed nose (violet caverns) |
+| 7 | Red Falcon   | mech    | **crimson + gold** humanoid mech (fortress) |
+
+The CV-closest pair (Foundry Core vs Red Falcon, min grid Δ 22) is **starkly
+different by silhouette** — a fixed turret tower vs a humanoid biped — the CV only
+rated them near for shared dark-warm palettes, which is exactly why the LOOK is the
+verdict. Every boss is distinguishable.
+
+**Feed-to-builder note (B = art):** within a family the base silhouette is shared and
+differentiated by palette recolor + biome background — cascade Gunship vs desert Sand
+Gunship are the same helicopter chassis in different liveries; Sentinel vs Ice
+Sentinel the same walker recolored. They ARE distinguishable as-is; if a higher
+distinctness bar is wanted later, the chopper/mech families are where added silhouette
+variation would pay off. (Foundry Core already breaks its family's mold — a good model.)
+
+---
+
 ## TWO-WEAPON defect — player-POV verification (the creator's REJECT gate)
 
 `CREATOR_FEEDBACK.md` round 2 keeps the build REJECTED until the **two-weapon

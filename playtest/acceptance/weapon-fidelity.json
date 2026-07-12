@@ -1,7 +1,7 @@
 {
-  "ts": "2026-07-12T03:52:14.530Z",
+  "ts": "2026-07-12T04:14:45.378Z",
   "mode": "local",
-  "target": "http://127.0.0.1:63226",
+  "target": "http://127.0.0.1:65332",
   "killedProcs": [],
   "captures": [
     {
@@ -132,7 +132,7 @@
         "y": 0
       },
       "prone": true,
-      "bullets": 10
+      "bullets": 9
     },
     {
       "entity": "hero",
@@ -145,7 +145,7 @@
         "y": 0
       },
       "prone": true,
-      "bullets": 11
+      "bullets": 10
     },
     {
       "entity": "hero",
@@ -158,7 +158,7 @@
         "y": 0
       },
       "prone": true,
-      "bullets": 11
+      "bullets": 9
     },
     {
       "entity": "turret",
