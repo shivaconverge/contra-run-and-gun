@@ -118,4 +118,14 @@ Pairwise cosine distance between 8-band spectral fingerprints (0 = identical tim
 
 **Distinctness verdict: PASS** — the two most-similar biomes still differ by 0.017 in coarse timbre fingerprint; no two are identical.
 
-> Honesty note: an 8-band magnitude fingerprint is a COARSE timbre measure — chiptune/action tracks share broad spectral shape, so the closest pairs sit near 0.01. The stronger distinctness axis is **harmonic**: every track is in a different key (E, D, A, C, F#, G, B minor — see the table above) with its own melody/arrangement, which this band measure under-weights. This report proves *real, non-silent, non-duplicate* audio; a human listen remains the authority on musical distinctiveness/taste.
+**Closest PAIR (timbre + harmony together):**
+
+| pair | timbre dist | harmonic dist | sum |
+|---|---:|---:|---:|
+| `s2_cascade` ~ `s5_foundry` | 0.026 | 0.017 | 0.042 |
+| `s2_cascade` ~ `s7_fortress` | 0.044 | 0.011 | 0.055 |
+| `s4_desert` ~ `s7_fortress` | 0.056 | 0.013 | 0.069 |
+
+**No two biomes are near-duplicates.** The single closest pair (`s2_cascade` ~ `s5_foundry`) still differs by 0.026 timbre + 0.017 harmony; and every close pair diverges strongly on the OTHER axis (the timbre-closest pair is harmonically far, and vice-versa). So each stage's music reads as its own place — no regeneration warranted.
+
+> Honesty note: the 8-band magnitude fingerprint is a COARSE timbre measure — chiptune/action tracks share broad spectral shape. Distinctness rests on timbre + arrangement + biome character; it does **not** rest on key — the model did not honor the requested keys (§1e, tonic match 1/7), and several tracks share a tonal centre. This report proves *real, non-silent, non-duplicate* audio; a human listen remains the authority on musical distinctiveness/taste.
