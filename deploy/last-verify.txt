@@ -1,4 +1,4 @@
-=== GO-LIVE verification @ 2026-07-12T07:45:43Z ===
+=== GO-LIVE verification @ 2026-07-12T08:24:42Z ===
 URL: https://shivaconverge.github.io/contra-run-and-gun/
 --- root HTTP 0 ---
 <!doctype html>
@@ -41,25 +41,5 @@ URL: https://shivaconverge.github.io/contra-run-and-gun/
   /* the ID rule above out-specifies the UA [hidden] rule — make hidden authoritative */
   #boot-help[hidden] { display: none !important; }
   #boot-help .card { max-width: 580px; text-align: left; font-size: 13px; line-height: 1.65; }
-
-module resolve-gate: 21/21 served ES modules HTTP 200 + byte-current
-asset resolve-gate: 42/42 referenced assets HTTP 200 + byte-current
-assets/audio/manifest.json: HTTP 200
-audio resolve-gate: 7/7 tracks HTTP 200:
-  assets/audio/s1_jungle.mp3: HTTP 200, audio/mp3, 874327 bytes [current]
-  assets/audio/s2_cascade.mp3: HTTP 200, audio/mp3, 3271502 bytes [current]
-  assets/audio/s3_snow.mp3: HTTP 200, audio/mp3, 1872061 bytes [current]
-  assets/audio/s4_desert.mp3: HTTP 200, audio/mp3, 1383421 bytes [current]
-  assets/audio/s5_foundry.mp3: HTTP 200, audio/mp3, 2674059 bytes [current]
-  assets/audio/s6_caverns.mp3: HTTP 200, audio/mp3, 2706956 bytes [current]
-  assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 2408655 bytes [current]
-RESULT: LIVE ✅
-
-WORLD.JS REFRESH — DEPLOY LOG NOW ACCUMULATING ACROSS COMMITS (HEAD 79d0f34):
-  Master advanced source-only (world.js +10 lines). Re-deployed; release gate
-  LIVE ✅ (reachability+currency PASS, functional 119/119 PASS). Changed module
-  byte-current live: src/world.js 35924==35924 — reached players.
-  The operate-phase DEPLOY-LOG.md added last cycle is proven working: it now
-  holds ship rows across distinct commits (…909b038 → 79d0f34), each tying a
-  LIVE ✅ authorization to its gated commit SHA + UTC timestamp — a real,
-  growing audit trail of go-live decisions.
+  MODULE STALE: src/selftest.js live=54685 local=55872
+  MODULE STALE: src/world.js live=35924 local=37472

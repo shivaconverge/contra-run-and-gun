@@ -1,12 +1,12 @@
 {
-  "when": "2026-07-12T07:51:16.295Z",
+  "when": "2026-07-12T08:24:50.718Z",
   "tool": "feedback/audit/weapon-defect-audit.mjs",
   "scope": "creator round-2 two-weapon defect (hero drawGun + turret drawTurretBarrel) across all 7 stages",
   "epsPx": 2,
   "layerB": {
-    "grounded": true,
-    "skipped": false,
-    "skipReason": null
+    "grounded": false,
+    "skipped": true,
+    "skipReason": "WEAPON_AUDIT_STATIC_ONLY=1 (static-only mode requested)"
   },
   "staticLayer": {
     "ok": true,
@@ -256,21 +256,23 @@
         {
           "id": "runtime.themeBoots",
           "ok": true,
-          "detail": "booted theme='jungle' (config='jungle'), status=playing"
+          "skipped": true,
+          "detail": "SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs"
         },
         {
           "id": "runtime.heroFromHandMuzzle",
           "ok": true,
-          "detail": "bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)"
+          "skipped": true,
+          "detail": "SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs"
         },
         {
           "id": "runtime.turretFromBarrelTip",
           "ok": true,
-          "detail": "5/5 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
+          "skipped": true,
+          "detail": "SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs"
         }
       ],
-      "verdict": "PASS",
-      "frame": "frames/stage1-jungle.png"
+      "verdict": "PASS"
     },
     {
       "stage": 2,
@@ -439,21 +441,23 @@
         {
           "id": "runtime.themeBoots",
           "ok": true,
-          "detail": "booted theme='cascade' (config='cascade'), status=playing"
+          "skipped": true,
+          "detail": "SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs"
         },
         {
           "id": "runtime.heroFromHandMuzzle",
           "ok": true,
-          "detail": "bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)"
+          "skipped": true,
+          "detail": "SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs"
         },
         {
           "id": "runtime.turretFromBarrelTip",
           "ok": true,
-          "detail": "4/4 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
+          "skipped": true,
+          "detail": "SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs"
         }
       ],
-      "verdict": "PASS",
-      "frame": "frames/stage2-cascade.png"
+      "verdict": "PASS"
     },
     {
       "stage": 3,
@@ -601,21 +605,23 @@
         {
           "id": "runtime.themeBoots",
           "ok": true,
-          "detail": "booted theme='snow' (config='snow'), status=playing"
+          "skipped": true,
+          "detail": "SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs"
         },
         {
           "id": "runtime.heroFromHandMuzzle",
           "ok": true,
-          "detail": "bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)"
+          "skipped": true,
+          "detail": "SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs"
         },
         {
           "id": "runtime.turretFromBarrelTip",
           "ok": true,
-          "detail": "3/3 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
+          "skipped": true,
+          "detail": "SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs"
         }
       ],
-      "verdict": "PASS",
-      "frame": "frames/stage3-snow.png"
+      "verdict": "PASS"
     },
     {
       "stage": 4,
@@ -763,21 +769,23 @@
         {
           "id": "runtime.themeBoots",
           "ok": true,
-          "detail": "booted theme='desert' (config='desert'), status=playing"
+          "skipped": true,
+          "detail": "SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs"
         },
         {
           "id": "runtime.heroFromHandMuzzle",
           "ok": true,
-          "detail": "bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)"
+          "skipped": true,
+          "detail": "SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs"
         },
         {
           "id": "runtime.turretFromBarrelTip",
           "ok": true,
-          "detail": "4/4 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
+          "skipped": true,
+          "detail": "SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs"
         }
       ],
-      "verdict": "PASS",
-      "frame": "frames/stage4-desert.png"
+      "verdict": "PASS"
     },
     {
       "stage": 5,
@@ -925,21 +933,23 @@
         {
           "id": "runtime.themeBoots",
           "ok": true,
-          "detail": "booted theme='foundry' (config='foundry'), status=playing"
+          "skipped": true,
+          "detail": "SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs"
         },
         {
           "id": "runtime.heroFromHandMuzzle",
           "ok": true,
-          "detail": "bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)"
+          "skipped": true,
+          "detail": "SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs"
         },
         {
           "id": "runtime.turretFromBarrelTip",
           "ok": true,
-          "detail": "9/9 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
+          "skipped": true,
+          "detail": "SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs"
         }
       ],
-      "verdict": "PASS",
-      "frame": "frames/stage5-foundry.png"
+      "verdict": "PASS"
     },
     {
       "stage": 6,
@@ -1108,21 +1118,23 @@
         {
           "id": "runtime.themeBoots",
           "ok": true,
-          "detail": "booted theme='caverns' (config='caverns'), status=playing"
+          "skipped": true,
+          "detail": "SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs"
         },
         {
           "id": "runtime.heroFromHandMuzzle",
           "ok": true,
-          "detail": "bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)"
+          "skipped": true,
+          "detail": "SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs"
         },
         {
           "id": "runtime.turretFromBarrelTip",
           "ok": true,
-          "detail": "3/3 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
+          "skipped": true,
+          "detail": "SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs"
         }
       ],
-      "verdict": "PASS",
-      "frame": "frames/stage6-caverns.png"
+      "verdict": "PASS"
     },
     {
       "stage": 7,
@@ -1291,21 +1303,23 @@
         {
           "id": "runtime.themeBoots",
           "ok": true,
-          "detail": "booted theme='fortress' (config='fortress'), status=playing"
+          "skipped": true,
+          "detail": "SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs"
         },
         {
           "id": "runtime.heroFromHandMuzzle",
           "ok": true,
-          "detail": "bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)"
+          "skipped": true,
+          "detail": "SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs"
         },
         {
           "id": "runtime.turretFromBarrelTip",
           "ok": true,
-          "detail": "8/8 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
+          "skipped": true,
+          "detail": "SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs"
         }
       ],
-      "verdict": "PASS",
-      "frame": "frames/stage7-fortress.png"
+      "verdict": "PASS"
     }
   ]
 }
