@@ -30,10 +30,14 @@
 //   forcing a human re-look. A stale looking-verdict can never silently pass here.
 //
 // Run (from repo root):
-//   node playtest/acceptance/run-acceptance.mjs                 # local + public
-//   node playtest/acceptance/run-acceptance.mjs --local-only    # skip the public URL
+//   node playtest/acceptance/run-acceptance.mjs                 # local + public → writes AUTHORITATIVE acceptance-summary.json
+//   node playtest/acceptance/run-acceptance.mjs --local-only    # skip the public URL → writes SCRATCH acceptance-summary.local.json ONLY
 // Exit: 0 iff the LIVE public campaign serves 7/7 to victory with no deploy drift
 //       AND the local build agrees AND fresh weapon evidence was captured.
+// POLICY GUARD: only a FULL (local+public) run may write the committed
+// acceptance-summary.json. A --local-only run writes a gitignored scratch summary
+// and never touches the authoritative one — so a fast local iteration can't silently
+// un-ground the LIVE public claim (scope_served/deployDrift).
 
 import { spawnSync } from 'node:child_process';
 import { readFile, writeFile } from 'node:fs/promises';
@@ -215,14 +219,23 @@ async function main() {
   const infra = summary.ran.some((r) => r.invalid === true);
   summary.verdict = infra ? 'GATE-INFRA-ERROR' : (allPassed ? 'PASS' : 'FAIL');
 
-  await writeFile(path.join(HERE, 'acceptance-summary.json'), JSON.stringify(summary, null, 2));
+  // AUTHORITATIVE-SUMMARY GUARD (parent-confirmed policy): the committed
+  // `acceptance-summary.json` must always reflect the FULL local+public gate — a
+  // `--local-only` run must NEVER clobber it, or a fast local iteration would
+  // silently un-ground the LIVE public claim (scope_served/deployDrift), which is
+  // exactly the regression this guards against. So a --local-only run writes only a
+  // non-authoritative SCRATCH file (`acceptance-summary.local.json`, gitignored) and
+  // leaves the authoritative summary untouched.
+  summary.authoritative = !localOnly;
+  const outName = localOnly ? 'acceptance-summary.local.json' : 'acceptance-summary.json';
+  await writeFile(path.join(HERE, outName), JSON.stringify(summary, null, 2));
 
   process.stdout.write('\n════════ ACCEPTANCE GATE ════════\n');
   process.stdout.write(`scope_served=${summary.scope_served} (${summary.scope_served_source})  verdict=${summary.verdict}\n`);
   for (const c of summary.checks) process.stdout.write(`  [${c.passed ? 'PASS' : 'FAIL'}] ${c.id}${c.detail != null ? ' — ' + JSON.stringify(c.detail) : ''}\n`);
   process.stdout.write(`  weapon one-gun (by-looking): ${summary.weaponLookingVerdict.verdict}` +
     `${summary.weaponLookingVerdict.stale ? ' ⚠ POSSIBLY-STALE (render path changed → re-look)' : ' (render path unchanged)'}\n`);
-  process.stdout.write(`  wrote ${path.relative(REPO, path.join(HERE, 'acceptance-summary.json'))}\n`);
+  process.stdout.write(`  wrote ${path.relative(REPO, path.join(HERE, outName))}${localOnly ? '  (SCRATCH — authoritative acceptance-summary.json left untouched; run WITHOUT --local-only to update the LIVE-grounded summary)' : '  (authoritative: full local+public)'}\n`);
 
   process.exit(summary.verdict === 'PASS' ? 0 : (summary.verdict === 'GATE-INFRA-ERROR' ? 2 : 1));
 }
