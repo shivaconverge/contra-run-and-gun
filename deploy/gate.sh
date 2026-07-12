@@ -113,9 +113,18 @@ else
   verdict="BLOCKED ❌"; rc=1
 fi
 
+# Precision for the operate-phase record: the gate runs at the local HEAD, but the
+# SERVED build only changes when game/ changes (the workflow triggers on game/**).
+# So the revision actually live is the last commit that touched game/, which can
+# lag HEAD on cycles that only change deploy/docs/tooling. Record both so the
+# status is unambiguous about WHICH game content is live vs which HEAD gated it.
+HEAD_SHA="$(git -C "$HERE" rev-parse --short HEAD 2>/dev/null || echo '?')"
+SERVED_SHA="$(git -C "$HERE" log -1 --format=%h -- ../game 2>/dev/null || echo '?')"
 {
   echo "=== RELEASE GATE @ ${STAMP} ==="
   echo "URL:                 ${TARGET_URL}"
+  echo "gated HEAD:          ${HEAD_SHA}"
+  echo "served build rev:    ${SERVED_SHA}   (last commit touching game/)"
   echo "reachability+currency: ${verify_state}   (verify.sh)"
   echo "full-surface parity:   ${parity_state}   (deploy-parity.mjs, sha256)"
   echo "functional self-test:  ${selftest_state}   (live-selftest.sh)"
