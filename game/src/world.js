@@ -670,6 +670,13 @@ export class World {
     const dec = World.validateDecor(stages);
     ck(dec.pass, `decor: ${JSON.stringify(dec.violations.slice(0, 3))}`);
 
+    // NOTE: the CASUAL-ACCESSIBILITY invariant (World.casualBossSurvivalTest — every boss
+    // beatable in a fresh casual pool ⇒ casual+retry reaches victory) is deliberately NOT
+    // folded in here: it is already gated directly at selftest.js block 32
+    // (campaign.casualBotCalibrated + campaign.casualRetryReachesVictory). Folding it here
+    // too would double-run the ~100ms mortal-bot drive every selftest for no added
+    // coverage, and it's a survival/balance check that belongs beside its own gate rather
+    // than inside this STRUCTURAL guard (structure + footing + decor).
     return { pass: errors.length === 0, errors, density, bossHp, footing: foot.pass, decor: dec.pass };
   }
 
