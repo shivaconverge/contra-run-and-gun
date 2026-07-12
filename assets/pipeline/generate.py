@@ -66,6 +66,25 @@ def sync_to_engine(src: Path) -> None:
     print(f"  synced -> {dst.relative_to(ROOT.parent)}")
 
 
+def merge_fragment(fragpath: "Path", new_records: dict) -> int:
+    """MERGE new records into an existing {sprites:{}} handoff fragment (create if absent)
+    instead of overwriting it. Fixes a real clobber: a single-biome iterator (e.g.
+    `generate.py bosses desert`) used to write the fragment with ONLY that biome, wiping
+    the other biomes' records the campaign/weapon loops read. Merge keeps the fragment
+    complete across per-biome runs. Returns the total record count. (manifest.json stays
+    the canonical source of truth via run(); the fragments are review/handoff artifacts.)"""
+    import json as _json
+    existing = {}
+    if fragpath.exists():
+        try:
+            existing = _json.loads(fragpath.read_text()).get("sprites", {})
+        except (ValueError, KeyError):
+            existing = {}
+    existing.update(new_records)
+    fragpath.write_text(_json.dumps({"sprites": existing}, indent=2))
+    return len(existing)
+
+
 # --------------------------------------------------------------------------- #
 # HTTP
 # --------------------------------------------------------------------------- #
@@ -708,8 +727,8 @@ def gen_biome_tilesets(only: str | None = None) -> None:
         print(f"[biome] {tid} tileset (48x16 [cap,dirt,dirt2])")
         frag[f"theme_{tid}"] = gen_theme_tileset(tid, BIOME_TILESETS[tid])
     fragpath = Path(__file__).resolve().parent / "biome-tilesets.json"
-    fragpath.write_text(json.dumps({"sprites": frag}, indent=2))
-    print(f"Wrote {fragpath.name} ({len(frag)} biome tileset(s))")
+    total = merge_fragment(fragpath, frag)
+    print(f"Wrote {fragpath.name} (+{len(frag)} this run, {total} total tileset(s))")
     bal1 = balance()
     print(f"Balance: ${bal1:.2f}  (spent ${bal0 - bal1:.2f})")
 
@@ -814,8 +833,8 @@ def gen_set_dressing(only: str | None = None) -> None:
         print(f"[decor] {tid}: {spec['name']} ({spec['size']}px native)")
         frag[f"decor_{tid}_{spec['name']}"] = gen_decor(tid, spec)
     fragpath = Path(__file__).resolve().parent / "set-dressing.json"
-    fragpath.write_text(json.dumps({"sprites": frag}, indent=2))
-    print(f"Wrote {fragpath.name} ({len(frag)} prop(s))")
+    total = merge_fragment(fragpath, frag)
+    print(f"Wrote {fragpath.name} (+{len(frag)} this run, {total} total prop(s))")
     bal1 = balance()
     print(f"Balance: ${bal1:.2f}  (spent ${bal0 - bal1:.2f})")
 
@@ -917,8 +936,8 @@ def gen_biome_backdrops(only: str | None = None) -> None:
         print(f"[backdrop] {tid} far-layer ({BG_W}x{BG_H})")
         frag[f"bg_{tid}"] = gen_backdrop(tid, BIOME_BACKDROPS[tid])
     fragpath = Path(__file__).resolve().parent / "backgrounds.json"
-    fragpath.write_text(json.dumps({"sprites": frag}, indent=2))
-    print(f"Wrote {fragpath.name} ({len(frag)} backdrop(s))")
+    total = merge_fragment(fragpath, frag)
+    print(f"Wrote {fragpath.name} (+{len(frag)} this run, {total} total backdrop(s))")
     bal1 = balance()
     print(f"Balance: ${bal1:.2f}  (spent ${bal0 - bal1:.2f})")
 
@@ -1368,8 +1387,8 @@ def gen_biome_bosses(only: str | None = None) -> None:
         print(f"[boss] {tid}: {spec['name']} ({spec['family']}-family, init-anchored)")
         frag[f"boss_{tid}"] = gen_boss(tid, spec)
     fragpath = Path(__file__).resolve().parent / "bosses.json"
-    fragpath.write_text(json.dumps({"sprites": frag}, indent=2))
-    print(f"Wrote {fragpath.name} ({len(frag)} boss(es))")
+    total = merge_fragment(fragpath, frag)
+    print(f"Wrote {fragpath.name} (+{len(frag)} this run, {total} total boss(es))")
     bal1 = balance()
     print(f"Balance: ${bal1:.2f}  (spent ${bal0 - bal1:.2f})")
 

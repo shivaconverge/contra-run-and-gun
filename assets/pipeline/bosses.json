@@ -14,6 +14,66 @@
       },
       "facing": "left",
       "note": "per-stage boss 'Sand Gunship' (desert). Same chopper silhouette/hitbox as the base; engine swaps via assets.get('boss_desert') || assets.get('chopper')."
+    },
+    "boss_snow": {
+      "image": "sprites/boss_snow.png",
+      "type": "boss",
+      "biome": "snow",
+      "bossName": "Ice Sentinel",
+      "family": "sentinel",
+      "frameWidth": 45,
+      "frameHeight": 48,
+      "hitboxPx": {
+        "w": 46,
+        "h": 52
+      },
+      "facing": "left",
+      "note": "per-stage boss 'Ice Sentinel' (snow). Same sentinel silhouette/hitbox as the base; engine swaps via assets.get('boss_snow') || assets.get('boss')."
+    },
+    "boss_foundry": {
+      "image": "sprites/boss_foundry.png",
+      "type": "boss",
+      "biome": "foundry",
+      "bossName": "Foundry Core",
+      "family": "sentinel",
+      "frameWidth": 60,
+      "frameHeight": 60,
+      "hitboxPx": {
+        "w": 46,
+        "h": 52
+      },
+      "facing": "left",
+      "note": "per-stage boss 'Foundry Core' (foundry). Same sentinel silhouette/hitbox as the base; engine swaps via assets.get('boss_foundry') || assets.get('boss')."
+    },
+    "boss_fortress": {
+      "image": "sprites/boss_fortress.png",
+      "type": "boss",
+      "biome": "fortress",
+      "bossName": "Red Falcon",
+      "family": "sentinel",
+      "frameWidth": 56,
+      "frameHeight": 54,
+      "hitboxPx": {
+        "w": 46,
+        "h": 52
+      },
+      "facing": "left",
+      "note": "per-stage boss 'Red Falcon' (fortress). Same sentinel silhouette/hitbox as the base; engine swaps via assets.get('boss_fortress') || assets.get('boss')."
+    },
+    "boss_caverns": {
+      "image": "sprites/boss_caverns.png",
+      "type": "boss",
+      "biome": "caverns",
+      "bossName": "Crystal Wing",
+      "family": "chopper",
+      "frameWidth": 73,
+      "frameHeight": 48,
+      "hitboxPx": {
+        "w": 62,
+        "h": 30
+      },
+      "facing": "left",
+      "note": "per-stage boss 'Crystal Wing' (caverns). Same chopper silhouette/hitbox as the base; engine swaps via assets.get('boss_caverns') || assets.get('chopper')."
     }
   }
 }
