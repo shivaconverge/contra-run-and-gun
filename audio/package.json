@@ -13,6 +13,7 @@
     "tracks:live": "node verify/campaign-tracks-live.mjs",
     "tracks:handoff": "node verify/track-handoff-check.mjs",
     "tracks:stageboot": "node verify/stage-boot-music.mjs",
+    "tracks:public": "node verify/public-url-music.mjs",
     "soak": "node verify/perf-soak.mjs"
   },
   "devDependencies": {

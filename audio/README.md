@@ -127,6 +127,16 @@ STAGES order, `BufferSource` live). Latest run: **7/7** — `?level=1→s1_jungl
 s7_fortress`, stageNum matching each time. So "stage N ⇒ biome N music" is proven through the
 real wiring, not just a manual selector call.
 
+**LIVE on the PUBLIC URL (`verify/public-url-music.mjs`, `npm run tracks:public`, all-pass):**
+the strongest grounding — drives the actual **deployed GitHub Pages site**
+(`https://shivaconverge.github.io/contra-run-and-gun/`, from `deploy/PUBLIC-URL.txt`), not a
+local server. It fetches the LIVE manifest, then boots `?level=1..7` on the real deployment
+and asserts each stage decodes + plays its biome loop over the internet. Latest run: **8/8**
+(manifest + all 7 stages: `?level=1→s1_jungle … ?level=7→s7_fortress`). Also confirmed the
+served mp3s are **byte-identical** to this build (the 14.5 MB web-optimized rebuild) and the
+live manifest carries the `key_estimate` correction — so real players get the current
+per-stage music. Doubles as a deploy-freshness gate for the audio layer.
+
 > 🔁 **OPEN NEED — re-sync `game/src/music.js` from `audio/music.js`.** This cycle added a
 > `_stopTrackSource` hygiene fix (pins the stopped real-track bus's schedule to silence) to
 > the source of truth. `game/src/music.js` (owned by the integrator, kept as a verbatim
