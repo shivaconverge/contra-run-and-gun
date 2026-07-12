@@ -1,4 +1,4 @@
-=== GO-LIVE verification @ 2026-07-12T07:10:30Z ===
+=== GO-LIVE verification @ 2026-07-12T07:45:43Z ===
 URL: https://shivaconverge.github.io/contra-run-and-gun/
 --- root HTTP 0 ---
 <!doctype html>
@@ -55,12 +55,11 @@ audio resolve-gate: 7/7 tracks HTTP 200:
   assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 2408655 bytes [current]
 RESULT: LIVE ✅
 
-MAIN.JS REFRESH + OPERATE-PHASE DEPLOY LOG (LIVE URL, HEAD 909b038):
-  Master advanced source-only (main.js +27 lines). Re-deployed; release gate
+WORLD.JS REFRESH — DEPLOY LOG NOW ACCUMULATING ACROSS COMMITS (HEAD 79d0f34):
+  Master advanced source-only (world.js +10 lines). Re-deployed; release gate
   LIVE ✅ (reachability+currency PASS, functional 119/119 PASS). Changed module
-  byte-current live: src/main.js 30761==30761 — reached players.
-  NEW: gate.sh now appends every ship verdict to deploy/DEPLOY-LOG.md (append-
-  only: UTC timestamp + gated commit SHA + reach/functional/verdict), giving a
-  durable audit trail of go-live decisions — GATE-STATUS.txt only holds the
-  latest. This closes the operate-phase traceability gap (a ship can now be
-  traced to a master revision + time).
+  byte-current live: src/world.js 35924==35924 — reached players.
+  The operate-phase DEPLOY-LOG.md added last cycle is proven working: it now
+  holds ship rows across distinct commits (…909b038 → 79d0f34), each tying a
+  LIVE ✅ authorization to its gated commit SHA + UTC timestamp — a real,
+  growing audit trail of go-live decisions.
