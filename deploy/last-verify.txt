@@ -1,4 +1,4 @@
-=== GO-LIVE verification @ 2026-07-12T01:55:40Z ===
+=== GO-LIVE verification @ 2026-07-12T02:26:58Z ===
 URL: https://shivaconverge.github.io/contra-run-and-gun/
 --- root HTTP 0 ---
 <!doctype html>
@@ -55,13 +55,13 @@ audio resolve-gate: 7/7 tracks HTTP 200:
   assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 2408655 bytes [current]
 RESULT: LIVE ✅
 
-S3 FROZEN RIDGE + S6 CRYSTAL CAVERNS (LIVE URL, HEAD 6679c20):
-  Master advanced source-only (config.js + render.js) — S3 'Frozen Ridge'
-  windswept ridgeline geometry + S6 'Crystal Caverns' — no asset/audio byte
-  changes, so the byte-currency gate stayed green (36 assets + 7 tracks current).
-  The new geometry is SOURCE, not files, so the visual capture IS the proof it
-  deployed. Distinct-biome proof via ?level=N on the LIVE URL (JUDGE BY LOOKING):
-    deploy/evidence/live-stage3.png — S3 Frozen Ridge: windswept snow ridgeline,
-      ice-capped platforms, falling snow, frozen tundra ground.
-    deploy/evidence/live-stage6.png — S6 Crystal Caverns: glowing magenta crystal
-      spires, violet cavern, boss + aerial + ninja enemy mix.
+DIFFICULTY-CURVE FIX + GATE RETRY-HARDENING (LIVE URL, HEAD b0c5a1c):
+  Master advanced source-only (config.js + render.js) — difficulty-curve
+  regression fix. Re-deployed; game boots live (deploy/evidence/live-boot.png).
+  DEFECT FOUND IN MY GATE (not the deliverable): a single HEAD on s7_fortress.mp3
+  hit a transient network blip (HTTP empty) and produced a FALSE 'STALE' verdict;
+  two immediate retries returned HTTP 200 len=2408655 == local (track is fine).
+  FIX: head_meta() now retries up to 3x when the status comes back EMPTY (curl-
+  level failure), but does NOT retry a real HTTP code (404 stays fast). Re-run:
+  all 36 assets + 7 tracks [current], clean pass. The gate no longer cries wolf
+  on transient flakes — false failures erode the go-live signal.
