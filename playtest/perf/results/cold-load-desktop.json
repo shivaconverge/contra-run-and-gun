@@ -1,0 +1,491 @@
+{
+  "generatedAt": "2026-07-12T11:50:26.083Z",
+  "profile": "desktop",
+  "url": "https://shivaconverge.github.io/contra-run-and-gun/",
+  "chrome": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "interactive": true,
+  "ttffMs": 813,
+  "fullyLoadedMs": 2819,
+  "payload": {
+    "totalBytes": 15438180,
+    "totalHuman": "14.72 MB",
+    "stage1Bytes": 1057396,
+    "stage1Human": "1.01 MB",
+    "deferrableBytes": 14380784,
+    "deferrableHuman": "13.71 MB",
+    "deferrableFrac": 0.932,
+    "byKind": {
+      "music": {
+        "bytes": 15201578,
+        "human": "14.50 MB"
+      },
+      "code": {
+        "bytes": 133476,
+        "human": "130.3 KB"
+      },
+      "background": {
+        "bytes": 16359,
+        "human": "16.0 KB"
+      },
+      "other": {
+        "bytes": 14127,
+        "human": "13.8 KB"
+      },
+      "sprite": {
+        "bytes": 15421,
+        "human": "15.1 KB"
+      },
+      "boss": {
+        "bytes": 29290,
+        "human": "28.6 KB"
+      },
+      "decor": {
+        "bytes": 11519,
+        "human": "11.2 KB"
+      },
+      "tileset": {
+        "bytes": 14669,
+        "human": "14.3 KB"
+      },
+      "data": {
+        "bytes": 1741,
+        "human": "1.7 KB"
+      }
+    },
+    "perStage": {
+      "1": {
+        "bytes": 1057396,
+        "human": "1.01 MB",
+        "name": "Jungle Approach"
+      },
+      "2": {
+        "bytes": 3281344,
+        "human": "3.13 MB",
+        "name": "Cascade Base"
+      },
+      "3": {
+        "bytes": 1880179,
+        "human": "1.79 MB",
+        "name": "Frozen Ridge"
+      },
+      "4": {
+        "bytes": 1390826,
+        "human": "1.33 MB",
+        "name": "Scorched Dunes"
+      },
+      "5": {
+        "bytes": 2685920,
+        "human": "2.56 MB",
+        "name": "Iron Foundry"
+      },
+      "6": {
+        "bytes": 2722340,
+        "human": "2.60 MB",
+        "name": "Crystal Caverns"
+      },
+      "7": {
+        "bytes": 2420175,
+        "human": "2.31 MB",
+        "name": "Red Falcon Keep"
+      }
+    },
+    "assetCount": 74,
+    "deferrableAssets": [
+      {
+        "file": "s2_cascade.mp3",
+        "kind": "music",
+        "biome": "cascade",
+        "bytes": 3273604,
+        "human": "3.12 MB"
+      },
+      {
+        "file": "s6_caverns.mp3",
+        "kind": "music",
+        "biome": "caverns",
+        "bytes": 2708895,
+        "human": "2.58 MB"
+      },
+      {
+        "file": "s5_foundry.mp3",
+        "kind": "music",
+        "biome": "foundry",
+        "bytes": 2675817,
+        "human": "2.55 MB"
+      },
+      {
+        "file": "s7_fortress.mp3",
+        "kind": "music",
+        "biome": "fortress",
+        "bytes": 2410370,
+        "human": "2.30 MB"
+      },
+      {
+        "file": "s3_snow.mp3",
+        "kind": "music",
+        "biome": "snow",
+        "bytes": 1873443,
+        "human": "1.79 MB"
+      },
+      {
+        "file": "s4_desert.mp3",
+        "kind": "music",
+        "biome": "desert",
+        "bytes": 1384441,
+        "human": "1.32 MB"
+      },
+      {
+        "file": "bg_caverns.png",
+        "kind": "background",
+        "biome": "caverns",
+        "bytes": 6141,
+        "human": "6.0 KB"
+      },
+      {
+        "file": "boss_fortress.png",
+        "kind": "boss",
+        "biome": "fortress",
+        "bytes": 4090,
+        "human": "4.0 KB"
+      },
+      {
+        "file": "bg_cascade.png",
+        "kind": "background",
+        "biome": "cascade",
+        "bytes": 3570,
+        "human": "3.5 KB"
+      },
+      {
+        "file": "boss_caverns.png",
+        "kind": "boss",
+        "biome": "caverns",
+        "bytes": 3478,
+        "human": "3.4 KB"
+      },
+      {
+        "file": "boss_foundry.png",
+        "kind": "boss",
+        "biome": "foundry",
+        "bytes": 3335,
+        "human": "3.3 KB"
+      },
+      {
+        "file": "boss_snow.png",
+        "kind": "boss",
+        "biome": "snow",
+        "bytes": 2585,
+        "human": "2.5 KB"
+      },
+      {
+        "file": "bg_foundry.png",
+        "kind": "background",
+        "biome": "foundry",
+        "bytes": 2531,
+        "human": "2.5 KB"
+      },
+      {
+        "file": "decor_foundry_vat.png",
+        "kind": "decor",
+        "biome": "foundry",
+        "bytes": 2310,
+        "human": "2.3 KB"
+      },
+      {
+        "file": "decor_cascade_valve.png",
+        "kind": "decor",
+        "biome": "cascade",
+        "bytes": 2288,
+        "human": "2.2 KB"
+      },
+      {
+        "file": "boss_desert.png",
+        "kind": "boss",
+        "biome": "desert",
+        "bytes": 2132,
+        "human": "2.1 KB"
+      },
+      {
+        "file": "theme_fortress.png",
+        "kind": "tileset",
+        "biome": "fortress",
+        "bytes": 2122,
+        "human": "2.1 KB"
+      },
+      {
+        "file": "decor_fortress_brazier.png",
+        "kind": "decor",
+        "biome": "fortress",
+        "bytes": 2117,
+        "human": "2.1 KB"
+      },
+      {
+        "file": "theme_foundry.png",
+        "kind": "tileset",
+        "biome": "foundry",
+        "bytes": 1927,
+        "human": "1.9 KB"
+      },
+      {
+        "file": "decor_caverns_crystal.png",
+        "kind": "decor",
+        "biome": "caverns",
+        "bytes": 1914,
+        "human": "1.9 KB"
+      },
+      {
+        "file": "theme_caverns.png",
+        "kind": "tileset",
+        "biome": "caverns",
+        "bytes": 1912,
+        "human": "1.9 KB"
+      },
+      {
+        "file": "theme_cascade.png",
+        "kind": "tileset",
+        "biome": "cascade",
+        "bytes": 1882,
+        "human": "1.8 KB"
+      },
+      {
+        "file": "theme_desert.png",
+        "kind": "tileset",
+        "biome": "desert",
+        "bytes": 1843,
+        "human": "1.8 KB"
+      },
+      {
+        "file": "decor_snow_pine.png",
+        "kind": "decor",
+        "biome": "snow",
+        "bytes": 1779,
+        "human": "1.7 KB"
+      },
+      {
+        "file": "bg_fortress.png",
+        "kind": "background",
+        "biome": "fortress",
+        "bytes": 1476,
+        "human": "1.4 KB"
+      },
+      {
+        "file": "bg_snow.png",
+        "kind": "background",
+        "biome": "snow",
+        "bytes": 1342,
+        "human": "1.3 KB"
+      },
+      {
+        "file": "bg_desert.png",
+        "kind": "background",
+        "biome": "desert",
+        "bytes": 1299,
+        "human": "1.3 KB"
+      },
+      {
+        "file": "decor_desert_cactus.png",
+        "kind": "decor",
+        "biome": "desert",
+        "bytes": 1111,
+        "human": "1.1 KB"
+      },
+      {
+        "file": "theme_snow.png",
+        "kind": "tileset",
+        "biome": "snow",
+        "bytes": 1030,
+        "human": "1.0 KB"
+      }
+    ],
+    "largest": [
+      {
+        "file": "s2_cascade.mp3",
+        "kind": "music",
+        "bytes": 3273604,
+        "human": "3.12 MB",
+        "deferrable": true
+      },
+      {
+        "file": "s6_caverns.mp3",
+        "kind": "music",
+        "bytes": 2708895,
+        "human": "2.58 MB",
+        "deferrable": true
+      },
+      {
+        "file": "s5_foundry.mp3",
+        "kind": "music",
+        "bytes": 2675817,
+        "human": "2.55 MB",
+        "deferrable": true
+      },
+      {
+        "file": "s7_fortress.mp3",
+        "kind": "music",
+        "bytes": 2410370,
+        "human": "2.30 MB",
+        "deferrable": true
+      },
+      {
+        "file": "s3_snow.mp3",
+        "kind": "music",
+        "bytes": 1873443,
+        "human": "1.79 MB",
+        "deferrable": true
+      },
+      {
+        "file": "s4_desert.mp3",
+        "kind": "music",
+        "bytes": 1384441,
+        "human": "1.32 MB",
+        "deferrable": true
+      },
+      {
+        "file": "s1_jungle.mp3",
+        "kind": "music",
+        "bytes": 875008,
+        "human": "854.5 KB",
+        "deferrable": false
+      },
+      {
+        "file": "render.js",
+        "kind": "code",
+        "bytes": 26998,
+        "human": "26.4 KB",
+        "deferrable": false
+      },
+      {
+        "file": "selftest.js",
+        "kind": "code",
+        "bytes": 17770,
+        "human": "17.4 KB",
+        "deferrable": false
+      },
+      {
+        "file": "world.js",
+        "kind": "code",
+        "bytes": 14664,
+        "human": "14.3 KB",
+        "deferrable": false
+      },
+      {
+        "file": "config.js",
+        "kind": "code",
+        "bytes": 14517,
+        "human": "14.2 KB",
+        "deferrable": false
+      },
+      {
+        "file": "main.js",
+        "kind": "code",
+        "bytes": 11162,
+        "human": "10.9 KB",
+        "deferrable": false
+      },
+      {
+        "file": "music.js",
+        "kind": "code",
+        "bytes": 9899,
+        "human": "9.7 KB",
+        "deferrable": false
+      },
+      {
+        "file": "bg_caverns.png",
+        "kind": "background",
+        "bytes": 6141,
+        "human": "6.0 KB",
+        "deferrable": true
+      },
+      {
+        "file": "assets.js",
+        "kind": "code",
+        "bytes": 5741,
+        "human": "5.6 KB",
+        "deferrable": false
+      }
+    ]
+  },
+  "pacing": {
+    "median": 16.699999999999818,
+    "medianFps": 59.9,
+    "p95": 18.100000000000136,
+    "dropped": 1,
+    "droppedFrac": 0.0022,
+    "sampleFrames": 456,
+    "gameFps": 60,
+    "gamePerf": {
+      "fps": 60,
+      "enemies": 19,
+      "bullets": 20,
+      "particles": 20,
+      "fx": 0
+    }
+  },
+  "heap": {
+    "before": 1951965,
+    "after": 2991651,
+    "growthMB": 0.99,
+    "samples": 15
+  },
+  "sprites": {
+    "loaded": null,
+    "missing": null
+  },
+  "lazyLoadRequired": true,
+  "pageErrors": [],
+  "checks": [
+    {
+      "id": "boot.interactive",
+      "severity": "hard",
+      "pass": true,
+      "detail": "first playable frame reached=true (ttff=813ms)"
+    },
+    {
+      "id": "boot.no-page-errors",
+      "severity": "hard",
+      "pass": true,
+      "detail": "no page errors"
+    },
+    {
+      "id": "payload.cold-ceiling",
+      "severity": "hard",
+      "pass": false,
+      "detail": "cold first-paint payload 14.72 MB vs ceiling 3.50 MB"
+    },
+    {
+      "id": "payload.cold-warn",
+      "severity": "warn",
+      "pass": false,
+      "detail": "payload 14.72 MB vs warn 2.00 MB"
+    },
+    {
+      "id": "boot.ttff",
+      "severity": "hard",
+      "pass": true,
+      "detail": "time-to-first-frame 813ms vs ceiling 2500ms (desktop)"
+    },
+    {
+      "id": "pacing.median-fps",
+      "severity": "hard",
+      "pass": true,
+      "detail": "median 59.9fps (Δmed 16.70ms) vs bar 58fps"
+    },
+    {
+      "id": "pacing.dropped-frames",
+      "severity": "hard",
+      "pass": true,
+      "detail": "dropped 1/456 (0.2%) vs ≤5%"
+    },
+    {
+      "id": "heap.growth",
+      "severity": "warn",
+      "pass": true,
+      "detail": "heap grew 0.99MB over 5s vs ≤8MB"
+    },
+    {
+      "id": "lazyload.not-required",
+      "severity": "warn",
+      "pass": false,
+      "detail": "13.71 MB (93%) of cold payload is stages 2..7 art loaded upfront → lazy-load REQUIRED"
+    }
+  ],
+  "verdict": "FAIL"
+}

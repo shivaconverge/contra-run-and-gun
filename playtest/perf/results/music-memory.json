@@ -1,0 +1,107 @@
+{
+  "generatedAt": "2026-07-12T11:51:54.266Z",
+  "url": "https://shivaconverge.github.io/contra-run-and-gun/",
+  "trackCount": 7,
+  "totalMp3Bytes": 15190981,
+  "totalMp3Human": "14.49 MB",
+  "totalDecodedPcmBytes": 422654400,
+  "totalDecodedPcmHuman": "403.07 MB",
+  "perTrackAvgDecodedHuman": "57.58 MB",
+  "lazyLoadWouldFitBudget": true,
+  "totalSeconds": 1198,
+  "decodeExpansionRatio": 27.8,
+  "checks": [
+    {
+      "id": "audio.decoded-ram-ceiling",
+      "severity": "hard",
+      "pass": false,
+      "detail": "all-7-tracks resident decoded PCM 403.07 MB vs ceiling 128MB"
+    },
+    {
+      "id": "audio.decoded-ram-warn",
+      "severity": "warn",
+      "pass": false,
+      "detail": "decoded PCM 403.07 MB vs warn 80MB"
+    }
+  ],
+  "verdict": "FAIL",
+  "tracks": [
+    {
+      "id": "s1_jungle",
+      "file": "s1_jungle.mp3",
+      "mp3Bytes": 874327,
+      "pcmBytes": 28559160,
+      "seconds": 81,
+      "sampleRate": 44100,
+      "channels": 2,
+      "mp3Human": "853.8 KB",
+      "pcmHuman": "27.24 MB"
+    },
+    {
+      "id": "s2_cascade",
+      "file": "s2_cascade.mp3",
+      "mp3Bytes": 3271502,
+      "pcmBytes": 76275360,
+      "seconds": 216.2,
+      "sampleRate": 44100,
+      "channels": 2,
+      "mp3Human": "3.12 MB",
+      "pcmHuman": "72.74 MB"
+    },
+    {
+      "id": "s3_snow",
+      "file": "s3_snow.mp3",
+      "mp3Bytes": 1872061,
+      "pcmBytes": 63715680,
+      "seconds": 180.6,
+      "sampleRate": 44100,
+      "channels": 2,
+      "mp3Human": "1.79 MB",
+      "pcmHuman": "60.76 MB"
+    },
+    {
+      "id": "s4_desert",
+      "file": "s4_desert.mp3",
+      "mp3Bytes": 1383421,
+      "pcmBytes": 46499040,
+      "seconds": 131.8,
+      "sampleRate": 44100,
+      "channels": 2,
+      "mp3Human": "1.32 MB",
+      "pcmHuman": "44.34 MB"
+    },
+    {
+      "id": "s5_foundry",
+      "file": "s5_foundry.mp3",
+      "mp3Bytes": 2674059,
+      "pcmBytes": 68778360,
+      "seconds": 194.9,
+      "sampleRate": 44100,
+      "channels": 2,
+      "mp3Human": "2.55 MB",
+      "pcmHuman": "65.59 MB"
+    },
+    {
+      "id": "s6_caverns",
+      "file": "s6_caverns.mp3",
+      "mp3Bytes": 2706956,
+      "pcmBytes": 68090400,
+      "seconds": 193,
+      "sampleRate": 44100,
+      "channels": 2,
+      "mp3Human": "2.58 MB",
+      "pcmHuman": "64.94 MB"
+    },
+    {
+      "id": "s7_fortress",
+      "file": "s7_fortress.mp3",
+      "mp3Bytes": 2408655,
+      "pcmBytes": 70736400,
+      "seconds": 200.5,
+      "sampleRate": 44100,
+      "channels": 2,
+      "mp3Human": "2.30 MB",
+      "pcmHuman": "67.46 MB"
+    }
+  ]
+}
