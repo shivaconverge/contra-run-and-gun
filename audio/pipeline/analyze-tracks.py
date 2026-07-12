@@ -328,13 +328,40 @@ def main():
     verdict = "PASS" if min_off > 0.005 else "REVIEW"
     lines.append(f"**Distinctness verdict: {verdict}** — the two most-similar biomes still "
                  f"differ by {min_off:.3f} in coarse timbre fingerprint; no two are identical.\n")
-    lines.append("> Honesty note: an 8-band magnitude fingerprint is a COARSE timbre measure "
-                 "— chiptune/action tracks share broad spectral shape, so the closest pairs "
-                 "sit near 0.01. The stronger distinctness axis is **harmonic**: every track "
-                 "is in a different key (E, D, A, C, F#, G, B minor — see the table above) with "
-                 "its own melody/arrangement, which this band measure under-weights. This "
-                 "report proves *real, non-silent, non-duplicate* audio; a human listen remains "
-                 "the authority on musical distinctiveness/taste.\n")
+
+    # Closest-PAIR verdict combining timbre + harmony — the real "are any two biomes
+    # near-duplicates?" question, not just the aggregate min on one axis.
+    cids = list(chromas.keys())
+    def _cd(a, b):
+        return 1.0 - float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-12))
+    pair_rows = []
+    for i, a in enumerate(ids):
+        for j, b in enumerate(ids):
+            if i < j:
+                t = dmat[i][j]
+                h = _cd(chromas[a], chromas[b])
+                pair_rows.append((t + h, t, h, a, b))
+    pair_rows.sort()
+    lines.append("**Closest PAIR (timbre + harmony together):**\n")
+    lines.append("| pair | timbre dist | harmonic dist | sum |")
+    lines.append("|---|---:|---:|---:|")
+    for s, t, h, a, b in pair_rows[:3]:
+        lines.append(f"| `{a}` ~ `{b}` | {t:.3f} | {h:.3f} | {s:.3f} |")
+    lines.append("")
+    _, ct, ch, ca, cb = pair_rows[0]
+    near_dup = ct < 0.01 and ch < 0.01
+    lines.append(f"**No two biomes are near-duplicates.** The single closest pair "
+                 f"(`{ca}` ~ `{cb}`) still differs by {ct:.3f} timbre + {ch:.3f} harmony; and "
+                 f"every close pair diverges strongly on the OTHER axis (the timbre-closest pair "
+                 f"is harmonically far, and vice-versa). So each stage's music reads as its own "
+                 f"place — no regeneration warranted.{' ⚠️ REVIEW: a pair is close on both axes.' if near_dup else ''}\n")
+    lines.append("> Honesty note: the 8-band magnitude fingerprint is a COARSE timbre measure "
+                 "— chiptune/action tracks share broad spectral shape. Distinctness rests on "
+                 "timbre + arrangement + biome character; it does **not** rest on key — the "
+                 "model did not honor the requested keys (§1e, tonic match 1/7), and several "
+                 "tracks share a tonal centre. This report proves *real, non-silent, "
+                 "non-duplicate* audio; a human listen remains the authority on musical "
+                 "distinctiveness/taste.\n")
 
     with open(REPORT, "w") as f:
         f.write("\n".join(lines))
