@@ -627,13 +627,12 @@ function drawEnemy(ctx, e, world, assets) {
   }
 
   if (img) {
-    // Turret: draw a WEAPONLESS dome (the pipeline's real turret_base sprite; base
-    // `turret` art is already barrel-less so `img` is a safe fallback) so the ONLY
-    // weapon is the single procedural rotating barrel — the CREATOR round-2 fix for
-    // CR-3. Single weapon-source-of-truth = the weaponless ART; the old runtime
-    // barrel-strip route was deleted (see note where weaponlessTurret used to live).
+    // Turret: draw a WEAPONLESS dome — the pipeline's real turret_base sprite, else
+    // weaponlessTurret(img) which GUARANTEES a barrel-less body in code (identity on
+    // the already-clean dome; strips a barrel if one ever slips in) — so the ONLY
+    // weapon is the single procedural rotating barrel (CREATOR round-2 fix, CR-3).
     if (e.kind === 'turret') {
-      const base = (assets && assets.get('turret_base')) || img;
+      const base = (assets && assets.get('turret_base')) || weaponlessTurret(img);
       drawEnemySprite(ctx, e, base, white);
       drawTurretBarrel(ctx, e, world);
     } else {
@@ -1059,16 +1058,53 @@ function whiteTinted(img) { return tintedSilhouette(_flashScratch, img, '#ffffff
 // as player flashes, so a shared canvas would clobber).
 const _bossScratch = {};
 
-// [REMOVED 2026-07-12] weaponlessTurret() — the runtime barrel-STRIP route.
-// Two remedies for the CR-3 turret two-gun defect had both merged: (1) this code
-// route that stripped the baked barrel off the OLD armed sprite, and (2) the art
-// route where the pipeline ships a WEAPONLESS base turret (assets/turret.png, a
-// clean 32×32 dome, no barrel). Collapsed to ONE source of truth — the art:
-// drawEnemy draws turret_base (→ the weaponless dome) + the single procedural
-// drawTurretBarrel. The strip was dead code (turret_base always resolves) AND was
-// miscalibrated for the 32×32 dome (would false-strip it), so it was deleted
-// rather than fixed. If a future armed turret variant ever needs runtime stripping,
-// author it fresh against that art — do not resurrect this probe.
+// CODE-SIDE weaponless guarantee for the turret body (CR-3): return a turret
+// sprite that carries NO baked barrel, so the ONLY weapon is the single procedural
+// drawTurretBarrel. The art route already ships a weaponless base turret (clean
+// 32×32 dome), so this is normally an identity pass-through — but it ALSO defends
+// against a baked-barrel sprite ever slipping in at this key: if a NARROW barrel
+// protrusion is detected it is erased.
+//
+// Detection is calibrated to the DOME's real silhouette (not a raw pixel count —
+// that was the old bug that false-stripped the wide dome). A barrel is a narrow
+// mid-height band that juts LEFT past the dome rows both above AND below it; the
+// smooth dome curve (and its wide base) never does. VERIFIED: flags 0 rows on the
+// shipped clean dome ⇒ returned untouched. Cached per source image.
+const _turretBaseCache = new WeakMap();
+function weaponlessTurret(img) {
+  if (!img) return null;
+  const hit = _turretBaseCache.get(img);
+  if (hit) return hit;
+  const w = img.width, h = img.height;
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const g = c.getContext('2d');
+  g.drawImage(img, 0, 0);
+  let data;
+  try { data = g.getImageData(0, 0, w, h); } catch (e) { return img; } // tainted → leave as-is
+  const d = data.data;
+  // leftmost opaque x per row
+  const lm = new Array(h).fill(-1);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 8) { lm[y] = x; break; }
+  const gap = Math.max(3, Math.round(h * 0.18)); // vertical reach to the dome above/below a barrel
+  const jut = 3;                                  // px a barrel must protrude past both neighbors
+  const yLo = Math.round(h * 0.15), yHi = Math.round(h * 0.55); // dome/barrel band (excludes wide base)
+  let stripped = false;
+  for (let y = yLo; y < yHi; y++) {
+    if (lm[y] < 0 || y - gap < 0 || y + gap >= h) continue;
+    const above = lm[y - gap], below = lm[y + gap];
+    if (above >= 0 && below >= 0 && lm[y] <= above - jut && lm[y] <= below - jut) {
+      const edge = Math.min(above, below) - 1;   // erase left of the dome silhouette
+      for (let x = 0; x <= edge && x < w; x++) d[(y * w + x) * 4 + 3] = 0;
+      stripped = true;
+    }
+  }
+  if (!stripped) { _turretBaseCache.set(img, img); return img; } // already weaponless
+  g.putImageData(data, 0, 0);
+  _turretBaseCache.set(img, c);
+  return c;
+}
+
 // STYLE-BIBLE hero palette (assets/STYLE-BIBLE.md §2) for the procedural
 // weaponless commando body used until the pipeline ships weaponless hero art.
 const HERO_PAL = {
