@@ -1,5 +1,24 @@
 # READY-TO-WIRE — art-slice fidelity levers awaiting an engine greenlight
 
+## 🎨 STAGED — per-stage BOSS sprites (5 distinct bosses, deliverable #2 LAST art class)
+`python assets/pipeline/generate.py bosses` produces a **distinct themed boss per stage** —
+real PixelLab art: Ice Sentinel (3), Foundry Core (5), Red Falcon (7), Sand Gunship (4),
+Crystal Wing (6). Closes the GOAL's "every stage has its own boss": today `drawBoss` blits
+the SAME gunmetal Sentinel for 1/3/5/7 and same chopper for 2/4/6 (config only recolors).
+Each keeps its family geometry (sentinel≈46×52 / gunship≈62×30). Judged by looking:
+`assets/pipeline/experiments/bosses/all-bosses.png`. **Grounded finding:** init-anchoring
+can't re-palette a boss (stays grey at every strength) — the recipe is FRESH generation
+with a strong biome prompt (`strength-sweep.png` vs `fresh-vs-base.png`).
+
+**Engine per-stage boss-swap hook to wire (then I finalize sync+manifest):**
+1. `game/data/assets.js` — key the bosses (`boss_snow: 'assets/boss_snow.png'`, …).
+2. `game/src/render.js drawEnemy` — resolve boss art as
+   `assets.get('boss_' + world.theme.id) || assets.get(e.kind)` (mirrors tileset/bg swap);
+   same hitbox → no geometry change. Enrage can stay base or gain per-biome variants.
+STAGED out of manifest/game-assets (no boss-swap hook yet → gate stays green, 31/31).
+**NEED:** confirm the boss-swap hook shape + whether per-biome ENRAGE variants are wanted.
+Known: `boss_desert` reads slightly mushy — a re-seed/polish candidate.
+
 ## ✅ DONE — per-stage BACKGROUND parallax art (6 biomes, deliverable #2 "background layers") — FINALIZED + LIVE
 WIRED by the engine (commit 43d2db2: `assets.js` keys `bg_snow..bg_cascade`, `render.js
 drawParallax` blits `assets.get('bg_'+theme.id)` tiled at `camx*0.15`, base y=158, with the

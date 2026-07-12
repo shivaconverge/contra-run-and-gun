@@ -1223,6 +1223,113 @@ CHOPPER_ENRAGED_PROMPT = (
 )
 
 
+# --------------------------------------------------------------------------- #
+# PER-STAGE BOSS re-themes  (deliverable #2 — the last art class: "boss sprite")
+# --------------------------------------------------------------------------- #
+# The GOAL wants "every stage has ... its own boss", but render.js drawBoss blits the SAME
+# assets.get('boss') Sentinel for stages 1/3/5/7 and assets.get('chopper') for 2/4/6 —
+# config STAGES only overrides name/hp/COLOR, so Ice Sentinel / Foundry Core / Red Falcon
+# all show the identical gunmetal Sentinel sprite (parent-confirmed: reused, not distinct).
+# This recipe produces a per-stage BOSS sprite from a theme spec, INIT-ANCHORED to the base
+# boss/chopper (exactly the boss_enraged pattern) so the re-theme keeps the SAME gameplay
+# SILHOUETTE/geometry (46x52 emplacement or 62x30 gunship — the engine draws to that hitbox)
+# while reading as a biome-distinct boss. The natural engine hook mirrors the tileset/bg
+# swap: `assets.get('boss_' + theme.id) || assets.get('boss'|'chopper')`.
+#
+# family 'sentinel' -> base-boss geometry (64px, 46x52 hitbox; stages snow/foundry/fortress
+# on LEVEL1); family 'chopper' -> base-chopper geometry (80px, 62x30 hitbox; stages desert/
+# caverns on LEVEL2). Staged produce-ahead (no boss_<id> swap hook yet).
+#
+# RECIPE = FRESH GENERATION (no init_image), NOT an init-anchored re-theme. Grounded finding
+# (experiments/bosses/strength-sweep.png, judged by looking): init-anchoring to the base
+# boss/chopper LOCKS its gunmetal palette -- at every init_strength (165/110/90) the "ice"/
+# "sand" theme never applied, the boss stayed grey (only the pose warped). A FRESH gen with a
+# strong biome-themed prompt DOES produce a genuinely distinct, on-palette boss (ice = blue-
+# white, sand = tan/ochre) on-geometry (experiments/bosses/fresh-vs-base.png). So each boss
+# is a full standalone prompt built on the base role (gun sentinel emplacement / attack
+# gunship) + the biome skin. Same role silhouette => drops into the existing boss hitbox.
+BIOME_BOSSES = {
+    "snow":    {"name": "Ice Sentinel", "family": "sentinel", "native": BOSS_NATIVE,
+        "hitbox": BOSS_HITBOX, "seed": 171,
+        "prompt": "classic Contra arcade stage boss, huge menacing ICE-armored gun "
+        "sentinel emplacement, thick pale blue-white frozen ice and crystal armor plating "
+        "with hanging icicles, a massive central cannon barrel aimed to the left, glowing "
+        "pale-cyan core eye, side view, bold black outline, high contrast, intimidating"},
+    "foundry": {"name": "Foundry Core", "family": "sentinel", "native": BOSS_NATIVE,
+        "hitbox": BOSS_HITBOX, "seed": 173,
+        "prompt": "classic Contra arcade stage boss, huge menacing INDUSTRIAL FOUNDRY gun "
+        "sentinel emplacement, soot-blackened riveted steel hull with red-hot glowing "
+        "molten-orange seams and vents, a massive central cannon barrel aimed to the left, "
+        "an exposed lava-bright reactor core eye, side view, bold black outline, high contrast"},
+    "fortress":{"name": "Red Falcon", "family": "sentinel", "native": BOSS_NATIVE,
+        "hitbox": BOSS_HITBOX, "seed": 177,
+        "prompt": "classic Contra arcade stage boss, huge menacing crimson RED FALCON war "
+        "sentinel emplacement, blood-red armored hull with gold trim and a fierce bird-of-"
+        "prey faceplate, a massive central cannon barrel aimed to the left, glowing red eye, "
+        "side view, bold black outline, high contrast, intimidating"},
+    "desert":  {"name": "Sand Gunship", "family": "chopper", "native": CHOPPER_NATIVE,
+        "hitbox": CHOPPER_HITBOX, "seed": 172,
+        "prompt": "classic Contra arcade attack helicopter gunship boss, wide armored "
+        "aerial silhouette facing left, tan and ochre DESERT SAND camo armor, dusty sun-"
+        "bleached weathered hull, spinning rotor on top, twin chin cannons pointing left, "
+        "glowing cockpit, side view, bold black outline, high contrast"},
+    "caverns": {"name": "Crystal Wing", "family": "chopper", "native": CHOPPER_NATIVE,
+        "hitbox": CHOPPER_HITBOX, "seed": 176,
+        "prompt": "classic Contra arcade attack helicopter gunship boss, wide armored aerial "
+        "silhouette facing left, violet-purple CRYSTALLINE armor plating with glowing lavender "
+        "crystal shards growing along the hull and wings, spinning rotor, chin cannons pointing "
+        "left, glowing cockpit, side view, bold black outline, high contrast"},
+}
+
+
+def gen_boss(biome: str, spec: dict) -> dict:
+    """Produce ONE per-stage boss via FRESH generation from its themed prompt (see recipe
+    note -- init-anchoring can't re-palette). Writes assets/sprites/boss_<biome>.png; returns
+    a manifest-ready record. STAGED (no sync/manifest) until the engine adds the boss_<id>
+    swap hook -- shipping now would fail the cross-source gate (orphan)."""
+    key = f"boss_{biome}"
+    im = gen_pixflux(spec["prompt"], spec["native"], seed=spec["seed"], tag=key)
+    pack = pack_strip([im], SPRITES / f"{key}.png", tighten=True)
+    return {
+        "image": f"sprites/{key}.png",
+        "type": "boss",
+        "biome": biome,
+        "bossName": spec["name"],
+        "family": spec["family"],
+        "frameWidth": pack["frameWidth"],
+        "frameHeight": pack["frameHeight"],
+        "hitboxPx": spec["hitbox"],
+        "facing": "left",
+        "note": (f"per-stage boss '{spec['name']}' ({biome}). Same "
+                 f"{spec['family']} silhouette/hitbox as the base; engine swaps via "
+                 f"assets.get('boss_{biome}') || assets.get('{'chopper' if spec['family']=='chopper' else 'boss'}')."),
+    }
+
+
+def gen_biome_bosses(only: str | None = None) -> None:
+    """Deliverable #2 boss driver: produce per-stage boss re-themes (real PixelLab), staged
+    for the engine's per-stage boss swap hook. Writes assets/sprites/boss_<biome>.png + a
+    fragment bosses.json. Produce-ahead-of-wire (gate-safe); RESUMABLE via cache."""
+    bal0 = balance()
+    print(f"Balance: ${bal0:.2f}")
+    if bal0 < MIN_BALANCE_USD:
+        sys.exit(f"Balance below ${MIN_BALANCE_USD}; aborting.")
+    SPRITES.mkdir(parents=True, exist_ok=True)
+    ids = [only] if only else list(BIOME_BOSSES)
+    frag = {}
+    for tid in ids:
+        if tid not in BIOME_BOSSES:
+            sys.exit(f"unknown boss biome '{tid}'; known: {', '.join(BIOME_BOSSES)}")
+        spec = BIOME_BOSSES[tid]
+        print(f"[boss] {tid}: {spec['name']} ({spec['family']}-family, init-anchored)")
+        frag[f"boss_{tid}"] = gen_boss(tid, spec)
+    fragpath = Path(__file__).resolve().parent / "bosses.json"
+    fragpath.write_text(json.dumps({"sprites": frag}, indent=2))
+    print(f"Wrote {fragpath.name} ({len(frag)} boss(es))")
+    bal1 = balance()
+    print(f"Balance: ${bal1:.2f}  (spent ${bal0 - bal1:.2f})")
+
+
 # Weapon-juice FX. The competitor visual-bar teardown rates weapon juice "very
 # high" and calls it the cheapest lever to close perceived-fidelity fast, favouring
 # WARM muzzle-flash palettes (our Spread is cold cyan). Multi-frame strips the
@@ -1943,5 +2050,9 @@ if __name__ == "__main__":
         # produce the per-stage background parallax scenery (deliverable #2). `backdrops`
         # = all 6; `backdrops <id>` = one biome. Staged for the engine bg-blit hook.
         gen_biome_backdrops(sys.argv[2] if len(sys.argv) > 2 else None)
+    elif cmd == "bosses":
+        # produce the per-stage boss re-themes (deliverable #2). `bosses` = all 5;
+        # `bosses <biome>` = one. Staged for the engine boss_<id> swap hook.
+        gen_biome_bosses(sys.argv[2] if len(sys.argv) > 2 else None)
     else:
         run()
