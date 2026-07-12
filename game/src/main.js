@@ -477,9 +477,15 @@ function drawStageIntro(ctx, world, frames) {
   ctx.fillRect(0, bandY + bandH - 1, SIM.VIEW_W, 1);
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillStyle = accent;
   ctx.font = '8px monospace';
-  ctx.fillText('STAGE ' + (world.stageNum || 1) + '  /  ' + (world.stageCount || 7), cx, bandY + 15);
+  // The last stage announces itself as the climax; earlier stages show "STAGE N / 7".
+  if (world.isFinalStage) {
+    ctx.fillStyle = '#ff6b6b';
+    ctx.fillText('★  FINAL STAGE  ★', cx, bandY + 15);
+  } else {
+    ctx.fillStyle = accent;
+    ctx.fillText('STAGE ' + (world.stageNum || 1) + '  /  ' + (world.stageCount || 7), cx, bandY + 15);
+  }
   ctx.fillStyle = '#fff';
   ctx.font = '15px monospace';
   ctx.fillText(String((world.level && world.level.name) || '').toUpperCase(), cx, bandY + 32);
