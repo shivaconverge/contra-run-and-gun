@@ -352,6 +352,7 @@ function runLive(ctx, world, assets) {
   world.highScore = high;
   world.newHigh = false;
   let prevStatus = world.status;
+  let introFrames = 0; // STAGE-INTRO card countdown (render frames), set on entering a stage
 
   let last = performance.now();
   let acc = 0;
@@ -418,6 +419,7 @@ function runLive(ctx, world, assets) {
       saveHigh(high);
     } else if (world.status === 'playing' && prevStatus !== 'playing') {
       world.newHigh = false;
+      introFrames = 96; // entered a stage (boot / CONTINUE / retry) → announce it (~1.6s)
     }
     prevStatus = world.status;
 
@@ -431,6 +433,16 @@ function runLive(ctx, world, assets) {
     //  • intermediate clear → a STAGE CLEAR interstitial naming the ACTUAL next stage,
     //  • final stage cleared → a VICTORY / CAMPAIGN COMPLETE screen (goal payoff).
     drawCampaignEndOverlay(ctx, world);
+
+    // STAGE-INTRO card: on ENTERING a stage (boot / CONTINUE / retry) briefly announce
+    // "STAGE N / 7 — BIOME NAME" (theme-tinted) across the top of the playfield, then
+    // fade. Production legibility for the distinct 7-stage ladder — directly answers the
+    // creator's #1 "stage/theme is not clear". LIVE-only overlay (sim untouched); the
+    // timer freezes while paused / the feedback panel is open.
+    if (introFrames > 0 && world.status === 'playing' && !world.paused && !feedback.isOpen()) {
+      drawStageIntro(ctx, world, introFrames);
+      introFrames--;
+    }
 
     // Scene-gate the BGM: play only while a run is live; fade out under title /
     // game-over / victory so the 'gameover'/'clear' sting reads clean. Runs every
@@ -449,6 +461,29 @@ function runLive(ctx, world, assets) {
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
+}
+
+// A brief "STAGE N / 7 — BIOME NAME" banner shown when a stage begins. Theme-tinted
+// (world.theme.accent) so it reinforces the biome; eases out over the final ~0.4s.
+function drawStageIntro(ctx, world, frames) {
+  const cx = SIM.VIEW_W / 2, bandY = 92, bandH = 46;
+  const accent = (world.theme && world.theme.accent) || '#ffe36e';
+  ctx.save();
+  ctx.globalAlpha = Math.min(1, frames / 24); // fade out over the last ~24 frames
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(0, bandY, SIM.VIEW_W, bandH);
+  ctx.fillStyle = accent; // thin theme-tinted rules top + bottom
+  ctx.fillRect(0, bandY, SIM.VIEW_W, 1);
+  ctx.fillRect(0, bandY + bandH - 1, SIM.VIEW_W, 1);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = accent;
+  ctx.font = '8px monospace';
+  ctx.fillText('STAGE ' + (world.stageNum || 1) + '  /  ' + (world.stageCount || 7), cx, bandY + 15);
+  ctx.fillStyle = '#fff';
+  ctx.font = '15px monospace';
+  ctx.fillText(String((world.level && world.level.name) || '').toUpperCase(), cx, bandY + 32);
+  ctx.restore();
 }
 
 function drawFps(ctx, fps) {
