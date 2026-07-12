@@ -15,7 +15,7 @@
         }
       ],
       "anchor": "bottom-center",
-      "note": "biome set-dressing prop for 'cascade'. Base-anchored: engine sits the prop BOTTOM on the ground y. Place via a level decor:[{x, key:'decor_cascade_valve', parallax?}] array + a render blit."
+      "note": "biome set-dressing prop for 'cascade'. Base-anchored: engine sits the prop BOTTOM on the ground y at d.x. ENGINE WIRE (2 lines): key 'decor_cascade_valve': 'assets/decor_cascade_valve.png' in assets.js + iterate world.decor in render.js (blit assets.get(d.key) feet-anchored). Placed in config.js CAMPAIGN[].decor; not yet loaded/blitted (Decor-reachability WONT-RENDER)."
     },
     "decor_snow_pine": {
       "image": "sprites/decor_snow_pine.png",
@@ -32,7 +32,7 @@
         }
       ],
       "anchor": "bottom-center",
-      "note": "biome set-dressing prop for 'snow'. Base-anchored: engine sits the prop BOTTOM on the ground y. Place via a level decor:[{x, key:'decor_snow_pine', parallax?}] array + a render blit."
+      "note": "biome set-dressing prop for 'snow'. Base-anchored: engine sits the prop BOTTOM on the ground y at d.x. ENGINE WIRE (2 lines): key 'decor_snow_pine': 'assets/decor_snow_pine.png' in assets.js + iterate world.decor in render.js (blit assets.get(d.key) feet-anchored). Placed in config.js CAMPAIGN[].decor; not yet loaded/blitted (Decor-reachability WONT-RENDER)."
     },
     "decor_desert_cactus": {
       "image": "sprites/decor_desert_cactus.png",
@@ -49,7 +49,7 @@
         }
       ],
       "anchor": "bottom-center",
-      "note": "biome set-dressing prop for 'desert'. Base-anchored: engine sits the prop BOTTOM on the ground y. Place via a level decor:[{x, key:'decor_desert_cactus', parallax?}] array + a render blit."
+      "note": "biome set-dressing prop for 'desert'. Base-anchored: engine sits the prop BOTTOM on the ground y at d.x. ENGINE WIRE (2 lines): key 'decor_desert_cactus': 'assets/decor_desert_cactus.png' in assets.js + iterate world.decor in render.js (blit assets.get(d.key) feet-anchored). Placed in config.js CAMPAIGN[].decor; not yet loaded/blitted (Decor-reachability WONT-RENDER)."
     },
     "decor_foundry_vat": {
       "image": "sprites/decor_foundry_vat.png",
@@ -66,7 +66,7 @@
         }
       ],
       "anchor": "bottom-center",
-      "note": "biome set-dressing prop for 'foundry'. Base-anchored: engine sits the prop BOTTOM on the ground y. Place via a level decor:[{x, key:'decor_foundry_vat', parallax?}] array + a render blit."
+      "note": "biome set-dressing prop for 'foundry'. Base-anchored: engine sits the prop BOTTOM on the ground y at d.x. ENGINE WIRE (2 lines): key 'decor_foundry_vat': 'assets/decor_foundry_vat.png' in assets.js + iterate world.decor in render.js (blit assets.get(d.key) feet-anchored). Placed in config.js CAMPAIGN[].decor; not yet loaded/blitted (Decor-reachability WONT-RENDER)."
     },
     "decor_caverns_crystal": {
       "image": "sprites/decor_caverns_crystal.png",
@@ -83,7 +83,7 @@
         }
       ],
       "anchor": "bottom-center",
-      "note": "biome set-dressing prop for 'caverns'. Base-anchored: engine sits the prop BOTTOM on the ground y. Place via a level decor:[{x, key:'decor_caverns_crystal', parallax?}] array + a render blit."
+      "note": "biome set-dressing prop for 'caverns'. Base-anchored: engine sits the prop BOTTOM on the ground y at d.x. ENGINE WIRE (2 lines): key 'decor_caverns_crystal': 'assets/decor_caverns_crystal.png' in assets.js + iterate world.decor in render.js (blit assets.get(d.key) feet-anchored). Placed in config.js CAMPAIGN[].decor; not yet loaded/blitted (Decor-reachability WONT-RENDER)."
     },
     "decor_fortress_brazier": {
       "image": "sprites/decor_fortress_brazier.png",
@@ -100,7 +100,7 @@
         }
       ],
       "anchor": "bottom-center",
-      "note": "biome set-dressing prop for 'fortress'. Base-anchored: engine sits the prop BOTTOM on the ground y. Place via a level decor:[{x, key:'decor_fortress_brazier', parallax?}] array + a render blit."
+      "note": "biome set-dressing prop for 'fortress'. Base-anchored: engine sits the prop BOTTOM on the ground y at d.x. ENGINE WIRE (2 lines): key 'decor_fortress_brazier': 'assets/decor_fortress_brazier.png' in assets.js + iterate world.decor in render.js (blit assets.get(d.key) feet-anchored). Placed in config.js CAMPAIGN[].decor; not yet loaded/blitted (Decor-reachability WONT-RENDER)."
     }
   }
 }

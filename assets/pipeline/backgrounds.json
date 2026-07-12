@@ -9,7 +9,7 @@
       "frameHeight": 56,
       "parallax": 0.15,
       "anchor": "horizon",
-      "note": "biome far-parallax scenery for 'cascade'. Blit tiled horizontally at camx*0.15 over the sky gradient, ridge base ~y=158 (drawParallax far-ridge). Transparent above the silhouette."
+      "note": "biome far-parallax scenery for 'cascade'. render.js drawParallax blits assets.get('bg_cascade') tiled at camx*0.15, ridge base y=158, over the sky gradient; transparent above the silhouette; procedural fallback."
     },
     "bg_snow": {
       "image": "sprites/bg_snow.png",
@@ -20,7 +20,7 @@
       "frameHeight": 56,
       "parallax": 0.15,
       "anchor": "horizon",
-      "note": "biome far-parallax scenery for 'snow'. Blit tiled horizontally at camx*0.15 over the sky gradient, ridge base ~y=158 (drawParallax far-ridge). Transparent above the silhouette."
+      "note": "biome far-parallax scenery for 'snow'. render.js drawParallax blits assets.get('bg_snow') tiled at camx*0.15, ridge base y=158, over the sky gradient; transparent above the silhouette; procedural fallback."
     },
     "bg_desert": {
       "image": "sprites/bg_desert.png",
@@ -31,7 +31,7 @@
       "frameHeight": 56,
       "parallax": 0.15,
       "anchor": "horizon",
-      "note": "biome far-parallax scenery for 'desert'. Blit tiled horizontally at camx*0.15 over the sky gradient, ridge base ~y=158 (drawParallax far-ridge). Transparent above the silhouette."
+      "note": "biome far-parallax scenery for 'desert'. render.js drawParallax blits assets.get('bg_desert') tiled at camx*0.15, ridge base y=158, over the sky gradient; transparent above the silhouette; procedural fallback."
     },
     "bg_foundry": {
       "image": "sprites/bg_foundry.png",
@@ -42,7 +42,7 @@
       "frameHeight": 56,
       "parallax": 0.15,
       "anchor": "horizon",
-      "note": "biome far-parallax scenery for 'foundry'. Blit tiled horizontally at camx*0.15 over the sky gradient, ridge base ~y=158 (drawParallax far-ridge). Transparent above the silhouette."
+      "note": "biome far-parallax scenery for 'foundry'. render.js drawParallax blits assets.get('bg_foundry') tiled at camx*0.15, ridge base y=158, over the sky gradient; transparent above the silhouette; procedural fallback."
     },
     "bg_caverns": {
       "image": "sprites/bg_caverns.png",
@@ -53,7 +53,7 @@
       "frameHeight": 56,
       "parallax": 0.15,
       "anchor": "horizon",
-      "note": "biome far-parallax scenery for 'caverns'. Blit tiled horizontally at camx*0.15 over the sky gradient, ridge base ~y=158 (drawParallax far-ridge). Transparent above the silhouette."
+      "note": "biome far-parallax scenery for 'caverns'. render.js drawParallax blits assets.get('bg_caverns') tiled at camx*0.15, ridge base y=158, over the sky gradient; transparent above the silhouette; procedural fallback."
     },
     "bg_fortress": {
       "image": "sprites/bg_fortress.png",
@@ -64,7 +64,7 @@
       "frameHeight": 56,
       "parallax": 0.15,
       "anchor": "horizon",
-      "note": "biome far-parallax scenery for 'fortress'. Blit tiled horizontally at camx*0.15 over the sky gradient, ridge base ~y=158 (drawParallax far-ridge). Transparent above the silhouette."
+      "note": "biome far-parallax scenery for 'fortress'. render.js drawParallax blits assets.get('bg_fortress') tiled at camx*0.15, ridge base y=158, over the sky gradient; transparent above the silhouette; procedural fallback."
     }
   }
 }
