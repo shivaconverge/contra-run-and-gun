@@ -1,0 +1,6 @@
+{
+  "name": "contra-playtest-perf",
+  "private": true,
+  "type": "module",
+  "dependencies": { "puppeteer-core": "^21.11.0" }
+}
