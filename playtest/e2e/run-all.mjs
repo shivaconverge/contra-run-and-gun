@@ -22,17 +22,26 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const FRAMES = path.resolve(HERE, '..', 'frames');
 
-// Sequential, clobber-safe order. `json` is the evidence each harness writes.
+const BALANCE = path.resolve(HERE, '..', 'balance');
+
+// Sequential, clobber-safe order. `script` is an absolute path to the harness; `json`
+// is the evidence each one writes. campaign-gate lives outside e2e/ (playtest/balance/)
+// and writes to its own dir, independent of frames/live, so it's clobber-safe anywhere;
+// it's placed LAST because it re-drives the full damage-ON campaign (heaviest harness).
 const HARNESSES = [
-  { name: 'playthrough', script: 'playthrough.mjs', json: path.join(FRAMES, 'live', 'results.json') },
-  { name: 'go-live', script: 'go-live.mjs', json: path.join(FRAMES, 'live', 'go-live.json') },
-  { name: 'touch', script: 'touch.mjs', json: path.join(FRAMES, 'live', 'touch.json') },
-  { name: 'fidelity', script: 'fidelity.mjs', json: path.join(FRAMES, 'fidelity', 'metrics.json') },
+  { name: 'playthrough', script: path.join(HERE, 'playthrough.mjs'), json: path.join(FRAMES, 'live', 'results.json') },
+  { name: 'go-live', script: path.join(HERE, 'go-live.mjs'), json: path.join(FRAMES, 'live', 'go-live.json') },
+  { name: 'touch', script: path.join(HERE, 'touch.mjs'), json: path.join(FRAMES, 'live', 'touch.json') },
+  { name: 'fidelity', script: path.join(HERE, 'fidelity.mjs'), json: path.join(FRAMES, 'fidelity', 'metrics.json') },
+  // Full 1→7→victory damage-ON balance gate. Carries the CRITICAL render-path sprite-key
+  // audit (render.stageAssetsIntact) — every stage's required tileset/parallax/boss/decor
+  // key must load, no 404/broken/absent art — plus the tracked BAL-1/BAL-2 known-bugs.
+  { name: 'campaign-gate', script: path.join(BALANCE, 'campaign-gate.mjs'), json: path.join(BALANCE, 'campaign-gate.json') },
 ];
 
 function run(script) {
   return new Promise((resolve) => {
-    const child = spawn('node', [path.join(HERE, script)], { stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn('node', [script], { stdio: ['ignore', 'pipe', 'pipe'] });
     let tail = '';
     const cap = (b) => { tail = (tail + b.toString()).slice(-4000); };
     child.stdout.on('data', cap);
@@ -49,6 +58,18 @@ function normalize(name, json, exit) {
     const reds = (json.failures || []).map((f) => ({ id: 'fidelity.validity', critical: true, detail: f }));
     const pairs = (json.pairs || []).length;
     return { passed: json.ok ? pairs : Math.max(0, pairs - reds.length), failed: reds.length, reds };
+  }
+  if (name === 'campaign-gate') {
+    // Balance gate: checks[] each = { id, crit, pass, knownBug?, detail }. A red is any
+    // failed check; crit=true reds fail the aggregate gate (render.stageAssetsIntact and
+    // the spine/invariant checks), while the tracked BAL-1/BAL-2 known-bugs (crit=false)
+    // are reported but non-blocking — same two-tier contract this runner already uses.
+    const checks = json.checks || [];
+    const reds = checks.filter((c) => !c.pass).map((c) => ({
+      id: c.id, critical: !!c.crit,
+      detail: c.knownBug ? `KNOWN-BUG(${c.knownBug}) ${c.detail}` : c.detail,
+    }));
+    return { passed: checks.filter((c) => c.pass).length, failed: reds.length, reds };
   }
   const reds = (json.results || []).filter((r) => !r.ok)
     .map((r) => ({ id: r.id, critical: r.critical !== false, detail: r.detail }));
