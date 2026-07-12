@@ -1,0 +1,361 @@
+{
+  "ts": "2026-07-12T05:50:43.057Z",
+  "target": "http://127.0.0.1:58130",
+  "seed": 1234,
+  "stageBudgetFrames": 15000,
+  "botPolicy": "baseline run+gun+gaphop+bossaim + one bullet-hop reflex (documented; NOT skilled-human)",
+  "groundTruthInvincible": {
+    "mode": "arcade",
+    "invincible": true,
+    "victory": true,
+    "stagesCleared": 7,
+    "gameoverAtStage": null,
+    "totalDeaths": 0,
+    "stages": [
+      {
+        "stage": 1,
+        "name": "Jungle Approach",
+        "theme": "jungle",
+        "bossName": "Sentinel",
+        "bossHpMax": 90,
+        "reachable": true,
+        "reachedBoss": true,
+        "bossBeaten": true,
+        "status": "cleared",
+        "timeToClearSec": 30.7,
+        "elapsedSec": 30.7,
+        "deaths": 0,
+        "deathsByCause": {
+          "pit": 0,
+          "contact": 0,
+          "projectile": 0
+        },
+        "deathLog": [],
+        "livesRemaining": 3,
+        "minBossHpReached": 1,
+        "softlock": null,
+        "isFinalStage": false,
+        "frame": "playtest/balance/frames/arcade-inv/stage-1-boss.png"
+      },
+      {
+        "stage": 2,
+        "name": "Cascade Base",
+        "theme": "cascade",
+        "bossName": "Gunship",
+        "bossHpMax": 78,
+        "reachable": true,
+        "reachedBoss": true,
+        "bossBeaten": true,
+        "status": "cleared",
+        "timeToClearSec": 65,
+        "elapsedSec": 65,
+        "deaths": 0,
+        "deathsByCause": {
+          "pit": 0,
+          "contact": 0,
+          "projectile": 0
+        },
+        "deathLog": [],
+        "livesRemaining": 3,
+        "minBossHpReached": 5,
+        "softlock": null,
+        "isFinalStage": false,
+        "frame": "playtest/balance/frames/arcade-inv/stage-2-boss.png"
+      },
+      {
+        "stage": 3,
+        "name": "Frozen Ridge",
+        "theme": "snow",
+        "bossName": "Ice Sentinel",
+        "bossHpMax": 86,
+        "reachable": true,
+        "reachedBoss": true,
+        "bossBeaten": true,
+        "status": "cleared",
+        "timeToClearSec": 23.2,
+        "elapsedSec": 23.2,
+        "deaths": 0,
+        "deathsByCause": {
+          "pit": 0,
+          "contact": 0,
+          "projectile": 0
+        },
+        "deathLog": [],
+        "livesRemaining": 3,
+        "minBossHpReached": 5,
+        "softlock": null,
+        "isFinalStage": false,
+        "frame": "playtest/balance/frames/arcade-inv/stage-3-boss.png"
+      },
+      {
+        "stage": 4,
+        "name": "Scorched Dunes",
+        "theme": "desert",
+        "bossName": "Sand Gunship",
+        "bossHpMax": 88,
+        "reachable": true,
+        "reachedBoss": true,
+        "bossBeaten": true,
+        "status": "cleared",
+        "timeToClearSec": 73.2,
+        "elapsedSec": 73.2,
+        "deaths": 0,
+        "deathsByCause": {
+          "pit": 0,
+          "contact": 0,
+          "projectile": 0
+        },
+        "deathLog": [],
+        "livesRemaining": 3,
+        "minBossHpReached": 2,
+        "softlock": null,
+        "isFinalStage": false,
+        "frame": "playtest/balance/frames/arcade-inv/stage-4-boss.png"
+      },
+      {
+        "stage": 5,
+        "name": "Iron Foundry",
+        "theme": "foundry",
+        "bossName": "Foundry Core",
+        "bossHpMax": 104,
+        "reachable": true,
+        "reachedBoss": true,
+        "bossBeaten": true,
+        "status": "cleared",
+        "timeToClearSec": 26.3,
+        "elapsedSec": 26.3,
+        "deaths": 0,
+        "deathsByCause": {
+          "pit": 0,
+          "contact": 0,
+          "projectile": 0
+        },
+        "deathLog": [],
+        "livesRemaining": 3,
+        "minBossHpReached": 4,
+        "softlock": null,
+        "isFinalStage": false,
+        "frame": "playtest/balance/frames/arcade-inv/stage-5-boss.png"
+      },
+      {
+        "stage": 6,
+        "name": "Crystal Caverns",
+        "theme": "caverns",
+        "bossName": "Crystal Wing",
+        "bossHpMax": 96,
+        "reachable": true,
+        "reachedBoss": true,
+        "bossBeaten": true,
+        "status": "cleared",
+        "timeToClearSec": 82.9,
+        "elapsedSec": 82.9,
+        "deaths": 0,
+        "deathsByCause": {
+          "pit": 0,
+          "contact": 0,
+          "projectile": 0
+        },
+        "deathLog": [],
+        "livesRemaining": 3,
+        "minBossHpReached": 1,
+        "softlock": null,
+        "isFinalStage": false,
+        "frame": "playtest/balance/frames/arcade-inv/stage-6-boss.png"
+      },
+      {
+        "stage": 7,
+        "name": "Red Falcon Keep",
+        "theme": "fortress",
+        "bossName": "Red Falcon",
+        "bossHpMax": 128,
+        "reachable": true,
+        "reachedBoss": true,
+        "bossBeaten": true,
+        "status": "cleared",
+        "timeToClearSec": 27,
+        "elapsedSec": 27,
+        "deaths": 0,
+        "deathsByCause": {
+          "pit": 0,
+          "contact": 0,
+          "projectile": 0
+        },
+        "deathLog": [],
+        "livesRemaining": 3,
+        "minBossHpReached": 5,
+        "softlock": null,
+        "isFinalStage": true,
+        "frame": "playtest/balance/frames/arcade-inv/stage-7-boss.png"
+      }
+    ]
+  },
+  "damageOn": {
+    "arcade": {
+      "mode": "arcade",
+      "invincible": false,
+      "victory": false,
+      "stagesCleared": 0,
+      "gameoverAtStage": 1,
+      "totalDeaths": 4,
+      "stages": [
+        {
+          "stage": 1,
+          "name": "Jungle Approach",
+          "theme": "jungle",
+          "bossName": "Sentinel",
+          "bossHpMax": 90,
+          "reachable": true,
+          "reachedBoss": true,
+          "bossBeaten": false,
+          "status": "gameover",
+          "timeToClearSec": null,
+          "elapsedSec": 29.7,
+          "deaths": 4,
+          "deathsByCause": {
+            "pit": 0,
+            "contact": 0,
+            "projectile": 4
+          },
+          "deathLog": [
+            {
+              "frame": 1218,
+              "x": 2288,
+              "cause": "projectile",
+              "livesAfter": 2
+            },
+            {
+              "frame": 1380,
+              "x": 2159,
+              "cause": "projectile",
+              "livesAfter": 1
+            },
+            {
+              "frame": 1555,
+              "x": 2185,
+              "cause": "projectile",
+              "livesAfter": 0
+            },
+            {
+              "frame": 1782,
+              "x": 2288,
+              "cause": "projectile",
+              "livesAfter": -1
+            }
+          ],
+          "livesRemaining": -1,
+          "minBossHpReached": 55,
+          "softlock": null,
+          "isFinalStage": false,
+          "frame": "playtest/balance/frames/arcade/stage-1-boss.png"
+        }
+      ]
+    },
+    "casual": {
+      "mode": "casual",
+      "invincible": false,
+      "victory": false,
+      "stagesCleared": 1,
+      "gameoverAtStage": 2,
+      "totalDeaths": 6,
+      "stages": [
+        {
+          "stage": 1,
+          "name": "Jungle Approach",
+          "theme": "jungle",
+          "bossName": "Sentinel",
+          "bossHpMax": 90,
+          "reachable": true,
+          "reachedBoss": true,
+          "bossBeaten": true,
+          "status": "cleared",
+          "timeToClearSec": 44.5,
+          "elapsedSec": 44.5,
+          "deaths": 3,
+          "deathsByCause": {
+            "pit": 0,
+            "contact": 0,
+            "projectile": 3
+          },
+          "deathLog": [
+            {
+              "frame": 1445,
+              "x": 2288,
+              "cause": "projectile",
+              "livesAfter": 4
+            },
+            {
+              "frame": 1845,
+              "x": 2288,
+              "cause": "projectile",
+              "livesAfter": 3
+            },
+            {
+              "frame": 2226,
+              "x": 2288,
+              "cause": "projectile",
+              "livesAfter": 2
+            }
+          ],
+          "livesRemaining": 2,
+          "minBossHpReached": 1,
+          "softlock": null,
+          "isFinalStage": false,
+          "frame": "playtest/balance/frames/casual/stage-1-boss.png"
+        },
+        {
+          "stage": 2,
+          "name": "Cascade Base",
+          "theme": "cascade",
+          "bossName": "Gunship",
+          "bossHpMax": 78,
+          "reachable": true,
+          "reachedBoss": true,
+          "bossBeaten": false,
+          "status": "gameover",
+          "timeToClearSec": null,
+          "elapsedSec": 45.7,
+          "deaths": 3,
+          "deathsByCause": {
+            "pit": 0,
+            "contact": 0,
+            "projectile": 3
+          },
+          "deathLog": [
+            {
+              "frame": 1434,
+              "x": 2128,
+              "cause": "projectile",
+              "livesAfter": 1
+            },
+            {
+              "frame": 2055,
+              "x": 2128,
+              "cause": "projectile",
+              "livesAfter": 0
+            },
+            {
+              "frame": 2743,
+              "x": 2128,
+              "cause": "projectile",
+              "livesAfter": -1
+            }
+          ],
+          "livesRemaining": -1,
+          "minBossHpReached": 52,
+          "softlock": null,
+          "isFinalStage": false,
+          "frame": "playtest/balance/frames/casual/stage-2-boss.png"
+        }
+      ]
+    }
+  },
+  "reachAll7": true,
+  "defeatableAll7Invincible": true,
+  "arcadeVictory": false,
+  "casualVictory": false,
+  "softlocks": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "pageErrors": []
+}
