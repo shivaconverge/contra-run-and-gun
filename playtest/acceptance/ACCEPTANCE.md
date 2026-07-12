@@ -145,6 +145,21 @@ of the rendered boss off the live `<canvas>` (`frames/boss/…`, public under
 `frames/boss/public/…`). Latest run: **7/7 bosses captured, 7 distinct names**, on
 both local and the public URL.
 
+**Affordance GROUNDED (2026-07-12) — `boss-arena-validate.mjs`.** The obvious worry:
+does "force `boss.active=true` + snap the camera" show the REAL boss the player
+meets, or a degraded/pre-entry pose? I proved it faithful by capturing stage 1's
+Sentinel **two ways in one run**: (a) NATURAL — actually driving the player the full
+length of stage 1 with real `ArrowRight` + auto-hopping the gaps until the boss woke
+on its own AND the camera settled at the arena barrier; (b) AFFORDANCE — the exact
+boss-fidelity move. Result: identical camera position (`camx=1920` both), same boss
+(`Sentinel`), and a near-zero crop diff (grid Δ **4.45**/255, palette-L1 **0.081**)
+— the tiny residual is just the boss's idle-bob animation phase. By looking, the two
+frames are the same boss, palette, silhouette, and framing. Since the natural
+activation gate (camera-proximity, `world.js`) is identical for every stage, this
+validates the affordance for all 7. (Caveat honestly noted: the capture lands on
+whatever animation frame is live, not a fixed pose — fine for a presence/distinctness
+look.)
+
 **By-looking verdict (2026-07-12): all 7 bosses PRESENT and visibly distinct.** Two
 design families — a walker MECH and a flying CHOPPER — each themed per biome:
 
