@@ -24,13 +24,13 @@ Each track's `theme` matches `game/data/config.js` THEMES/STAGES at the same sta
 
 | stage_id | biome | key | dur | RMS | peak | centroid | bass<250Hz |
 |---|---|---|---:|---:|---:|---:|---:|
-| `s1_jungle` | jungle | E minor | 81s | -14.2 dB | 0.4 dB | 2445 Hz | 41.5% |
-| `s2_cascade` | cascade waterfall base | A minor | 216s | -14.9 dB | 1.1 dB | 3030 Hz | 57.3% |
-| `s3_snow` | snow | C minor | 181s | -14.2 dB | 0.7 dB | 2638 Hz | 46.8% |
-| `s4_desert` | desert | D minor | 132s | -14.6 dB | -1.0 dB | 2865 Hz | 46.7% |
-| `s5_foundry` | foundry | G minor | 195s | -14.3 dB | -1.6 dB | 2825 Hz | 69.7% |
-| `s6_caverns` | caverns | F# minor | 193s | -14.8 dB | 0.3 dB | 3078 Hz | 50.7% |
-| `s7_fortress` | fortress | B minor | 200s | -14.9 dB | 1.2 dB | 3198 Hz | 41.8% |
+| `s1_jungle` | jungle | E minor | 81s | -14.1 dB | 0.6 dB | 2387 Hz | 41.6% |
+| `s2_cascade` | cascade waterfall base | A minor | 216s | -14.8 dB | 1.2 dB | 2996 Hz | 57.3% |
+| `s3_snow` | snow | C minor | 181s | -14.2 dB | 1.0 dB | 2820 Hz | 45.3% |
+| `s4_desert` | desert | D minor | 132s | -14.6 dB | -0.6 dB | 2890 Hz | 46.5% |
+| `s5_foundry` | foundry | G minor | 195s | -14.2 dB | -1.5 dB | 2857 Hz | 69.4% |
+| `s6_caverns` | caverns | F# minor | 193s | -14.7 dB | 0.4 dB | 3002 Hz | 51.0% |
+| `s7_fortress` | fortress | B minor | 200s | -14.8 dB | 1.3 dB | 3319 Hz | 40.3% |
 
 Every track is multi-second, well above the noise floor (RMS ≫ −60 dB) and carries a real bass floor — i.e. real music, not silence/placeholder.
 
@@ -40,15 +40,15 @@ The engine loops each track whole (`loop=true`), so the END must wrap back to th
 
 | stage_id | tail silence | end→start jump | end RMS |
 |---|---:|---:|---:|
-| `s1_jungle` | 9.7 ms | 0.0004 | 0.055 |
-| `s2_cascade` | 6.3 ms | 0.0012 | 0.033 |
-| `s3_snow` | 10.6 ms | 0.0000 | 0.053 |
+| `s1_jungle` | 9.8 ms | 0.0004 | 0.058 |
+| `s2_cascade` | 6.3 ms | 0.0006 | 0.033 |
+| `s3_snow` | 10.7 ms | 0.0008 | 0.054 |
 | `s4_desert` | 8.9 ms | 0.0000 | 0.045 |
-| `s5_foundry` | 7.8 ms | 0.0001 | 0.047 |
-| `s6_caverns` | 7.3 ms | 0.0011 | 0.044 |
-| `s7_fortress` | 3.6 ms | 0.0003 | 0.096 |
+| `s5_foundry` | 7.8 ms | 0.0004 | 0.049 |
+| `s6_caverns` | 7.2 ms | 0.0018 | 0.047 |
+| `s7_fortress` | 3.6 ms | 0.0014 | 0.102 |
 
-**Loop verdict: PASS** — worst trailing silence 10.6 ms and worst wrap discontinuity 0.0012; every loop wraps on live music (end RMS ≫ 0), so no track goes silent mid-loop and no wrap clicks.
+**Loop verdict: PASS** — worst trailing silence 10.7 ms and worst wrap discontinuity 0.0018; every loop wraps on live music (end RMS ≫ 0), so no track goes silent mid-loop and no wrap clicks.
 
 ## 1c. Consistent loudness across stages (EBU R128)
 
@@ -56,32 +56,49 @@ The campaign hard-cuts stage N→N+1, so the 7 tracks must sit at the SAME integ
 
 | stage_id | integrated | true peak |
 |---|---:|---:|
-| `s1_jungle` | -15.0 LUFS | -2.4 dBFS |
-| `s2_cascade` | -14.9 LUFS | -1.8 dBFS |
-| `s3_snow` | -15.0 LUFS | -2.1 dBFS |
-| `s4_desert` | -15.0 LUFS | -3.1 dBFS |
+| `s1_jungle` | -14.9 LUFS | -2.2 dBFS |
+| `s2_cascade` | -14.9 LUFS | -1.2 dBFS |
+| `s3_snow` | -14.9 LUFS | -2.0 dBFS |
+| `s4_desert` | -14.9 LUFS | -3.3 dBFS |
 | `s5_foundry` | -14.9 LUFS | -3.7 dBFS |
-| `s6_caverns` | -14.9 LUFS | -2.3 dBFS |
-| `s7_fortress` | -15.0 LUFS | -1.7 dBFS |
+| `s6_caverns` | -14.9 LUFS | -2.4 dBFS |
+| `s7_fortress` | -14.8 LUFS | -1.5 dBFS |
 
-**Loudness verdict: PASS** — spread 0.10 LU (≤1 LU = inaudible stage-to-stage step) and worst true peak -1.7 dBFS (headroom, no clipping).
+**Loudness verdict: PASS** — spread 0.10 LU (≤1 LU = inaudible stage-to-stage step) and worst true peak -1.2 dBFS (headroom, no clipping).
+
+## 1d. Web payload (first-load bandwidth)
+
+The engine `loadTracks` decodes all 7 at boot, so their combined size is what every player downloads (async — the synth covers until they arrive). `pipeline/rebuild-clean.py` rebuilds each from its Udio master in ONE encode at a web-appropriate bitrate (~120 kbps VBR).
+
+| stage_id | size |
+|---|---:|
+| `s1_jungle` | 0.83 MB |
+| `s2_cascade` | 3.12 MB |
+| `s3_snow` | 1.79 MB |
+| `s4_desert` | 1.32 MB |
+| `s5_foundry` | 2.55 MB |
+| `s6_caverns` | 2.58 MB |
+| `s7_fortress` | 2.30 MB |
+| **total** | **14.49 MB** |
+
+**Total first-load audio payload: 14.5 MB** (down from ~21.4 MB; each file is now a single transcode from the Udio master rather than 4–5 stacked re-encodes).
 
 ## 2. Distinct per biome (band-fingerprint cosine distance)
 
 Pairwise cosine distance between 8-band spectral fingerprints (0 = identical timbre, larger = more distinct).
 
 - **min pairwise distance:** 0.0169  (the two closest biomes)
-- **mean pairwise distance:** 0.0866
+- **mean pairwise distance:** 0.0873
 
 | | jungle | cascade | snow | desert | foundry | caverns | fortress |
 |---|---|---|---|---|---|---|---|
-| **s1_jungle** | 0.000 | 0.159 | 0.057 | 0.049 | 0.292 | 0.176 | 0.118 |
-| **s2_cascade** | 0.159 | 0.000 | 0.060 | 0.056 | 0.026 | 0.017 | 0.039 |
-| **s3_snow** | 0.057 | 0.060 | 0.000 | 0.044 | 0.150 | 0.090 | 0.048 |
-| **s4_desert** | 0.049 | 0.056 | 0.044 | 0.000 | 0.143 | 0.049 | 0.056 |
-| **s5_foundry** | 0.292 | 0.026 | 0.150 | 0.143 | 0.000 | 0.049 | 0.106 |
-| **s6_caverns** | 0.176 | 0.017 | 0.090 | 0.049 | 0.049 | 0.000 | 0.036 |
-| **s7_fortress** | 0.118 | 0.039 | 0.048 | 0.056 | 0.106 | 0.036 | 0.000 |
+| **s1_jungle** | 0.000 | 0.157 | 0.058 | 0.049 | 0.291 | 0.174 | 0.117 |
+| **s2_cascade** | 0.157 | 0.000 | 0.061 | 0.055 | 0.026 | 0.017 | 0.044 |
+| **s3_snow** | 0.058 | 0.061 | 0.000 | 0.044 | 0.152 | 0.090 | 0.048 |
+| **s4_desert** | 0.049 | 0.055 | 0.044 | 0.000 | 0.143 | 0.050 | 0.056 |
+| **s5_foundry** | 0.291 | 0.026 | 0.152 | 0.143 | 0.000 | 0.049 | 0.113 |
+| **s6_caverns** | 0.174 | 0.017 | 0.090 | 0.050 | 0.049 | 0.000 | 0.040 |
+| **s7_fortress** | 0.117 | 0.044 | 0.048 | 0.056 | 0.113 | 0.040 | 0.000 |
 
 **Distinctness verdict: PASS** — the two most-similar biomes still differ by 0.017 in coarse timbre fingerprint; no two are identical.
 

@@ -210,6 +210,27 @@ def main():
                  f"{spread:.2f} LU (≤1 LU = inaudible stage-to-stage step) and worst true "
                  f"peak {worst_peak:.1f} dBFS (headroom, no clipping).\n")
 
+    lines.append("## 1d. Web payload (first-load bandwidth)\n")
+    lines.append("The engine `loadTracks` decodes all 7 at boot, so their combined size is "
+                 "what every player downloads (async — the synth covers until they arrive). "
+                 "`pipeline/rebuild-clean.py` rebuilds each from its Udio master in ONE encode "
+                 "at a web-appropriate bitrate (~120 kbps VBR).\n")
+    total = 0
+    lines.append("| stage_id | size |")
+    lines.append("|---|---:|")
+    for tid, meta in tracks.items():
+        path = os.path.join(AUDIO_DIR, meta["file"])
+        if not os.path.exists(path):
+            path = os.path.join(TRACKS_DIR, os.path.basename(meta["file"]))
+        sz = os.path.getsize(path)
+        total += sz
+        lines.append(f"| `{tid}` | {sz / 1048576:.2f} MB |")
+    lines.append(f"| **total** | **{total / 1048576:.2f} MB** |")
+    lines.append("")
+    lines.append(f"**Total first-load audio payload: {total / 1048576:.1f} MB** "
+                 f"(down from ~21.4 MB; each file is now a single transcode from the Udio "
+                 f"master rather than 4–5 stacked re-encodes).\n")
+
     lines.append("## 2. Distinct per biome (band-fingerprint cosine distance)\n")
     lines.append("Pairwise cosine distance between 8-band spectral fingerprints "
                  "(0 = identical timbre, larger = more distinct).\n")
