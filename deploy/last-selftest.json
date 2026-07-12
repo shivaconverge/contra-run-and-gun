@@ -1,6 +1,6 @@
 {
-  "passed": 122,
-  "total": 122,
+  "passed": 124,
+  "total": 124,
   "ok": true,
   "results": [
     {
@@ -581,7 +581,7 @@
     {
       "name": "campaign.structureInvariantsHold",
       "pass": true,
-      "detail": "density=[23,20,20,20,21,23,27] bossHp=[90,78,86,88,104,96,128]"
+      "detail": "density=[23,20,20,20,21,23,27] bossHp=[90,78,86,88,104,82,128]"
     },
     {
       "name": "campaign.sevenDistinctStages",
@@ -591,7 +591,7 @@
     {
       "name": "campaign.finaleIsDensestAndHardest",
       "pass": true,
-      "detail": "density=[23,20,20,20,21,23,27] bossHp=[90,78,86,88,104,96,128]"
+      "detail": "density=[23,20,20,20,21,23,27] bossHp=[90,78,86,88,104,82,128]"
     },
     {
       "name": "campaign.respawnNeverIntoPit",
@@ -612,6 +612,16 @@
       "name": "weaponOnDeath.invariantHolds",
       "pass": true,
       "detail": ""
+    },
+    {
+      "name": "campaign.casualBotCalibrated",
+      "pass": true,
+      "detail": "S1-S3 cleared=[true,true,true]"
+    },
+    {
+      "name": "campaign.casualRetryReachesVictory",
+      "pass": true,
+      "detail": "all 7 bosses clear in a fresh casual pool [1,4,0,5,1,4,1 deaths]"
     }
   ]
 }
