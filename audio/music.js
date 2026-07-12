@@ -217,6 +217,8 @@ export class MusicKit {
     // and byte-safe until a track is registered — the synth remains the default/fallback.
     this._trackBuffers = {};  // stage_id -> decoded AudioBuffer
     this._activeTrack = null; // stage_id currently playing as real audio, or null (synth)
+    this._bossTrackId = null; // OPTIONAL distinct boss theme (setBossTrack); dormant when null
+    this._stageTrackId = null; // the stage's biome track to restore when the boss ends
     this._trackSource = null; // live looping BufferSource for the active track
     this._pendingTrack = null; // id requested while ctx suspended → started on resume()
     try {
@@ -393,10 +395,29 @@ export class MusicKit {
   // call every frame with the current boss-state boolean. Unknown names are ignored.
   // e.g. root.B: audio.music && audio.music.setSection(world.bossActive ? 'boss' : 'stage')
   setSection(name) {
-    if (!SECTIONS[name] || name === this._section) return;
-    if (this.running) this._pendingSection = name; // clean downbeat cut in the scheduler
+    if (!SECTIONS[name]) return;
+    // OPTIONAL distinct-boss-theme swap for REAL tracks. Dormant unless setBossTrack() has
+    // registered a boss loop AND a real stage track is playing — then this rides the SAME
+    // per-frame `audio.setSection('boss'|'stage')` hook main.js already uses for the synth:
+    // a boss section hard-cuts the real audio to the boss theme; a stage section restores the
+    // biome loop. Keyed on the REQUESTED section (not the downbeat-quantized synth `_section`)
+    // and idempotent via useTrack's same-id guard, so it's correct + cheap every frame.
+    // Byte-safe no-op when unregistered.
+    if (this._bossTrackId && this._activeTrack) {
+      const want = (name === 'boss' || name === 'boss2') ? this._bossTrackId : this._stageTrackId;
+      if (want && this._trackBuffers[want]) this.useTrack(want);
+    }
+    if (name === this._section) return;             // synth section unchanged → done
+    if (this.running) this._pendingSection = name;  // clean downbeat cut in the scheduler
     else { this._section = name; this._bar = 0; }   // offline / pre-start: apply now
   }
+
+  // Register a distinct boss theme (a decoded track id) to hard-cut to during boss fights,
+  // or null to disable (default). Once set, the existing setSection('boss') hook swaps the
+  // real audio to it and setSection('stage') restores the biome track — no new main.js
+  // wiring beyond one call. e.g. main.js: audio.music.setBossTrack('boss') after loadTracks.
+  setBossTrack(id) { this._bossTrackId = id || null; }
+  get bossTrack() { return this._bossTrackId; }
 
   // ---- REAL generated-track layer ----------------------------------------
   // Register a generated per-biome track (decode an mp3/ogg URL into a reusable buffer).
@@ -445,6 +466,9 @@ export class MusicKit {
     if (id === this._activeTrack) return;
     this._stopTrackSource();
     this._activeTrack = id;
+    // Remember the STAGE track (not the boss theme) so setSection can restore it after a
+    // boss fight. onStageChange calls useTrack(stageId); the boss swap calls useTrack(bossId).
+    if (id && id !== this._bossTrackId) this._stageTrackId = id;
     if (id) {
       if (this.ctx.state === 'suspended') { this._pendingTrack = id; } // start on resume()
       else this._startTrackSource(id);
