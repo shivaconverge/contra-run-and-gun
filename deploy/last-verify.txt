@@ -1,4 +1,4 @@
-=== GO-LIVE verification @ 2026-07-12T10:54:26Z ===
+=== GO-LIVE verification @ 2026-07-12T11:32:48Z ===
 URL: https://shivaconverge.github.io/contra-run-and-gun/
 --- root HTTP 0 ---
 <!doctype html>
@@ -55,14 +55,15 @@ audio resolve-gate: 7/7 tracks HTTP 200:
   assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 2408655 bytes [current]
 RESULT: LIVE ✅
 
-3-STEP RELEASE GATE (adds creator two-weapon defect audit) — LIVE (HEAD 6399c8f):
-  Master advanced (audio manifest bitrate metadata + selftest.js + world.js).
-  Re-deployed; gate.sh is now a 3-STEP release gate (a prior commit wired the
-  existing passing two-weapon audit as a hard step 3/3):
-    1/3 reachability+currency: PASS   2/3 functional self-test: PASS
-    3/3 creator two-weapon defect audit: PASS (7/7 stages clean)  -> VERDICT: LIVE ✅
-  This makes a core GOAL deliverable ("two-weapon defect fixed for good") a HARD
-  ship condition — a red (baked/second weapon) would BLOCK the release (the log
-  shows real BLOCKED ❌ rows when a step failed). Changed modules byte-current
-  live: src/selftest.js 55872==55872, src/world.js 37472==37472. DEPLOY-LOG.md
-  now carries the two-weapon column; README updated to document the 3 steps.
+4-STEP RELEASE GATE (adds full-surface sha256 byte-parity) — LIVE (HEAD 1e31094):
+  Master advanced: bg_caverns.png re-gen (4599->5988 bytes) + config/selftest/
+  world.js. Re-deployed; gate.sh is now a 4-STEP gate (a prior commit wired
+  deploy-parity.mjs as hard step 2/4):
+    1/4 reachability+currency: PASS
+    2/4 full-surface byte-parity (sha256): PASS — 72/72 served files byte-current
+        (STRICTLY STRONGER than Content-Length: hashes content, catching same-size
+         different-content drift)
+    3/4 functional self-test: PASS      4/4 two-weapon audit: PASS (7/7 clean)
+    -> VERDICT: LIVE ✅
+  The bg_caverns.png re-gen verified byte-current live: 5988==5988. README + gate
+  snippet updated to document all 4 steps; DEPLOY-LOG carries the full-parity column.
