@@ -333,6 +333,28 @@ def tighten_palette(im: Image.Image, min_count: int = 3) -> Image.Image:
     return ni
 
 
+def _opaque_colors(im: Image.Image) -> int:
+    return len({(r, g, b) for r, g, b, a in im.convert("RGBA").getdata() if a >= 128})
+
+
+def tighten_to_budget(im: Image.Image, cap: int = 44, max_mc: int = 16) -> Image.Image:
+    """Snap rare AA speckle to the dominant palette, raising the min-count threshold ONLY
+    as far as needed to bring the opaque-colour count within `cap`. For detailed boss
+    sprites: fresh-gen edges carry more AA near-duplicate speckle than the 32px character
+    tier, so the flat mc=3 tighten leaves them over the palette budget. Verified by looking
+    (experiments/bosses/boss_*-tighten.png) that raising mc crisps the SPECKLE with no
+    detail loss -- so this is the correct fix vs. loosening the palette cap (which would let
+    genuine AA bloat through). Low-colour sprites return unchanged (loop exits immediately)."""
+    if _opaque_colors(im) <= cap:
+        return im
+    best = im
+    for mc in range(4, max_mc + 1):
+        best = tighten_palette(im, min_count=mc)
+        if _opaque_colors(best) <= cap:
+            break
+    return best
+
+
 def pack_strip(frames: list[Image.Image], out: Path, tighten: bool = False,
                cell: tuple[int, int] | None = None) -> dict:
     """Trim frames to a common content bbox, lay them out in a horizontal strip.
@@ -1289,7 +1311,12 @@ def gen_boss(biome: str, spec: dict) -> dict:
     swap hook -- shipping now would fail the cross-source gate (orphan)."""
     key = f"boss_{biome}"
     im = gen_pixflux(spec["prompt"], spec["native"], seed=spec["seed"], tag=key)
-    pack = pack_strip([im], SPRITES / f"{key}.png", tighten=True)
+    # Detailed fresh-gen bosses carry more AA edge speckle than the 32px tier; snap it to
+    # the palette budget adaptively (verified by looking = no detail loss) so they stay
+    # within the contract-gate palette cap, THEN pack (tighten=False, already tightened).
+    im = tighten_to_budget(im, cap=44)
+    pack = pack_strip([im], SPRITES / f"{key}.png", tighten=False)
+    sync_to_engine(SPRITES / f"{key}.png")   # engine keys boss_<id> (WIRED, commit 4dbe7b7)
     return {
         "image": f"sprites/{key}.png",
         "type": "boss",
@@ -1705,6 +1732,18 @@ def run() -> None:
         rec = gen_backdrop(tid, spec)                # writes assets/sprites + syncs
         manifest["sprites"][f"bg_{tid}"] = rec
 
+    # 5e) PER-STAGE BOSS sprites (deliverable #2 last art class) -- FINALIZED + WIRED (the
+    # engine keys boss_<biome> in assets.js and render.js drawEnemy resolves
+    # assets.get('boss_'+world.theme.id) || assets.get(e.kind) for both boss/chopper
+    # families, commit 4dbe7b7). Fold the 5 distinct themed bosses into the canonical run so
+    # manifest.json carries them (like the tileset/bg finalize). `generate.py bosses [id]`
+    # stays the fast iterator. Stages 1/2 keep the base Sentinel/chopper (no boss_jungle/
+    # boss_cascade key). Fresh-gen recipe (init-anchoring can't re-palette; see boss note).
+    print("[bosses] per-stage themed bosses (5, fresh-gen)")
+    for tid, spec in BIOME_BOSSES.items():
+        rec = gen_boss(tid, spec)                    # writes assets/sprites + syncs
+        manifest["sprites"][f"boss_{tid}"] = rec
+
     manifest["meta"]["knownIssues"] = [
         "boss_enraged: real phase-2 enraged Sentinel sprite produced + synced + "
         "loads, but drawBoss doesn't swap to it yet -- wire it to blit "
@@ -1887,6 +1926,14 @@ def verify_contract() -> int:
         has_bg_path = "assets.get('bg_'" in render_src.replace(" ", "")
         bg_arg_forms = {a for a in _re.findall(r"assets\.get\(([^)]*)\)", render_src)
                         if a.replace(" ", "").startswith("'bg_'")}
+        # PER-STAGE BOSS path: render.js drawEnemy resolves the themed boss via
+        # `assets.get('boss_' + world.theme.id)` (commit 4dbe7b7) for both boss/chopper
+        # families -- same 'boss_'+var concat shape as the bg path. If present, every
+        # engine key with a `boss_` prefix is reachable via it (boss_enraged is also a
+        # literal, harmlessly matched too).
+        has_boss_theme_path = "assets.get('boss_'" in render_src.replace(" ", "")
+        boss_arg_forms = {a for a in _re.findall(r"assets\.get\(([^)]*)\)", render_src)
+                          if a.replace(" ", "").startswith("'boss_'")}
         # Self-grounding guard: this reachability model KNOWS only two consumption
         # forms -- a literal 'key' and the dynamic e.kind. If the engine later adds
         # ANY other dynamic argument form (a var, a lookup, fx.kind, ...), the model
@@ -1897,7 +1944,8 @@ def verify_contract() -> int:
         all_args = {a.strip() for a in _re.findall(r"assets\.get\(([^)]*)\)", render_src)}
         modeled = ({"e.kind"} | {f"'{k}'" for k in literal} | wrapper_params
                    | (tileset_vars if has_theme_tileset_path else set())
-                   | {a.strip() for a in bg_arg_forms})
+                   | {a.strip() for a in bg_arg_forms}
+                   | {a.strip() for a in boss_arg_forms})
         unmodeled = {a for a in all_args if a not in modeled}
         if unmodeled:
             print("\n  MODEL-WARN: unmodeled assets.get() arg form(s) in render.js "
@@ -1910,6 +1958,8 @@ def verify_contract() -> int:
                 continue   # drawn via assets.get(world.theme.tileset)
             if has_bg_path and key.startswith("bg_"):
                 continue   # drawn via assets.get('bg_' + theme.id) in drawParallax
+            if has_boss_theme_path and key.startswith("boss_"):
+                continue   # drawn via assets.get('boss_' + theme.id) in drawEnemy
             how = "spawned-enemy-kind" if has_dynamic_kind else "no dynamic e.kind path"
             rprob.append(f"engine key '{key}' NOT blitted by render.js "
                          f"(no literal assets.get; {how}) -> shipped-but-unreachable")

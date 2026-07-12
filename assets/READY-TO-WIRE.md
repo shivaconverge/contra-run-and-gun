@@ -1,23 +1,23 @@
 # READY-TO-WIRE — art-slice fidelity levers awaiting an engine greenlight
 
-## 🎨 STAGED — per-stage BOSS sprites (5 distinct bosses, deliverable #2 LAST art class)
-`python assets/pipeline/generate.py bosses` produces a **distinct themed boss per stage** —
-real PixelLab art: Ice Sentinel (3), Foundry Core (5), Red Falcon (7), Sand Gunship (4),
-Crystal Wing (6). Closes the GOAL's "every stage has its own boss": today `drawBoss` blits
-the SAME gunmetal Sentinel for 1/3/5/7 and same chopper for 2/4/6 (config only recolors).
-Each keeps its family geometry (sentinel≈46×52 / gunship≈62×30). Judged by looking:
-`assets/pipeline/experiments/bosses/all-bosses.png`. **Grounded finding:** init-anchoring
-can't re-palette a boss (stays grey at every strength) — the recipe is FRESH generation
-with a strong biome prompt (`strength-sweep.png` vs `fresh-vs-base.png`).
+## ✅ DONE — per-stage BOSS sprites (5 distinct bosses, deliverable #2 LAST art class) — FINALIZED + LIVE
+WIRED by the engine (commit 4dbe7b7: `assets.js` keys `boss_snow/foundry/fortress/desert/
+caverns`, `render.js drawEnemy` resolves `assets.get('boss_'+world.theme.id) || assets.get
+(e.kind)` for both boss/chopper families) and FINALIZED by me: folded into canonical `run()`
+(§5e) so `manifest.json` carries all 5; byte-synced; gate extended (boss-swap draw-path
+modeled). Cross-source consistent (36=36=36), 36/36 sprites pass.
 
-**Engine per-stage boss-swap hook to wire (then I finalize sync+manifest):**
-1. `game/data/assets.js` — key the bosses (`boss_snow: 'assets/boss_snow.png'`, …).
-2. `game/src/render.js drawEnemy` — resolve boss art as
-   `assets.get('boss_' + world.theme.id) || assets.get(e.kind)` (mirrors tileset/bg swap);
-   same hitbox → no geometry change. Enrage can stay base or gain per-biome variants.
-STAGED out of manifest/game-assets (no boss-swap hook yet → gate stays green, 31/31).
-**NEED:** confirm the boss-swap hook shape + whether per-biome ENRAGE variants are wanted.
-Known: `boss_desert` reads slightly mushy — a re-seed/polish candidate.
+**Verified LIVE by looking** (headless `?level=3-7&scenario=boss`):
+`assets/pipeline/experiments/bosses/live/MONTAGE-live-bosses.png` — every stage renders its
+OWN distinct boss in its biome (Ice Sentinel / Foundry Core / Red Falcon / Sand Gunship /
+Crystal Wing), with the themed HUD name; 0 errors, 0 missing. Closes the GOAL's "every stage
+has its own boss". **Grounded finding:** init-anchoring can't re-palette a boss — the recipe
+is FRESH generation (`experiments/bosses/strength-sweep.png` vs `fresh-vs-base.png`).
+Palette fix: detailed fresh bosses carried AA edge speckle over the gate's palette cap;
+`tighten_to_budget` snaps it adaptively (verified by looking = no detail loss, `boss_*-
+tighten.png`) rather than loosening the cap.
+**NEED (future):** whether per-biome ENRAGE variants are wanted. `boss_desert` reads
+slightly mushy — a re-seed/polish candidate.
 
 ## ✅ DONE — per-stage BACKGROUND parallax art (6 biomes, deliverable #2 "background layers") — FINALIZED + LIVE
 WIRED by the engine (commit 43d2db2: `assets.js` keys `bg_snow..bg_cascade`, `render.js
