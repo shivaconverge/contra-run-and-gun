@@ -1,0 +1,56 @@
+[
+  {
+    "lvl": 2,
+    "theme": "cascade",
+    "tilesetKey": "theme_cascade",
+    "tilesetLoaded": true,
+    "missing": 0,
+    "errors": 0,
+    "file": "assets/pipeline/experiments/set-dressing/live-prod/level2-cascade.png"
+  },
+  {
+    "lvl": 3,
+    "theme": "snow",
+    "tilesetKey": "theme_snow",
+    "tilesetLoaded": true,
+    "missing": 0,
+    "errors": 0,
+    "file": "assets/pipeline/experiments/set-dressing/live-prod/level3-snow.png"
+  },
+  {
+    "lvl": 4,
+    "theme": "desert",
+    "tilesetKey": "theme_desert",
+    "tilesetLoaded": true,
+    "missing": 0,
+    "errors": 0,
+    "file": "assets/pipeline/experiments/set-dressing/live-prod/level4-desert.png"
+  },
+  {
+    "lvl": 5,
+    "theme": "foundry",
+    "tilesetKey": "theme_foundry",
+    "tilesetLoaded": true,
+    "missing": 0,
+    "errors": 0,
+    "file": "assets/pipeline/experiments/set-dressing/live-prod/level5-foundry.png"
+  },
+  {
+    "lvl": 6,
+    "theme": "caverns",
+    "tilesetKey": "theme_caverns",
+    "tilesetLoaded": true,
+    "missing": 0,
+    "errors": 0,
+    "file": "assets/pipeline/experiments/set-dressing/live-prod/level6-caverns.png"
+  },
+  {
+    "lvl": 7,
+    "theme": "fortress",
+    "tilesetKey": "theme_fortress",
+    "tilesetLoaded": true,
+    "missing": 0,
+    "errors": 0,
+    "file": "assets/pipeline/experiments/set-dressing/live-prod/level7-fortress.png"
+  }
+]
