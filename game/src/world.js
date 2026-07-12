@@ -717,4 +717,30 @@ export class World {
     });
     return { pass: violations.length === 0, violations };
   }
+
+  // WEAPON-ON-DEATH guard (BAL-4, playtest/balance/): a subtle but load-bearing
+  // mode-conditional invariant — ARCADE reverts to the default rifle on death (the pure
+  // 1987 challenge), while CASUAL RETAINS the weapon so a boss death doesn't trigger the
+  // DPS-death-spiral (re-measured fact: this lifts a baseline casual run from clearing 1
+  // stage to 3 stages per life-pool, without trivializing it — casual still walls at the
+  // Stage-4 Gunship). Guards the mechanism against a silent regression (e.g. someone
+  // making the revert mode-agnostic again). Drives the REAL death→respawn path.
+  static weaponOnDeathTest(level) {
+    const errors = [];
+    const ck = (c, m) => { if (!c) errors.push(m); };
+    const run = (mode) => {
+      const w = new World(level, 1234, mode);
+      w.lives = 3;
+      w.player.setWeapon('laser');           // a non-default top weapon
+      w.player.dead = true;
+      w._onPlayerDeath();                     // death → (arcade) revert / (casual) retain
+      const afterDeath = w.player.weaponKey;
+      w.respawnTimer = 1; w._doRespawn();     // respawn mirrors the same rule
+      return { afterDeath, afterRespawn: w.player.weaponKey };
+    };
+    const arc = run('arcade'), cas = run('casual');
+    ck(arc.afterRespawn === 'rifle', `arcade must revert to rifle on death, got '${arc.afterRespawn}'`);
+    ck(cas.afterRespawn === 'laser', `casual must RETAIN weapon on death, got '${cas.afterRespawn}'`);
+    return { pass: errors.length === 0, errors, arcade: arc, casual: cas };
+  }
 }
