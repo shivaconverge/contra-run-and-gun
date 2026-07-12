@@ -14,7 +14,16 @@
   ],
   "renderPathHashesAtVerdict": {
     "note": "The hero/turret weapon LOOK only changes if the render code (or its sprite assets) change. run-acceptance.mjs recomputes these and flags the by-looking verdict as POSSIBLY-STALE if they differ — a human must then re-look, so the recorded verdict can never silently mask a render regression.",
-    "game/src/render.js": "d57dd3e8b69f126b",
+    "game/src/render.js": "ea2492a150756f2f",
     "game/src/player.js": "216a310f71151ab4"
-  }
+  },
+  "reconfirmations": [
+    {
+      "date": "2026-07-12 (later, after render.js set-dressing drift)",
+      "trigger": "render.js changed d57dd3e8b69f126b -> ea2492a150756f2f (set-dressing commit) — staleness guard fired, forcing this re-look.",
+      "verdict": "PASS (unchanged)",
+      "renderPathHashesReconfirmed": { "game/src/render.js": "ea2492a150756f2f", "game/src/player.js": "216a310f71151ab4" },
+      "note": "Re-captured weapon frames on the render-drifted build and re-judged BY LOOKING: hero still shows ONE horizontal rifle in both hands (muzzle at the barrel tip) and the turret still shows ONE barrel on a weaponless dome. The set-dressing render change did NOT reintroduce the two-weapon defect and did NOT regress hero/turret rendering (a full-canvas capture confirmed the hero draws correctly at its px/py). renderPathHashesAtVerdict is now updated to the confirmed build, clearing the stale flag with a fresh grounded verdict."
+    }
+  ]
 }

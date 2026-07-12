@@ -164,6 +164,17 @@ the deployed build. This clears the *behavioral* half of the creator's gate from
 player's eyes; the formal **creator APPROVE** artifact is the feedback loop's to
 record.
 
+**RE-CONFIRMED 2026-07-12 (later), after `render.js` drift.** The staleness guard in
+`run-acceptance.mjs` fired when a set-dressing commit changed `render.js`
+(`d57dd3e8…` → `ea2492a1…`). Acting on it, I re-captured weapon frames on the
+render-drifted build and re-judged BY LOOKING: hero still shows ONE horizontal rifle
+in both hands (muzzle at the barrel tip), turret still ONE barrel on a weaponless
+dome — the set-dressing change did **not** reintroduce the two-weapon defect. A
+full-canvas capture also confirmed the hero renders correctly at its `px/py` (no
+render-offset regression). `weapon-verdict.json` `renderPathHashesAtVerdict` is
+updated to the confirmed build (stale flag cleared with a fresh grounded verdict);
+the re-look is logged under `reconfirmations`.
+
 ---
 
 ## PUBLIC-URL grounding — the LIVE deploy real players reach
@@ -237,18 +248,22 @@ without masking (`scope_served` still reflects the bytes the URL actually served
   retried. A still-invalid run is reported `GATE-INFRA-ERROR` (exit 2), never a game
   FAIL. Post-fix: both scope runs valid on the first attempt, gate PASS 8/8.
 
-### 2026-07-12 — harness (mine): prone weapon crop doesn't reliably frame the hero
-- **Severity:** harness coverage gap (NOT a game defect).
-- **Symptom:** `weapon-fidelity.mjs` frames the hero cleanly for `aim-right`,
-  `aim-up`, and `aim-diag-up`, but the `prone` crop often catches only ground — the
-  flat, low prone sprite sits at the crop edge and blends with the floor band.
-- **Not a game issue:** prone FIRING works (bullet count increments every prone
-  capture) and the horizontal `aim-right` pose already proves the same one-gun
-  geometry the prone pose would; the defect verdict does not depend on the prone
-  frame. The two-weapon fix is confirmed by the other three captures + the turret.
-- **Repro:** run the harness; open `frames/weapon/hero-prone-*.png`. Follow-up
-  (mine): anchor the prone crop to the sprite's drawn bounds (render offset), not the
-  shrunk hitbox center, so the low pose frames reliably.
+### 2026-07-12 — harness (mine): weapon crops intermittently missed the hero — ROOT-CAUSED + FIXED
+- **Severity:** harness reliability (NOT a game defect). RESOLVED this cycle.
+- **Symptom:** `weapon-fidelity.mjs` intermittently captured empty crops (ground/
+  bullets, no hero) for `aim-up`, `aim-diag-up`, and especially `prone`.
+- **Root cause (found by reading `render.js`):** the harness set `player.iframe =
+  99999` to keep the hero alive, but `render.js:1253`
+  (`if (p.iframe > 0 && Math.floor(p.iframe/4) % 2 === 0) return;`) SKIPS drawing the
+  hero on alternate 4-frame windows — the arcade invulnerability BLINK. A capture
+  landing on a blink-OFF frame was therefore empty. Not a game bug — the blink is
+  correct gameplay; the harness was fighting it.
+- **Fix (this commit):** before each capture, zero `iframe` (so the hero draws SOLID,
+  no blink), let ~70ms render, grab, then restore invuln for the rest of the pose.
+  Verified: 24/24 hero crops across 2 runs are non-empty (grayscale σ 45–70, vs the
+  near-uniform empties before), and by looking, every pose (incl. prone) now frames
+  the hero holding ONE weapon. This also retires the earlier "prone crop" limitation
+  — prone now frames reliably.
 
 ### 2026-07-12 — harness (mine): dropped synthetic `KeyN` caused a FALSE 5/7 (fixed)
 - **Severity:** harness robustness (NOT a game/deploy defect) — but a *false* fail

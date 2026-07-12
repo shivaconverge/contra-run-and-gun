@@ -172,19 +172,26 @@ async function main() {
 
     async function heroPose(label, keys, shots = 3) {
       await releaseAll();
-      await page.evaluate(() => { window.__game.player.iframe = 99999; });
+      await page.evaluate(() => { window.__game.player.iframe = 99999; }); // survive the fire window
       for (const k of keys) await page.keyboard.down(k);
       await page.keyboard.down('KeyX'); // fire
       await sleep(360);
       for (let i = 0; i < shots; i++) {
-        await page.evaluate(() => { window.__game.player.iframe = 99999; });
+        // CRITICAL: iframe>0 makes render.js:1253 SKIP drawing the hero on alternate
+        // 4-frame windows (the arcade invuln BLINK) — so a capture landing on a
+        // blink-off frame is EMPTY. Zero iframe and let a couple frames render the
+        // hero SOLID before grabbing, then restore invuln so he survives the rest of
+        // the pose. (Near spawn the hero can't be hit in this brief window.)
+        await page.evaluate(() => { window.__game.player.iframe = 0; });
+        await sleep(70);
         const cap = await captureEntity(page, heroPick, 64, 6);
         if (cap) {
           const file = path.join(framesDir, `hero-${label}-${i}.png`);
           await writeFile(file, cap.png);
           run.captures.push({ entity: 'hero', pose: label, frame: path.relative(REPO, file), ...cap.info });
         }
-        await sleep(110);
+        await page.evaluate(() => { window.__game.player.iframe = 99999; });
+        await sleep(90);
       }
       await releaseAll();
     }
