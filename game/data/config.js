@@ -512,6 +512,71 @@ const LEVEL5_FOUNDRY = {
   goalX: 2340, // Sentinel x is the fight trigger; boss.dead = stage clear
 };
 
+// DISTINCT STAGE GEOMETRY — Stage 7 "Red Falcon Keep" is the CLIMAX: a fortress
+// approach with STEPPED RAMPARTS (ascending battlement platforms) and TWIN MOAT gaps
+// (a double drawbridge run — two 56px jumps), the densest gauntlet of the campaign
+// (every threat axis). A third distinct silhouette after S4's open desert + S5's
+// vertical foundry. Sentinel boss (Red Falcon) on its PROVEN arena tail (barrier@2300,
+// sentinel@2340) so the final cannon fight + defeatability are unchanged.
+const LEVEL7_FORTRESS = {
+  name: 'Red Falcon Keep',
+  theme: 'fortress',
+  width: 2500,
+  height: 270,
+  gravityFloor: 268,
+  solids: [
+    // Ground broken by TWO moat gaps (56px each = the proven jump reach) — the fortress
+    // drawbridges. Outer bailey → inner ward → keep (arena).
+    { x: 0,    y: 236, w: 850,  h: 40, kind: 'ground' },
+    // — 56px outer moat (x850–906) —
+    { x: 906,  y: 236, w: 550,  h: 40, kind: 'ground' },
+    // — 56px inner moat (x1456–1512) —
+    { x: 1512, y: 236, w: 988,  h: 40, kind: 'ground' }, // inner ward + keep/arena
+    // Stepped RAMPARTS — an ascending battlement climb (outer wall).
+    { x: 300,  y: 200, w: 100, h: 8, kind: 'platform' },
+    { x: 480,  y: 170, w: 100, h: 8, kind: 'platform' },
+    { x: 660,  y: 140, w: 100, h: 8, kind: 'platform' }, // top of the outer wall
+    // Inner-ward gantries + keep-tower perches.
+    { x: 1050, y: 185, w: 110, h: 8, kind: 'platform' },
+    { x: 1250, y: 150, w: 100, h: 8, kind: 'platform' },
+    { x: 1600, y: 175, w: 120, h: 8, kind: 'platform' },
+    { x: 1850, y: 145, w: 110, h: 8, kind: 'platform' }, // keep tower
+    { x: 2050, y: 190, w: 120, h: 8, kind: 'platform' },
+    // Boss-arena barrier — SAME as LEVEL1 (Sentinel arena).
+    { x: 2300, y: 96, w: 12, h: 140, kind: 'barrier', noBullet: true },
+  ],
+  spawns: [
+    // Outer bailey — grunts + ramparted sentries + an aerial.
+    { type: 'grunt',  x: 250,  y: 210 },
+    { type: 'grunt',  x: 400,  y: 210 },
+    { type: 'turret', x: 330,  y: 184 }, // on the 300 rampart (top y200 → y184)
+    { type: 'turret', x: 510,  y: 154 }, // on the 480 rampart (top y170 → y154)
+    { type: 'flyer',  x: 600,  y: 110 },
+    // Inner ward — sentries stacked on the gantries + mortar denial.
+    { type: 'grunt',  x: 1000, y: 210 },
+    { type: 'turret', x: 1080, y: 169 }, // on the 1050 gantry (top y185 → y169)
+    { type: 'mortar', x: 1200, y: 224 },
+    { type: 'turret', x: 1290, y: 134 }, // on the 1250 gantry (top y150 → y134)
+    // Keep approach — the final gauntlet (dense).
+    { type: 'grunt',  x: 1550, y: 210 },
+    { type: 'flyer',  x: 1600, y: 110 },
+    { type: 'turret', x: 1630, y: 159 }, // on the 1600 gantry (top y175 → y159)
+    { type: 'turret', x: 1880, y: 129 }, // on the 1850 keep tower (top y145 → y129)
+    { type: 'mortar', x: 1900, y: 224 },
+    { type: 'grunt',  x: 2100, y: 210 },
+    // STAGE-7 BOSS — the Red Falcon (Sentinel family), retuned via the CAMPAIGN override.
+    { type: 'boss',   x: 2340, y: 184 },
+  ],
+  pickups: [
+    { weapon: 'spread',  x: 220,  y: 218 },
+    { weapon: 'laser',   x: 1100, y: 218 }, // pierce for the stacked keep sentries
+    { weapon: 'machine', x: 1550, y: 218 },
+    { weapon: 'spread',  x: 2100, y: 218 }, // pre-boss fan for the finale
+  ],
+  playerStart: { x: 40, y: 200 },
+  goalX: 2340, // Sentinel x is the fight trigger; boss.dead = stage clear
+};
+
 // Ground-emplacement Y helpers (base ground top = y236): a gravity-less turret (h16)
 // sits at 220, a mortar (h12) at 224; grunts spawn at 210 and fall onto the ground.
 // One row per stage. `boss` folds onto the base boss spawn; `mix` adds the signature.
@@ -568,24 +633,15 @@ const CAMPAIGN = [
       { x: 1640, key: 'decor_caverns_crystal' },
       { x: 2000, key: 'decor_caverns_crystal' },
     ] },
-  // Stage 7 — Red Falcon Keep (GAUNTLET: every threat axis at once, densest run).
-  { base: LEVEL1, theme: 'fortress', name: 'Red Falcon Keep',
+  // Stage 7 — Red Falcon Keep (DISTINCT fortress-climax geometry, not a LEVEL1 reskin;
+  // the densest gauntlet mix is authored inline in LEVEL7_FORTRESS for the ramparts).
+  { base: LEVEL7_FORTRESS, theme: 'fortress', name: 'Red Falcon Keep',
     boss: { name: 'Red Falcon', hp: 128, color: '#ff5a6e', fireEvery: 68, enrageFireEvery: 36 },
-    mix: [
-      { type: 'grunt',  x: 600,  y: 210 },
-      { type: 'grunt',  x: 1000, y: 210 },
-      { type: 'grunt',  x: 1980, y: 210 },
-      { type: 'turret', x: 700,  y: 220 },
-      { type: 'turret', x: 1300, y: 220 },
-      { type: 'flyer',  x: 1100, y: 110 },
-      { type: 'flyer',  x: 1550, y: 110 },
-      { type: 'mortar', x: 1250, y: 224 },
-    ],
-    decor: [ // flaming iron braziers lining the keep approach
+    decor: [ // flaming iron braziers lining the keep approach (x over ground, clear of both moats)
       { x: 420,  key: 'decor_fortress_brazier' },
-      { x: 920,  key: 'decor_fortress_brazier' },
-      { x: 1500, key: 'decor_fortress_brazier' },
-      { x: 1960, key: 'decor_fortress_brazier' },
+      { x: 1000, key: 'decor_fortress_brazier' },
+      { x: 1600, key: 'decor_fortress_brazier' },
+      { x: 2000, key: 'decor_fortress_brazier' },
     ] },
 ];
 
