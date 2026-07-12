@@ -68,7 +68,7 @@ The campaign hard-cuts stage N→N+1, so the 7 tracks must sit at the SAME integ
 
 ## 1d. Web payload (first-load bandwidth)
 
-The engine `loadTracks` decodes all 7 at boot, so their combined size is what every player downloads (async — the synth covers until they arrive). `pipeline/rebuild-clean.py` rebuilds each from its Udio master in ONE encode at a web-appropriate bitrate (~120 kbps VBR).
+The engine `loadTracks` decodes all 7 at boot, so their combined size is what every player downloads (async — the synth covers until they arrive). `pipeline/rebuild-clean.py` rebuilds each from its Udio master in ONE encode at a web-appropriate VBR (libmp3lame q:a 6 → content-adaptive 83–121 kbps, mean ~99; denser tracks get more bits).
 
 | stage_id | size |
 |---|---:|

@@ -106,7 +106,7 @@ dBFS** (no clipping). So stage→stage transitions no longer jump in volume.
 stacked 4–5 lossy MP3 re-encodes and left a **21.4 MB** first-load payload (every player
 `loadTracks` all 7 at boot). This one script rebuilds each shipped loop from its original
 Udio master (`source_url`) through a **single ffmpeg encode** that does trim + click-safe
-fades + linear loudnorm (−15 LUFS) + web bitrate (~120 kbps VBR) at once — so each file is
+fades + linear loudnorm (−15 LUFS) + web VBR (q:a 6 → 83–121 kbps, mean ~99, content-adaptive) at once — so each file is
 ONE transcode from the master (higher fidelity than the stacked chain) AND smaller. Measured
 after (`TRACK-ANALYSIS.md §1d`): total payload **14.5 MB** (−32%), loudness spread held at
 **0.10 LU**, seams intact, live playback 10/10. This is the preferred rebuild; `make-seamless`
