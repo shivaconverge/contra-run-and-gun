@@ -27,6 +27,27 @@ PUBLIC (live github.io URL):  scope_served=7/7  verdict=PASS  victory=true  depl
 - **Machine-readable output:** `scope-served.json` (local) / `scope-served-live.json` (public)
 - **Frame evidence:** `frames/stage-<n>-<theme>.png` (local) / `frames/public/stage-<n>-<theme>.png` (public)
 
+### ONE COMMAND — the consolidated acceptance gate
+
+```bash
+node playtest/acceptance/run-acceptance.mjs        # local + public (authoritative)
+node playtest/acceptance/run-acceptance.mjs --local-only
+```
+
+`run-acceptance.mjs` is the single player-POV signal. It runs **every** harness fresh
+against BOTH targets, aggregates their real FACTS into `acceptance-summary.json`, and
+**exits 0 iff the LIVE public campaign serves 7/7 to victory with no deploy drift AND
+the local build agrees AND fresh weapon evidence was captured**. Latest gate
+(2026-07-12): **`scope_served=7/7 (public-url) verdict=PASS`**, 8/8 checks green.
+
+Honest boundary it holds: the campaign facts gate the exit code; the "exactly ONE
+weapon per entity" call is **by-looking** (from `weapon-verdict.json`) and is NOT
+faked — the gate re-hashes the weapon render path and flags the verdict
+POSSIBLY-STALE (forcing a human re-look) if `render.js`/`player.js` changed. A
+run that boots but never sustains play (a gate-sequencing artifact, not a game
+defect) is retried and, if still invalid, reported as `GATE-INFRA-ERROR` (exit 2),
+distinct from a real campaign FAIL — so a false 0/7 can never read as a game defect.
+
 ---
 
 ## What `scope_served` counts (a FACT, computed by code)
@@ -200,6 +221,21 @@ without masking (`scope_served` still reflects the bytes the URL actually served
   than swept so it is not mistaken for a missing game asset.
 - **Repro:** boot the served build, watch the network panel — a single 404 for
   `/favicon.ico`. Fix (art/index owner): add a 16×16 favicon + `<link rel="icon">`.
+
+### 2026-07-12 — gate (mine): back-to-back sessions can stall a run on the title screen
+- **Severity:** gate robustness (NOT a game/deploy defect).
+- **Symptom:** running 4 heavy browser sessions back-to-back in `run-acceptance.mjs`,
+  the later public `scope-served` run booted + started but did **not sustain play** —
+  every stage captured in `status:'title'`, every transition `STUCK` → a false
+  `scope_served=0/7`. **Grounded that it is NOT a deploy defect:** the SAME public URL
+  run standalone (and 2nd in the gate) plays 7/7 to victory with `deployDrift=none`.
+- **Fix (this commit):** the gate (a) settles a few seconds between sessions so the
+  prior browser fully tears down, (b) runs the scope playthroughs BEFORE the weapon
+  captures (so the public scope run is 2nd, not 4th), and (c) detects an INVALID run
+  (booted but no stage ever reached `playing`/`cleared` AND scope 0) and retries it up
+  to 3×; a genuine content FAIL (some stages played, failed a predicate) is NEVER
+  retried. A still-invalid run is reported `GATE-INFRA-ERROR` (exit 2), never a game
+  FAIL. Post-fix: both scope runs valid on the first attempt, gate PASS 8/8.
 
 ### 2026-07-12 — harness (mine): prone weapon crop doesn't reliably frame the hero
 - **Severity:** harness coverage gap (NOT a game defect).
