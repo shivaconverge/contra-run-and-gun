@@ -745,50 +745,72 @@ const CAMPAIGN = [
   // the aerial-heavy mix is authored inline in LEVEL3_SNOW along the ridge + open sky).
   { base: LEVEL3_SNOW, theme: 'snow', name: 'Frozen Ridge',
     boss: { name: 'Ice Sentinel', hp: 86, color: '#7fb6d9', enrageFireEvery: 42 },
-    decor: [ // snow-laden pines (x over LEVEL3_SNOW ground, clear of the crevasse 1100–1156)
-      { x: 360, key: 'decor_snow_pine' },
-      { x: 780, key: 'decor_snow_pine' },
+    decor: [ // snow-laden pines dotting the ridge (over ground, clear of the crevasse 1100–1156)
+      { x: 200,  key: 'decor_snow_pine' },
+      { x: 360,  key: 'decor_snow_pine' },
+      { x: 780,  key: 'decor_snow_pine' },
+      { x: 980,  key: 'decor_snow_pine' },
       { x: 1280, key: 'decor_snow_pine' },
+      { x: 1450, key: 'decor_snow_pine' },
       { x: 1640, key: 'decor_snow_pine' },
+      { x: 1900, key: 'decor_snow_pine' },
+      { x: 2200, key: 'decor_snow_pine' },
     ] },
   // Stage 4 — Scorched Dunes (DISTINCT open-desert geometry, not a LEVEL2 reskin; the
   // artillery/mortar enemy mix is authored inline in LEVEL4_DESERT for the open flats).
   { base: LEVEL4_DESERT, theme: 'desert', name: 'Scorched Dunes',
     boss: { name: 'Sand Gunship', hp: 88, color: '#d9b06a', enrageFireEvery: 42 },
-    decor: [ // saguaro cacti on the flats (x over LEVEL4_DESERT ground, clear of the canyon 1000–1056)
+    decor: [ // saguaro cacti dotting the flats (over ground, clear of the canyon 1000–1056)
+      { x: 150,  key: 'decor_desert_cactus' },
       { x: 350,  key: 'decor_desert_cactus' },
+      { x: 650,  key: 'decor_desert_cactus' },
       { x: 900,  key: 'decor_desert_cactus' },
+      { x: 1250, key: 'decor_desert_cactus' },
       { x: 1500, key: 'decor_desert_cactus' },
-      { x: 2050, key: 'decor_desert_cactus' },
+      { x: 1800, key: 'decor_desert_cactus' },
+      { x: 1950, key: 'decor_desert_cactus' },
     ] },
   // Stage 5 — Iron Foundry (DISTINCT vertical industrial geometry, not a LEVEL1 reskin;
   // the turret-fortress enemy mix is authored inline in LEVEL5_FOUNDRY for the catwalks).
   { base: LEVEL5_FOUNDRY, theme: 'foundry', name: 'Iron Foundry',
     boss: { name: 'Foundry Core', hp: 104, color: '#9aa4b0', fireEvery: 74, enrageFireEvery: 40 },
-    decor: [ // molten smelting vats on the foundry floor (x over ground, clear of the pit 900–956)
+    decor: [ // molten smelting vats along the foundry floor (over ground, clear of the pit 900–956)
+      { x: 200,  key: 'decor_foundry_vat' },
       { x: 450,  key: 'decor_foundry_vat' },
+      { x: 750,  key: 'decor_foundry_vat' },
       { x: 1080, key: 'decor_foundry_vat' },
+      { x: 1300, key: 'decor_foundry_vat' },
       { x: 1600, key: 'decor_foundry_vat' },
+      { x: 1850, key: 'decor_foundry_vat' },
+      { x: 2200, key: 'decor_foundry_vat' },
     ] },
   // Stage 6 — Crystal Caverns (DISTINCT descending-cavern geometry, not a LEVEL2 reskin;
   // the mixed aerial+artillery ambush is authored inline in LEVEL6_CAVERNS' outcrops).
   { base: LEVEL6_CAVERNS, theme: 'caverns', name: 'Crystal Caverns',
     boss: { name: 'Crystal Wing', hp: 96, color: '#b98ad9', enrageFireEvery: 40 },
-    decor: [ // glowing violet crystal clusters (x over LEVEL6_CAVERNS ground, clear of the pit 1000–1056)
+    decor: [ // glowing violet crystal clusters lining the cavern (over ground, clear of the pit 1000–1056)
+      { x: 200,  key: 'decor_caverns_crystal' },
       { x: 380,  key: 'decor_caverns_crystal' },
+      { x: 700,  key: 'decor_caverns_crystal' },
       { x: 950,  key: 'decor_caverns_crystal' },
+      { x: 1300, key: 'decor_caverns_crystal' },
       { x: 1640, key: 'decor_caverns_crystal' },
-      { x: 2000, key: 'decor_caverns_crystal' },
+      { x: 1900, key: 'decor_caverns_crystal' },
     ] },
   // Stage 7 — Red Falcon Keep (DISTINCT fortress-climax geometry, not a LEVEL1 reskin;
   // the densest gauntlet mix is authored inline in LEVEL7_FORTRESS for the ramparts).
   { base: LEVEL7_FORTRESS, theme: 'fortress', name: 'Red Falcon Keep',
     boss: { name: 'Red Falcon', hp: 128, color: '#ff5a6e', fireEvery: 68, enrageFireEvery: 36 },
-    decor: [ // flaming iron braziers lining the keep approach (x over ground, clear of both moats)
+    decor: [ // flaming iron braziers lining the keep approach (over ground, clear of both moats)
+      { x: 250,  key: 'decor_fortress_brazier' },
       { x: 420,  key: 'decor_fortress_brazier' },
+      { x: 700,  key: 'decor_fortress_brazier' },
       { x: 1000, key: 'decor_fortress_brazier' },
+      { x: 1200, key: 'decor_fortress_brazier' },
       { x: 1600, key: 'decor_fortress_brazier' },
+      { x: 1750, key: 'decor_fortress_brazier' },
       { x: 2000, key: 'decor_fortress_brazier' },
+      { x: 2200, key: 'decor_fortress_brazier' },
     ] },
 ];
 
