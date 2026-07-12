@@ -24,12 +24,12 @@ generated track can replace/augment this behind the same `MusicKit` interface.
 | **`verify/render-check.mjs`** | RUNS the sequencer in real Chromium via OfflineAudioContext and asserts, **for all four sections** (stage/boss/stage2/boss2): non-silence, seamless loop (no audible gap), no dead bar, ducks under hit-stop, deterministic — plus distinctness (boss shorter+D#-heavy; stage2 is A-minor, no F#; boss2 is A-minor G#-tension and dominant-heavier than stage2) and the scene-gate + enrage-intensity. Writes all 5 WAVs. |
 | **`verify/headless-safety.mjs`** | Plain-node proof that constructing/driving `MusicKit` with no AudioContext never throws — so it can't break the deterministic headless self-tests. |
 | **`verify/live-check.mjs`** | Boots the SHIPPED build (`game/serve.mjs`) in real Chromium and asserts the music is live end-to-end: self-test passes with music mounted; transport starts, `audio.duck()` engages, KeyM mutes; **the boss theme switches live** (real `world.boss.active` latch → `stage→boss`, holds, restart resumes `stage`); **the scene-gate cuts BGM on victory/death** (`sceneGain→0` on `'cleared'` and `'gameover'`, `→1` on restart); **the wiring is present in the served source** (duck/setSection/setPlaying call sites asserted by signature, drift-proof vs line numbers); **rapid state-churn is robust** (20 fast interleaved setPlaying/setSection/mute toggles — a player mashing restart — leave no stuck gain); **and the boss ENRAGE intensity engages live** (forcing `boss.enraged` lifts `musicGain` above base with `_intensity=true`, relaxes on restart); **plus a Stage-2 `?level=2` probe** that asserts the intended `stage2` theme and prints a ⏳ PENDING line until root.B wires it (tracks OI-A1; auto-flips to PASS on fix). The authoritative "it's actually wired and working" check. |
-| **`verify/all.mjs`** | **One command for the whole layer** (`npm run verify:all`) — runs **7 verifiers** in sequence (fast→slow) and reports a single consolidated PASS/FAIL (**84 assertions**). Now includes the REAL-TRACK verifiers (`track-handoff-check`, `campaign-tracks-live`, `stage-boot-music`) — previously it ran only the 4 synth verifiers, so `verify:all` passed without ever testing the actual per-biome generated music. The verdict is each child's exit code. **`--json`** (`npm run verify:all:json`) emits a machine-readable `{layer,allPass,totalAssertions,verifiers[]}` line so a gate-scoring harness can consume the audio-layer verdict programmatically. Use this as the audio-layer gate. (The LIVE public-URL check `public-url-music.mjs` is separate — `npm run tracks:public` — since it needs the live deploy.) |
+| **`verify/all.mjs`** | **One command for the whole layer** (`npm run verify:all`) — runs **7 verifiers** in sequence (fast→slow) and reports a single consolidated PASS/FAIL (**87 assertions**). Now includes the REAL-TRACK verifiers (`track-handoff-check`, `campaign-tracks-live`, `stage-boot-music`) — previously it ran only the 4 synth verifiers, so `verify:all` passed without ever testing the actual per-biome generated music. The verdict is each child's exit code. **`--json`** (`npm run verify:all:json`) emits a machine-readable `{layer,allPass,totalAssertions,verifiers[]}` line so a gate-scoring harness can consume the audio-layer verdict programmatically. Use this as the audio-layer gate. (The LIVE public-URL check `public-url-music.mjs` is separate — `npm run tracks:public` — since it needs the live deploy.) |
 | **`verify/perf-soak.mjs`** | **Production-readiness soak** — runs sustained music (~20s) on the served build and **asserts** by measurement: FPS ≥55, no FPS degradation, transport stays running, scheduler on musical pace (not stalled/runaway), and **no heap growth** (early-vs-late-window JS heap ≤ +4 MB — the direct no-leak gate; reported UNAVAILABLE, never faked, if `performance.memory` is absent). Latest run: 60 fps flat, heap flat at 10.0 MB (Δ +0.00 MB), scheduler on-pace. 5/5. |
 
 ## Run it
 ```
-node audio/verify/all.mjs               # ONE command → runs 7 verifiers (incl. real-track); consolidated PASS/FAIL (84 assertions)
+node audio/verify/all.mjs               # ONE command → runs 7 verifiers (incl. real-track); consolidated PASS/FAIL (87 assertions)
 node audio/verify/render-check.mjs      # 34/34 PASS; stage+boss+stage2+boss2 render, scene-gate, enrage, distinctness + 5 WAVs
 node audio/verify/headless-safety.mjs   # 5/5 PASS; no-ctx safety + section/scene/intensity logic (incl. stage2)
 node audio/verify/live-check.mjs        # 18/18 PASS; music LIVE (boss switch + scene-gate + enrage) + wiring-in-source + churn robustness
@@ -137,23 +137,23 @@ served mp3s are **byte-identical** to this build (the 14.5 MB web-optimized rebu
 live manifest carries the `key_estimate` correction — so real players get the current
 per-stage music. Doubles as a deploy-freshness gate for the audio layer.
 
-> 🔁 **OPEN NEED — re-sync `game/src/music.js` from `audio/music.js`.** The source of truth
-> carries two engine-side improvements the integrator's verbatim copy still lacks; re-sync
-> (`cp audio/music.js game/src/music.js`) to ship them. Both are byte-safe (the served
-> build's 7-track playback passes today regardless):
-> 1. **Boss ENRAGE now lifts REAL tracks** (this cycle). `_applyGain` applied the
->    `_intensityBoost` only to the synth's `musicGain`, so on the shipped build — where a real
->    per-biome track plays during boss fights — phase-2 enrage produced NO audible escalation
->    (parent-confirmed: `trackTarget=this._base`, no boost). Fixed: `trackTarget` now takes the
->    same `×intensityBoost` lift, so the "it just got serious" cue lands on the shipped biome
->    track too (a rendered mp3 can't gain double-time hats — the hotter-mix lift is the cue).
->    Grounded on `audio/music.js` by `verify/track-handoff-check.mjs`: with a real track
->    active, `setIntensity(true)` raises `trackGain`→0.268 (base×1.22), `setIntensity(false)`
->    relaxes →0.22. **7/7.**
-> 2. **`_stopTrackSource` hygiene** (prior cycle) — pins the stopped real-track bus's schedule
->    to silence. (The "trackGain lingers hot after useTrack(null)" is a headless-shell readback
->    artifact on a sourceless GainNode, not an audible defect; verifiers assert the audible
->    contract, not that value.)
+> ✅ **SHIPPED + LIVE-VERIFIED: Boss ENRAGE now lifts REAL tracks.** `_applyGain` used to apply
+> the `_intensityBoost` only to the synth's `musicGain`, so on the shipped build — where a real
+> per-biome track plays during boss fights — phase-2 enrage produced NO audible escalation.
+> Fixed so `trackTarget` takes the same `×intensityBoost` lift (a rendered mp3 can't gain
+> double-time hats — the hotter-mix lift is the "it just got serious" cue). The integrator
+> **re-synced `game/src/music.js`**, and it's now verified LIVE on the served build by
+> `verify/campaign-tracks-live.mjs`: with a real track active, forcing `world.boss.enraged`
+> makes the real frame-loop hook raise `trackGain`→**0.268** (base×1.22, `_intensity=true`),
+> relaxing →0.22 when de-enraged. Also grounded on the source-of-truth by
+> `verify/track-handoff-check.mjs` (7/7).
+>
+> 🔁 **OPEN NEED (minor) — re-sync the `_stopTrackSource` hygiene pin.** The one remaining
+> drift between `audio/music.js` (source of truth) and `game/src/music.js`: the source pins the
+> stopped real-track bus's schedule to silence for hygiene. **Benign** — the "trackGain lingers
+> hot after useTrack(null)" it addresses is a headless-shell readback artifact on a sourceless
+> GainNode (the bus emits silence regardless of gain), NOT an audible defect. `cp
+> audio/music.js game/src/music.js` closes it; no player-facing effect either way.
 
 > Open need (parent to confirm): the boss fight currently keeps the stage's real biome
 > loop (no per-biome *boss* track yet — confirmed: `onStageChange` fires only on stage

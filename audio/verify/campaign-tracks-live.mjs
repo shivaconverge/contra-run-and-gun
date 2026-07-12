@@ -107,6 +107,28 @@ const CAMPAIGN = ['jungle', 'cascade', 'snow', 'desert', 'foundry', 'caverns', '
         `active=${r.active} trackGain=${r.trackGain} synthGain=${r.synthGain} src=${r.srcLive} themeMatch=${themeOk}`);
     }
 
+    // Boss phase-2 ENRAGE lifts the REAL track LIVE (shipped build). The last stage's biome
+    // loop is active. The main loop drives `audio.setIntensity(!!(world.boss && world.boss.enraged))`
+    // EVERY frame, so we can't just call setIntensity directly (it'd be reverted next frame);
+    // instead force the boss ENRAGE flag the hook reads, then assert trackGain gets the
+    // ×intensityBoost lift, and relaxes when de-enraged. (Grounds the just-synced boost fix live.)
+    const enr = await page.evaluate(`(async () => {
+      const m = window.__audio.music, w = window.__game;
+      if (w.status !== 'playing') w.start();
+      const before = +m.trackGain.gain.value.toFixed(3);
+      if (w.boss) { w.boss.active = true; w.boss.enraged = true; } else { w.boss = { active: true, enraged: true }; }
+      await new Promise((r) => setTimeout(r, 400));       // frame hook → setIntensity(true) held
+      const lifted = +m.trackGain.gain.value.toFixed(3);
+      const intensity = m._intensity;
+      if (w.boss) w.boss.enraged = false;
+      await new Promise((r) => setTimeout(r, 400));
+      const relaxed = +m.trackGain.gain.value.toFixed(3);
+      return { active: m.track, intensity, before, lifted, relaxed };
+    })()`);
+    pass &= ok('boss ENRAGE lifts the live real track (trackGain → base×boost)',
+      enr.active && enr.intensity === true && enr.lifted > 0.24 && enr.relaxed < 0.24 && enr.lifted > enr.relaxed,
+      `_intensity=${enr.intensity} before=${enr.before} lifted=${enr.lifted} relaxed=${enr.relaxed} (base×1.22≈0.27)`);
+
     // return to synth (useTrack(null)) — proves the fallback path still works. Deterministic
     // contract: the real-track source is STOPPED (active===null, srcLive===false) and the
     // synth is re-selected (muted===false). We wait >1 bar (~1.58s @152 BPM) before reading
