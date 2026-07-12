@@ -1,4 +1,4 @@
-=== GO-LIVE verification @ 2026-07-12T01:32:53Z ===
+=== GO-LIVE verification @ 2026-07-12T01:55:40Z ===
 URL: https://shivaconverge.github.io/contra-run-and-gun/
 --- root HTTP 0 ---
 <!doctype html>
@@ -55,13 +55,13 @@ audio resolve-gate: 7/7 tracks HTTP 200:
   assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 2408655 bytes [current]
 RESULT: LIVE ✅
 
-FINALIZED BOSSES + STAGE-7 KEEP + FULL BYTE-CURRENCY GATE (LIVE URL, HEAD f691ad5):
-  Master finalized the 5 themed boss sprites (PNG bytes changed, same names) +
-  Stage 7 'Red Falcon Keep' fortress geometry + audio-manifest key metadata
-  (mp3 bytes unchanged). NEW: the ASSET resolve-gate now also enforces byte-
-  currency (Content-Length == local file size), matching the audio gate — it
-  FIRST caught all 5 finalized boss PNGs as STALE pre-deploy (an HTTP-200-only
-  check would have passed them), then post-deploy all 36 assets + 7 tracks are
-  [current]. The whole served bundle is now provably fresh, not just reachable.
-  Stage 7 renders live: deploy/evidence/live-stage7.png — crimson fortress
-  crenellations, armored boss, aerial + ninja enemy mix.
+S3 FROZEN RIDGE + S6 CRYSTAL CAVERNS (LIVE URL, HEAD 6679c20):
+  Master advanced source-only (config.js + render.js) — S3 'Frozen Ridge'
+  windswept ridgeline geometry + S6 'Crystal Caverns' — no asset/audio byte
+  changes, so the byte-currency gate stayed green (36 assets + 7 tracks current).
+  The new geometry is SOURCE, not files, so the visual capture IS the proof it
+  deployed. Distinct-biome proof via ?level=N on the LIVE URL (JUDGE BY LOOKING):
+    deploy/evidence/live-stage3.png — S3 Frozen Ridge: windswept snow ridgeline,
+      ice-capped platforms, falling snow, frozen tundra ground.
+    deploy/evidence/live-stage6.png — S6 Crystal Caverns: glowing magenta crystal
+      spires, violet cavern, boss + aerial + ninja enemy mix.
