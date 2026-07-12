@@ -111,6 +111,16 @@ grounds the same handoff on the **source-of-truth `audio/music.js`** (loads it d
 (this layer's devDep) + a cached chrome-for-testing; run `npm run tracks:live` /
 `npm run tracks:handoff` from `audio/`.
 
+**END-TO-END per-stage (`verify/stage-boot-music.mjs`, `npm run tracks:stageboot`, all-pass):**
+the check above drives the selector directly; this one exercises the REAL campaign
+progression. It boots the shipped game at `?level=N` for **N=1..7** — running main.js's
+actual stage-setup, which fires `world.onStageChange(stageIndex)` (the same hook the campaign
+uses on stage-clear) — and asserts that on each stage the live engine ends up playing THAT
+stage's biome loop (`music.track` === the Nth manifest id, its `theme` matches the config.js
+STAGES order, `BufferSource` live). Latest run: **7/7** — `?level=1→s1_jungle … ?level=7→
+s7_fortress`, stageNum matching each time. So "stage N ⇒ biome N music" is proven through the
+real wiring, not just a manual selector call.
+
 > 🔁 **OPEN NEED — re-sync `game/src/music.js` from `audio/music.js`.** This cycle added a
 > `_stopTrackSource` hygiene fix (pins the stopped real-track bus's schedule to silence) to
 > the source of truth. `game/src/music.js` (owned by the integrator, kept as a verbatim
