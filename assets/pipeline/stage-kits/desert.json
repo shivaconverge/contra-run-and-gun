@@ -1,0 +1,82 @@
+{
+  "biome": "desert",
+  "wired": {
+    "theme_desert": {
+      "image": "sprites/theme_desert.png",
+      "type": "tileset",
+      "tileSize": 16,
+      "tiles": [
+        {
+          "name": "cap",
+          "role": "surface",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt",
+          "role": "fill",
+          "x": 16,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt2",
+          "role": "fill",
+          "x": 32,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        }
+      ],
+      "note": "biome tileset for the 'desert' stage (config THEMES.desert.tileset). Drop-in same format as `tiles`; engine swaps assets.get('tiles') -> assets.get(world.theme.tileset)."
+    },
+    "bg_desert": {
+      "image": "sprites/bg_desert.png",
+      "type": "background",
+      "biome": "desert",
+      "layer": "far",
+      "frameWidth": 128,
+      "frameHeight": 56,
+      "parallax": 0.15,
+      "anchor": "horizon",
+      "note": "biome far-parallax scenery for 'desert'. render.js drawParallax blits assets.get('bg_desert') tiled at camx*0.15, ridge base y=158, over the sky gradient; transparent above the silhouette; procedural fallback."
+    },
+    "boss_desert": {
+      "image": "sprites/boss_desert.png",
+      "type": "boss",
+      "biome": "desert",
+      "bossName": "Sand Gunship",
+      "family": "chopper",
+      "frameWidth": 76,
+      "frameHeight": 42,
+      "hitboxPx": {
+        "w": 62,
+        "h": 30
+      },
+      "facing": "left",
+      "note": "per-stage boss 'Sand Gunship' (desert). Same chopper silhouette/hitbox as the base; engine swaps via assets.get('boss_desert') || assets.get('chopper')."
+    }
+  },
+  "staged": {
+    "decor_desert_cactus": {
+      "image": "sprites/decor_desert_cactus.png",
+      "type": "decor",
+      "biome": "desert",
+      "frameWidth": 30,
+      "frameHeight": 46,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 30,
+          "h": 46
+        }
+      ],
+      "anchor": "bottom-center",
+      "note": "biome set-dressing prop for 'desert'. Base-anchored: engine sits the prop BOTTOM on the ground y. Place via a level decor:[{x, key:'decor_desert_cactus', parallax?}] array + a render blit."
+    }
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "biome": "fortress",
+  "wired": {
+    "theme_fortress": {
+      "image": "sprites/theme_fortress.png",
+      "type": "tileset",
+      "tileSize": 16,
+      "tiles": [
+        {
+          "name": "cap",
+          "role": "surface",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt",
+          "role": "fill",
+          "x": 16,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt2",
+          "role": "fill",
+          "x": 32,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        }
+      ],
+      "note": "biome tileset for the 'fortress' stage (config THEMES.fortress.tileset). Drop-in same format as `tiles`; engine swaps assets.get('tiles') -> assets.get(world.theme.tileset)."
+    },
+    "bg_fortress": {
+      "image": "sprites/bg_fortress.png",
+      "type": "background",
+      "biome": "fortress",
+      "layer": "far",
+      "frameWidth": 128,
+      "frameHeight": 56,
+      "parallax": 0.15,
+      "anchor": "horizon",
+      "note": "biome far-parallax scenery for 'fortress'. render.js drawParallax blits assets.get('bg_fortress') tiled at camx*0.15, ridge base y=158, over the sky gradient; transparent above the silhouette; procedural fallback."
+    },
+    "boss_fortress": {
+      "image": "sprites/boss_fortress.png",
+      "type": "boss",
+      "biome": "fortress",
+      "bossName": "Red Falcon",
+      "family": "sentinel",
+      "frameWidth": 56,
+      "frameHeight": 54,
+      "hitboxPx": {
+        "w": 46,
+        "h": 52
+      },
+      "facing": "left",
+      "note": "per-stage boss 'Red Falcon' (fortress). Same sentinel silhouette/hitbox as the base; engine swaps via assets.get('boss_fortress') || assets.get('boss')."
+    }
+  },
+  "staged": {
+    "decor_fortress_brazier": {
+      "image": "sprites/decor_fortress_brazier.png",
+      "type": "decor",
+      "biome": "fortress",
+      "frameWidth": 30,
+      "frameHeight": 44,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 30,
+          "h": 44
+        }
+      ],
+      "anchor": "bottom-center",
+      "note": "biome set-dressing prop for 'fortress'. Base-anchored: engine sits the prop BOTTOM on the ground y. Place via a level decor:[{x, key:'decor_fortress_brazier', parallax?}] array + a render blit."
+    }
+  }
+}

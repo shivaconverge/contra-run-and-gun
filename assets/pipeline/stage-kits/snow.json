@@ -1,0 +1,82 @@
+{
+  "biome": "snow",
+  "wired": {
+    "theme_snow": {
+      "image": "sprites/theme_snow.png",
+      "type": "tileset",
+      "tileSize": 16,
+      "tiles": [
+        {
+          "name": "cap",
+          "role": "surface",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt",
+          "role": "fill",
+          "x": 16,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt2",
+          "role": "fill",
+          "x": 32,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        }
+      ],
+      "note": "biome tileset for the 'snow' stage (config THEMES.snow.tileset). Drop-in same format as `tiles`; engine swaps assets.get('tiles') -> assets.get(world.theme.tileset)."
+    },
+    "bg_snow": {
+      "image": "sprites/bg_snow.png",
+      "type": "background",
+      "biome": "snow",
+      "layer": "far",
+      "frameWidth": 128,
+      "frameHeight": 56,
+      "parallax": 0.15,
+      "anchor": "horizon",
+      "note": "biome far-parallax scenery for 'snow'. render.js drawParallax blits assets.get('bg_snow') tiled at camx*0.15, ridge base y=158, over the sky gradient; transparent above the silhouette; procedural fallback."
+    },
+    "boss_snow": {
+      "image": "sprites/boss_snow.png",
+      "type": "boss",
+      "biome": "snow",
+      "bossName": "Ice Sentinel",
+      "family": "sentinel",
+      "frameWidth": 45,
+      "frameHeight": 48,
+      "hitboxPx": {
+        "w": 46,
+        "h": 52
+      },
+      "facing": "left",
+      "note": "per-stage boss 'Ice Sentinel' (snow). Same sentinel silhouette/hitbox as the base; engine swaps via assets.get('boss_snow') || assets.get('boss')."
+    }
+  },
+  "staged": {
+    "decor_snow_pine": {
+      "image": "sprites/decor_snow_pine.png",
+      "type": "decor",
+      "biome": "snow",
+      "frameWidth": 28,
+      "frameHeight": 48,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 28,
+          "h": 48
+        }
+      ],
+      "anchor": "bottom-center",
+      "note": "biome set-dressing prop for 'snow'. Base-anchored: engine sits the prop BOTTOM on the ground y. Place via a level decor:[{x, key:'decor_snow_pine', parallax?}] array + a render blit."
+    }
+  }
+}

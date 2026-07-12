@@ -1,0 +1,82 @@
+{
+  "biome": "caverns",
+  "wired": {
+    "theme_caverns": {
+      "image": "sprites/theme_caverns.png",
+      "type": "tileset",
+      "tileSize": 16,
+      "tiles": [
+        {
+          "name": "cap",
+          "role": "surface",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt",
+          "role": "fill",
+          "x": 16,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt2",
+          "role": "fill",
+          "x": 32,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        }
+      ],
+      "note": "biome tileset for the 'caverns' stage (config THEMES.caverns.tileset). Drop-in same format as `tiles`; engine swaps assets.get('tiles') -> assets.get(world.theme.tileset)."
+    },
+    "bg_caverns": {
+      "image": "sprites/bg_caverns.png",
+      "type": "background",
+      "biome": "caverns",
+      "layer": "far",
+      "frameWidth": 128,
+      "frameHeight": 56,
+      "parallax": 0.15,
+      "anchor": "horizon",
+      "note": "biome far-parallax scenery for 'caverns'. render.js drawParallax blits assets.get('bg_caverns') tiled at camx*0.15, ridge base y=158, over the sky gradient; transparent above the silhouette; procedural fallback."
+    },
+    "boss_caverns": {
+      "image": "sprites/boss_caverns.png",
+      "type": "boss",
+      "biome": "caverns",
+      "bossName": "Crystal Wing",
+      "family": "chopper",
+      "frameWidth": 73,
+      "frameHeight": 48,
+      "hitboxPx": {
+        "w": 62,
+        "h": 30
+      },
+      "facing": "left",
+      "note": "per-stage boss 'Crystal Wing' (caverns). Same chopper silhouette/hitbox as the base; engine swaps via assets.get('boss_caverns') || assets.get('chopper')."
+    }
+  },
+  "staged": {
+    "decor_caverns_crystal": {
+      "image": "sprites/decor_caverns_crystal.png",
+      "type": "decor",
+      "biome": "caverns",
+      "frameWidth": 40,
+      "frameHeight": 48,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 40,
+          "h": 48
+        }
+      ],
+      "anchor": "bottom-center",
+      "note": "biome set-dressing prop for 'caverns'. Base-anchored: engine sits the prop BOTTOM on the ground y. Place via a level decor:[{x, key:'decor_caverns_crystal', parallax?}] array + a render blit."
+    }
+  }
+}
