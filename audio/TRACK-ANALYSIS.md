@@ -6,7 +6,7 @@ Generator: **udioapi.pro/chirp-v4-5**. Analysis SR: 22050 Hz.
 
 ## 0. Campaign stage mapping (main.js selects by s<N>_ order)
 
-Each track's `theme` matches `game/data/config.js` THEMES/STAGES at the same stage index — so stage N plays biome N's real loop.
+Each track's `theme` matches the campaign STAGES order at the same stage index — so stage N plays biome N's real loop. Verified against **live game/data/config.js STAGES** (order: jungle, cascade, snow, desert, foundry, caverns, fortress).
 
 | stageIndex | track id | theme | served file | campaign biome | match |
 |---:|---|---|---|---|---|
