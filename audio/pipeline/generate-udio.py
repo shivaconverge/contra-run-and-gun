@@ -249,7 +249,8 @@ def main():
             "biome": spec["biome"],
             "level": spec["level"],
             "theme": spec["theme"],
-            "key": spec["key"],
+            "requested_key": spec["key"],  # the PROMPT request; the model may reharmonise —
+            # analyze-tracks.py measures the actual key and writes `key_estimate` (§1e).
             "source_url": url,
             "workId": wid,
         }

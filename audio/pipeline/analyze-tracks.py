@@ -55,6 +55,49 @@ def lufs_and_peak(path):
     return (float(I[-1]) if I else None), (float(TP[-1]) if TP else None)
 
 
+# Krumhansl-Kessler tonal key profiles (tonic-relative) for automated key estimation.
+_NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+_KK_MAJ = np.array([6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88])
+_KK_MIN = np.array([6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17])
+
+
+def chroma_vector(x):
+    """12-D pitch-class energy profile (C..B) from the magnitude STFT, 55–2093 Hz."""
+    win, hop = 8192, 4096
+    if len(x) < win:
+        x = np.pad(x, (0, win - len(x)))
+    w = np.hanning(win)
+    freqs = np.fft.rfftfreq(win, 1.0 / SR)
+    pc = np.full(len(freqs), -1)
+    band = (freqs >= 55.0) & (freqs <= 2093.0)
+    midi = np.zeros(len(freqs))
+    midi[band] = np.round(69 + 12 * np.log2(freqs[band] / 440.0))
+    pc[band] = (midi[band].astype(int)) % 12
+    acc = np.zeros(12)
+    for i in range(0, len(x) - win, hop):
+        mag = np.abs(np.fft.rfft(x[i:i + win] * w))
+        for k in range(12):
+            acc[k] += mag[pc == k].sum()
+    return acc / (acc.sum() + 1e-12)
+
+
+def estimate_key(chroma):
+    """Best-correlating key (name, mode, confidence) via K-K profile correlation.
+    NOTE: automated key estimation is approximate — relative major/minor share a pitch
+    collection so the mode can flip, and a multi-minute track may modulate. Treat as a
+    measured *estimate* of the dominant tonal center, not ground truth."""
+    def corr(a, b):
+        a = a - a.mean(); b = b - b.mean()
+        return float((a * b).sum() / (np.sqrt((a * a).sum() * (b * b).sum()) + 1e-12))
+    best = None
+    for t in range(12):
+        for mode, prof in (("major", _KK_MAJ), ("minor", _KK_MIN)):
+            r = corr(chroma, np.roll(prof, t))
+            if best is None or r > best[0]:
+                best = (r, _NOTE_NAMES[t], mode)
+    return best[1], best[2], best[0]
+
+
 def fingerprint(x):
     """Return (duration_s, rms_dbfs, peak_dbfs, centroid_hz, band_energy[9])."""
     dur = len(x) / SR
@@ -97,6 +140,8 @@ def main():
     fps = {}
     seams = {}
     loud = {}
+    chromas = {}
+    keys = {}
     for tid, meta in tracks.items():
         path = os.path.join(AUDIO_DIR, meta["file"])
         if not os.path.exists(path):
@@ -115,8 +160,12 @@ def main():
         end_rms = float(np.sqrt(np.mean(x[-w:] ** 2))) if n >= w else 0.0
         seams[tid] = (tail / SR * 1000.0, abs(float(x[-1]) - float(x[0])), end_rms)
         loud[tid] = lufs_and_peak(path)
+        cvec = chroma_vector(x)
+        chromas[tid] = cvec
+        ekt, ekm, ekc = estimate_key(cvec)
+        keys[tid] = (meta.get("requested_key", meta.get("key", "?")), f"{ekt} {ekm}", ekc)
         low_frac = float(band[0] + band[1])  # <250 Hz = the driving-bass floor
-        rows.append((tid, meta["biome"], meta["key"], dur, rms_db, peak_db, cen, low_frac))
+        rows.append((tid, meta["biome"], keys[tid][0], dur, rms_db, peak_db, cen, low_frac))
         print(f"{tid:14s} {meta['biome']:14s} {dur:6.1f}s  rms={rms_db:6.1f}dB  "
               f"peak={peak_db:6.1f}dB  centroid={cen:6.0f}Hz  bass={low_frac*100:4.1f}%")
 
@@ -230,6 +279,39 @@ def main():
     lines.append(f"**Total first-load audio payload: {total / 1048576:.1f} MB** "
                  f"(down from ~21.4 MB; each file is now a single transcode from the Udio "
                  f"master rather than 4–5 stacked re-encodes).\n")
+
+    lines.append("## 1e. Harmonic content — requested vs MEASURED key (honesty)\n")
+    lines.append("The `requested_key` is what the Udio prompt asked for; `measured_key` is an "
+                 "automated estimate (chroma + Krumhansl-Kessler) of the ACTUAL generated "
+                 "audio. **They largely differ** — a generative model does not honor a "
+                 "requested key exactly — so the per-stage *distinctness* is grounded on "
+                 "measured **timbre** (§2) and biome character, NOT on the requested keys. "
+                 "Key estimation is approximate (relative major/minor can flip; a long track "
+                 "may modulate), so `measured_key` is a best-effort tonal-center readout.\n")
+    lines.append("| stage_id | requested_key | measured_key (est.) | conf | match |")
+    lines.append("|---|---|---|---:|---:|")
+    matches = 0
+    for tid in tracks:
+        req, meas, conf = keys[tid]
+        req_tonic = req.split()[0] if req and req != "?" else "?"
+        meas_tonic = meas.split()[0]
+        ok_m = "yes" if req_tonic == meas_tonic else "no"
+        if req_tonic == meas_tonic:
+            matches += 1
+        lines.append(f"| `{tid}` | {req} | {meas} | {conf:.2f} | {ok_m} |")
+    lines.append("")
+    # harmonic (chroma) pairwise distance — the measured tonal distinctness
+    cids = list(chromas.keys())
+    hoff = [1.0 - float(np.dot(chromas[a], chromas[b]) /
+                        (np.linalg.norm(chromas[a]) * np.linalg.norm(chromas[b]) + 1e-12))
+            for i, a in enumerate(cids) for j, b in enumerate(cids) if i < j]
+    hmin = min(hoff) if hoff else 0.0
+    hmean = sum(hoff) / len(hoff) if hoff else 0.0
+    lines.append(f"Requested-key tonic match: **{matches}/{len(tracks)}** (the model reharmonised "
+                 f"most tracks). Measured harmonic (chroma) pairwise distance: min {hmin:.3f}, "
+                 f"mean {hmean:.3f} — tonal centres still differ track-to-track, but this is a "
+                 f"weaker distinctness axis than timbre; **treat the manifest's key field as the "
+                 f"prompt request, not the delivered key.**\n")
 
     lines.append("## 2. Distinct per biome (band-fingerprint cosine distance)\n")
     lines.append("Pairwise cosine distance between 8-band spectral fingerprints "

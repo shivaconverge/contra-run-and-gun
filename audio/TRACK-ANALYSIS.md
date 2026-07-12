@@ -83,6 +83,22 @@ The engine `loadTracks` decodes all 7 at boot, so their combined size is what ev
 
 **Total first-load audio payload: 14.5 MB** (down from ~21.4 MB; each file is now a single transcode from the Udio master rather than 4–5 stacked re-encodes).
 
+## 1e. Harmonic content — requested vs MEASURED key (honesty)
+
+The `requested_key` is what the Udio prompt asked for; `measured_key` is an automated estimate (chroma + Krumhansl-Kessler) of the ACTUAL generated audio. **They largely differ** — a generative model does not honor a requested key exactly — so the per-stage *distinctness* is grounded on measured **timbre** (§2) and biome character, NOT on the requested keys. Key estimation is approximate (relative major/minor can flip; a long track may modulate), so `measured_key` is a best-effort tonal-center readout.
+
+| stage_id | requested_key | measured_key (est.) | conf | match |
+|---|---|---|---:|---:|
+| `s1_jungle` | E minor | D# minor | 0.83 | no |
+| `s2_cascade` | A minor | A minor | 0.77 | yes |
+| `s3_snow` | C minor | G minor | 0.77 | no |
+| `s4_desert` | D minor | E minor | 0.73 | no |
+| `s5_foundry` | G minor | A minor | 0.69 | no |
+| `s6_caverns` | F# minor | G minor | 0.78 | no |
+| `s7_fortress` | B minor | A minor | 0.84 | no |
+
+Requested-key tonic match: **1/7** (the model reharmonised most tracks). Measured harmonic (chroma) pairwise distance: min 0.004, mean 0.057 — tonal centres still differ track-to-track, but this is a weaker distinctness axis than timbre; **treat the manifest's key field as the prompt request, not the delivered key.**
+
 ## 2. Distinct per biome (band-fingerprint cosine distance)
 
 Pairwise cosine distance between 8-band spectral fingerprints (0 = identical timbre, larger = more distinct).
