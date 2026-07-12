@@ -140,11 +140,13 @@ real wiring, not just a manual selector call.
 the strongest grounding — drives the actual **deployed GitHub Pages site**
 (`https://shivaconverge.github.io/contra-run-and-gun/`, from `deploy/PUBLIC-URL.txt`), not a
 local server. It fetches the LIVE manifest, then boots `?level=1..7` on the real deployment
-and asserts each stage decodes + plays its biome loop over the internet. Latest run: **8/8**
-(manifest + all 7 stages: `?level=1→s1_jungle … ?level=7→s7_fortress`). Also confirmed the
-served mp3s are **byte-identical** to this build (the 14.5 MB web-optimized rebuild) and the
-live manifest carries the `key_estimate` correction — so real players get the current
-per-stage music. Doubles as a deploy-freshness gate for the audio layer.
+and asserts each stage decodes + plays its biome loop over the internet, **plus** that boss
+phase-2 ENRAGE lifts the real track live (forcing `world.boss.enraged` raises `trackGain`→0.268
+on the deployed site). Latest run: **9/9** (manifest + all 7 stages `?level=1→s1_jungle …
+?level=7→s7_fortress` + live boss-enrage). Also confirmed the served mp3s are **byte-identical**
+to this build (the 14.5 MB web-optimized rebuild), the live manifest carries the `key_estimate`
+correction, and the deployed `music.js` carries the enrage boost — so real players get the
+current per-stage music AND the boss escalation. Doubles as a deploy-freshness gate.
 
 > ✅ **SHIPPED + LIVE-VERIFIED: Boss ENRAGE now lifts REAL tracks.** `_applyGain` used to apply
 > the `_intensityBoost` only to the synth's `musicGain`, so on the shipped build — where a real

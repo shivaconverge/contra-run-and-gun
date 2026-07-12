@@ -83,6 +83,27 @@ function ok(name, pass, detail) { console.log(`  ${pass ? 'PASS' : 'FAIL'}  ${na
       pass &= ok(`?level=${n} → stage ${n} '${expectTheme}' plays ${expectId} (LIVE)`, good,
         `music.track=${got.track} src=${got.src}`);
     }
+
+    // Boss phase-2 ENRAGE lifts the REAL track — on the DEPLOYED site (page is at the last
+    // stage, its biome loop active). Force the enrage flag the every-frame hook reads
+    // (`audio.setIntensity(!!(world.boss && world.boss.enraged))`) and confirm trackGain gets
+    // the ×intensityBoost lift live over the internet, then relaxes. Closes the "verified on
+    // the served build but not the live CDN" gap.
+    const enr = await page.evaluate(`(async () => {
+      const m = window.__audio.music, w = window.__game;
+      if (w.status !== 'playing') w.start();
+      const before = +m.trackGain.gain.value.toFixed(3);
+      if (w.boss) { w.boss.active = true; w.boss.enraged = true; } else { w.boss = { active: true, enraged: true }; }
+      await new Promise((r) => setTimeout(r, 500));
+      const lifted = +m.trackGain.gain.value.toFixed(3), intensity = m._intensity;
+      if (w.boss) w.boss.enraged = false;
+      await new Promise((r) => setTimeout(r, 500));
+      const relaxed = +m.trackGain.gain.value.toFixed(3);
+      return { active: m.track, intensity, before, lifted, relaxed };
+    })()`);
+    pass &= ok('boss ENRAGE lifts the real track on the LIVE site (trackGain → base×boost)',
+      enr.active && enr.intensity === true && enr.lifted > 0.24 && enr.relaxed < 0.24 && enr.lifted > enr.relaxed,
+      `_intensity=${enr.intensity} before=${enr.before} lifted=${enr.lifted} relaxed=${enr.relaxed} (base×1.22≈0.27)`);
   } catch (e) {
     console.error('CHECK ERROR:', e.message);
     pass = false;
