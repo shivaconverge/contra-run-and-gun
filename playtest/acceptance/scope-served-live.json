@@ -1,18 +1,59 @@
 {
-  "ts": "2026-07-12T01:39:18.621Z",
-  "mode": "local",
-  "target": "http://127.0.0.1:50795",
+  "ts": "2026-07-12T01:37:53.055Z",
+  "mode": "public",
+  "target": "https://shivaconverge.github.io/contra-run-and-gun/",
   "staleServeGuard": {
-    "mode": "local",
-    "killedProcs": [],
-    "note": "served game/ on ephemeral port, never :8080"
+    "mode": "public",
+    "note": "remote CDN — verified served content hashes vs local game/ (drift = deploy behind worktree)",
+    "remote": {
+      "baseUrl": "https://shivaconverge.github.io/contra-run-and-gun/",
+      "files": [
+        {
+          "rel": "index.html",
+          "httpStatus": 200,
+          "remoteSha": "1984a026f957cee3",
+          "localSha": "1984a026f957cee3",
+          "matchesLocal": true
+        },
+        {
+          "rel": "src/main.js",
+          "httpStatus": 200,
+          "remoteSha": "8bc26f8f52bc0bcb",
+          "localSha": "8bc26f8f52bc0bcb",
+          "matchesLocal": true
+        },
+        {
+          "rel": "data/config.js",
+          "httpStatus": 200,
+          "remoteSha": "0170aa74f2b4fbb9",
+          "localSha": "0170aa74f2b4fbb9",
+          "matchesLocal": true
+        },
+        {
+          "rel": "data/level1.js",
+          "httpStatus": 200,
+          "remoteSha": "9d669e4955f62b36",
+          "localSha": "9d669e4955f62b36",
+          "matchesLocal": true
+        },
+        {
+          "rel": "assets/audio/manifest.json",
+          "httpStatus": 200,
+          "remoteSha": "7d0347519cdec35c",
+          "localSha": "7d0347519cdec35c",
+          "matchesLocal": true
+        }
+      ],
+      "drifted": [],
+      "unreachable": []
+    }
   },
   "expectedStages": 7,
   "stages": [
     {
       "stage": 1,
       "reachedVia": "boot(stage1,no-param)",
-      "frame": "playtest/acceptance/frames/stage-1-jungle.png",
+      "frame": "playtest/acceptance/frames/public/stage-1-jungle.png",
       "stageNum": 1,
       "name": "Jungle Approach",
       "theme": "jungle",
@@ -25,10 +66,10 @@
       "bossKind": "boss",
       "bossHp": 90,
       "playerX": 131,
-      "distinctBins": 114,
+      "distinctBins": 110,
       "nearestSibling": 2,
-      "minGridDiff": 18.58,
-      "minHistDiff": 0.593,
+      "minGridDiff": 18.59,
+      "minHistDiff": 0.592,
       "suspectedReuseOf": [],
       "visuallyDistinct": true,
       "pass": true,
@@ -37,7 +78,7 @@
     {
       "stage": 2,
       "reachedVia": "requestNextStage(N-key)",
-      "frame": "playtest/acceptance/frames/stage-2-cascade.png",
+      "frame": "playtest/acceptance/frames/public/stage-2-cascade.png",
       "stageNum": 2,
       "name": "Cascade Base",
       "theme": "cascade",
@@ -52,8 +93,8 @@
       "playerX": 131,
       "distinctBins": 133,
       "nearestSibling": 1,
-      "minGridDiff": 18.58,
-      "minHistDiff": 0.593,
+      "minGridDiff": 18.59,
+      "minHistDiff": 0.592,
       "suspectedReuseOf": [],
       "visuallyDistinct": true,
       "pass": true,
@@ -62,7 +103,7 @@
     {
       "stage": 3,
       "reachedVia": "requestNextStage(N-key)",
-      "frame": "playtest/acceptance/frames/stage-3-snow.png",
+      "frame": "playtest/acceptance/frames/public/stage-3-snow.png",
       "stageNum": 3,
       "name": "Frozen Ridge",
       "theme": "snow",
@@ -75,10 +116,10 @@
       "bossKind": "boss",
       "bossHp": 72,
       "playerX": 131,
-      "distinctBins": 96,
+      "distinctBins": 95,
       "nearestSibling": 4,
-      "minGridDiff": 54.1,
-      "minHistDiff": 1.48,
+      "minGridDiff": 54.13,
+      "minHistDiff": 1.481,
       "suspectedReuseOf": [],
       "visuallyDistinct": true,
       "pass": true,
@@ -87,7 +128,7 @@
     {
       "stage": 4,
       "reachedVia": "requestNextStage(N-key)",
-      "frame": "playtest/acceptance/frames/stage-4-desert.png",
+      "frame": "playtest/acceptance/frames/public/stage-4-desert.png",
       "stageNum": 4,
       "name": "Scorched Dunes",
       "theme": "desert",
@@ -112,7 +153,7 @@
     {
       "stage": 5,
       "reachedVia": "requestNextStage(N-key)",
-      "frame": "playtest/acceptance/frames/stage-5-foundry.png",
+      "frame": "playtest/acceptance/frames/public/stage-5-foundry.png",
       "stageNum": 5,
       "name": "Iron Foundry",
       "theme": "foundry",
@@ -125,7 +166,7 @@
       "bossKind": "boss",
       "bossHp": 104,
       "playerX": 131,
-      "distinctBins": 139,
+      "distinctBins": 137,
       "nearestSibling": 7,
       "minGridDiff": 10.1,
       "minHistDiff": 0.561,
@@ -137,7 +178,7 @@
     {
       "stage": 6,
       "reachedVia": "requestNextStage(N-key)",
-      "frame": "playtest/acceptance/frames/stage-6-caverns.png",
+      "frame": "playtest/acceptance/frames/public/stage-6-caverns.png",
       "stageNum": 6,
       "name": "Crystal Caverns",
       "theme": "caverns",
@@ -162,7 +203,7 @@
     {
       "stage": 7,
       "reachedVia": "requestNextStage(N-key)",
-      "frame": "playtest/acceptance/frames/stage-7-fortress.png",
+      "frame": "playtest/acceptance/frames/public/stage-7-fortress.png",
       "stageNum": 7,
       "name": "Red Falcon Keep",
       "theme": "fortress",
@@ -175,7 +216,7 @@
       "bossKind": "boss",
       "bossHp": 128,
       "playerX": 131,
-      "distinctBins": 116,
+      "distinctBins": 114,
       "nearestSibling": 5,
       "minGridDiff": 10.1,
       "minHistDiff": 0.561,
@@ -186,8 +227,8 @@
     }
   ],
   "consoleErrors": [
-    "Failed to load resource: the server responded with a status of 404 (Not Found)",
-    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+    "Failed to load resource: the server responded with a status of 404 ()",
+    "Failed to load resource: the server responded with a status of 404 ()"
   ],
   "pageErrors": [],
   "bootProbe": {

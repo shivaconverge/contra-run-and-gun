@@ -7,21 +7,25 @@ player transition (`world.requestNextStage`, fired by the real **`N`** CONTINUE
 keydown that `game/src/main.js` binds). One real, native-resolution frame is
 captured off the live `<canvas>` per stage.
 
-**The single fact this run emits:**
+**The single fact this run emits (BOTH targets, latest run 2026-07-12):**
 
 ```
-scope_served=7/7  verdict=PASS  victory=true
+LOCAL  (served game/):        scope_served=7/7  verdict=PASS  victory=true
+PUBLIC (live github.io URL):  scope_served=7/7  verdict=PASS  victory=true  deployDrift=none
 ```
 
 - **Harness:** `playtest/acceptance/scope-served.mjs` (self-contained; own static
-  server on an ephemeral port + puppeteer-core).
+  server on an ephemeral port + puppeteer-core). One harness, two targets.
 - **Run it (from repo root):**
   ```bash
   cd playtest/acceptance && npm install     # one-time (node_modules gitignored)
-  node playtest/acceptance/scope-served.mjs # serves game/, plays 1→7, writes evidence
+  # LOCAL — serves game/ on an ephemeral port, plays 1→7:
+  node playtest/acceptance/scope-served.mjs
+  # PUBLIC — drives the LIVE deployed URL real players reach:
+  node playtest/acceptance/scope-served.mjs --url=https://shivaconverge.github.io/contra-run-and-gun/
   ```
-- **Machine-readable output:** `playtest/acceptance/scope-served.json`
-- **Frame evidence:** `playtest/acceptance/frames/stage-<n>-<theme>.png`
+- **Machine-readable output:** `scope-served.json` (local) / `scope-served-live.json` (public)
+- **Frame evidence:** `frames/stage-<n>-<theme>.png` (local) / `frames/public/stage-<n>-<theme>.png` (public)
 
 ---
 
@@ -99,7 +103,39 @@ pre-filter. No stage reuses another's art.
 
 ---
 
-## Stale-serve guard
+## PUBLIC-URL grounding — the LIVE deploy real players reach
+
+`scope_served` is now proven against **both** the local worktree AND the deployed
+public URL `https://shivaconverge.github.io/contra-run-and-gun/` (parent correction:
+"local == public is unverifiable from the integration subtree — live scope_served
+must still be confirmed against the public URL"). The `--url=` mode drives the
+identical playthrough (param-free boot → `N`-progression 1→7 → victory) against the
+CDN and captures its own frames under `frames/public/`.
+
+**Latest public run (2026-07-12): `scope_served=7/7 verdict=PASS victory=true`**,
+boot probe `stageNum=1, urlHasLevel=false`. The public frames were read side-by-side
+with the local ones — every biome (jungle…fortress) renders the same distinct
+tileset/background/set-dressing/boss on the live URL as locally. No missing art, no
+param-only stage, no reuse.
+
+**Deploy-drift guard (remote stale-serve):** we cannot kill a lingering process on a
+CDN, so instead we FETCH the live modules and diff their sha256 against local
+`game/`. Latest run — all match, `deployDrift=none`:
+
+| file | HTTP | remote sha16 | local sha16 | match |
+|------|------|--------------|-------------|-------|
+| index.html               | 200 | 1984a026f957cee3 | 1984a026f957cee3 | ✅ |
+| src/main.js              | 200 | 8bc26f8f52bc0bcb | 8bc26f8f52bc0bcb | ✅ |
+| data/config.js           | 200 | 0170aa74f2b4fbb9 | 0170aa74f2b4fbb9 | ✅ |
+| data/level1.js           | 200 | 9d669e4955f62b36 | 9d669e4955f62b36 | ✅ |
+| assets/audio/manifest.json | 200 | 7d0347519cdec35c | 7d0347519cdec35c | ✅ |
+
+⇒ the live public build **is** this worktree's build (not a stale deploy). If a
+future run shows `deployDrift=[…]`, the named files have not shipped to the live URL
+yet — that gap is the **deploy owner's** to resolve, and the report will flag it
+without masking (`scope_served` still reflects the bytes the URL actually served).
+
+## Stale-serve guard (local mode)
 
 - The sensor `pgrep -f`/`kill -9`s any lingering `serve.mjs` / `stage-boot-music` /
   `go-live` before serving, then serves `game/` on an **ephemeral** port (never
