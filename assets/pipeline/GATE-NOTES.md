@@ -6,6 +6,31 @@ blit-meta). Fidelity stays the by-looking verdict, never this gate. Exit 0 = gre
 
 ## OPEN ISSUES
 
+### 2026-07-12 — Stage-2 placed set-dressing `decor_cascade_valve` renders NOTHING (owner: engine loop / assets.js + render.js)
+**Severity:** medium (visible content gap — Cascade stage has set-dressing DATA but shows no props). **Status:** OPEN — surfaced by the new `Decor-reachability` gate check + verified LIVE by looking.
+
+**Fact (from `generate.py verify` + live capture):** `game/data/level2.js` places
+`decor: [{x, key:'decor_cascade_valve'} ×3]` and `world.js validateDecor` enforces the
+`decor_` contract, but (a) `game/data/assets.js` does NOT key `decor_cascade_valve` (so
+it never LOADS) and (b) `game/src/render.js` has NO `level.decor` blit (so it never
+DRAWS). Result: Stage 2 (Cascade) renders zero set-dressing props.
+**Live evidence:** `assets/pipeline/experiments/set-dressing/live/level2-cascade.png` —
+the biome tileset + my `bg_cascade` dam/waterfall backdrop render, but no valve prop.
+
+**Repro:** `python assets/pipeline/generate.py verify` → "Decor-reachability: 1 placed
+prop(s) (decor_cascade_valve) → 1 WONT-RENDER".
+
+**Fix (3 steps; art is READY on my side):**
+1. **(me, on request)** sync `assets/sprites/decor_cascade_valve.png` → `game/assets/`
+   (and fold decor into `run()`/manifest, mirroring the tileset/bg finalize) once the
+   engine keys it — held back now so the cross-source gate stays green.
+2. **(engine)** `game/data/assets.js` — `decor_cascade_valve: 'assets/decor_cascade_valve.png'`.
+3. **(engine)** `game/src/render.js` — after `drawParallax`/`drawGround`, iterate
+   `world.decor` (or `level.decor`) and blit each `assets.get(d.key)` BASE-anchored to the
+   ground y at `d.x` (parallax `d.parallax ?? 1`); mirror `drawEnemySprite`'s feet-anchor.
+The other 5 biome props (`decor_snow_pine`, …) are produced + staged but not yet PLACED
+in any level — the content loop adds `decor:[]` arrays per biome, then the same 3 steps.
+
 ### 2026-07-12 — 4 superseded armed `player_*` keys are shipped-but-unreachable  (owner: engine loop / game/data/assets.js)
 **Severity:** low (dead weight, not a visible bug). **Status:** OPEN — surfaced by the gate, not maskable here.
 

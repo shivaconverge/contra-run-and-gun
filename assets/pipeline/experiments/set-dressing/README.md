@@ -36,14 +36,20 @@ committed progress). Prefer `decor <biome>` for single-prop iteration.
 
 ## HANDOFF — engine placement hook (produce-ahead-of-wire, gate-safe)
 STAGED only: `assets/sprites/decor_*.png` + fragment `assets/pipeline/set-dressing.json`.
-NOT synced to `game/assets/` and NOT in `manifest.json` — there is no engine decor hook
-yet, so shipping now would trip the cross-source gate (orphan). To wire (engine loop):
-1. `game/data/assets.js` — key the props to use (`decor_snow_pine: 'assets/decor_snow_pine.png'`, …).
-2. Level data — a `decor: [{ x, key, parallax? }]` array per stage (world-x, optional
-   parallax factor for mid-ground depth).
-3. `game/src/render.js` — after `drawParallax`/before entities, blit each decor sprite
-   base-anchored to the ground y (mirror the existing `drawEnemySprite` feet-anchor).
-Then I finalize (sync + manifest merge + a run() fold-in like the tilesets) and verify
-LIVE by looking. **NEED from parent/campaign loop:** confirm the placement-hook shape +
-the intended on-screen prop SIZE (I authored ~28–48px native; the engine may want a
-specific scale) before I polish/expand to multiple props per biome.
+NOT synced to `game/assets/` and NOT in `manifest.json` — held back so the cross-source
+gate stays green until the engine LOADS + DRAWS decor.
+
+## ⚠️ PARTIAL WIRE — Stage-2 places my decor but it renders NOTHING (OPEN ISSUE)
+The engine started wiring decor: `config.js` documents the `decor:[{x,key,parallax}]`
+level field, `world.js validateDecor` enforces the `decor_` contract, and **`level2.js`
+now places `decor_cascade_valve ×3`** (Cascade). BUT `assets.js` doesn't key it (no LOAD)
+and `render.js` has no `level.decor` blit (no DRAW) → **Stage 2 shows zero props**.
+Verified LIVE (`live/level2-cascade.png`: tileset + `bg_cascade` render, no valve). My new
+`Decor-reachability` gate check catches this ("1 WONT-RENDER"); full repro + the 3-step
+fix are in `assets/pipeline/GATE-NOTES.md` (dated 2026-07-12). Remaining engine steps:
+1. `game/data/assets.js` — `decor_cascade_valve: 'assets/decor_cascade_valve.png'` (+ others as placed).
+2. `game/src/render.js` — iterate `world.decor` and blit `assets.get(d.key)` base-anchored
+   to the ground y at `d.x` (parallax `d.parallax ?? 1`), mirroring `drawEnemySprite`.
+Then I sync + manifest-finalize (like the tileset/bg finalize) and verify LIVE by looking.
+The other 5 biome props are produced + staged, awaiting per-biome `decor:[]` placement.
+**Confirmed:** ~28–48px native prop size is fine for the 480×270 view (parent).

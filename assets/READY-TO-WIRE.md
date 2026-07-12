@@ -17,23 +17,23 @@ strip repeats ~4×/screen — wider-strip/seam-blend is a noted polish follow-up
 **NEED (future):** whether a NEAR authored parallax layer is also wanted (far layer is the
 confirmed scope; engine keeps procedural near/canopy/foliage bands for now).
 
-## 🎨 STAGED — per-stage SET-DRESSING props (6 biomes, deliverable #2 next art class)
+## ⚠️ PARTIAL-WIRE — per-stage SET-DRESSING props (deliverable #2; Stage-2 gap OPEN)
 `python assets/pipeline/generate.py decor` produces one signature transparent prop per
 biome — real PixelLab art (snow pine / desert cactus / cavern crystal / foundry molten
-vat / fortress brazier / cascade valve). Adds the "set-dressing" the GOAL wants per stage
-and answers the creator's "background looks very simple" note; today biome distinctness is
-only the tileset + a procedural parallax band. Proven distinct-yet-coherent AND composited
-onto the REAL live biome frames (they ground + read in-scene): `assets/pipeline/
-experiments/set-dressing/` (`props-montage.png`, `props-in-context.png`, `README.md`).
+vat / fortress brazier / cascade valve). Proven distinct-yet-coherent + composited on the
+live biome frames: `assets/pipeline/experiments/set-dressing/`.
 
-**Engine placement hook to wire (then I finalize sync+manifest, ~5 min $0):**
-1. `game/data/assets.js` — key the props (`decor_snow_pine: 'assets/decor_snow_pine.png'`, …).
-2. Level data — a `decor: [{ x, key, parallax? }]` array per stage.
-3. `game/src/render.js` — blit each decor sprite base-anchored to the ground y (after
-   `drawParallax`, before entities; mirror `drawEnemySprite`'s feet-anchor).
-STAGED out of manifest/game-assets on purpose (no decor hook yet → keeps the gate green).
-**NEED:** confirm the placement-hook shape + intended on-screen prop SIZE before I expand
-past one prop per biome (authored ~28–48px native — a rough proportional pass).
+**The engine STARTED wiring decor but Stage 2 renders NOTHING (verified LIVE, OPEN ISSUE):**
+`config.js` documents the `decor:[{x,key,parallax}]` field, `world.js validateDecor`
+enforces it, and `level2.js` places `decor_cascade_valve ×3` — but `assets.js` doesn't key
+it (no LOAD) and `render.js` has no `level.decor` blit (no DRAW). My new **`Decor-
+reachability` gate check** catches this ("1 WONT-RENDER"); repro + fix in `GATE-NOTES.md`.
+Remaining engine steps (art is READY in `assets/sprites/`):
+1. `game/data/assets.js` — `decor_cascade_valve: 'assets/decor_cascade_valve.png'` (+ others as placed).
+2. `game/src/render.js` — iterate `world.decor`, blit `assets.get(d.key)` base-anchored to
+   the ground y at `d.x` (parallax `d.parallax ?? 1`), mirroring `drawEnemySprite`.
+Then I sync + manifest-finalize (like the tileset/bg finalize) and verify LIVE.
+**Confirmed:** ~28–48px native prop size is fine for the 480×270 view (parent).
 
 ## ✅ DONE — per-stage BIOME TILESETS (6 biomes, deliverable #2 scaling engine) — FINALIZED + LIVE
 WIRED by the engine (commit 41e9563: `assets.js` keys `theme_cascade..theme_fortress`,
