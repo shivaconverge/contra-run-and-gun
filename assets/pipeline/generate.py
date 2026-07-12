@@ -2050,6 +2050,14 @@ def verify_contract() -> int:
         has_boss_theme_path = "assets.get('boss_'" in render_src.replace(" ", "")
         boss_arg_forms = {a for a in _re.findall(r"assets\.get\(([^)]*)\)", render_src)
                           if a.replace(" ", "").startswith("'boss_'")}
+        # PER-STAGE DECOR path: render.js drawDecor iterates world.decor and blits
+        # `assets.get(d.key)` per placed prop (WIRED). d.key resolves to the placed
+        # `decor_*` keys; so if that draw path exists, every engine key with a `decor_`
+        # prefix is reachable via it. (The reverse Decor-reachability check below
+        # separately verifies each PLACED key loads+draws.)
+        has_decor_draw = "assets.get(d.key)" in render_src.replace(" ", "")
+        decor_arg_forms = {a for a in _re.findall(r"assets\.get\(([^)]*)\)", render_src)
+                           if a.replace(" ", "") == "d.key"}
         # Self-grounding guard: this reachability model KNOWS only two consumption
         # forms -- a literal 'key' and the dynamic e.kind. If the engine later adds
         # ANY other dynamic argument form (a var, a lookup, fx.kind, ...), the model
@@ -2061,7 +2069,8 @@ def verify_contract() -> int:
         modeled = ({"e.kind"} | {f"'{k}'" for k in literal} | wrapper_params
                    | (tileset_vars if has_theme_tileset_path else set())
                    | {a.strip() for a in bg_arg_forms}
-                   | {a.strip() for a in boss_arg_forms})
+                   | {a.strip() for a in boss_arg_forms}
+                   | {a.strip() for a in decor_arg_forms})
         unmodeled = {a for a in all_args if a not in modeled}
         if unmodeled:
             print("\n  MODEL-WARN: unmodeled assets.get() arg form(s) in render.js "
@@ -2076,6 +2085,8 @@ def verify_contract() -> int:
                 continue   # drawn via assets.get('bg_' + theme.id) in drawParallax
             if has_boss_theme_path and key.startswith("boss_"):
                 continue   # drawn via assets.get('boss_' + theme.id) in drawEnemy
+            if has_decor_draw and key.startswith("decor_"):
+                continue   # drawn via assets.get(d.key) in drawDecor (world.decor loop)
             how = "spawned-enemy-kind" if has_dynamic_kind else "no dynamic e.kind path"
             rprob.append(f"engine key '{key}' NOT blitted by render.js "
                          f"(no literal assets.get; {how}) -> shipped-but-unreachable")
