@@ -1307,6 +1307,10 @@ function drawPlayer(ctx, p, assets) {
 
   // Grounded: run cycle when moving, else idle stance. Weaponless sprite (with
   // the 4-beat run strip) if the pipeline ships it, else the procedural body.
+  // NOTE (measured, do not "fix"): the run strip has NO vertical body bob — all 4
+  // frames share head-top=row0 / feet=row30 (only the legs cycle). So drawGun's
+  // fixed pivot (gy = y + h·HERO_GUN.pivotY) already tracks the body across the run;
+  // adding a per-frame gun bob would DESYNC the one weapon from the body, not help.
   const running = p.grounded && Math.abs(p.vx) > 0.2;
   if (running) {
     const frame = Math.floor(p.walkPhase / (Math.PI / 2)) % PLAYER_RUN.frames;

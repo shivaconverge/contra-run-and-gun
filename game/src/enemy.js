@@ -21,6 +21,11 @@
 // enemy sprite that already carries one (that is exactly what reopened the reject
 // for hero+turret). If a NEW enemy needs an aiming weapon, ship its body
 // weaponless (like turret_base) OR fire from the baked weapon — never both.
+// AUDITED ROSTER (closed set as of this audit): ENEMIES = {grunt, flyer, turret,
+// mortar, boss, chopper}, and the ONLY kind that overlays a procedural weapon is
+// `turret` (drawTurretBarrel over the weaponless turret_base). Adding a 7th kind?
+// It is NOT covered above — apply the invariant and re-run
+// feedback/audit/weapon-defect-audit.mjs (must stay PASS 7/7).
 import { ENEMIES, PHYSICS } from '../data/config.js';
 import { moveAndCollide } from './physics.js';
 import { sign } from './util.js';
