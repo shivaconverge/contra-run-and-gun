@@ -36,22 +36,22 @@ strip repeats ~4×/screen — wider-strip/seam-blend is a noted polish follow-up
 **NEED (future):** whether a NEAR authored parallax layer is also wanted (far layer is the
 confirmed scope; engine keeps procedural near/canopy/foliage bands for now).
 
-## ⚠️ PARTIAL-WIRE — per-stage SET-DRESSING props (deliverable #2; Stage-2 gap OPEN)
-`python assets/pipeline/generate.py decor` produces one signature transparent prop per
-biome — real PixelLab art (snow pine / desert cactus / cavern crystal / foundry molten
-vat / fortress brazier / cascade valve). Proven distinct-yet-coherent + composited on the
-live biome frames: `assets/pipeline/experiments/set-dressing/`.
+## 🟢 ART FINALIZED, awaiting 2 engine lines — per-stage SET-DRESSING props (deliverable #2)
+All 6 props (snow pine / desert cactus / cavern crystal / foundry molten vat / fortress
+brazier / cascade valve) are **FINALIZED by me: synced to `game/assets/` + in `manifest.json`**
+(run() §5f), so the art is present where the engine's loader reads it — the pipeline is NO
+LONGER the blocker. The campaign already PLACES all 6 (`config.js CAMPAIGN[].decor` stages
+3-7 + `level2.js`). Gate green 42/42; placed decor is excluded from the cross-source orphan
+rule (referenced by level data, not dead weight); `Decor-reachability` honestly still =
+**6 WONT-RENDER** until the 2 engine lines land.
 
-**The engine STARTED wiring decor but Stage 2 renders NOTHING (verified LIVE, OPEN ISSUE):**
-`config.js` documents the `decor:[{x,key,parallax}]` field, `world.js validateDecor`
-enforces it, and `level2.js` places `decor_cascade_valve ×3` — but `assets.js` doesn't key
-it (no LOAD) and `render.js` has no `level.decor` blit (no DRAW). My new **`Decor-
-reachability` gate check** catches this ("1 WONT-RENDER"); repro + fix in `GATE-NOTES.md`.
-Remaining engine steps (art is READY in `assets/sprites/`):
-1. `game/data/assets.js` — `decor_cascade_valve: 'assets/decor_cascade_valve.png'` (+ others as placed).
-2. `game/src/render.js` — iterate `world.decor`, blit `assets.get(d.key)` base-anchored to
-   the ground y at `d.x` (parallax `d.parallax ?? 1`), mirroring `drawEnemySprite`.
-Then I sync + manifest-finalize (like the tileset/bg finalize) and verify LIVE.
+**Only 2 engine lines remain (then the props render on every stage):**
+1. `game/data/assets.js` — key all 6 (`decor_snow_pine: 'assets/decor_snow_pine.png'`, …).
+2. `game/src/render.js` — after `drawParallax`/`drawGround`, iterate `world.decor` and blit
+   `assets.get(d.key)` BASE-anchored to the ground y at `d.x` (parallax `d.parallax ?? 1`),
+   mirroring `drawEnemySprite`'s feet-anchor.
+Once landed I verify LIVE by looking + close the `GATE-NOTES.md` OPEN ISSUE. This is the
+last GOAL-listed per-stage art class not yet on-screen.
 **Confirmed:** ~28–48px native prop size is fine for the 480×270 view (parent).
 
 ## ✅ DONE — per-stage BIOME TILESETS (6 biomes, deliverable #2 scaling engine) — FINALIZED + LIVE
