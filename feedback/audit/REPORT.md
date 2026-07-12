@@ -1,6 +1,6 @@
 # Weapon-Defect Audit — creator round-2 (all 7 stages)
 
-_Generated 2026-07-12T01:36:25.023Z by `feedback/audit/weapon-defect-audit.mjs`. Regenerate: `node feedback/audit/weapon-defect-audit.mjs`._
+_Generated 2026-07-12T01:57:38.134Z by `feedback/audit/weapon-defect-audit.mjs`. Regenerate: `node feedback/audit/weapon-defect-audit.mjs`._
 
 **VERDICT: PASS** — 7/7 stages clean. Muzzle tolerance 2px.
 
@@ -72,17 +72,16 @@ Resolved bodies (armed entities):
 Resolved bodies (armed entities):
 
 - **hero (commando)** ×1 → body `player_idle_noweapon | player_run_noweapon | player_jump_noweapon | player_prone_noweapon` + procedural `drawGun`
-- **grunt** ×16 → body `grunt` (single weapon, no overlay)
-- **turret (purple cannon)** ×5 → body `turret_base` + procedural `drawTurretBarrel`
+- **grunt** ×5 → body `grunt` (single weapon, no overlay)
 - **flyer (drone)** ×5 → body `flyer` (single weapon, no overlay)
-- **mortar (emplacement)** ×1 → body `mortar` (single weapon, no overlay)
+- **turret (purple cannon)** ×3 → body `turret_base` + procedural `drawTurretBarrel`
 - **boss (sentinel)** ×1 → body `boss_<theme>||boss_enraged||boss` (single weapon, no overlay)
 
 - ✅ `static.renderPathInvariants` — LAYER A A1..A5 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle)
 - ✅ `keys.noBakedWeaponBody` — two-weapon entities [turret, hero] resolve to weaponless bodies only
 - ✅ `runtime.themeBoots` — booted theme='snow' (config='snow'), status=playing
 - ✅ `runtime.heroFromHandMuzzle` — bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)
-- ✅ `runtime.turretFromBarrelTip` — 5/5 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)
+- ✅ `runtime.turretFromBarrelTip` — 3/3 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)
 
 ### Stage 4 — Scorched Dunes (desert) — PASS
 
@@ -121,17 +120,17 @@ Resolved bodies (armed entities):
 Resolved bodies (armed entities):
 
 - **hero (commando)** ×1 → body `player_idle_noweapon | player_run_noweapon | player_jump_noweapon | player_prone_noweapon` + procedural `drawGun`
-- **grunt** ×12 → body `grunt` (single weapon, no overlay)
-- **turret (purple cannon)** ×4 → body `turret_base` + procedural `drawTurretBarrel`
-- **flyer (drone)** ×5 → body `flyer` (single weapon, no overlay)
-- **mortar (emplacement)** ×4 → body `mortar` (single weapon, no overlay)
+- **grunt** ×5 → body `grunt` (single weapon, no overlay)
+- **turret (purple cannon)** ×2 → body `turret_base` + procedural `drawTurretBarrel`
+- **flyer (drone)** ×3 → body `flyer` (single weapon, no overlay)
+- **mortar (emplacement)** ×3 → body `mortar` (single weapon, no overlay)
 - **boss (chopper)** ×1 → body `boss_<theme>||chopper_enraged||chopper` (single weapon, no overlay)
 
 - ✅ `static.renderPathInvariants` — LAYER A A1..A5 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle)
 - ✅ `keys.noBakedWeaponBody` — two-weapon entities [turret, hero] resolve to weaponless bodies only
 - ✅ `runtime.themeBoots` — booted theme='caverns' (config='caverns'), status=playing
 - ✅ `runtime.heroFromHandMuzzle` — bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)
-- ✅ `runtime.turretFromBarrelTip` — 4/4 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)
+- ✅ `runtime.turretFromBarrelTip` — 2/2 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)
 
 ### Stage 7 — Red Falcon Keep (fortress) — PASS
 
