@@ -1228,9 +1228,11 @@ function drawHeroBody(ctx, p, x, y, pose, frame) {
 // armed enemy (see enemy.js audit); 1× vs the arcade reference; across biome
 // backdrops (jungle/snow/desert); RUN-AND-GUN motion — the real 4-frame weaponless
 // run strip (player_run.png, confirmed gunless) under the single procedural rifle;
-// and PRONE firing both facings. FINAL: confirmed on the LIVE PUBLIC deployment
-// (shivaconverge.github.io/contra-run-and-gun) — hero=one rifle, turret=one barrel
-// on the build real players reach, not just local (2026-07-12).
+// and PRONE firing both facings. FINAL: confirmed on the LIVE PUBLIC deployment by
+// DRIVING the real URL headless first-hand (not from second-hand frames) —
+// puppeteer → https://shivaconverge.github.io/contra-run-and-gun/ , booted
+// window.__game, forced hero + turret fire, screenshotted: hero=one rifle,
+// turret=weaponless dome+one barrel on the build real players reach (2026-07-12).
 function drawPlayer(ctx, p, assets) {
   const get = (k) => (assets && assets.get(k)) || null;
 
