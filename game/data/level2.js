@@ -134,11 +134,15 @@ export const LEVEL2 = {
 
   // Biome SET-DRESSING (contract in config.js): rusty pipe-valve props base-anchored on
   // the ground, giving the Cascade Base its industrial read. x over ground, clear of the
-  // water gap (x1290–1346) and the boss arena (x>2140). Inert until render blits it.
+  // water gap (x1290–1346) and the boss arena (x>2140). Rendered behind the actors.
   decor: [
+    { x: 200,  key: 'decor_cascade_valve' },
     { x: 400,  key: 'decor_cascade_valve' },
+    { x: 780,  key: 'decor_cascade_valve' },
     { x: 980,  key: 'decor_cascade_valve' },
+    { x: 1480, key: 'decor_cascade_valve' },
     { x: 1650, key: 'decor_cascade_valve' },
+    { x: 2050, key: 'decor_cascade_valve' },
   ],
 
   playerStart: { x: 40, y: 200 },
