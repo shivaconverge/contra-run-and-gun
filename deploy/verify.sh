@@ -83,14 +83,49 @@ grep -q 'type="module"' <<<"$HTML"    || fail "root HTML loads no ES module — 
 grep -q './src/main.js' <<<"$HTML"    || fail "root HTML does not reference ./src/main.js"
 pass "root serves the game entrypoint (index.html)"
 
-# 2) The ES-module entry must be reachable and be JavaScript, not an HTML 404.
-MAIN_URL="${BASE}/src/main.js"
-log "GET $MAIN_URL"
-MC="$(code "$MAIN_URL")"
+# 2) MODULE RESOLVE-GATE — the served ES-module tree (game/src/*.js + game/data/*.js)
+#    must be reachable AND byte-CURRENT with the local build. A source-only change
+#    (STAGE-INTRO card, difficulty fix, render tweak) rewrites a module's bytes but
+#    keeps the filename, so a stale CDN main.js/render.js would still return 200-JS
+#    and pass a plain reachability check — while serving OLD gameplay code and
+#    silently dropping the new feature. We assert each module: HTTP 200, not an
+#    HTML 404 page, and Content-Length == local file size (proves the source, not
+#    just the assets, is current with master). Entry main.js MUST exist.
+LOCAL_GAME_DIR="$(cd "$(dirname "$0")/.." && pwd)/game"
+MC="$(code "${BASE}/src/main.js")"
 [ "$MC" = "200" ] || fail "src/main.js returned HTTP $MC (module tree not published)"
-MAIN="$(fetch "$MAIN_URL")"
-grep -qi '<html' <<<"$MAIN" && fail "src/main.js served an HTML page (Pages 404 fallback)"
-pass "src/main.js reachable (HTTP 200, JS payload)"
+MODULES=()
+if [ -d "${LOCAL_GAME_DIR}/src" ]; then
+  while IFS= read -r m; do MODULES+=("$m"); done < <(
+    cd "$LOCAL_GAME_DIR" && find src data -name '*.js' 2>/dev/null | sort)
+else
+  MODULES=(src/main.js)  # deploy dir without game/ alongside → entry check only
+fi
+log "module resolve-gate: ${#MODULES[@]} served ES modules vs the deployed bundle"
+MOD_FAILED=0; MOD_STALE=0
+for rel in "${MODULES[@]}"; do
+  IFS=$'\t' read -r mc mtype mlen <<<"$(head_meta "${BASE}/${rel}")"
+  if [ "$mc" != "200" ]; then
+    printf '\033[31m[verify]   MISSING\033[0m %s -> HTTP %s\n' "$rel" "$mc"
+    echo "  MODULE MISSING: $rel -> HTTP $mc" >>"$OUT"; MOD_FAILED=$((MOD_FAILED+1)); continue
+  fi
+  case "$mtype" in text/javascript*|application/javascript*|application/x-javascript*) : ;;
+    *) printf '\033[31m[verify]   NOT-JS\033[0m %s -> %s\n' "$rel" "$mtype"
+       echo "  MODULE NOT-JS: $rel -> $mtype" >>"$OUT"; MOD_FAILED=$((MOD_FAILED+1)); continue ;;
+  esac
+  if [ -f "${LOCAL_GAME_DIR}/${rel}" ]; then
+    lsz="$(stat -f%z "${LOCAL_GAME_DIR}/${rel}" 2>/dev/null || stat -c%s "${LOCAL_GAME_DIR}/${rel}" 2>/dev/null)"
+    if [ -n "$lsz" ] && [ "${mlen:-x}" != "$lsz" ]; then
+      printf '\033[31m[verify]   STALE\033[0m %s live=%s local=%s\n' "$rel" "${mlen:-?}" "$lsz"
+      echo "  MODULE STALE: $rel live=${mlen:-?} local=$lsz" >>"$OUT"; MOD_STALE=$((MOD_STALE+1))
+    fi
+  fi
+done
+[ "$MOD_FAILED" -eq 0 ] || fail "$MOD_FAILED/${#MODULES[@]} served modules unreachable/not-JS (see above)"
+if [ "$MOD_STALE" -gt 0 ]; then
+  fail "$MOD_STALE/${#MODULES[@]} served modules are STALE (size != local build) — public URL source not current with master; wait for the deploy run or re-run go-live.sh"
+fi
+pass "all ${#MODULES[@]} served ES modules reachable + byte-current with local build"
 
 # 3) ASSET RESOLVE-GATE — every asset the game references must be published.
 #    Source of truth is the game's OWN manifest (game/data/assets.js), so this
@@ -197,8 +232,8 @@ pass "audio manifest + all ${#TRACK_FILES[@]} per-stage tracks reachable + byte-
 
 {
   echo ""
-  echo "src/main.js: HTTP $MC ($(wc -c <<<"$MAIN" | tr -d ' ') bytes)"
-  echo "asset resolve-gate: ${#ASSET_PATHS[@]}/${#ASSET_PATHS[@]} referenced assets HTTP 200"
+  echo "module resolve-gate: ${#MODULES[@]}/${#MODULES[@]} served ES modules HTTP 200 + byte-current"
+  echo "asset resolve-gate: ${#ASSET_PATHS[@]}/${#ASSET_PATHS[@]} referenced assets HTTP 200 + byte-current"
   echo "assets/audio/manifest.json: HTTP 200"
   echo "audio resolve-gate: ${#TRACK_FILES[@]}/${#TRACK_FILES[@]} tracks HTTP 200:"
   printf '%s' "$AUDIO_LINES"

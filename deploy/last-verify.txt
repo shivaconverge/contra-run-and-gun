@@ -1,4 +1,4 @@
-=== GO-LIVE verification @ 2026-07-12T04:38:07Z ===
+=== GO-LIVE verification @ 2026-07-12T05:13:51Z ===
 URL: https://shivaconverge.github.io/contra-run-and-gun/
 --- root HTTP 0 ---
 <!doctype html>
@@ -42,7 +42,7 @@ URL: https://shivaconverge.github.io/contra-run-and-gun/
   #boot-help[hidden] { display: none !important; }
   #boot-help .card { max-width: 580px; text-align: left; font-size: 13px; line-height: 1.65; }
 
-src/main.js: HTTP 200 (26946 bytes)
+src/main.js: HTTP 200 ( bytes)
 asset resolve-gate: 42/42 referenced assets HTTP 200
 assets/audio/manifest.json: HTTP 200
 audio resolve-gate: 7/7 tracks HTTP 200:
@@ -54,14 +54,3 @@ audio resolve-gate: 7/7 tracks HTTP 200:
   assets/audio/s6_caverns.mp3: HTTP 200, audio/mp3, 2706956 bytes [current]
   assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 2408655 bytes [current]
 RESULT: LIVE ✅
-
-RE-SEEDED DESERT BOSS v2 (Sand Gunship) — LIVE (HEAD 8bb0827):
-  Master re-seeded boss_desert.png (2681->1922 bytes, same name) + activated
-  footing/decor guards (render.js/world.js). Re-deployed; ran the consolidated
-  release gate (deploy/gate.sh):
-    reachability+currency: PASS   functional self-test: PASS   VERDICT: LIVE ✅
-  Byte-freshness proved the re-seed reached players: live boss_desert.png
-  Content-Length 1922 == local 1922 (the v2, not the stale 2681-byte v1).
-  Rendered live (JUDGE BY LOOKING): deploy/evidence/live-boss-desert.png —
-  Stage 4 boss arena shows the new Sand Gunship (detailed military chopper w/
-  rotor) over the desert dunes + cactus set-dressing.
