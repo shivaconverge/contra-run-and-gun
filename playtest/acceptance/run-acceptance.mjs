@@ -152,6 +152,20 @@ async function main() {
   const arenaExit = runHarness('boss-arena-validate (grounds affordance, local)', ['boss-arena-validate.mjs']);
   summary.ran.push({ harness: 'boss-arena-validate', mode: 'local', exit: arenaExit });
 
+  // FULL-COVERAGE stale-serve guard: content-hash EVERY served file (all sprites +
+  // src/data modules + audio) on the public URL vs the worktree. This is the rigorous
+  // "the LIVE deploy is byte-current across every stage's art" fact — far broader than
+  // scope-served's 5-file deployDrift, and it backs the transition-flake classification
+  // below (a public shortfall on a byte-current deploy that plays 7/7 locally is a
+  // drive flake, not a stale/missing asset). Fast + deterministic (no browser).
+  let deployParity = null;
+  if (!localOnly) {
+    await sleep(2000);
+    const parityExit = runHarness('deploy-parity (full content-hash vs public URL)', ['deploy-parity.mjs', `--url=${PUBLIC_URL}`]);
+    summary.ran.push({ harness: 'deploy-parity', mode: 'public', exit: parityExit });
+    deployParity = await readJson(path.join(HERE, 'deploy-parity.json')).catch(() => null);
+  }
+
   // ---- Aggregate the real FACTS from each harness's JSON output ----
   const weaponLocal = await readJson(path.join(HERE, 'weapon-fidelity.json')).catch(() => null);
   const weaponPublic = localOnly ? null : await readJson(path.join(HERE, 'weapon-fidelity-live.json')).catch(() => null);
@@ -183,7 +197,8 @@ async function main() {
       scopePublic && (scopePublic.themedBossArt || []).map((b) => `${b.theme}:${b.dims ? b.dims.w + 'x' + b.dims.h : 'MISSING'}`).join(' '));
     check('public.tilesetAllDistinct (no tile reuse)', tilesetOk(scopePublic), scopePublic && (scopePublic.resolvedTilesets || []).map((t) => t.tileset).join(','));
     check('public.setDressingArtPresent', decorOk(scopePublic), scopePublic && `missingDecorArt=${JSON.stringify((scopePublic.problems || {}).missingDecorArt || [])}`);
-    check('public.deployDrift==none', scopePublic && Array.isArray(scopePublic.deployDrift) && scopePublic.deployDrift.length === 0, scopePublic && scopePublic.deployDrift);
+    check('public.deployDrift==none (5 core files)', scopePublic && Array.isArray(scopePublic.deployDrift) && scopePublic.deployDrift.length === 0, scopePublic && scopePublic.deployDrift);
+    check('public.deployByteCurrent (ALL served files)', deployParity && deployParity.verdict === 'BYTE-CURRENT', deployParity && `${deployParity.byteCurrent}${deployParity.drifted.length ? ' drifted=' + deployParity.drifted.join(',') : ''}${deployParity.missingRemote.length ? ' missing=' + deployParity.missingRemote.map((m) => m.rel).join(',') : ''}`);
     check('public.normalProgression(keyBindingProven)', scopePublic && scopePublic.keyBindingProven === true, null);
   }
 
@@ -232,19 +247,23 @@ async function main() {
   // INFRA (gate-sequencing flake, NOT a campaign FAIL — surfaced distinctly, exit 2,
   // so a false <7/7 can't be read as a game defect nor clobber the good summary):
   //   (a) a scope run never sustained play even after retries (full collapse), OR
-  //   (b) PUBLIC-TRANSITION-FLAKE — rigorously provable: the public bytes match the
-  //       worktree (deployDrift none) AND the SAME build plays 7/7 LOCALLY, yet public
-  //       fell short BECAUSE stages went UNREACHED (a dropped remote transition), not
-  //       because a reached stage failed content. Identical bytes that clear 7/7
-  //       locally cannot be a content defect remotely — only a drive/latency flake.
-  //       Crucially, if all 7 were REACHED but some failed a predicate (missing art,
-  //       tileset fallback on a reached stage), publicReached==7 so this is FALSE and
-  //       the real FAIL lands — a genuine regression is never masked.
-  const deployDriftNone = scopePublic && Array.isArray(scopePublic.deployDrift) && scopePublic.deployDrift.length === 0;
+  //   (b) PUBLIC-TRANSITION-FLAKE — rigorously provable: the public deploy is
+  //       BYTE-CURRENT across the FULL served surface (deploy-parity: every sprite +
+  //       module + track hash-matches the worktree — NOT just the 5-file deployDrift,
+  //       which the parent flagged as too narrow) AND the SAME build plays 7/7 LOCALLY,
+  //       yet public fell short BECAUSE stages went UNREACHED (a dropped remote
+  //       transition), not because a reached stage failed content. Identical bytes that
+  //       clear 7/7 locally cannot be a content defect remotely — only a drive/latency
+  //       flake. Crucially, if all 7 were REACHED but some failed a predicate (missing
+  //       art, tileset fallback on a reached stage), publicReached==7 so this is FALSE
+  //       and the real FAIL lands — a genuine regression is never masked. Requiring FULL
+  //       byte-parity (not 5 files) means a stale/missing per-stage asset can no longer
+  //       be misclassified as a flake.
+  const deployByteCurrent = deployParity && deployParity.verdict === 'BYTE-CURRENT';
   const publicReached = scopePublic && Array.isArray(scopePublic.stages)
     ? scopePublic.stages.filter((s) => s.status === 'playing' || s.status === 'cleared').length : 0;
   const publicTransitionFlake = !localOnly && scopePublic && scopeLocal
-    && scopeLocal.scopeServedNum === 7 && deployDriftNone
+    && scopeLocal.scopeServedNum === 7 && deployByteCurrent
     && scopePublic.scopeServedNum < 7 && publicReached < 7;
   if (publicTransitionFlake) summary.publicTransitionFlake = { publicReached, publicScope: scopePublic.scope_served };
   const infra = summary.ran.some((r) => r.invalid === true) || publicTransitionFlake;

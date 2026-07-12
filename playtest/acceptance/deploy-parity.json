@@ -1,0 +1,517 @@
+{
+  "ts": "2026-07-12T10:59:03.514Z",
+  "target": "https://shivaconverge.github.io/contra-run-and-gun/",
+  "totalServed": 72,
+  "matched": 72,
+  "byteCurrent": "72/72",
+  "drifted": [],
+  "missingRemote": [],
+  "localOnlyManifest": [],
+  "verdict": "BYTE-CURRENT",
+  "files": [
+    {
+      "rel": "assets/audio/manifest.json",
+      "local": "fa4812995047",
+      "remote": "fa4812995047",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/audio/s1_jungle.mp3",
+      "local": "c8bf8c7c5ee7",
+      "remote": "c8bf8c7c5ee7",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/audio/s2_cascade.mp3",
+      "local": "20286efdb118",
+      "remote": "20286efdb118",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/audio/s3_snow.mp3",
+      "local": "67fcd4f650ab",
+      "remote": "67fcd4f650ab",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/audio/s4_desert.mp3",
+      "local": "7ae2ec30b464",
+      "remote": "7ae2ec30b464",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/audio/s5_foundry.mp3",
+      "local": "1385b3b5992c",
+      "remote": "1385b3b5992c",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/audio/s6_caverns.mp3",
+      "local": "dc82d2d43bc6",
+      "remote": "dc82d2d43bc6",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/audio/s7_fortress.mp3",
+      "local": "c6ad8f74170b",
+      "remote": "c6ad8f74170b",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/bg_cascade.png",
+      "local": "5011d7fbbf4a",
+      "remote": "5011d7fbbf4a",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/bg_caverns.png",
+      "local": "7097719cc330",
+      "remote": "7097719cc330",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/bg_desert.png",
+      "local": "71cdde2bcde2",
+      "remote": "71cdde2bcde2",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/bg_fortress.png",
+      "local": "8e2c13eeb799",
+      "remote": "8e2c13eeb799",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/bg_foundry.png",
+      "local": "9d70dabc82bb",
+      "remote": "9d70dabc82bb",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/bg_snow.png",
+      "local": "64bf9ba049bd",
+      "remote": "64bf9ba049bd",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/boss.png",
+      "local": "afdc549ea058",
+      "remote": "afdc549ea058",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/boss_caverns.png",
+      "local": "f4a55062aca6",
+      "remote": "f4a55062aca6",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/boss_desert.png",
+      "local": "f60d10c5735e",
+      "remote": "f60d10c5735e",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/boss_enraged.png",
+      "local": "9edb389804c6",
+      "remote": "9edb389804c6",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/boss_fortress.png",
+      "local": "25aea3486c5b",
+      "remote": "25aea3486c5b",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/boss_foundry.png",
+      "local": "98ebbea6fceb",
+      "remote": "98ebbea6fceb",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/boss_snow.png",
+      "local": "87271fc512d9",
+      "remote": "87271fc512d9",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/chopper.png",
+      "local": "3646cd489788",
+      "remote": "3646cd489788",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/chopper_enraged.png",
+      "local": "b43f1703ae36",
+      "remote": "b43f1703ae36",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/decor_cascade_valve.png",
+      "local": "1c2a6d6709d9",
+      "remote": "1c2a6d6709d9",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/decor_caverns_crystal.png",
+      "local": "0acf23ef84a9",
+      "remote": "0acf23ef84a9",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/decor_desert_cactus.png",
+      "local": "fbf6e2108342",
+      "remote": "fbf6e2108342",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/decor_fortress_brazier.png",
+      "local": "fcd1ea644ba8",
+      "remote": "fcd1ea644ba8",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/decor_foundry_vat.png",
+      "local": "c672177dfe36",
+      "remote": "c672177dfe36",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/decor_snow_pine.png",
+      "local": "980a18c3e198",
+      "remote": "980a18c3e198",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/explosion.png",
+      "local": "adafe88e153b",
+      "remote": "adafe88e153b",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/flyer.png",
+      "local": "8ed8675d24d3",
+      "remote": "8ed8675d24d3",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/grunt.png",
+      "local": "0755c78cbf6b",
+      "remote": "0755c78cbf6b",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/mortar.png",
+      "local": "41e623a4614e",
+      "remote": "41e623a4614e",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/muzzle.png",
+      "local": "d4ec05deb3fe",
+      "remote": "d4ec05deb3fe",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/pickup.png",
+      "local": "5cdcf17c2c12",
+      "remote": "5cdcf17c2c12",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/player_idle.png",
+      "local": "b7298eaf89ae",
+      "remote": "b7298eaf89ae",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/player_jump.png",
+      "local": "75189d3eda7a",
+      "remote": "75189d3eda7a",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/player_prone.png",
+      "local": "179d4e02df80",
+      "remote": "179d4e02df80",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/player_run.png",
+      "local": "ea0149bffbe1",
+      "remote": "ea0149bffbe1",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/theme_bridge.png",
+      "local": "a605a73a19fa",
+      "remote": "a605a73a19fa",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/theme_cascade.png",
+      "local": "964f756f23b2",
+      "remote": "964f756f23b2",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/theme_caverns.png",
+      "local": "da214aeea538",
+      "remote": "da214aeea538",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/theme_desert.png",
+      "local": "53ca1d8651dc",
+      "remote": "53ca1d8651dc",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/theme_fortress.png",
+      "local": "d155ae1202a7",
+      "remote": "d155ae1202a7",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/theme_foundry.png",
+      "local": "3928ec41c703",
+      "remote": "3928ec41c703",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/theme_snow.png",
+      "local": "e041c678cb83",
+      "remote": "e041c678cb83",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/theme_water.png",
+      "local": "45cd6b69a01d",
+      "remote": "45cd6b69a01d",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/theme_water_top.png",
+      "local": "3120e0cff92a",
+      "remote": "3120e0cff92a",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/tiles.png",
+      "local": "6d5ec842d1b2",
+      "remote": "6d5ec842d1b2",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "assets/turret.png",
+      "local": "5f8cbaf11b26",
+      "remote": "5f8cbaf11b26",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "data/assets.js",
+      "local": "37ae2a03d238",
+      "remote": "37ae2a03d238",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "data/config.js",
+      "local": "116612948035",
+      "remote": "116612948035",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "data/level1.js",
+      "local": "9d669e4955f6",
+      "remote": "9d669e4955f6",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "data/level2.js",
+      "local": "d103c532605e",
+      "remote": "d103c532605e",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "index.html",
+      "local": "1984a026f957",
+      "remote": "1984a026f957",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "src/assets.js",
+      "local": "e3cd4ccbde1c",
+      "remote": "e3cd4ccbde1c",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "src/audio.js",
+      "local": "6c84681c2ff9",
+      "remote": "6c84681c2ff9",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "src/camera.js",
+      "local": "2356f6bff112",
+      "remote": "2356f6bff112",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "src/enemy.js",
+      "local": "16b11ecdd03a",
+      "remote": "16b11ecdd03a",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "src/entities.js",
+      "local": "d23dc33d9748",
+      "remote": "d23dc33d9748",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "src/feedback.js",
+      "local": "f28f38d7ca55",
+      "remote": "f28f38d7ca55",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "src/feel.js",
+      "local": "5c8326167a85",
+      "remote": "5c8326167a85",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "src/input.js",
+      "local": "8ea3a90e8d89",
+      "remote": "8ea3a90e8d89",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "src/main.js",
+      "local": "d64e67781625",
+      "remote": "d64e67781625",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "src/music.js",
+      "local": "c64829a1c3e0",
+      "remote": "c64829a1c3e0",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "src/physics.js",
+      "local": "aa6db6f353d6",
+      "remote": "aa6db6f353d6",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "src/player.js",
+      "local": "216a310f7115",
+      "remote": "216a310f7115",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "src/render.js",
+      "local": "1b9349671a0d",
+      "remote": "1b9349671a0d",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "src/selftest.js",
+      "local": "d03b9154b7e7",
+      "remote": "d03b9154b7e7",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "src/touch.js",
+      "local": "c6096f2fd9fb",
+      "remote": "c6096f2fd9fb",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "src/util.js",
+      "local": "76fff2b6e16d",
+      "remote": "76fff2b6e16d",
+      "http": 200,
+      "match": true
+    },
+    {
+      "rel": "src/world.js",
+      "local": "bd6a9999934c",
+      "remote": "bd6a9999934c",
+      "http": 200,
+      "match": true
+    }
+  ]
+}
