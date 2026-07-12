@@ -1,4 +1,4 @@
-=== GO-LIVE verification @ 2026-07-12T04:05:25Z ===
+=== GO-LIVE verification @ 2026-07-12T04:38:07Z ===
 URL: https://shivaconverge.github.io/contra-run-and-gun/
 --- root HTTP 0 ---
 <!doctype html>
@@ -55,15 +55,13 @@ audio resolve-gate: 7/7 tracks HTTP 200:
   assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 2408655 bytes [current]
 RESULT: LIVE ✅
 
-REFINED DECOR PLACEMENT + CONSOLIDATED RELEASE GATE (LIVE URL, HEAD 916aed4):
-  Master advanced source-only (config.js/level2.js/render.js) — refined per-biome
-  decor placement. Re-deployed; both gates green (42 assets + 7 tracks current;
-  live-selftest 119/119, campaign invariants PASS).
-  NEW deploy/gate.sh — the single ship-authorization command: runs verify.sh
-  (reachability+currency) THEN live-selftest.sh (functional) and emits one
-  combined verdict to GATE-STATUS.txt. Ran it this cycle:
+RE-SEEDED DESERT BOSS v2 (Sand Gunship) — LIVE (HEAD 8bb0827):
+  Master re-seeded boss_desert.png (2681->1922 bytes, same name) + activated
+  footing/decor guards (render.js/world.js). Re-deployed; ran the consolidated
+  release gate (deploy/gate.sh):
     reachability+currency: PASS   functional self-test: PASS   VERDICT: LIVE ✅
-  Reachability is the HARD requirement; a no-browser SKIP of the functional gate
-  is tolerated (it's an added assurance, not the reachability check). Also
-  refreshed deploy/README.md (was stale: '118 tests'/'a sprite reachable' → now
-  describes the full byte-currency + 119-test functional gates + gate.sh).
+  Byte-freshness proved the re-seed reached players: live boss_desert.png
+  Content-Length 1922 == local 1922 (the v2, not the stale 2681-byte v1).
+  Rendered live (JUDGE BY LOOKING): deploy/evidence/live-boss-desert.png —
+  Stage 4 boss arena shows the new Sand Gunship (detailed military chopper w/
+  rotor) over the desert dunes + cactus set-dressing.
