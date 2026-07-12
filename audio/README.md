@@ -1,18 +1,26 @@
-# audio/ — the missing music layer (BGM staging + drop-in patch)
+# audio/ — the per-stage music layer (7 real generated biome tracks, LIVE)
 
-The slice has procedural **SFX** (`game/src/audio.js` → `AudioKit`) but no looping
-**stage music** — the biggest missing sensory layer vs the Contra corpus, where a
-driving looped theme is core to the feel. This dir supplies it, as a hand-off to root.B.
+The seed had procedural **SFX** (`game/src/audio.js` → `AudioKit`) but no looping
+**stage music** — the biggest missing sensory layer vs the Contra corpus. This dir now
+supplies it, **shipped and live-verified**.
 
-UDIO_API_KEY was **not reachable** this cycle, so the track is a **deterministic
-WebAudio chiptune sequencer** — real synthesized music (2 pulse + triangle + noise, the
-NES 2A03 arrangement Contra used), not a placeholder tone. If UDIO becomes available, a
-generated track can replace/augment this behind the same `MusicKit` interface.
+**Primary deliverable (DONE):** 7 REAL Udio-generated per-biome instrumental loops — one
+per campaign stage (jungle · cascade · snow · desert · foundry · caverns · fortress) — that
+the engine hard-cuts to per stage. Real generated audio, not placeholder/procedural. They're
+in `audio/tracks/` (source) + `game/assets/audio/` (served), decoded and played by
+`MusicKit` in the shipped build, and verified end-to-end on the live public URL. Full detail:
+the **"REAL GENERATED PER-BIOME CAMPAIGN TRACKS"** section below.
+
+The **`MusicKit` procedural chiptune sequencer** (real synthesized NES-2A03 music) remains as
+the deterministic **fallback** — it plays while a track is still decoding or if a fetch fails,
+so the game is never silent. Both live behind the one `MusicKit` interface (`useTrack` selects
+a real biome loop; the synth covers otherwise). History note: the earliest cycle here couldn't
+reach UDIO and shipped only the synth; that's long since superseded by the 7 generated tracks.
 
 ## Files
 | File | What it is |
 |---|---|
-| **`music.js`** | The drop-in `MusicKit` — deterministic chiptune BGM sequencer. `start/stop/resume/toggleMute/setMuted/duck/setSection/setPlaying/setIntensity` + a live look-ahead scheduler and an offline `scheduleSpan` for verification. Four sections: 16-bar **stage** (E-min) + 8-bar **boss** (E-min) + 8-bar **stage2** (A-min "Cascade Base") + 8-bar **boss2** (A-min chopper gunship); scene-gate cuts music on game-over/victory; **enrage-intensity** lifts the boss theme (hotter mix + double-time hats) in phase 2. Headless-safe (no ctx = silent no-op). **This is the deliverable root.B integrates.** |
+| **`music.js`** | The drop-in `MusicKit` — deterministic chiptune BGM sequencer. `start/stop/resume/toggleMute/setMuted/duck/setSection/setPlaying/setIntensity` + a live look-ahead scheduler and an offline `scheduleSpan` for verification. Four sections: 16-bar **stage** (E-min) + 8-bar **boss** (E-min) + 8-bar **stage2** (A-min "Cascade Base") + 8-bar **boss2** (A-min chopper gunship); scene-gate cuts music on game-over/victory; **enrage-intensity** lifts the boss theme (hotter mix + double-time hats) in phase 2. Headless-safe (no ctx = silent no-op). Plus the **real-track layer** (`registerTrack`/`loadTracks`/`useTrack`) that decodes and hard-cuts to the 7 generated per-biome mp3s, suppressing the synth while a track plays. **Integrated & live** (see "Engine wiring — DONE"). |
 | **`TEARDOWN.md`** | Corpus-grounded music teardown: the 5 stage-music invariants (fast tempo, gallop bass, march feel, heroic-minor key, seamless short loop) and how each maps to a choice in `music.js`. Marks what's reference-character vs measured. |
 | **`INTEGRATION.md`** | The ~10-line wiring spec for root.B (merge into `AudioKit`, one line in `main.js`). |
 | **`contra-stage-loop.wav`** | Listenable artifact — one 25.26s seamless stage A/B loop rendered from `music.js`, so a human can actually **hear** it and judge sound quality (the one thing a headless loop can't). Reference only; the live music is synthesized at runtime. |
@@ -37,11 +45,12 @@ node audio/verify/perf-soak.mjs         # 5/5 PASS; ~20s soak — FPS stable, he
 ```
 All green this cycle (render numbers in TEARDOWN §3; live results in the Status block below).
 
-## The one wiring call root.B needs
-Copy `music.js` → `game/src/music.js`, then in `AudioKit`:
-`this.music = new MusicKit(this.ctx, this.master)`, forward `resume()` / `toggleMute()`
-to it, add `duck(active)`, and add one `audio.duck(world.feel.hitStop > 0)` line to the
-main.js render loop. Full patch in **INTEGRATION.md**.
+## Engine wiring — DONE & LIVE
+`MusicKit` is integrated: `game/src/audio.js` mounts it (`this.music = new MusicKit(ctx,
+master)`), forwards `resume`/`toggleMute`/`duck`/`setSection`/`setPlaying`/`setIntensity`, and
+`game/src/main.js` reads the manifest, decodes all 7 mp3s, and hard-cuts per stage via
+`world.onStageChange`. Live-verified on the served build AND the public URL (see below). The
+historical drop-in patch is preserved in **INTEGRATION.md** for reference.
 
 ## ✅ REAL GENERATED PER-BIOME CAMPAIGN TRACKS (7/7) — the primary deliverable
 **Real Udio-generated instrumental loops, one per campaign stage/biome** (via

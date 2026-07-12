@@ -5,14 +5,18 @@ player recognises as *arcade run-and-gun* and that captures the nostalgic feel o
 original Contra. This documents the **musical character** the corpus shares, where that
 character is grounded, and the exact choices `music.js` makes to hit it.
 
+> Scope note: this teardown documents the grounding for the **procedural `MusicKit` synth**
+> (now the deterministic *fallback*). The shipped per-stage music is the **7 real Udio-generated
+> biome tracks** (UDIO became reachable and they're live — measured in `TRACK-ANALYSIS.md`).
+>
 > Honesty note on grounding: the frame corpus under `reference/frames/` is **visual**
-> (gameplay screengrabs for cadence/fidelity) — there are no soundtrack audio files in
-> the repo, and UDIO_API_KEY was not reachable this cycle. So this teardown is grounded
-> in the **documented, well-known musical character** of these titles (tempo class,
-> instrumentation, harmonic/rhythmic idiom), not in a fresh spectral analysis of their
-> audio. Where a number is our own measurement it is marked `[measured]`; where it is a
-> characterisation of the reference it is marked `[reference-character]`. The one thing
-> fully measured here is OUR track (see `verify/render-check.mjs`).
+> (gameplay screengrabs for cadence/fidelity) — there are no reference *soundtrack* audio files
+> in the repo. So this teardown is grounded in the **documented, well-known musical character**
+> of these titles (tempo class, instrumentation, harmonic/rhythmic idiom), not in a fresh
+> spectral analysis of their audio. Where a number is our own measurement it is marked
+> `[measured]`; where it is a characterisation of the reference it is marked
+> `[reference-character]`. The one thing fully measured here is OUR synth track (see
+> `verify/render-check.mjs`); the generated tracks are measured in `TRACK-ANALYSIS.md`.
 
 ## 1. The corpus's shared stage-music DNA `[reference-character]`
 
