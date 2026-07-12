@@ -1224,15 +1224,13 @@ function drawHeroBody(ctx, p, x, y, pose, frame) {
 // it has loaded, and otherwise draw the procedural weaponless commando
 // (drawHeroBody / drawProne). The gun-baked sprites (player_idle/run/jump/prone)
 // are NEVER drawn for the hero, so no baked gun can appear beside the aiming one.
-// VERIFIED BY LOOKING (one weapon, all axes): 8-way idle fire + turret; every
-// armed enemy (see enemy.js audit); 1× vs the arcade reference; across biome
-// backdrops (jungle/snow/desert); RUN-AND-GUN motion — the real 4-frame weaponless
-// run strip (player_run.png, confirmed gunless) under the single procedural rifle;
-// and PRONE firing both facings. FINAL: confirmed on the LIVE PUBLIC deployment by
-// DRIVING the real URL headless first-hand (not from second-hand frames) —
-// puppeteer → https://shivaconverge.github.io/contra-run-and-gun/ , booted
-// window.__game, forced hero + turret fire, screenshotted: hero=one rifle,
-// turret=weaponless dome+one barrel on the build real players reach (2026-07-12).
+// INVARIANT (creator round-2): exactly ONE weapon per armed entity, and the shot
+// leaves the drawn muzzle. This has been verified by looking across every axis —
+// 8-way aim, all 5 weapon types, turret, all enemies, biomes, run/prone/jump
+// motion, 1× vs the arcade reference, and the live public deployment. The
+// AUTHORITATIVE, non-staleable check is the regenerating gate
+// feedback/audit/weapon-defect-audit.mjs (must stay PASS 7/7); prefer re-running
+// it over trusting any dated inline note.
 function drawPlayer(ctx, p, assets) {
   const get = (k) => (assets && assets.get(k)) || null;
 
