@@ -1,5 +1,5 @@
 {
-  "when": "2026-07-12T04:38:58.390Z",
+  "when": "2026-07-12T05:43:28.887Z",
   "tool": "feedback/audit/weapon-defect-audit.mjs",
   "scope": "creator round-2 two-weapon defect (hero drawGun + turret drawTurretBarrel) across all 7 stages",
   "epsPx": 2,
@@ -30,8 +30,50 @@
         "id": "A5.turretShotFromDrawnBarrel",
         "ok": true,
         "detail": "render.drawTurretBarrel uses e.def.barrel{Pivot,Len}=true; enemy.js fire uses this.def.barrel{Pivot,Len}=true"
+      },
+      {
+        "id": "A6.otherArmedEnemiesWeaponless",
+        "ok": true,
+        "detail": "drawBoss weaponCalls={gun:0,barrel:0}, drawChopper weaponCalls={gun:0,barrel:0}, drawGun-in-drawEnemy=0 ⇒ boss/chopper/flyer/mortar/grunt carry no procedural overlay"
       }
-    ]
+    ],
+    "weaponDrawMap": {
+      "hero": {
+        "gun": 3,
+        "barrel": 0,
+        "fn": "drawPlayer→drawGun"
+      },
+      "turret": {
+        "gun": 0,
+        "barrel": 2,
+        "fn": "drawEnemy(turret)→drawTurretBarrel"
+      },
+      "boss": {
+        "gun": 0,
+        "barrel": 0,
+        "fn": "drawBoss"
+      },
+      "chopper": {
+        "gun": 0,
+        "barrel": 0,
+        "fn": "drawChopper"
+      },
+      "flyer": {
+        "gun": 0,
+        "barrel": 0,
+        "fn": "drawEnemy→drawEnemySprite"
+      },
+      "mortar": {
+        "gun": 0,
+        "barrel": 0,
+        "fn": "drawEnemy→drawEnemySprite/placeholder"
+      },
+      "grunt": {
+        "gun": 0,
+        "barrel": 0,
+        "fn": "drawEnemy→drawEnemySprite/placeholder"
+      }
+    }
   },
   "passed": 7,
   "total": 7,
@@ -51,6 +93,62 @@
       "twoWeaponSurface": [
         "hero",
         "turret"
+      ],
+      "armedWeapons": [
+        {
+          "kind": "hero",
+          "count": 1,
+          "gun": 3,
+          "barrel": 0,
+          "weaponTypes": [
+            "gun"
+          ],
+          "expect": "gun",
+          "via": "drawPlayer→drawGun",
+          "ok": true
+        },
+        {
+          "kind": "turret",
+          "count": 5,
+          "gun": 0,
+          "barrel": 2,
+          "weaponTypes": [
+            "barrel"
+          ],
+          "expect": "barrel",
+          "via": "drawEnemy(turret)→drawTurretBarrel",
+          "ok": true
+        },
+        {
+          "kind": "flyer",
+          "count": 2,
+          "gun": 0,
+          "barrel": 0,
+          "weaponTypes": [],
+          "expect": "none",
+          "via": "drawEnemy→drawEnemySprite",
+          "ok": true
+        },
+        {
+          "kind": "mortar",
+          "count": 1,
+          "gun": 0,
+          "barrel": 0,
+          "weaponTypes": [],
+          "expect": "none",
+          "via": "drawEnemy→drawEnemySprite/placeholder",
+          "ok": true
+        },
+        {
+          "kind": "boss",
+          "count": 1,
+          "gun": 0,
+          "barrel": 0,
+          "weaponTypes": [],
+          "expect": "none",
+          "via": "drawBoss",
+          "ok": true
+        }
       ],
       "entities": [
         {
@@ -128,12 +226,17 @@
         {
           "id": "static.renderPathInvariants",
           "ok": true,
-          "detail": "LAYER A A1..A5 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle)"
+          "detail": "LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)"
         },
         {
           "id": "keys.noBakedWeaponBody",
           "ok": true,
           "detail": "two-weapon entities [turret, hero] resolve to weaponless bodies only"
+        },
+        {
+          "id": "keys.everyArmedEnemyOneWeapon",
+          "ok": true,
+          "detail": "all 5 armed kinds draw one weapon type: hero→gun, turret→barrel, flyer→none, mortar→none, boss→none (hero=gun, turret=barrel, rest=none; none draws two)"
         },
         {
           "id": "runtime.themeBoots",
@@ -167,6 +270,62 @@
       "twoWeaponSurface": [
         "hero",
         "turret"
+      ],
+      "armedWeapons": [
+        {
+          "kind": "hero",
+          "count": 1,
+          "gun": 3,
+          "barrel": 0,
+          "weaponTypes": [
+            "gun"
+          ],
+          "expect": "gun",
+          "via": "drawPlayer→drawGun",
+          "ok": true
+        },
+        {
+          "kind": "turret",
+          "count": 4,
+          "gun": 0,
+          "barrel": 2,
+          "weaponTypes": [
+            "barrel"
+          ],
+          "expect": "barrel",
+          "via": "drawEnemy(turret)→drawTurretBarrel",
+          "ok": true
+        },
+        {
+          "kind": "flyer",
+          "count": 3,
+          "gun": 0,
+          "barrel": 0,
+          "weaponTypes": [],
+          "expect": "none",
+          "via": "drawEnemy→drawEnemySprite",
+          "ok": true
+        },
+        {
+          "kind": "mortar",
+          "count": 2,
+          "gun": 0,
+          "barrel": 0,
+          "weaponTypes": [],
+          "expect": "none",
+          "via": "drawEnemy→drawEnemySprite/placeholder",
+          "ok": true
+        },
+        {
+          "kind": "chopper",
+          "count": 1,
+          "gun": 0,
+          "barrel": 0,
+          "weaponTypes": [],
+          "expect": "none",
+          "via": "drawChopper",
+          "ok": true
+        }
       ],
       "entities": [
         {
@@ -244,12 +403,17 @@
         {
           "id": "static.renderPathInvariants",
           "ok": true,
-          "detail": "LAYER A A1..A5 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle)"
+          "detail": "LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)"
         },
         {
           "id": "keys.noBakedWeaponBody",
           "ok": true,
           "detail": "two-weapon entities [turret, hero] resolve to weaponless bodies only"
+        },
+        {
+          "id": "keys.everyArmedEnemyOneWeapon",
+          "ok": true,
+          "detail": "all 5 armed kinds draw one weapon type: hero→gun, turret→barrel, flyer→none, mortar→none, chopper→none (hero=gun, turret=barrel, rest=none; none draws two)"
         },
         {
           "id": "runtime.themeBoots",
@@ -282,6 +446,52 @@
       "twoWeaponSurface": [
         "hero",
         "turret"
+      ],
+      "armedWeapons": [
+        {
+          "kind": "hero",
+          "count": 1,
+          "gun": 3,
+          "barrel": 0,
+          "weaponTypes": [
+            "gun"
+          ],
+          "expect": "gun",
+          "via": "drawPlayer→drawGun",
+          "ok": true
+        },
+        {
+          "kind": "flyer",
+          "count": 8,
+          "gun": 0,
+          "barrel": 0,
+          "weaponTypes": [],
+          "expect": "none",
+          "via": "drawEnemy→drawEnemySprite",
+          "ok": true
+        },
+        {
+          "kind": "turret",
+          "count": 3,
+          "gun": 0,
+          "barrel": 2,
+          "weaponTypes": [
+            "barrel"
+          ],
+          "expect": "barrel",
+          "via": "drawEnemy(turret)→drawTurretBarrel",
+          "ok": true
+        },
+        {
+          "kind": "boss",
+          "count": 1,
+          "gun": 0,
+          "barrel": 0,
+          "weaponTypes": [],
+          "expect": "none",
+          "via": "drawBoss",
+          "ok": true
+        }
       ],
       "entities": [
         {
@@ -349,12 +559,17 @@
         {
           "id": "static.renderPathInvariants",
           "ok": true,
-          "detail": "LAYER A A1..A5 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle)"
+          "detail": "LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)"
         },
         {
           "id": "keys.noBakedWeaponBody",
           "ok": true,
           "detail": "two-weapon entities [turret, hero] resolve to weaponless bodies only"
+        },
+        {
+          "id": "keys.everyArmedEnemyOneWeapon",
+          "ok": true,
+          "detail": "all 4 armed kinds draw one weapon type: hero→gun, flyer→none, turret→barrel, boss→none (hero=gun, turret=barrel, rest=none; none draws two)"
         },
         {
           "id": "runtime.themeBoots",
@@ -387,6 +602,52 @@
       "twoWeaponSurface": [
         "hero",
         "turret"
+      ],
+      "armedWeapons": [
+        {
+          "kind": "hero",
+          "count": 1,
+          "gun": 3,
+          "barrel": 0,
+          "weaponTypes": [
+            "gun"
+          ],
+          "expect": "gun",
+          "via": "drawPlayer→drawGun",
+          "ok": true
+        },
+        {
+          "kind": "turret",
+          "count": 4,
+          "gun": 0,
+          "barrel": 2,
+          "weaponTypes": [
+            "barrel"
+          ],
+          "expect": "barrel",
+          "via": "drawEnemy(turret)→drawTurretBarrel",
+          "ok": true
+        },
+        {
+          "kind": "mortar",
+          "count": 4,
+          "gun": 0,
+          "barrel": 0,
+          "weaponTypes": [],
+          "expect": "none",
+          "via": "drawEnemy→drawEnemySprite/placeholder",
+          "ok": true
+        },
+        {
+          "kind": "chopper",
+          "count": 1,
+          "gun": 0,
+          "barrel": 0,
+          "weaponTypes": [],
+          "expect": "none",
+          "via": "drawChopper",
+          "ok": true
+        }
       ],
       "entities": [
         {
@@ -454,12 +715,17 @@
         {
           "id": "static.renderPathInvariants",
           "ok": true,
-          "detail": "LAYER A A1..A5 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle)"
+          "detail": "LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)"
         },
         {
           "id": "keys.noBakedWeaponBody",
           "ok": true,
           "detail": "two-weapon entities [turret, hero] resolve to weaponless bodies only"
+        },
+        {
+          "id": "keys.everyArmedEnemyOneWeapon",
+          "ok": true,
+          "detail": "all 4 armed kinds draw one weapon type: hero→gun, turret→barrel, mortar→none, chopper→none (hero=gun, turret=barrel, rest=none; none draws two)"
         },
         {
           "id": "runtime.themeBoots",
@@ -492,6 +758,52 @@
       "twoWeaponSurface": [
         "hero",
         "turret"
+      ],
+      "armedWeapons": [
+        {
+          "kind": "hero",
+          "count": 1,
+          "gun": 3,
+          "barrel": 0,
+          "weaponTypes": [
+            "gun"
+          ],
+          "expect": "gun",
+          "via": "drawPlayer→drawGun",
+          "ok": true
+        },
+        {
+          "kind": "turret",
+          "count": 9,
+          "gun": 0,
+          "barrel": 2,
+          "weaponTypes": [
+            "barrel"
+          ],
+          "expect": "barrel",
+          "via": "drawEnemy(turret)→drawTurretBarrel",
+          "ok": true
+        },
+        {
+          "kind": "mortar",
+          "count": 2,
+          "gun": 0,
+          "barrel": 0,
+          "weaponTypes": [],
+          "expect": "none",
+          "via": "drawEnemy→drawEnemySprite/placeholder",
+          "ok": true
+        },
+        {
+          "kind": "boss",
+          "count": 1,
+          "gun": 0,
+          "barrel": 0,
+          "weaponTypes": [],
+          "expect": "none",
+          "via": "drawBoss",
+          "ok": true
+        }
       ],
       "entities": [
         {
@@ -559,12 +871,17 @@
         {
           "id": "static.renderPathInvariants",
           "ok": true,
-          "detail": "LAYER A A1..A5 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle)"
+          "detail": "LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)"
         },
         {
           "id": "keys.noBakedWeaponBody",
           "ok": true,
           "detail": "two-weapon entities [turret, hero] resolve to weaponless bodies only"
+        },
+        {
+          "id": "keys.everyArmedEnemyOneWeapon",
+          "ok": true,
+          "detail": "all 4 armed kinds draw one weapon type: hero→gun, turret→barrel, mortar→none, boss→none (hero=gun, turret=barrel, rest=none; none draws two)"
         },
         {
           "id": "runtime.themeBoots",
@@ -598,6 +915,62 @@
       "twoWeaponSurface": [
         "hero",
         "turret"
+      ],
+      "armedWeapons": [
+        {
+          "kind": "hero",
+          "count": 1,
+          "gun": 3,
+          "barrel": 0,
+          "weaponTypes": [
+            "gun"
+          ],
+          "expect": "gun",
+          "via": "drawPlayer→drawGun",
+          "ok": true
+        },
+        {
+          "kind": "turret",
+          "count": 3,
+          "gun": 0,
+          "barrel": 2,
+          "weaponTypes": [
+            "barrel"
+          ],
+          "expect": "barrel",
+          "via": "drawEnemy(turret)→drawTurretBarrel",
+          "ok": true
+        },
+        {
+          "kind": "flyer",
+          "count": 6,
+          "gun": 0,
+          "barrel": 0,
+          "weaponTypes": [],
+          "expect": "none",
+          "via": "drawEnemy→drawEnemySprite",
+          "ok": true
+        },
+        {
+          "kind": "mortar",
+          "count": 5,
+          "gun": 0,
+          "barrel": 0,
+          "weaponTypes": [],
+          "expect": "none",
+          "via": "drawEnemy→drawEnemySprite/placeholder",
+          "ok": true
+        },
+        {
+          "kind": "chopper",
+          "count": 1,
+          "gun": 0,
+          "barrel": 0,
+          "weaponTypes": [],
+          "expect": "none",
+          "via": "drawChopper",
+          "ok": true
+        }
       ],
       "entities": [
         {
@@ -675,12 +1048,17 @@
         {
           "id": "static.renderPathInvariants",
           "ok": true,
-          "detail": "LAYER A A1..A5 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle)"
+          "detail": "LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)"
         },
         {
           "id": "keys.noBakedWeaponBody",
           "ok": true,
           "detail": "two-weapon entities [turret, hero] resolve to weaponless bodies only"
+        },
+        {
+          "id": "keys.everyArmedEnemyOneWeapon",
+          "ok": true,
+          "detail": "all 5 armed kinds draw one weapon type: hero→gun, turret→barrel, flyer→none, mortar→none, chopper→none (hero=gun, turret=barrel, rest=none; none draws two)"
         },
         {
           "id": "runtime.themeBoots",
@@ -714,6 +1092,62 @@
       "twoWeaponSurface": [
         "hero",
         "turret"
+      ],
+      "armedWeapons": [
+        {
+          "kind": "hero",
+          "count": 1,
+          "gun": 3,
+          "barrel": 0,
+          "weaponTypes": [
+            "gun"
+          ],
+          "expect": "gun",
+          "via": "drawPlayer→drawGun",
+          "ok": true
+        },
+        {
+          "kind": "turret",
+          "count": 8,
+          "gun": 0,
+          "barrel": 2,
+          "weaponTypes": [
+            "barrel"
+          ],
+          "expect": "barrel",
+          "via": "drawEnemy(turret)→drawTurretBarrel",
+          "ok": true
+        },
+        {
+          "kind": "flyer",
+          "count": 5,
+          "gun": 0,
+          "barrel": 0,
+          "weaponTypes": [],
+          "expect": "none",
+          "via": "drawEnemy→drawEnemySprite",
+          "ok": true
+        },
+        {
+          "kind": "mortar",
+          "count": 3,
+          "gun": 0,
+          "barrel": 0,
+          "weaponTypes": [],
+          "expect": "none",
+          "via": "drawEnemy→drawEnemySprite/placeholder",
+          "ok": true
+        },
+        {
+          "kind": "boss",
+          "count": 1,
+          "gun": 0,
+          "barrel": 0,
+          "weaponTypes": [],
+          "expect": "none",
+          "via": "drawBoss",
+          "ok": true
+        }
       ],
       "entities": [
         {
@@ -791,12 +1225,17 @@
         {
           "id": "static.renderPathInvariants",
           "ok": true,
-          "detail": "LAYER A A1..A5 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle)"
+          "detail": "LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)"
         },
         {
           "id": "keys.noBakedWeaponBody",
           "ok": true,
           "detail": "two-weapon entities [turret, hero] resolve to weaponless bodies only"
+        },
+        {
+          "id": "keys.everyArmedEnemyOneWeapon",
+          "ok": true,
+          "detail": "all 5 armed kinds draw one weapon type: hero→gun, turret→barrel, flyer→none, mortar→none, boss→none (hero=gun, turret=barrel, rest=none; none draws two)"
         },
         {
           "id": "runtime.themeBoots",
