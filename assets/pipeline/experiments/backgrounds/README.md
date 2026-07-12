@@ -45,11 +45,19 @@ The 128px strip repeats ~4× across the 480px view (engine `BG.w=128`, CONFIRMED
   tile reads as one continuous crystal wall. Verified less-periodic by looking
   (`periodicity/v2-compare.png`) and LIVE at `?level=6` (`periodicity/` capture) — still
   distinctly violet-crystal. Finalized (synced + manifest).
-- ⏸️ **foundry** (2nd worst): tried v2 + v3 — v2 killed the coral MOLTEN sky (lost the hot-
-  foundry identity); v3 kept a beautiful sunset but its bright SUN repeats 4× (no net
-  periodicity win). KEPT the current (mild repeat + strong molten atmosphere is the better
-  trade). Candidates recorded in `periodicity/` for a future pass.
+- 🔒 **foundry** (2nd worst) — INVESTIGATION CLOSED, keep current. FOUR re-gen candidates
+  judged by looking (`periodicity/foundry-v{2,3,4,5}*.png`), all WORSE than current:
+  v2 (distributed windows) killed the coral MOLTEN sky → lost the hot-foundry identity;
+  v3/v4/v5 (sunset / "no sun" / "flat coral no circle") EACH still drew a big celestial
+  circle (sun/moon) that repeats 4× — pixflux insists on a sky landmark for a skyline, and
+  removing it drifts the sky off coral. The current's single small glow-blob repeat is the
+  LEAST obtrusive option + keeps the coral atmosphere → best balance. **Don't re-attempt
+  foundry via re-gen** (dead end recorded to save rework); a true fix needs a wider strip
+  (engine `BG.w` bump) or engine-side variant-cycling.
 - **desert / snow / fortress / cascade**: mild/none, acceptable as-shipped (see below).
+**PERIODICITY RESOLVED**: worst offender (caverns) fixed drop-in; foundry best-as-is
+(4-candidate negative recorded); the rest acceptable. No open action on my side; any
+further gain is an engine `BG.w` change (deferred).
 **Assessment (evidence: `tiled-4x-all.png` = all 6 strips tiled 4× at worst-case static
 full-opacity, no foreground):** ranked by how visible the repeat is —
 - **desert**: barely (uniform dunes read as a continuous horizon) — fine.
