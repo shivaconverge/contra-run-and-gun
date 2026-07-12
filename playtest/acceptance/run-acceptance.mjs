@@ -124,9 +124,15 @@ async function main() {
   // Campaign spine facts.
   check('local.scope_served==7/7', scopeLocal && scopeLocal.scopeServedNum === 7, scopeLocal && scopeLocal.scope_served);
   check('local.victory', scopeLocal && scopeLocal.victory === true, null);
+  // Per-stage themed boss ART is LOADED (proves each biome's dedicated boss sprite —
+  // incl. the re-seeded boss_desert Sand Gunship — is active, not a base-art fallback).
+  check('local.themedBossArtLoaded', scopeLocal && scopeLocal.themedBossArtOk === true,
+    scopeLocal && (scopeLocal.themedBossArt || []).map((b) => `${b.theme}:${b.dims ? b.dims.w + 'x' + b.dims.h : 'MISSING'}`).join(' '));
   if (!localOnly) {
     check('public.scope_served==7/7', scopePublic && scopePublic.scopeServedNum === 7, scopePublic && scopePublic.scope_served);
     check('public.victory', scopePublic && scopePublic.victory === true, null);
+    check('public.themedBossArtLoaded', scopePublic && scopePublic.themedBossArtOk === true,
+      scopePublic && (scopePublic.themedBossArt || []).map((b) => `${b.theme}:${b.dims ? b.dims.w + 'x' + b.dims.h : 'MISSING'}`).join(' '));
     check('public.deployDrift==none', scopePublic && Array.isArray(scopePublic.deployDrift) && scopePublic.deployDrift.length === 0, scopePublic && scopePublic.deployDrift);
     check('public.normalProgression(keyBindingProven)', scopePublic && scopePublic.keyBindingProven === true, null);
   }
