@@ -96,7 +96,11 @@ Outputs (this dir only):
   static-only PASS.
 - `REPORT.md` — regenerated human summary, with an `## OPEN ISSUES` section listing any
   failing fact (severity + repro + owner) so a real defect is recorded, never masked.
-- `INTEGRATION.md` — the proposed deploy-gate wire (exit-code + report contract) for root.D.
+- `gate-step.sh` — self-contained ONE-LINE deploy-gate step (`bash feedback/audit/gate-step.sh`):
+  resolves the repo root itself, runs the audit fast/static-only, prints one `[weapon-audit]`
+  line, fail-closed exit (0 clean / 1 red / 0+SKIP if no toolchain). For root.D to source.
+- `INTEGRATION.md` — the proposed deploy-gate wire (now one line via `gate-step.sh`) for
+  root.D. Status banner tracks that the gate is **not yet wired** (as of 2026-07-12).
 
 ## Ownership & boundaries
 
