@@ -105,7 +105,7 @@ flag in the gate and it becomes a CRITICAL regression guard.
 | `spine.defeatableAll7` — full-campaign VICTORY (invincible) | CRITICAL | ✅ |
 | `spine.noSoftlocks` — no soft-lock/unwinnable in any pass | CRITICAL | ✅ |
 | `spine.naturalProgressionOnly` — every beaten stage ended `cleared` via genuine boss-kill | CRITICAL | ✅ |
-| `invariant.weaponRevertsOnDeath` — every death reverts weapon to rifle (Contra single-slot) | CRITICAL | ✅ |
+| `invariant.weaponRevertsOnDeath` — mode-gated (BAL-4): ARCADE death reverts to rifle (single-slot); CASUAL retains | CRITICAL | ✅ |
 | `accessibility.casualClearsStage1` — assist mode passes boss 1 | CRITICAL | ✅ |
 | `balance.bossesAreThePrimaryKiller` — boss fire ≥ traversal deaths (levels aren't the killer) | CRITICAL | ✅ |
 | `render.stageAssetsIntact` — every stage's required sprite keys load (no 404/broken/absent art) | CRITICAL | ✅ |

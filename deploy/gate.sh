@@ -52,13 +52,34 @@ else
   verdict="BLOCKED ❌"; rc=1
 fi
 
+TARGET_URL="${URL:-https://shivaconverge.github.io/contra-run-and-gun/}"
 {
   echo "=== RELEASE GATE @ ${STAMP} ==="
-  echo "URL:                 ${URL:-https://shivaconverge.github.io/contra-run-and-gun/}"
+  echo "URL:                 ${TARGET_URL}"
   echo "reachability+currency: ${verify_state}   (verify.sh)"
   echo "functional self-test:  ${selftest_state}   (live-selftest.sh)"
   echo "VERDICT:             ${verdict}"
 } | tee "$STATUS"
+
+# OPERATE-phase audit trail: append every ship decision (never overwrite) so we
+# keep a durable history of what was authorized live and when — GATE-STATUS.txt
+# only holds the latest. Records the commit SHA actually gated, so a ship can be
+# traced back to a master revision.
+LOG="${HERE}/DEPLOY-LOG.md"
+SHA="$(git -C "$HERE" rev-parse --short HEAD 2>/dev/null || echo '?')"
+if [ ! -f "$LOG" ]; then
+  {
+    echo "# Deploy / ship-authorization log"
+    echo ""
+    echo "Append-only audit trail of \`gate.sh\` verdicts (newest at bottom). Each row"
+    echo "is one release-gate run against the live public URL."
+    echo ""
+    echo "| UTC timestamp | commit | reach+currency | functional | verdict |"
+    echo "|---|---|---|---|---|"
+  } > "$LOG"
+fi
+printf '| %s | `%s` | %s | %s | %s |\n' \
+  "$STAMP" "$SHA" "$verify_state" "$selftest_state" "$verdict" >> "$LOG"
 
 line
 if [ "$rc" -eq 0 ]; then

@@ -360,8 +360,15 @@ export class World {
     this.spawnFx('explosion', px, py);
     burst(this.particles, px, py, this.rng, { count: 20, color: '#ffd27a', speed: 3.4, life: 30 });
     burst(this.particles, px, py, this.rng, { count: 12, color: '#ff5252', speed: 2.2, life: 24 });
-    // Contra invariant: losing a life reverts the weapon to the default rifle.
-    this.player.resetWeapon();
+    // Weapon-on-death (BAL-4, playtest/balance/BALANCE-REPORT.md): reverting to the
+    // rifle is the pure 1987 ARCADE invariant, but at a boss it triggers a DPS-death-
+    // SPIRAL (die → rifle → the DPS-bound fight drags longer → more time under fire →
+    // more deaths). Keep the revert for ARCADE (the hard mode stays hard); in CASUAL —
+    // the parent-endorsed accessibility path — RETAIN the weapon so a death doesn't
+    // cripple the retry. Surgical: only affects players who DIE, only in casual, so it
+    // never trivializes the fight for skilled players (who never trigger it) or dilutes
+    // arcade. `_doRespawn` mirrors this (it also resets on respawn).
+    if (this.modeKey !== 'casual') this.player.resetWeapon();
     this.lives--;
     if (this.lives < 0) { this.status = 'gameover'; this.emit('gameover'); return; }
     this.respawnTimer = 48;
@@ -404,7 +411,7 @@ export class World {
     p.dead = false;
     p.dying = false; p.deathAngle = 0; p.vx = 0; p.vy = 0; // end the death arc
     p.shield = this.modeDef.shield;    // restore the CASUAL shield on respawn
-    p.resetWeapon();
+    if (this.modeKey !== 'casual') p.resetWeapon(); // BAL-4: CASUAL retains weapon (accessibility; arcade reverts)
     p.iframe = PLAYER.respawnProtect;  // brief spawn-in invulnerability (blink)
     p.flash = 12;
   }

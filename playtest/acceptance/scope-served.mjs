@@ -347,6 +347,16 @@ async function main() {
         const decorMissingArt = decorKeys.filter((k) => !(window.__assets && window.__assets.get(k)));
         const camx = w.camera.x, camR = camx + 480;
         const decorOnScreen = decor.filter((d) => d.x >= camx - 40 && d.x <= camR + 40).length;
+        // TILESET fact: render.js drawSolids resolves assets.get(theme.tileset) and
+        // FALLS BACK to the base jungle sheet 'tiles' when the biome sheet is unloaded.
+        // So a stage whose theme_<biome>.png didn't ship silently renders JUNGLE's
+        // tiles on its own background — the goal's "reusing another stage's tiles"
+        // defect, which the whole-frame diff can miss (tiles are only the floor band).
+        // resolvedTileset = the key that ACTUALLY renders (own sheet, or the 'tiles'
+        // fallback). jungle owns 'tiles' by design (theme_jungle intentionally absent).
+        const tilesetKey = w.theme && w.theme.tileset;         // e.g. 'theme_snow' (config)
+        const tilesetLoaded = !!(tilesetKey && window.__assets && window.__assets.get(tilesetKey));
+        const resolvedTileset = tilesetLoaded ? tilesetKey : 'tiles';
         return {
           stageNum: w.stageNum,
           name: w.level && w.level.name,
@@ -369,6 +379,9 @@ async function main() {
           decorCount: decor.length,
           decorMissingArt,                        // referenced-but-unloaded decor sprites (a real art gap → B)
           decorOnScreen,
+          tilesetKey,
+          tilesetLoaded,
+          resolvedTileset,                        // the tileset that ACTUALLY renders (own sheet or 'tiles' fallback)
         };
       });
 
@@ -499,7 +512,14 @@ async function main() {
   //            AND visually distinct from every reached sibling AND a distinct,
   //            theme-matched biome track is playing.
   // -------------------------------------------------------------------------
-  const problems = { missing: [], paramOnly: [], reusingTiles: [], noBoss: [], reusingMusic: [], noMusic: [], missingDecorArt: [] };
+  const problems = { missing: [], paramOnly: [], reusingTiles: [], noBoss: [], reusingMusic: [], noMusic: [], missingDecorArt: [], tilesetReuse: [] };
+  // TILESET distinctness across stages: resolvedTileset is the sheet each stage
+  // ACTUALLY renders. All 7 should be unique (jungle='tiles' by design; 2–7 each
+  // their own theme_<biome>). A biome sheet that failed to load collapses to 'tiles',
+  // so >1 stage sharing a resolvedTileset == the non-jungle ones reuse jungle's tiles.
+  const tilesetCounts = {};
+  for (const s of run.stages) tilesetCounts[s.resolvedTileset] = (tilesetCounts[s.resolvedTileset] || 0) + 1;
+  const tilesetOwners = { tiles: 'jungle' }; // 'tiles' legitimately belongs to jungle only
   let scopeServed = 0;
   for (const s of run.stages) {
     const reachedNormally = s.status === 'playing' || s.status === 'cleared';
@@ -508,7 +528,18 @@ async function main() {
     // (a missing key silently draws nothing → set-dressing vanishes). Stages whose
     // dressing is procedural (jungle grass, decorCount 0) reference no keys and pass.
     s.setDressingOk = (s.decorMissingArt || []).length === 0;
-    const pass = reachedNormally && bossOk && s.visuallyDistinct && s.musicDistinct && s.setDressingOk;
+    // TILESET present+own == the stage renders its OWN distinct sheet. jungle is OK on
+    // 'tiles' (by design); every other stage must have loaded its theme_<biome> sheet
+    // (else it fell back to jungle's tiles → reuse). Blames ONLY the offending stage —
+    // jungle legitimately owns 'tiles', so it is never penalized when another stage
+    // collapses onto 'tiles'. (Config guarantees distinct keys, so a fallback is the
+    // only way two stages can share a resolvedTileset.)
+    s.tilesetOwn = s.theme === 'jungle' ? (s.resolvedTileset === 'tiles') : s.tilesetLoaded;
+    // Informational: is this stage's rendered sheet shared with any sibling? (blame
+    // still goes to tilesetOwn — the non-owner that fell back.)
+    s.tilesetShared = tilesetCounts[s.resolvedTileset] > 1;
+    s.tilesetOk = s.tilesetOwn;
+    const pass = reachedNormally && bossOk && s.visuallyDistinct && s.musicDistinct && s.setDressingOk && s.tilesetOk;
     s.pass = pass;
     s.reasons = [];
     if (!reachedNormally) s.reasons.push('not-reached-normally');
@@ -518,6 +549,15 @@ async function main() {
     else if (!s.musicUnique) { s.reasons.push('music-reuse-of-sibling'); problems.reusingMusic.push({ stage: s.stage, track: s.audioTrack }); }
     else if (!s.musicMatchesTheme) s.reasons.push('music-track-does-not-name-theme');
     if (!s.setDressingOk) { s.reasons.push('set-dressing-art-missing:' + s.decorMissingArt.join(',')); problems.missingDecorArt.push({ stage: s.stage, keys: s.decorMissingArt }); }
+    if (!s.tilesetOk) {
+      // A non-jungle stage on 'tiles' fell back (its biome sheet didn't load); or two
+      // stages share a resolved sheet. Route the blame to the reusing stage.
+      const detail = !s.tilesetOwn
+        ? `tileset-fellback-to-jungle(${s.tilesetKey}-unloaded)`
+        : `tileset-reuse-of-${tilesetOwners[s.resolvedTileset] || 'sibling'}(${s.resolvedTileset})`;
+      s.reasons.push(detail);
+      problems.tilesetReuse.push({ stage: s.stage, resolvedTileset: s.resolvedTileset, tilesetKey: s.tilesetKey, loaded: s.tilesetLoaded });
+    }
     if (pass) scopeServed++;
     delete s._sig; // keep the JSON lean; grids/hists are large
   }
@@ -528,6 +568,11 @@ async function main() {
   run.scope_served = `${scopeServed}/${EXPECTED_STAGES}`;
   run.scopeServedNum = scopeServed;
   run.problems = problems;
+  // TILESET distinctness FACT: the sheet each stage actually renders, and whether all
+  // 7 are unique (the goal's "reusing another stage's tiles" — a collision means a
+  // biome sheet fell back to jungle's).
+  run.resolvedTilesets = run.stages.map((s) => ({ stage: s.stage, theme: s.theme, tileset: s.resolvedTileset, own: s.tilesetOwn }));
+  run.tilesetAllDistinct = new Set(run.stages.map((s) => s.resolvedTileset)).size === run.stages.length;
   // Public-mode note: report (do NOT mask) if the live deploy is behind the
   // worktree. scope_served still reflects what the LIVE URL actually served —
   // a drifted deploy that still plays 7/7 is a PASS-with-drift, flagged so the
@@ -569,7 +614,7 @@ async function main() {
   for (const s of run.stages) {
     const bd = s.themedBossDims ? `${s.themedBossDims.w}x${s.themedBossDims.h}` : (s.bossName ? 'ART-MISSING' : 'base');
     const decor = s.decorCount === 0 ? 'procedural' : `${s.decorKeys.join('+')}${s.decorMissingArt && s.decorMissingArt.length ? ' MISSING!' : `×${s.decorOnScreen}on-screen`}`;
-    console.log(`  stage ${s.stage} [${s.theme}] boss=${s.bossName || '—'} art=${bd} decor=${decor} vis=${s.visuallyDistinct} music=${s.audioTrack || 'synth'}(${s.musicDistinct}) pass=${s.pass}${s.reasons.length ? ' (' + s.reasons.join(',') + ')' : ''}`);
+    console.log(`  stage ${s.stage} [${s.theme}] boss=${s.bossName || '—'} art=${bd} tiles=${s.resolvedTileset}(${s.tilesetOk}) decor=${decor} vis=${s.visuallyDistinct} music=${s.audioTrack || 'synth'}(${s.musicDistinct}) pass=${s.pass}${s.reasons.length ? ' (' + s.reasons.join(',') + ')' : ''}`);
   }
   console.log(`  themedBossArt: ${run.themedBossArtOk ? 'all themed bosses loaded their sprite' : 'MISSING on stages ' + run.themedBossArtProblems.join(',')}`);
   if (run.consoleErrors.length) console.log(`  consoleErrors: ${run.consoleErrors.length}`);

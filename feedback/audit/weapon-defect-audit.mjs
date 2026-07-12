@@ -267,6 +267,18 @@ async function runtimeForStage(browser, url, stageNum) {
     await page.goto(`${url}/?headless=1&level=${stageNum}&frames=60`, { waitUntil: 'networkidle2', timeout: 30000 });
     await page.waitForFunction(() => !!document.getElementById('headless-done'), { timeout: 20000 });
 
+    // B4 — VISUAL grounding: capture the REAL 480×270 canvas the shipped build just
+    // rendered (the showcase fires the whole run, so this end-frame shows the HERO
+    // mid-run with its ONE drawn weapon — the creator's primary "two guns" complaint
+    // is about "the main character sprite"). The numeric probes below manipulate world
+    // state but the canvas only repaints on render(), so grabbing the PNG now yields the
+    // unmanipulated shipped frame. A human/multimodal reviewer LOOKS at these to confirm
+    // one weapon — CV metrics are only a pre-filter, the eyes are the verdict.
+    const frameDataUrl = await page.evaluate(() => {
+      const c = document.getElementById('game');
+      return c && c.toDataURL ? c.toDataURL('image/png') : null;
+    });
+
     // B1 — theme + which armed entities the live world instantiated.
     const boot = await page.evaluate(() => {
       const w = window.__game;
@@ -352,7 +364,7 @@ async function runtimeForStage(browser, url, stageNum) {
       };
     }, EPS_PX);
 
-    return { boot, hero, turret };
+    return { boot, hero, turret, frameDataUrl };
   } finally {
     await page.close();
   }
@@ -511,6 +523,8 @@ async function main() {
   }
 
   const stages = [];
+  const framesDir = path.join(HERE, 'report', 'frames');
+  if (!skipRuntime) await mkdir(framesDir, { recursive: true });
   try {
     console.log('LAYER B — per-stage runtime grounding:' + (skipRuntime ? ' (SKIPPED — static FACT governs)' : ''));
     for (let n = 1; n <= STAGES.length; n++) {
@@ -522,10 +536,18 @@ async function main() {
       const rec = stageRecord(n, staticLayer, rt, skipRuntime);
       // A drive error while the browser IS available is a REAL failure (not a skip).
       if (err) { rec.verdict = 'FAIL'; rec.checks.push({ id: 'runtime.driveError', ok: false, detail: err }); }
+      // VISUAL grounding: persist the captured shipped frame so a human/multimodal
+      // reviewer can LOOK at the hero + on-screen enemies and confirm one weapon.
+      if (rt && rt.frameDataUrl && rt.frameDataUrl.startsWith('data:image/png;base64,')) {
+        const rel = path.join('frames', `stage${n}-${rec.theme}.png`);
+        await writeFile(path.join(HERE, 'report', rel),
+          Buffer.from(rt.frameDataUrl.split(',')[1], 'base64'));
+        rec.frame = rel;
+      }
       stages.push(rec);
       const bad = rec.checks.filter((c) => !c.ok).map((c) => c.id);
       const skipped = rec.checks.filter((c) => c.skipped).length;
-      console.log(`  Stage ${n} [${rec.theme}] ${rec.verdict}${bad.length ? '  (red: ' + bad.join(', ') + ')' : ''}${skipped ? `  (${skipped} runtime SKIP)` : ''}`);
+      console.log(`  Stage ${n} [${rec.theme}] ${rec.verdict}${bad.length ? '  (red: ' + bad.join(', ') + ')' : ''}${skipped ? `  (${skipped} runtime SKIP)` : ''}${rec.frame ? '  📷 ' + rec.frame : ''}`);
     }
   } finally {
     if (browser) await browser.close();
@@ -568,6 +590,8 @@ function renderMarkdown(r) {
     L.push('');
   } else if (r.layerB && r.layerB.grounded) {
     L.push('> ✅ **Layer B (runtime grounding) RAN** — every stage driven in a real headless browser build.');
+    const nFrames = r.stages.filter((s) => s.frame).length;
+    if (nFrames) L.push(`> 📷 Captured ${nFrames} shipped frame(s) under \`report/frames/\` — LOOK at them (embedded per stage below) to confirm one weapon per entity. Eyes-on review: \`VISUAL-REVIEW.md\`.`);
     L.push('');
   }
   L.push('The creator round-2 REJECT is a FACT: does any armed entity show TWO weapons (a');
@@ -595,6 +619,12 @@ function renderMarkdown(r) {
   for (const s of r.stages) {
     L.push(`### Stage ${s.stage} — ${s.name} (${s.theme}) — ${s.verdict}`);
     L.push('');
+    if (s.frame) {
+      L.push(`Captured shipped frame (LOOK to confirm one weapon per entity): [\`report/${s.frame}\`](${s.frame})`);
+      L.push('');
+      L.push(`![stage ${s.stage} ${s.theme}](${s.frame})`);
+      L.push('');
+    }
     L.push('Resolved bodies (armed entities):');
     L.push('');
     for (const e of s.entities) {
