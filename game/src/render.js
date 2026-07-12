@@ -627,12 +627,18 @@ function drawEnemy(ctx, e, world, assets) {
   }
 
   if (img) {
-    // Turret: draw a WEAPONLESS dome — the pipeline's real turret_base sprite, else
-    // weaponlessTurret(img) which GUARANTEES a barrel-less body in code (identity on
-    // the already-clean dome; strips a barrel if one ever slips in) — so the ONLY
-    // weapon is the single procedural rotating barrel (CREATOR round-2 fix, CR-3).
+    // Turret: draw a WEAPONLESS dome, then the single procedural rotating barrel —
+    // the ONLY weapon (CREATOR round-2 fix, CR-3). We resolve the body (real
+    // turret_base sprite, else the base turret img) and pass it through
+    // weaponlessTurret() on the LIVE path so the barrel-less body is GUARANTEED IN
+    // CODE, not just assumed from the art: identity on the already-clean dome
+    // (verified 0 false-strips; cached per-image so it computes once), but strips a
+    // baked barrel if an armed sprite ever slips in at this key. (Audit-coupled:
+    // weapon-defect-audit.mjs A2 requires the literal `weaponlessTurret(` +
+    // `assets.get('turret_base')` + `drawEnemySprite(ctx, e, base` here — do not
+    // remove/rename without updating that gate, or it goes 7/7 red.)
     if (e.kind === 'turret') {
-      const base = (assets && assets.get('turret_base')) || weaponlessTurret(img);
+      const base = weaponlessTurret((assets && assets.get('turret_base')) || img);
       drawEnemySprite(ctx, e, base, white);
       drawTurretBarrel(ctx, e, world);
     } else {

@@ -1,5 +1,5 @@
 {
-  "when": "2026-07-12T01:36:25.023Z",
+  "when": "2026-07-12T01:57:38.134Z",
   "tool": "feedback/audit/weapon-defect-audit.mjs",
   "scope": "creator round-2 two-weapon defect (hero drawGun + turret drawTurretBarrel) across all 7 stages",
   "epsPx": 2,
@@ -275,9 +275,8 @@
       "theme": "snow",
       "armedTypes": [
         "grunt",
-        "turret",
         "flyer",
-        "mortar",
+        "turret",
         "boss"
       ],
       "twoWeaponSurface": [
@@ -311,18 +310,6 @@
             "grunt"
           ],
           "bakedForbidden": [],
-          "count": 16
-        },
-        {
-          "kind": "turret",
-          "label": "turret (purple cannon)",
-          "procWeapon": "drawTurretBarrel",
-          "bodyKeys": [
-            "turret_base"
-          ],
-          "bakedForbidden": [
-            "turret"
-          ],
           "count": 5
         },
         {
@@ -336,14 +323,16 @@
           "count": 5
         },
         {
-          "kind": "mortar",
-          "label": "mortar (emplacement)",
-          "procWeapon": null,
+          "kind": "turret",
+          "label": "turret (purple cannon)",
+          "procWeapon": "drawTurretBarrel",
           "bodyKeys": [
-            "mortar"
+            "turret_base"
           ],
-          "bakedForbidden": [],
-          "count": 1
+          "bakedForbidden": [
+            "turret"
+          ],
+          "count": 3
         },
         {
           "kind": "boss",
@@ -380,7 +369,7 @@
         {
           "id": "runtime.turretFromBarrelTip",
           "ok": true,
-          "detail": "5/5 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
+          "detail": "3/3 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
         }
       ],
       "verdict": "PASS"
@@ -637,7 +626,7 @@
             "grunt"
           ],
           "bakedForbidden": [],
-          "count": 12
+          "count": 5
         },
         {
           "kind": "turret",
@@ -649,7 +638,7 @@
           "bakedForbidden": [
             "turret"
           ],
-          "count": 4
+          "count": 2
         },
         {
           "kind": "flyer",
@@ -659,7 +648,7 @@
             "flyer"
           ],
           "bakedForbidden": [],
-          "count": 5
+          "count": 3
         },
         {
           "kind": "mortar",
@@ -669,7 +658,7 @@
             "mortar"
           ],
           "bakedForbidden": [],
-          "count": 4
+          "count": 3
         },
         {
           "kind": "chopper",
@@ -706,7 +695,7 @@
         {
           "id": "runtime.turretFromBarrelTip",
           "ok": true,
-          "detail": "4/4 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
+          "detail": "2/2 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
         }
       ],
       "verdict": "PASS"
