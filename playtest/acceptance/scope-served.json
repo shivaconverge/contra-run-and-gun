@@ -1,7 +1,7 @@
 {
-  "ts": "2026-07-12T05:36:03.354Z",
+  "ts": "2026-07-12T06:44:23.563Z",
   "mode": "local",
-  "target": "http://127.0.0.1:56468",
+  "target": "http://127.0.0.1:63252",
   "staleServeGuard": {
     "mode": "local",
     "killedProcs": [],
@@ -27,14 +27,18 @@
       "themedBossKey": "boss_jungle",
       "themedBossLoaded": false,
       "themedBossDims": null,
-      "playerX": 133,
+      "playerX": 131,
       "audioLayerPresent": true,
       "audioTrack": "s1_jungle",
-      "distinctBins": 111,
+      "decorKeys": [],
+      "decorCount": 0,
+      "decorMissingArt": [],
+      "decorOnScreen": 0,
+      "distinctBins": 117,
       "transitionVia": "KeyN(real-key)",
       "transitionKeyPresses": 1,
       "nearestSibling": 2,
-      "minGridDiff": 15.73,
+      "minGridDiff": 15.61,
       "minHistDiff": 0.471,
       "suspectedReuseOf": [],
       "visuallyDistinct": true,
@@ -42,6 +46,7 @@
       "musicUnique": true,
       "musicMatchesTheme": true,
       "musicDistinct": true,
+      "setDressingOk": true,
       "pass": true,
       "reasons": []
     },
@@ -63,14 +68,20 @@
       "themedBossKey": "boss_cascade",
       "themedBossLoaded": false,
       "themedBossDims": null,
-      "playerX": 133,
+      "playerX": 131,
       "audioLayerPresent": true,
       "audioTrack": "s2_cascade",
+      "decorKeys": [
+        "decor_cascade_valve"
+      ],
+      "decorCount": 7,
+      "decorMissingArt": [],
+      "decorOnScreen": 2,
       "distinctBins": 141,
       "transitionVia": "KeyN(real-key)",
       "transitionKeyPresses": 1,
       "nearestSibling": 1,
-      "minGridDiff": 15.73,
+      "minGridDiff": 15.61,
       "minHistDiff": 0.471,
       "suspectedReuseOf": [],
       "visuallyDistinct": true,
@@ -78,6 +89,7 @@
       "musicUnique": true,
       "musicMatchesTheme": true,
       "musicDistinct": true,
+      "setDressingOk": true,
       "pass": true,
       "reasons": []
     },
@@ -105,6 +117,12 @@
       "playerX": 131,
       "audioLayerPresent": true,
       "audioTrack": "s3_snow",
+      "decorKeys": [
+        "decor_snow_pine"
+      ],
+      "decorCount": 9,
+      "decorMissingArt": [],
+      "decorOnScreen": 2,
       "distinctBins": 100,
       "transitionVia": "KeyN(real-key)",
       "transitionKeyPresses": 1,
@@ -117,6 +135,7 @@
       "musicUnique": true,
       "musicMatchesTheme": true,
       "musicDistinct": true,
+      "setDressingOk": true,
       "pass": true,
       "reasons": []
     },
@@ -144,6 +163,12 @@
       "playerX": 131,
       "audioLayerPresent": true,
       "audioTrack": "s4_desert",
+      "decorKeys": [
+        "decor_desert_cactus"
+      ],
+      "decorCount": 8,
+      "decorMissingArt": [],
+      "decorOnScreen": 2,
       "distinctBins": 109,
       "transitionVia": "KeyN(real-key)",
       "transitionKeyPresses": 1,
@@ -156,6 +181,7 @@
       "musicUnique": true,
       "musicMatchesTheme": true,
       "musicDistinct": true,
+      "setDressingOk": true,
       "pass": true,
       "reasons": []
     },
@@ -180,14 +206,20 @@
         "w": 60,
         "h": 60
       },
-      "playerX": 131,
+      "playerX": 133,
       "audioLayerPresent": true,
       "audioTrack": "s5_foundry",
-      "distinctBins": 145,
+      "decorKeys": [
+        "decor_foundry_vat"
+      ],
+      "decorCount": 8,
+      "decorMissingArt": [],
+      "decorOnScreen": 2,
+      "distinctBins": 146,
       "transitionVia": "KeyN(real-key)",
       "transitionKeyPresses": 1,
       "nearestSibling": 7,
-      "minGridDiff": 8.51,
+      "minGridDiff": 8.55,
       "minHistDiff": 0.449,
       "suspectedReuseOf": [],
       "visuallyDistinct": true,
@@ -195,6 +227,7 @@
       "musicUnique": true,
       "musicMatchesTheme": true,
       "musicDistinct": true,
+      "setDressingOk": true,
       "pass": true,
       "reasons": []
     },
@@ -222,18 +255,25 @@
       "playerX": 131,
       "audioLayerPresent": true,
       "audioTrack": "s6_caverns",
-      "distinctBins": 161,
+      "decorKeys": [
+        "decor_caverns_crystal"
+      ],
+      "decorCount": 7,
+      "decorMissingArt": [],
+      "decorOnScreen": 2,
+      "distinctBins": 162,
       "transitionVia": "KeyN(real-key)",
       "transitionKeyPresses": 1,
       "nearestSibling": 7,
       "minGridDiff": 17.41,
-      "minHistDiff": 1.418,
+      "minHistDiff": 1.411,
       "suspectedReuseOf": [],
       "visuallyDistinct": true,
       "musicPresent": true,
       "musicUnique": true,
       "musicMatchesTheme": true,
       "musicDistinct": true,
+      "setDressingOk": true,
       "pass": true,
       "reasons": []
     },
@@ -258,12 +298,18 @@
         "w": 56,
         "h": 54
       },
-      "playerX": 133,
+      "playerX": 131,
       "audioLayerPresent": true,
       "audioTrack": "s7_fortress",
+      "decorKeys": [
+        "decor_fortress_brazier"
+      ],
+      "decorCount": 9,
+      "decorMissingArt": [],
+      "decorOnScreen": 2,
       "distinctBins": 128,
       "nearestSibling": 5,
-      "minGridDiff": 8.51,
+      "minGridDiff": 8.55,
       "minHistDiff": 0.449,
       "suspectedReuseOf": [],
       "visuallyDistinct": true,
@@ -271,6 +317,7 @@
       "musicUnique": true,
       "musicMatchesTheme": true,
       "musicDistinct": true,
+      "setDressingOk": true,
       "pass": true,
       "reasons": []
     }
@@ -295,7 +342,8 @@
     "reusingTiles": [],
     "noBoss": [],
     "reusingMusic": [],
-    "noMusic": []
+    "noMusic": [],
+    "missingDecorArt": []
   },
   "deployDrift": [],
   "transitions": [

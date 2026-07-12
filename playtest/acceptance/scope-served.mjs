@@ -335,6 +335,18 @@ async function main() {
         // stages (jungle/cascade — no boss_<id> key) legitimately resolve null.
         const themeId = w.level && w.level.theme;
         const bImg = window.__assets && themeId && window.__assets.get('boss_' + themeId);
+        // SET-DRESSING presence fact: render.js drawDecor blits each world.decor prop
+        // ONLY if assets.get(d.key) resolves — an unloaded decor key silently draws
+        // NOTHING (no fallback). So a stage that references a decor sprite the deploy
+        // failed to ship loses its set-dressing while the sibling palette-diff could
+        // still pass. Enumerate the keys this stage actually references and record
+        // which resolve to a loaded image vs which are MISSING ART (the defect), plus
+        // how many props are on-screen at capture (so the frame evidence shows them).
+        const decor = w.decor || [];
+        const decorKeys = [...new Set(decor.map((d) => d.key))];
+        const decorMissingArt = decorKeys.filter((k) => !(window.__assets && window.__assets.get(k)));
+        const camx = w.camera.x, camR = camx + 480;
+        const decorOnScreen = decor.filter((d) => d.x >= camx - 40 && d.x <= camR + 40).length;
         return {
           stageNum: w.stageNum,
           name: w.level && w.level.name,
@@ -353,6 +365,10 @@ async function main() {
           playerX: Math.round(w.player.x),
           audioLayerPresent: !!(a && a.music),
           audioTrack: a ? a.track : null,        // real biome loop id, or null (synth fallback)
+          decorKeys,
+          decorCount: decor.length,
+          decorMissingArt,                        // referenced-but-unloaded decor sprites (a real art gap → B)
+          decorOnScreen,
         };
       });
 
@@ -483,12 +499,16 @@ async function main() {
   //            AND visually distinct from every reached sibling AND a distinct,
   //            theme-matched biome track is playing.
   // -------------------------------------------------------------------------
-  const problems = { missing: [], paramOnly: [], reusingTiles: [], noBoss: [], reusingMusic: [], noMusic: [] };
+  const problems = { missing: [], paramOnly: [], reusingTiles: [], noBoss: [], reusingMusic: [], noMusic: [], missingDecorArt: [] };
   let scopeServed = 0;
   for (const s of run.stages) {
     const reachedNormally = s.status === 'playing' || s.status === 'cleared';
     const bossOk = s.bossPresent && s.bossIsBoss;
-    const pass = reachedNormally && bossOk && s.visuallyDistinct && s.musicDistinct;
+    // SET-DRESSING present == no decor sprite this stage REFERENCES failed to load
+    // (a missing key silently draws nothing → set-dressing vanishes). Stages whose
+    // dressing is procedural (jungle grass, decorCount 0) reference no keys and pass.
+    s.setDressingOk = (s.decorMissingArt || []).length === 0;
+    const pass = reachedNormally && bossOk && s.visuallyDistinct && s.musicDistinct && s.setDressingOk;
     s.pass = pass;
     s.reasons = [];
     if (!reachedNormally) s.reasons.push('not-reached-normally');
@@ -497,6 +517,7 @@ async function main() {
     if (!s.musicPresent) { s.reasons.push('music-missing(synth-fallback)'); problems.noMusic.push(s.stage); }
     else if (!s.musicUnique) { s.reasons.push('music-reuse-of-sibling'); problems.reusingMusic.push({ stage: s.stage, track: s.audioTrack }); }
     else if (!s.musicMatchesTheme) s.reasons.push('music-track-does-not-name-theme');
+    if (!s.setDressingOk) { s.reasons.push('set-dressing-art-missing:' + s.decorMissingArt.join(',')); problems.missingDecorArt.push({ stage: s.stage, keys: s.decorMissingArt }); }
     if (pass) scopeServed++;
     delete s._sig; // keep the JSON lean; grids/hists are large
   }
@@ -547,7 +568,8 @@ async function main() {
   console.log(`  transitions: ${viaKey} via real KeyN, ${viaClosure} via requestNextStage() fallback; keyBindingProven=${run.keyBindingProven}`);
   for (const s of run.stages) {
     const bd = s.themedBossDims ? `${s.themedBossDims.w}x${s.themedBossDims.h}` : (s.bossName ? 'ART-MISSING' : 'base');
-    console.log(`  stage ${s.stage} [${s.theme}] boss=${s.bossName || '—'} art=${bd} vis=${s.visuallyDistinct} music=${s.audioTrack || 'synth'}(${s.musicDistinct}) pass=${s.pass}${s.reasons.length ? ' (' + s.reasons.join(',') + ')' : ''}`);
+    const decor = s.decorCount === 0 ? 'procedural' : `${s.decorKeys.join('+')}${s.decorMissingArt && s.decorMissingArt.length ? ' MISSING!' : `×${s.decorOnScreen}on-screen`}`;
+    console.log(`  stage ${s.stage} [${s.theme}] boss=${s.bossName || '—'} art=${bd} decor=${decor} vis=${s.visuallyDistinct} music=${s.audioTrack || 'synth'}(${s.musicDistinct}) pass=${s.pass}${s.reasons.length ? ' (' + s.reasons.join(',') + ')' : ''}`);
   }
   console.log(`  themedBossArt: ${run.themedBossArtOk ? 'all themed bosses loaded their sprite' : 'MISSING on stages ' + run.themedBossArtProblems.join(',')}`);
   if (run.consoleErrors.length) console.log(`  consoleErrors: ${run.consoleErrors.length}`);
