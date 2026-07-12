@@ -16,8 +16,9 @@ is FRESH generation (`experiments/bosses/strength-sweep.png` vs `fresh-vs-base.p
 Palette fix: detailed fresh bosses carried AA edge speckle over the gate's palette cap;
 `tighten_to_budget` snaps it adaptively (verified by looking = no detail loss, `boss_*-
 tighten.png`) rather than loosening the cap.
-**NEED (future):** whether per-biome ENRAGE variants are wanted. `boss_desert` reads
-slightly mushy — a re-seed/polish candidate.
+**NEED (future):** whether per-biome ENRAGE variants are wanted (parent: not needed now —
+shared boss_enraged + pulsing red-glow overlay reads enrage). `boss_desert` was re-seeded
+(v1 mushy → v2 clean flat panels, seed 184) — verified crisper by looking + LIVE.
 
 ## ✅ DONE — per-stage BACKGROUND parallax art (6 biomes, deliverable #2 "background layers") — FINALIZED + LIVE
 WIRED by the engine (commit 43d2db2: `assets.js` keys `bg_snow..bg_cascade`, `render.js

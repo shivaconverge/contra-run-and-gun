@@ -717,8 +717,8 @@
       "biome": "desert",
       "bossName": "Sand Gunship",
       "family": "chopper",
-      "frameWidth": 76,
-      "frameHeight": 42,
+      "frameWidth": 74,
+      "frameHeight": 34,
       "hitboxPx": {
         "w": 62,
         "h": 30
