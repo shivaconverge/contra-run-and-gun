@@ -81,6 +81,10 @@ export class World {
     this.bossCallout = 0;     // "BOSS" title flash timer
     this.enrageFlash = 0;     // "ENRAGED" phase-2 callout timer
     this.pickups = (this.level.pickups || []).map((pk) => new Pickup(pk.weapon, pk.x, pk.y));
+    // Per-stage SET-DRESSING props (inert data: {x, key, parallax?}). Bound off the
+    // active level every reset (like solids/theme) so stage transitions swap the
+    // biome's decor. render.js drawDecor blits each base-anchored to the ground.
+    this.decor = this.level.decor || [];
     this.bullets = [];
     this.particles = [];
     this.fx = []; // visual-only strip animations (explosions); no RNG, not sim-critical

@@ -1,11 +1,102 @@
 [
   {
+    "lvl": 2,
+    "theme": "cascade",
+    "decorCount": 3,
+    "keys": [
+      "decor_cascade_valve"
+    ],
+    "allLoaded": true,
+    "decorXs": [
+      400,
+      980,
+      1650
+    ],
+    "errors": 0,
+    "file": "assets/pipeline/experiments/set-dressing/live/level2-cascade.png"
+  },
+  {
     "lvl": 3,
     "theme": "snow",
-    "tilesetKey": "theme_snow",
-    "tilesetLoaded": true,
-    "missing": 0,
+    "decorCount": 4,
+    "keys": [
+      "decor_snow_pine"
+    ],
+    "allLoaded": true,
+    "decorXs": [
+      360,
+      780,
+      1280,
+      1640
+    ],
     "errors": 0,
     "file": "assets/pipeline/experiments/set-dressing/live/level3-snow.png"
+  },
+  {
+    "lvl": 4,
+    "theme": "desert",
+    "decorCount": 4,
+    "keys": [
+      "decor_desert_cactus"
+    ],
+    "allLoaded": true,
+    "decorXs": [
+      350,
+      900,
+      1500,
+      2050
+    ],
+    "errors": 0,
+    "file": "assets/pipeline/experiments/set-dressing/live/level4-desert.png"
+  },
+  {
+    "lvl": 5,
+    "theme": "foundry",
+    "decorCount": 3,
+    "keys": [
+      "decor_foundry_vat"
+    ],
+    "allLoaded": true,
+    "decorXs": [
+      450,
+      1080,
+      1600
+    ],
+    "errors": 0,
+    "file": "assets/pipeline/experiments/set-dressing/live/level5-foundry.png"
+  },
+  {
+    "lvl": 6,
+    "theme": "caverns",
+    "decorCount": 4,
+    "keys": [
+      "decor_caverns_crystal"
+    ],
+    "allLoaded": true,
+    "decorXs": [
+      380,
+      950,
+      1640,
+      2000
+    ],
+    "errors": 0,
+    "file": "assets/pipeline/experiments/set-dressing/live/level6-caverns.png"
+  },
+  {
+    "lvl": 7,
+    "theme": "fortress",
+    "decorCount": 4,
+    "keys": [
+      "decor_fortress_brazier"
+    ],
+    "allLoaded": true,
+    "decorXs": [
+      420,
+      1000,
+      1600,
+      2000
+    ],
+    "errors": 0,
+    "file": "assets/pipeline/experiments/set-dressing/live/level7-fortress.png"
   }
 ]

@@ -184,4 +184,17 @@ export const ASSET_MANIFEST = {
   bg_caverns: 'assets/bg_caverns.png',
   bg_fortress: 'assets/bg_fortress.png',
   bg_cascade: 'assets/bg_cascade.png',
+  // Per-stage SET-DRESSING props (deliverable #2, from assets/pipeline/generate.py
+  // set-dressing). One distinct native prop per biome, BASE-anchored to the ground
+  // under its world x by the level data (config.js CAMPAIGN[].decor stages 3-7 +
+  // level2.js cascade). render.js drawDecor iterates world.decor and blits
+  // assets.get(d.key) at native size with its bottom sitting on the ground surface
+  // (parallax d.parallax ?? 1), behind the actors — mirroring the tileset/bg swaps.
+  // Pure set-dressing: an unloaded key simply draws nothing (no procedural fallback).
+  decor_snow_pine: 'assets/decor_snow_pine.png',
+  decor_desert_cactus: 'assets/decor_desert_cactus.png',
+  decor_foundry_vat: 'assets/decor_foundry_vat.png',
+  decor_caverns_crystal: 'assets/decor_caverns_crystal.png',
+  decor_fortress_brazier: 'assets/decor_fortress_brazier.png',
+  decor_cascade_valve: 'assets/decor_cascade_valve.png',
 };

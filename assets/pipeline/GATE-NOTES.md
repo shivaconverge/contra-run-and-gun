@@ -6,34 +6,35 @@ blit-meta). Fidelity stays the by-looking verdict, never this gate. Exit 0 = gre
 
 ## OPEN ISSUES
 
-### 2026-07-12 (updated: now ALL 6 stages) — placed set-dressing renders NOTHING (owner: engine loop / assets.js + render.js)
-**Severity:** medium→HIGH (the GOAL requires "every stage has its own set-dressing"; the campaign now PLACES it on all 6 themed stages but shows NONE). **Status:** OPEN — surfaced by the `Decor-reachability` gate check + verified LIVE by looking.
+### 2026-07-12 — placed set-dressing renders NOTHING → ✅ CLOSED (WIRED + LIVE)
+**Severity:** medium→HIGH (the GOAL requires "every stage has its own set-dressing"). **Status:** ✅ RESOLVED — the 2 engine lines landed this cycle; all 6 props now render, verified LIVE by looking.
 
-**Fact (from `generate.py verify` + live capture):** the campaign places 6 decor props
-across the stages — `config.js CAMPAIGN[].decor` (stages 3-7: `decor_snow_pine`×4,
-`decor_desert_cactus`×4, `decor_foundry_vat`×3, `decor_caverns_crystal`×4,
-`decor_fortress_brazier`×4) + `level2.js` (`decor_cascade_valve`×3) — and `world.js
-validateDecor` enforces the `decor_` contract. BUT (a) `game/data/assets.js` keys NONE of
-them (never LOAD) and (b) `game/src/render.js` has NO `level.decor` blit (never DRAW).
-Result: **every stage renders zero set-dressing props.**
-**Live evidence:** `experiments/set-dressing/live/level3-snow.png` (S3 early-game) — snow
-tileset + `bg_snow` mountains render, but no `decor_snow_pine` at x=360 (placed in config).
+**Was:** the campaign placed 6 decor props across the stages — `config.js CAMPAIGN[].decor`
+(stages 3-7: `decor_snow_pine`×4, `decor_desert_cactus`×4, `decor_foundry_vat`×3,
+`decor_caverns_crystal`×4, `decor_fortress_brazier`×4) + `level2.js` (`decor_cascade_valve`×3)
+— and `world.js validateDecor` enforced the `decor_` contract, BUT (a) `game/data/assets.js`
+keyed NONE of them (never LOAD) and (b) `game/src/render.js` had NO `level.decor` blit (never
+DRAW), so every stage rendered zero props.
 
-**Repro:** `python assets/pipeline/generate.py verify` → "Decor-reachability: 6 placed
-prop(s) (…) → 6 WONT-RENDER". (The gate now scans ALL of `game/data/` — the campaign
-placements live in `config.js`, not just `level*.js`; a level-only scan under-reported 1/6.)
+**Fix — LANDED (pipeline side + engine side both DONE):**
+- ✅ **(pipeline)** All 6 props FINALIZED: synced to `game/assets/` + folded into
+  `run()`/`manifest.json` (§5f) — the art is present where the loader reads it.
+- ✅ **(engine)** `game/data/assets.js` — all 6 `decor_*` keys added (→ they LOAD).
+- ✅ **(engine)** `game/src/world.js` reset() — binds `this.decor = this.level.decor || []`
+  every stage (like solids/theme), so stage transitions swap the biome's decor.
+- ✅ **(engine)** `game/src/render.js` — new `drawDecor()` (called after `drawSolids`, before
+  the actors) iterates `world.decor` and blits each `assets.get(d.key)` at native size,
+  BASE-anchored to the ground surface under `d.x` (`parallax d.parallax ?? 1`), off-screen
+  props skipped; an unloaded key draws nothing (pure dressing, no procedural fallback).
 
-**Fix — pipeline side DONE, only 2 engine lines remain:**
-- ✅ **(me, done this cycle)** All 6 props FINALIZED: synced to `game/assets/` + folded
-  into `run()`/`manifest.json` (§5f). The art the engine needs is now present where the
-  loader reads it. Placed decor is excluded from the cross-source orphan rule (it is
-  referenced by level data, not dead weight), so the gate stays green (42/42) while
-  Decor-reachability keeps honestly reporting the render gap.
-1. **(engine)** `game/data/assets.js` — key all 6 (`decor_snow_pine: 'assets/decor_snow_pine.png'`, …).
-2. **(engine)** `game/src/render.js` — after `drawParallax`/`drawGround`, iterate
-   `world.decor` and blit each `assets.get(d.key)` BASE-anchored to the ground y at `d.x`
-   (parallax `d.parallax ?? 1`); mirror `drawEnemySprite`'s feet-anchor.
-Once those 2 lines land, the props render (I verify LIVE by looking + close this issue).
+**Live evidence (verified by looking):** `experiments/set-dressing/live/level{2..7}-*.png`
+(capture harness `assets/pipeline/tools/capture-decor.mjs`) — every decor-bearing stage now
+renders its OWN distinct prop on the ground behind the actors: cascade valve (S2), snow pine
+(S3), desert saguaro (S4), foundry molten vat (S5), caverns crystal cluster (S6), fortress
+brazier (S7). `window.__game.decor` populated + every key `allLoaded=true`, 0 page errors,
+boot selftest 118/118. Closes the GOAL's "every stage has its own set-dressing" on-screen.
+**Follow-up (pipeline):** the `Decor-reachability` gate check can now flip from "WONT-RENDER"
+to reachable (the render draw-path exists) — a pipeline-side gate-model update, non-blocking.
 
 ### 2026-07-12 — 4 superseded armed `player_*` keys are shipped-but-unreachable  (owner: engine loop / game/data/assets.js)
 **Severity:** low (dead weight, not a visible bug). **Status:** OPEN — surfaced by the gate, not maskable here.

@@ -63,6 +63,7 @@ export function render(ctx, world, assets) {
 
   drawWater(ctx, world, assets);   // behind the bridge deck (CR-1: bridge-over-water theme)
   drawSolids(ctx, world, assets);
+  drawDecor(ctx, world, assets);   // per-stage set-dressing props, base-anchored, behind the actors
   for (const e of world.enemies) drawEnemy(ctx, e, world, assets);
   for (const pk of world.pickups) drawPickup(ctx, pk, world.frame, assets);
   drawGoal(ctx, world);
@@ -318,6 +319,32 @@ function drawSolids(ctx, world, assets) {
     if (s.kind === 'ground') drawGround(ctx, s, vx0, vx1, tiles, assets, tufts);
     else if (s.kind === 'barrier') drawBarrier(ctx, s, world.frame);
     else drawPlatform(ctx, s, vx0, vx1, tiles);
+  }
+}
+
+// Per-stage SET-DRESSING: blit each world.decor prop base-anchored to the ground
+// under its world x, at native size, behind the actors (drawn after drawSolids,
+// before enemies). The prop's BOTTOM sits on the surface of the `kind:'ground'`
+// solid under `d.x` (the same footing validateDecor enforces), centred on d.x —
+// mirroring drawEnemySprite's feet-anchor. `d.parallax ?? 1` shifts distant props
+// slower than the world (1 = locked to the world). An unloaded key draws nothing
+// (pure set-dressing — no procedural fallback). Off-screen props are skipped.
+function drawDecor(ctx, world, assets) {
+  if (!assets || !world.decor || !world.decor.length) return;
+  const camx = world.camera.x;
+  const vx0 = camx - 32, vx1 = camx + SIM.VIEW_W + 32;
+  for (const d of world.decor) {
+    const img = assets.get(d.key);
+    if (!img) continue; // art absent → nothing to blit (props are optional dressing)
+    const par = d.parallax ?? 1;
+    const drawX = d.x + camx * (1 - par); // counter-scroll for distant layers (par<1)
+    if (drawX + img.width / 2 < vx0 || drawX - img.width / 2 > vx1) continue;
+    // Ground surface under the prop's world x (top of the ground solid it stands on).
+    const g = world.solids.find((s) => s.kind === 'ground' && d.x >= s.x && d.x <= s.x + s.w);
+    const groundY = g ? g.y : world.level.gravityFloor;
+    const dx = Math.round(drawX - img.width / 2); // centred on x, crisp pixels
+    const dy = Math.round(groundY - img.height);  // base on the ground surface
+    ctx.drawImage(img, dx, dy, img.width, img.height);
   }
 }
 

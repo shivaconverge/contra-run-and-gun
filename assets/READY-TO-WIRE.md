@@ -36,22 +36,26 @@ strip repeats ~4×/screen — wider-strip/seam-blend is a noted polish follow-up
 **NEED (future):** whether a NEAR authored parallax layer is also wanted (far layer is the
 confirmed scope; engine keeps procedural near/canopy/foliage bands for now).
 
-## 🟢 ART FINALIZED, awaiting 2 engine lines — per-stage SET-DRESSING props (deliverable #2)
+## ✅ DONE — per-stage SET-DRESSING props (6 biomes, deliverable #2) — FINALIZED + WIRED + LIVE
 All 6 props (snow pine / desert cactus / cavern crystal / foundry molten vat / fortress
-brazier / cascade valve) are **FINALIZED by me: synced to `game/assets/` + in `manifest.json`**
-(run() §5f), so the art is present where the engine's loader reads it — the pipeline is NO
-LONGER the blocker. The campaign already PLACES all 6 (`config.js CAMPAIGN[].decor` stages
-3-7 + `level2.js`). Gate green 42/42; placed decor is excluded from the cross-source orphan
-rule (referenced by level data, not dead weight); `Decor-reachability` honestly still =
-**6 WONT-RENDER** until the 2 engine lines land.
+brazier / cascade valve) are FINALIZED (synced to `game/assets/` + in `manifest.json`,
+run() §5f) AND now **WIRED by the engine + verified LIVE by looking**:
+- `game/data/assets.js` keys all 6 `decor_*` → they LOAD.
+- `game/src/world.js` reset() binds `this.decor = this.level.decor || []` every stage (like
+  solids/theme), so stage transitions swap the biome's decor.
+- `game/src/render.js drawDecor()` (called after `drawSolids`, before the actors) iterates
+  `world.decor` and blits `assets.get(d.key)` at native size, BASE-anchored to the ground
+  surface under `d.x` (parallax `d.parallax ?? 1`), off-screen props skipped; an unloaded
+  key draws nothing (pure dressing, no procedural fallback).
 
-**Only 2 engine lines remain (then the props render on every stage):**
-1. `game/data/assets.js` — key all 6 (`decor_snow_pine: 'assets/decor_snow_pine.png'`, …).
-2. `game/src/render.js` — after `drawParallax`/`drawGround`, iterate `world.decor` and blit
-   `assets.get(d.key)` BASE-anchored to the ground y at `d.x` (parallax `d.parallax ?? 1`),
-   mirroring `drawEnemySprite`'s feet-anchor.
-Once landed I verify LIVE by looking + close the `GATE-NOTES.md` OPEN ISSUE. This is the
-last GOAL-listed per-stage art class not yet on-screen.
+**Verified LIVE by looking** (headless capture `assets/pipeline/tools/capture-decor.mjs` at
+`?level=2..7`): `assets/pipeline/experiments/set-dressing/live/level{2..7}-*.png` — every
+decor-bearing stage renders its OWN distinct prop on the ground behind the actors (cascade
+valve S2 / snow pine S3 / desert saguaro S4 / foundry vat S5 / caverns crystal S6 / fortress
+brazier S7). `window.__game.decor` populated + every key `allLoaded=true`, 0 page errors,
+boot selftest 118/118. Closes the GOAL's "every stage has its own set-dressing" on-screen —
+the last GOAL-listed per-stage art class is now live. The campaign PLACES all 6 via
+`config.js CAMPAIGN[].decor` (stages 3-7) + `level2.js` (cascade).
 **Confirmed:** ~28–48px native prop size is fine for the 480×270 view (parent).
 
 ## ✅ DONE — per-stage BIOME TILESETS (6 biomes, deliverable #2 scaling engine) — FINALIZED + LIVE
