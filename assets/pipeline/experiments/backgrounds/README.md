@@ -36,14 +36,22 @@ so the sky gradient shows through.
 - `snow-tile-seam.png` — 3× horizontal tile: the treeline joins continuously.
 - `snow_far_strip*_4x.png`, `snow_peak_prop_4x.png` — the initial approach experiment.
 
-## KNOWN LIMITATION (honest — tuning follow-up, not a blocking bug)
-The 128px strip **repeats periodically** when tiled across the 480px view (~4×): the big
-central peak recurs every 128px. It reads as a natural range at the far 0.15 parallax
-rate (slow scroll), but the periodicity is visible. Mitigations for a polish pass: author
-a wider strip (e.g. 240–256px so it repeats once per screen), edge-blend the seam, or
-generate 2–3 variant strips the engine cycles. Recorded so it gets improved, not hidden.
-Scope this cycle = the FAR layer only (biggest fidelity carrier); the engine keeps its
-procedural near/canopy/foliage bands. A near-layer strip is the obvious next step.
+## KNOWN LIMITATION — periodicity, ASSESSED by looking (minor polish, not a defect)
+The 128px strip repeats ~4× across the 480px view (engine `BG.w=128`, hardcoded).
+**Assessment (evidence: `tiled-4x-all.png` = all 6 strips tiled 4× at worst-case static
+full-opacity, no foreground):** ranked by how visible the repeat is —
+- **desert**: barely (uniform dunes read as a continuous horizon) — fine.
+- **snow / fortress / cascade**: mild (peaks/towers/dam recur, but read as a range/skyline).
+- **caverns / foundry**: MOST visible (evenly-spaced bright landmarks — crystal spires,
+  glow spots — repeat obviously); these are the priority polish candidates.
+In ACTUAL gameplay the repeat is much less noticeable: the bg is the FAR layer at 0.15
+parallax (slow), the foreground tileset + enemies + hero + FX draw the eye, and the engine's
+procedural near-ridge/foliage bands partially occlude it (see the live prod frames,
+`../set-dressing/live-prod/`). **Verdict: acceptable-as-shipped, polish-tier — NOT a blocking
+defect.** Proper fix (deferred, needs API + an engine change): bump the engine's `BG.w` to
+~240–256 and re-author wider strips (≤2 repeats/screen), starting with caverns/foundry; or
+generate 2–3 variant strips the engine cycles. Recorded precisely so it gets improved, not
+hidden. Scope stays the FAR layer (parent-confirmed); the engine keeps its procedural near bands.
 
 ## ✅ FINALIZED + LIVE (verified by looking)
 The engine wired the bg-blit hook (commit 43d2db2: `assets.js bg_<biome>` keys +
