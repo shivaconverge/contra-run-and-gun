@@ -1,4 +1,4 @@
-=== GO-LIVE verification @ 2026-07-12T05:35:45Z ===
+=== GO-LIVE verification @ 2026-07-12T06:12:59Z ===
 URL: https://shivaconverge.github.io/contra-run-and-gun/
 --- root HTTP 0 ---
 <!doctype html>
@@ -55,19 +55,12 @@ audio resolve-gate: 7/7 tracks HTTP 200:
   assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 2408655 bytes [current]
 RESULT: LIVE ✅
 
-MODULE BYTE-CURRENCY GATE + SELFTEST RETRY-HARDENING (deploy tooling):
-  Completed the source-currency gap: verify.sh now byte-verifies the served
-  ES-module tree too (21 files: game/src/*.js + game/data/*.js), not just the 42
-  assets + 7 tracks — so a source-only change (STAGE-INTRO card, difficulty fix,
-  render tweak) is proven CURRENT on the live URL, not merely reachable. A stale
-  CDN main.js/render.js now fails the gate as STALE instead of passing 200-JS.
-  Full deployed bundle now byte-current: 21 modules + 42 assets + 7 tracks.
-  DEFECT FOUND IN MY GATE (not the deliverable): gate.sh reported functional=FAIL
-  and BLOCKED ship — but an immediate re-run of live-selftest.sh passed 119/119.
-  Root cause: a single headless drive returned a blank DOM (no #selftest-done div,
-  a transient load blip), and the script treated that identically to a real
-  regression → a FALSE ship-BLOCK (as harmful as a false pass). FIX: live-selftest
-  now retries the browser drive up to 3x on the transient signatures (browser-run
-  failure OR parser exit 2 = 'report not captured'), but a parsed REAL regression
-  (parser exit 1) fails immediately, never retried. Re-run: gate LIVE ✅ stable
-  across 3 consecutive runs.
+SOURCE-CHANGE REFRESH — MODULE GATE PROVES CURRENCY (LIVE URL, HEAD 644ef98):
+  Master advanced source-only (enemy.js/main.js/render.js — setBossTrack cap +
+  misc). Re-deployed; full release gate LIVE ✅ (reachability+currency PASS,
+  functional 119/119 PASS). The module byte-currency gate added last cycle did
+  exactly its job on a source-only change: the 3 CHANGED modules verified
+  byte-exact live == local —
+    src/enemy.js  12458==12458   src/main.js 29382==29382   src/render.js 80610==80610
+  — proving the source reached players (not just returns 200). Boots clean:
+  deploy/evidence/live-boot.png (stage-1 jungle).
