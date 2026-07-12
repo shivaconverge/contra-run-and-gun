@@ -2228,10 +2228,35 @@ def verify_contract() -> int:
     except (FileNotFoundError, KeyError) as e:
         print(f"\nBlit-meta alignment: skipped ({type(e).__name__})")
 
-    total = len(viol) + len(xprob) + len(rprob) + len(mprob)
+    # CAMPAIGN KIT-COMPLETENESS (roll-up): the GOAL requires "every stage a DISTINCT theme
+    # with its own tileset + set-dressing + boss". Cross-source checks INDIVIDUAL keys, but
+    # nothing asserts each biome has its WHOLE kit -- a biome silently missing a class (e.g.
+    # no bg_snow) would pass cross-source yet leave that stage without its distinct art.
+    # Compute the FACT per biome (replacing hand-asserted "live on all stages" claims): for
+    # each biome the pipeline produces (STAGE_BIOMES), every art class it DEFINES must be in
+    # the manifest -- tileset (theme_<b>) + background (bg_<b>) always; boss (boss_<b>) when
+    # the biome is in BIOME_BOSSES; decor (decor_<b>_<name>) when in SET_DRESSING.
+    kprob = []
+    print(f"\nKit-completeness ({len(STAGE_BIOMES)} biomes):")
+    for b in STAGE_BIOMES:
+        expect = {"tileset": f"theme_{b}", "bg": f"bg_{b}"}
+        if b in BIOME_BOSSES:
+            expect["boss"] = f"boss_{b}"
+        if b in SET_DRESSING:
+            expect["decor"] = f"decor_{b}_{SET_DRESSING[b]['name']}"
+        cells = " ".join(f"{cls}:{'ok' if key in sprites else 'MISSING'}"
+                         for cls, key in expect.items())
+        print(f"  {b:9}{cells}")
+        kprob += [f"biome '{b}' kit MISSING '{key}' from manifest"
+                  for key in expect.values() if key not in sprites]
+    for kp in kprob:
+        print(f"  KIT-GAP: {kp}")
+    print(f"Kit-completeness -> {'all biomes complete' if not kprob else str(len(kprob))+' gap(s)'}")
+
+    total = len(viol) + len(xprob) + len(rprob) + len(mprob) + len(kprob)
     print(f"\nContract gate: {len(items)-len(viol)}/{len(items)} sprites pass, "
           f"{total} violation(s) (per-sprite {len(viol)} + cross-source {len(xprob)} "
-          f"+ unreachable {len(rprob)} + blit-meta {len(mprob)}).")
+          f"+ unreachable {len(rprob)} + blit-meta {len(mprob)} + kit {len(kprob)}).")
     print("(Mechanical contract only; fidelity is the by-looking verdict, not this gate.)")
     return total
 
