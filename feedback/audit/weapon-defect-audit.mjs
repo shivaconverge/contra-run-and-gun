@@ -30,6 +30,12 @@
 //     A5 turret shot ORIGIN == drawn barrel tip: render.js drawTurretBarrel and
 //        enemy.js turret fire both key off the SAME e.def.barrelPivotFromBottom +
 //        e.def.barrelLen — one geometry.
+//     A6 EVERY OTHER armed enemy is weaponless-overlay: the dedicated boss/chopper
+//        draws invoke NEITHER procedural weapon and drawEnemy overlays NO drawGun on
+//        any body ⇒ boss/chopper/flyer/mortar/grunt each show at most ONE weapon
+//        (their own art). Closes the mandate's "every armed enemy", not just {hero,
+//        turret}; per-stage `keys.everyArmedEnemyOneWeapon` enumerates each with its
+//        static procedural-weapon-draw count.
 //   LAYER B  (RUNTIME — drive the REAL browser build headless, one load per stage):
 //     B1 the stage boots on its configured theme; the enumerated armed entities
 //        actually instantiate in the live world.
@@ -184,8 +190,49 @@ async function layerA() {
   add('A5.turretShotFromDrawnBarrel', drawBarrelUsesDef && fireUsesDef,
     `render.drawTurretBarrel uses e.def.barrel{Pivot,Len}=${drawBarrelUsesDef}; enemy.js fire uses this.def.barrel{Pivot,Len}=${fireUsesDef}`);
 
+  // A6 — EVERY OTHER armed enemy carries ZERO procedural weapon overlay (mandate:
+  // enumerate "every armed enemy", not just {hero,turret}). A1..A3 confine drawGun
+  // to drawPlayer and drawTurretBarrel to drawEnemy's turret branch; A6 CLOSES the
+  // set by proving, from source, that the DEDICATED enemy draws (drawBoss/drawChopper
+  // — separate functions A3's whole-file counts imply but never inspect on their own)
+  // invoke NEITHER procedural weapon, and that NO drawGun is ever overlaid on ANY
+  // enemy body (drawEnemy has zero drawGun). So boss/chopper/flyer/mortar/grunt each
+  // show at most ONE weapon (their own art) — the `procWeapon:null` label is now a
+  // machine-checked FACT, not an assertion. Per-enemy draw-call counts are exposed
+  // (weaponDrawMap) so each stage record can enumerate every armed enemy explicitly.
+  const drawBossFn = fnBody(render, 'drawBoss') || '';
+  const drawChopperFn = fnBody(render, 'drawChopper') || '';
+  const wc = (s) => ({ gun: count(s, /drawGun\(/g), barrel: count(s, /drawTurretBarrel\(/g) });
+  const bossW = wc(drawBossFn), chopW = wc(drawChopperFn);
+  const enemyDrawGun = count(drawEnemy, /drawGun\(/g);
+  const bossWeaponless = !!drawBossFn && bossW.gun === 0 && bossW.barrel === 0;
+  const chopWeaponless = !!drawChopperFn && chopW.gun === 0 && chopW.barrel === 0;
+  add('A6.otherArmedEnemiesWeaponless',
+    bossWeaponless && chopWeaponless && enemyDrawGun === 0,
+    `drawBoss weaponCalls={gun:${bossW.gun},barrel:${bossW.barrel}}, ` +
+    `drawChopper weaponCalls={gun:${chopW.gun},barrel:${chopW.barrel}}, ` +
+    `drawGun-in-drawEnemy=${enemyDrawGun} ⇒ boss/chopper/flyer/mortar/grunt carry no procedural overlay`);
+
+  // Per-enemy-kind procedural-weapon TYPES, DERIVED from the parse above, so a stage
+  // record can state a machine-checked fact for EACH armed enemy it resolves. `gun`/
+  // `barrel` are the draw-SITE counts of each weapon TYPE (multiple sites are the same
+  // ONE weapon drawn across mutually-exclusive body-state / sprite-vs-placeholder
+  // branches — NOT a second weapon). The two-weapon defect would surface as a kind
+  // drawing BOTH types (gun>0 AND barrel>0), or a non-{hero,turret} kind drawing ANY
+  // procedural weapon on top of its baked art. Expected weapon type per kind:
+  //   hero → gun only · turret → barrel only · every other kind → none.
+  const weaponDrawMap = {
+    hero:    { gun: gunCallsInPlayer,   barrel: 0,             fn: 'drawPlayer→drawGun' },
+    turret:  { gun: 0,                  barrel: barrelInDrawEnemy, fn: 'drawEnemy(turret)→drawTurretBarrel' },
+    boss:    { gun: bossW.gun,          barrel: bossW.barrel,  fn: 'drawBoss' },
+    chopper: { gun: chopW.gun,          barrel: chopW.barrel,  fn: 'drawChopper' },
+    flyer:   { gun: 0,                  barrel: 0,             fn: 'drawEnemy→drawEnemySprite' },
+    mortar:  { gun: 0,                  barrel: 0,             fn: 'drawEnemy→drawEnemySprite/placeholder' },
+    grunt:   { gun: 0,                  barrel: 0,             fn: 'drawEnemy→drawEnemySprite/placeholder' },
+  };
+
   const ok = checks.every((c) => c.ok);
-  return { ok, checks };
+  return { ok, checks, weaponDrawMap };
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -292,9 +339,20 @@ async function runtimeForStage(browser, url, stageNum) {
 // ────────────────────────────────────────────────────────────────────────────
 // Compose the per-stage verdict.
 // ────────────────────────────────────────────────────────────────────────────
-function stageRecord(stageNum, staticOk, rt) {
+// A kind is ARMED iff its config def can spawn a shot (aimed fire, a lobbed shell,
+// or any boss volley). grunt has none of these ⇒ contact-only, unarmed. Derived
+// from ENEMIES so the "every armed enemy" enumeration cannot drift from config.
+function isArmedKind(k) {
+  const d = ENEMIES[k];
+  return !!d && (d.fireEvery != null || d.shotSpeed != null || d.shellVy != null || d.isBoss === true);
+}
+
+function stageRecord(stageNum, staticLayer, rt) {
+  const staticOk = staticLayer.ok;
+  const weaponDrawMap = staticLayer.weaponDrawMap || {};
   const stage = STAGES[stageNum - 1];
-  const armedTypes = [...new Set(stage.spawns.map((s) => s.type))];
+  const spawnTypes = [...new Set(stage.spawns.map((s) => s.type))];
+  const armedTypes = spawnTypes; // preserved name (all resolved spawn kinds this stage)
   const twoWeaponKinds = armedTypes.filter((k) => RESOLVE[k] && RESOLVE[k].procWeapon);
   // hero is implicit on every stage (always drawn + always the drawGun overlay)
   const entities = [];
@@ -313,7 +371,7 @@ function stageRecord(stageNum, staticOk, rt) {
 
   // 1. static render-path invariants (shared; a source regression fails every stage)
   add('static.renderPathInvariants', staticOk, staticOk
-    ? 'LAYER A A1..A5 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle)'
+    ? 'LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)'
     : 'LAYER A invariant(s) FAILED — see report.staticLayer (source regression → root.A)');
 
   // 2. no armed (two-weapon-surface) entity resolves to a baked-weapon body key
@@ -323,6 +381,30 @@ function stageRecord(stageNum, staticOk, rt) {
   add('keys.noBakedWeaponBody', bakedHits.length === 0,
     bakedHits.length ? `baked-weapon body keys resolved: ${bakedHits.join(', ')}`
       : `two-weapon entities [${twoWeaponKinds.concat(['hero']).join(', ')}] resolve to weaponless bodies only`);
+
+  // 2b. EVERY armed enemy this stage resolves shows exactly ONE weapon TYPE (mandate:
+  // "every armed enemy", not just the {hero,turret} two-weapon surface). Enumerate the
+  // stage's armed kinds from config, and assert each draws its expected single procedural
+  // weapon TYPE and no other: hero → drawGun only, turret → drawTurretBarrel only, every
+  // other armed kind → NEITHER (its baked art is its one weapon). A kind drawing BOTH a
+  // gun AND a barrel, or a non-{hero,turret} kind drawing any procedural weapon, is the
+  // two-weapon defect. Facts come from Layer-A's parse of the SHIPPED render.js.
+  const armedThisStage = ['hero', ...armedTypes.filter(isArmedKind)];
+  const EXPECT_TYPE = { hero: 'gun', turret: 'barrel' }; // every other armed kind ⇒ none
+  const armedWeapons = armedThisStage.map((k) => {
+    const m = weaponDrawMap[k] || { gun: null, barrel: null, fn: '?' };
+    const expect = EXPECT_TYPE[k] || 'none';
+    const count = k === 'hero' ? 1 : stage.spawns.filter((s) => s.type === k).length;
+    const types = [m.gun > 0 && 'gun', m.barrel > 0 && 'barrel'].filter(Boolean);
+    // exactly the one expected weapon type, and never both (never a second weapon)
+    const ok = types.length <= 1 && (expect === 'none' ? types.length === 0 : types[0] === expect);
+    return { kind: k, count, gun: m.gun, barrel: m.barrel, weaponTypes: types, expect, via: m.fn, ok };
+  });
+  const armedBad = armedWeapons.filter((a) => !a.ok);
+  add('keys.everyArmedEnemyOneWeapon', armedBad.length === 0,
+    armedBad.length
+      ? `armed enemies drawing a wrong/second weapon: ${armedBad.map((a) => `${a.kind}{gun:${a.gun},barrel:${a.barrel}}≠[${a.expect}]`).join(', ')}`
+      : `all ${armedWeapons.length} armed kinds draw one weapon type: ${armedWeapons.map((a) => `${a.kind}→${a.weaponTypes[0] || 'none'}`).join(', ')} (hero=gun, turret=barrel, rest=none; none draws two)`);
 
   // 3. runtime: stage booted on its configured theme
   add('runtime.themeBoots', rt && rt.boot && rt.boot.theme === stage.theme,
@@ -350,7 +432,7 @@ function stageRecord(stageNum, staticOk, rt) {
   return {
     stage: stageNum, name: stage.name, theme: stage.theme,
     armedTypes, twoWeaponSurface: ['hero', ...twoWeaponKinds],
-    entities, checks, verdict: ok ? 'PASS' : 'FAIL',
+    armedWeapons, entities, checks, verdict: ok ? 'PASS' : 'FAIL',
   };
 }
 
@@ -376,7 +458,7 @@ async function main() {
       let rt = null, err = null;
       try { rt = await runtimeForStage(browser, srv.url, n); }
       catch (e) { err = e.message; }
-      const rec = stageRecord(n, staticLayer.ok, rt);
+      const rec = stageRecord(n, staticLayer, rt);
       if (err) { rec.verdict = 'FAIL'; rec.checks.push({ id: 'runtime.driveError', ok: false, detail: err }); }
       stages.push(rec);
       const bad = rec.checks.filter((c) => !c.ok).map((c) => c.id);
@@ -442,6 +524,15 @@ function renderMarkdown(r) {
       L.push(`- **${e.label}** ×${e.count} → body \`${e.bodyKeys.join(' | ')}\`${overlay}`);
     }
     L.push('');
+    if (s.armedWeapons && s.armedWeapons.length) {
+      L.push('Every armed enemy — procedural weapon TYPE (static, from `render.js`; hero=gun, turret=barrel, all others=none; none draws two):');
+      L.push('');
+      for (const a of s.armedWeapons) {
+        const drew = a.weaponTypes.length ? a.weaponTypes.join('+') : 'none';
+        L.push(`- ${a.ok ? '✅' : '❌'} \`${a.kind}\` ×${a.count} → draws \`${drew}\` (\`${a.via}\`, expected \`${a.expect}\`)`);
+      }
+      L.push('');
+    }
     for (const c of s.checks) L.push(`- ${c.ok ? '✅' : '❌'} \`${c.id}\` — ${c.detail}`);
     L.push('');
   }

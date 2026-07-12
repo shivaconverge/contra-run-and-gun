@@ -10,10 +10,20 @@ stages — not just the ones hand-checked.
 ## What it checks
 
 The only two on-screen entities that overlay a **procedural** aiming weapon on a
-body — the entire surface of the defect — are the **hero** (`render.js drawGun`)
-and the **turret/cannon** (`render.js drawTurretBarrel`), exactly the two the
-creator named. Boss/chopper draw single-weapon art (no overlay); grunt/flyer/mortar
-carry at most one weapon. So the audit targets `{hero, turret}` per stage.
+body — the surface of the defect — are the **hero** (`render.js drawGun`) and the
+**turret/cannon** (`render.js drawTurretBarrel`), exactly the two the creator named.
+But the mandate is **every armed enemy**, so the audit does not merely *assert* the
+rest are clean — it **enumerates every armed enemy each stage resolves** (from
+config: `hero`, plus any spawn whose `ENEMIES` def can fire — `fireEvery`/`shotSpeed`/
+`shellVy`/`isBoss`) and machine-verifies each draws exactly **one weapon type**:
+`hero → gun`, `turret → barrel`, and **every other armed kind → none** (its baked
+art is its only weapon). `boss`/`chopper` have **dedicated** draws (`drawBoss`/
+`drawChopper`) that A3's whole-file counts imply but never inspect on their own — so
+`A6` parses those functions directly and proves they invoke neither procedural weapon,
+and that `drawEnemy` overlays no `drawGun` on any body. A kind drawing **both** a gun
+and a barrel, or a non-`{hero,turret}` kind drawing **any** procedural weapon, trips
+the per-stage `keys.everyArmedEnemyOneWeapon` fact (non-vacuous: verified to go red on
+an injected boss-gun / hero-both defect).
 
 - **Layer A — static render-path invariants** (parses the shipped `game/src`):
   - `A1` `drawPlayer` blits the hero body **only** through weaponless `*_noweapon`
@@ -28,6 +38,10 @@ carry at most one weapon. So the audit targets `{hero, turret}` per stage.
   - `A5` turret **shot origin == drawn barrel tip**: `render.js drawTurretBarrel`
     and `enemy.js` turret fire key off the SAME `e.def.barrelPivotFromBottom` +
     `e.def.barrelLen` — one geometry.
+  - `A6` **every OTHER armed enemy is weaponless-overlay**: the dedicated `drawBoss`/
+    `drawChopper` invoke neither procedural weapon, and `drawEnemy` overlays no
+    `drawGun` on any body — so `boss`/`chopper`/`flyer`/`mortar`/`grunt` each show at
+    most one weapon (their own art). Closes the enumeration to **all** armed kinds.
 - **Layer B — per-stage runtime grounding** (drives the REAL browser build headless,
   one load per stage, `?headless=1&level=N`):
   - `B1` the stage boots on its configured theme; the enumerated armed entities
