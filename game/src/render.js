@@ -603,18 +603,24 @@ function drawEnemy(ctx, e, world, assets) {
   // Boss gets a dedicated draw so the animated telegraph/core FX (which the
   // static sprite can't animate) stay overlaid on top of its art. It blits the
   // real Sentinel sprite when loaded and falls back to the procedural hull.
+  // Per-stage THEMED boss art: a themed stage swaps in its OWN boss sprite
+  // (boss_snow/foundry/fortress for the sentinel, boss_desert/caverns for the
+  // chopper) — mirrors the tileset/bg theme swap. Untamed stages (jungle/cascade,
+  // no boss_<id> key) resolve to null and keep the base boss/chopper art.
+  const themedBoss = assets && world.theme && assets.get('boss_' + world.theme.id);
   if (e.kind === 'boss') {
-    // Phase-2 swaps to the distinct ENRAGED Sentinel sprite (flaring core,
-    // cracked reactor, scorched hull) — not just a red tint over the base art.
-    // Falls back to the base boss sprite if the enraged art hasn't loaded.
-    const bossImg = (e.enraged && assets && assets.get('boss_enraged')) || img;
+    // Themed boss wins; else phase-2 swaps to the distinct ENRAGED Sentinel
+    // sprite (flaring core, cracked reactor, scorched hull); else base boss.
+    // (Themed stages have no per-biome enrage art yet — the pulsing red-glow
+    // overlay in drawBoss still reads the enrage on top of the themed sprite.)
+    const bossImg = themedBoss || (e.enraged && assets && assets.get('boss_enraged')) || img;
     drawBoss(ctx, e, bossImg);
     return;
   }
   // Stage-2 chopper boss: dedicated draw (blits assets.get('chopper') when it lands,
   // else a procedural gunship). Animated rotor/telegraph the static art can't show.
   if (e.kind === 'chopper') {
-    const chImg = (e.enraged && assets && assets.get('chopper_enraged')) || img;
+    const chImg = themedBoss || (e.enraged && assets && assets.get('chopper_enraged')) || img;
     drawChopper(ctx, e, chImg, world);
     if (e.telegraph > 0) drawFireTelegraph(ctx, e, world);
     return;

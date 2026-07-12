@@ -1,0 +1,80 @@
+[
+  {
+    "level": 1,
+    "theme": "jungle",
+    "expect": null,
+    "themeId": "jungle",
+    "themedKey": "boss_jungle",
+    "themedLoaded": false,
+    "expectMatchesLoaded": true,
+    "bossKind": "boss",
+    "bossAlive": true,
+    "errs": 0,
+    "file": "assets/pipeline/experiments/bosses/live/boss-1-jungle.png"
+  },
+  {
+    "level": 3,
+    "theme": "snow",
+    "expect": "boss_snow",
+    "themeId": "snow",
+    "themedKey": "boss_snow",
+    "themedLoaded": true,
+    "expectMatchesLoaded": true,
+    "bossKind": "boss",
+    "bossAlive": true,
+    "errs": 0,
+    "file": "assets/pipeline/experiments/bosses/live/boss-3-snow.png"
+  },
+  {
+    "level": 4,
+    "theme": "desert",
+    "expect": "boss_desert",
+    "themeId": "desert",
+    "themedKey": "boss_desert",
+    "themedLoaded": true,
+    "expectMatchesLoaded": true,
+    "bossKind": "chopper",
+    "bossAlive": true,
+    "errs": 0,
+    "file": "assets/pipeline/experiments/bosses/live/boss-4-desert.png"
+  },
+  {
+    "level": 5,
+    "theme": "foundry",
+    "expect": "boss_foundry",
+    "themeId": "foundry",
+    "themedKey": "boss_foundry",
+    "themedLoaded": true,
+    "expectMatchesLoaded": true,
+    "bossKind": "boss",
+    "bossAlive": true,
+    "errs": 0,
+    "file": "assets/pipeline/experiments/bosses/live/boss-5-foundry.png"
+  },
+  {
+    "level": 6,
+    "theme": "caverns",
+    "expect": "boss_caverns",
+    "themeId": "caverns",
+    "themedKey": "boss_caverns",
+    "themedLoaded": true,
+    "expectMatchesLoaded": true,
+    "bossKind": "chopper",
+    "bossAlive": true,
+    "errs": 0,
+    "file": "assets/pipeline/experiments/bosses/live/boss-6-caverns.png"
+  },
+  {
+    "level": 7,
+    "theme": "fortress",
+    "expect": "boss_fortress",
+    "themeId": "fortress",
+    "themedKey": "boss_fortress",
+    "themedLoaded": true,
+    "expectMatchesLoaded": true,
+    "bossKind": "boss",
+    "bossAlive": true,
+    "errs": 0,
+    "file": "assets/pipeline/experiments/bosses/live/boss-7-fortress.png"
+  }
+]

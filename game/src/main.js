@@ -137,7 +137,10 @@ function runHeadless(ctx, world, assets, params) {
   if (params.get('scenario') === 'boss') {
     // Boss-arena demo: drop the player at the barrier vs the boss, prone + fire.
     // Verifies/visualizes the win path without needing a bot to survive the level.
-    world.enemies = world.enemies.filter((e) => e.kind === 'boss');
+    // Keep any boss-kind enemy (sentinel `boss` OR the `chopper` gunship) so this
+    // demo drives the boss of ANY themed stage (?level=3..7), which is how the
+    // per-stage themed boss art gets exercised/captured.
+    world.enemies = world.enemies.filter((e) => e.kind === 'boss' || e.kind === 'chopper');
     world.boss = world.enemies[0];
     world.player.setWeapon(params.get('weapon') || 'spread'); // QA: test any weapon vs boss
     world.player.x = 2285; world.player.y = 210;

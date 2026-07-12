@@ -97,6 +97,22 @@ export const ASSET_MANIFEST = {
   //   swaps to assets.get('chopper_enraged') once e.enraged (enrageAt 0.4), like
   //   boss_enraged; falls back to the base chopper if absent.
   chopper_enraged: 'assets/chopper_enraged.png',
+  // Per-stage BOSS sprites (deliverable #2, from assets/pipeline/generate.py bosses).
+  // One DISTINCT themed boss per themed stage — closes the GOAL's "every stage has its
+  // own boss" (previously stages 3/5/7 reused the base Sentinel, 4/6 the base chopper;
+  // config only recolored). Each keeps its family GEOMETRY/hitbox (sentinel≈46×52 /
+  // chopper≈62×30) so no config/behavior change — only the blitted art swaps. render.js
+  // drawEnemy resolves assets.get('boss_'+world.theme.id) || assets.get(e.kind) for both
+  // the sentinel (boss) and chopper kinds, so a themed stage shows its own boss and the
+  // untamed stages (jungle/cascade — no boss_<id> key) keep the base boss/chopper. WIRED.
+  //   sentinel family: boss_snow (Ice Sentinel, S3), boss_foundry (Foundry Core, S5),
+  //                    boss_fortress (Red Falcon, S7)
+  //   chopper family:  boss_desert (Sand Gunship, S4), boss_caverns (Crystal Wing, S6)
+  boss_snow: 'assets/boss_snow.png',
+  boss_foundry: 'assets/boss_foundry.png',
+  boss_fortress: 'assets/boss_fortress.png',
+  boss_desert: 'assets/boss_desert.png',
+  boss_caverns: 'assets/boss_caverns.png',
   // pickup: REAL Contra falcon weapon-pod (native 32×15, gold winged pod, dark
   //   central emblem window) — replaces the placeholder gold-pill in drawPickup.
   //   Synced + LOADED. Wire drawPickup to blit assets.get('pickup') scaled-to-fit
