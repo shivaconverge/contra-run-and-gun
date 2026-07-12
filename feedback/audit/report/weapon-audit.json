@@ -1,5 +1,5 @@
 {
-  "when": "2026-07-12T06:44:18.542Z",
+  "when": "2026-07-12T07:16:14.102Z",
   "tool": "feedback/audit/weapon-defect-audit.mjs",
   "scope": "creator round-2 two-weapon defect (hero drawGun + turret drawTurretBarrel) across all 7 stages",
   "epsPx": 2,
@@ -269,7 +269,8 @@
           "detail": "5/5 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
         }
       ],
-      "verdict": "PASS"
+      "verdict": "PASS",
+      "frame": "frames/stage1-jungle.png"
     },
     {
       "stage": 2,
@@ -451,7 +452,8 @@
           "detail": "4/4 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
         }
       ],
-      "verdict": "PASS"
+      "verdict": "PASS",
+      "frame": "frames/stage2-cascade.png"
     },
     {
       "stage": 3,
@@ -612,7 +614,8 @@
           "detail": "3/3 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
         }
       ],
-      "verdict": "PASS"
+      "verdict": "PASS",
+      "frame": "frames/stage3-snow.png"
     },
     {
       "stage": 4,
@@ -773,7 +776,8 @@
           "detail": "4/4 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
         }
       ],
-      "verdict": "PASS"
+      "verdict": "PASS",
+      "frame": "frames/stage4-desert.png"
     },
     {
       "stage": 5,
@@ -934,7 +938,8 @@
           "detail": "9/9 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
         }
       ],
-      "verdict": "PASS"
+      "verdict": "PASS",
+      "frame": "frames/stage5-foundry.png"
     },
     {
       "stage": 6,
@@ -1116,7 +1121,8 @@
           "detail": "3/3 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
         }
       ],
-      "verdict": "PASS"
+      "verdict": "PASS",
+      "frame": "frames/stage6-caverns.png"
     },
     {
       "stage": 7,
@@ -1298,7 +1304,8 @@
           "detail": "8/8 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
         }
       ],
-      "verdict": "PASS"
+      "verdict": "PASS",
+      "frame": "frames/stage7-fortress.png"
     }
   ]
 }

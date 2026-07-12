@@ -1,5 +1,5 @@
 {
-  "ts": "2026-07-12T06:50:32.203Z",
+  "ts": "2026-07-12T07:34:34.799Z",
   "harnessTs": "2026-07-12T06:50:32.090Z",
   "seed": 1234,
   "verdict": "PASS",
@@ -47,7 +47,7 @@
       "id": "invariant.weaponRevertsOnDeath",
       "crit": true,
       "pass": true,
-      "detail": "all 10 deaths reverted the weapon to rifle (Contra single-slot rule holds through the run)"
+      "detail": "all 4 arcade-family deaths reverted to rifle (single-slot invariant holds); casual RETAINED weapon on 0 death(s) per BAL-4 (mode-gated: accessibility keeps the weapon, arcade stays hard)"
     },
     {
       "id": "accessibility.casualClearsStage1",

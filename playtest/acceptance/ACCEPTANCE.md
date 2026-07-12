@@ -82,6 +82,21 @@ A stage counts toward `scope_served` **only** when all three hold:
    `decor_caverns_crystal`, `decor_fortress_brazier`, `decor_cascade_valve`) —
    confirmed by looking (e.g. two snow pines in `frames/stage-3-snow.png`, two molten
    vats in `frames/stage-5-foundry.png`).
+6. **Tileset own + distinct** — the ground/platform sheet each stage ACTUALLY renders
+   is its own, not a reuse. `render.js drawSolids` resolves `assets.get(theme.tileset)`
+   and **falls back to the base jungle sheet `tiles`** if the biome sheet didn't load
+   (it even sprouts jungle grass tufts on the fallback). So a stage whose
+   `theme_<biome>.png` failed to ship silently renders JUNGLE's tiles on its own
+   background — the goal's **"reusing another stage's tiles"** defect, which the
+   whole-frame diff can miss (tiles are only the floor band). The sensor records
+   `resolvedTileset` (the sheet that renders) per stage; jungle is OK on `tiles` (by
+   design — `theme_jungle` intentionally absent), every other stage must have loaded
+   its own `theme_<biome>` sheet, else it FAILS (`tileset-fellback-to-jungle` →
+   `problems.tilesetReuse`, fed to B) — blame goes only to the reusing stage, never to
+   jungle. Latest: `tilesetAllDistinct=true`, all 7 render their own sheet
+   (`tiles`, `theme_cascade`, `theme_snow`, `theme_desert`, `theme_foundry`,
+   `theme_caverns`, `theme_fortress`). **Public parity proven** by content-hashing all
+   7 sheets off the LIVE URL — every one byte-matches the worktree (shipped + identical).
 
 > The CV grid/palette diff is an **advisory pre-filter, not the fidelity verdict.**
 > The frames are written to disk so a human LOOKS at them side-by-side. The

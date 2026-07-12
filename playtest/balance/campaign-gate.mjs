@@ -11,7 +11,8 @@
 //   • CRITICAL  — the campaign SPINE + invariants that must NEVER break. Any red here
 //                 exits non-zero (a real regression: a stage went unreachable, a boss
 //                 became undefeatable, a soft-lock/unwinnable state appeared, the
-//                 weapon-revert-on-death rule broke, or progression stopped being a
+//                 weapon-on-death rule broke (ARCADE must revert to rifle; CASUAL
+//                 retains per BAL-4 — mode-gated), or progression stopped being a
 //                 genuine boss-clear).
 //   • KNOWN-BUG — the balance defects this seat FOUND and filed (BAL-1 arcade GAME-OVER
 //                 at boss 1; BAL-2 casual GAME-OVER at boss 2). Asserted as the INTENDED
@@ -63,7 +64,17 @@ async function main() {
 
   const gt = d.groundTruthInvincible, ar = d.damageOn.arcade, ca = d.damageOn.casual;
   const deaths = allDeaths(d);
-  const badRevert = deaths.filter((x) => x.weaponAfterDeath !== undefined && x.weaponAfterDeath !== 'rifle');
+  // Weapon-on-death is MODE-GATED (BAL-4, world.js _onPlayerDeath/_doRespawn): ARCADE
+  // — and the invincible ground truth, which runs in arcade — revert to the rifle (the
+  // 1987 single-slot invariant the hard mode must keep); CASUAL RETAINS the weapon so a
+  // death doesn't cripple the retry (the parent-endorsed accessibility path). So a
+  // violation is an ARCADE-family death that KEPT a non-rifle weapon; a casual death
+  // keeping its weapon is the INTENDED new behavior, not a revert failure.
+  const revertDeaths = deaths.filter((x) => x.weaponAfterDeath !== undefined && !x.mode.startsWith('casual'));
+  const badRevert = revertDeaths.filter((x) => x.weaponAfterDeath !== 'rifle');
+  // Casual deaths that retained a non-rifle weapon — the observable footprint of the
+  // BAL-4 fix in the run (0 is not a failure; the baseline bot often dies still on rifle).
+  const casualRetained = deaths.filter((x) => x.mode.startsWith('casual') && x.weaponAfterDeath !== undefined && x.weaponAfterDeath !== 'rifle');
   // "advanced only by natural boss-clear": every stage that counts as beaten must have
   // ended 'cleared' with the boss actually dead (the harness never uses ?level=/force-kill).
   const beatenStages = [gt, ar, ca].flatMap((r) => r.stages.filter((s) => s.bossBeaten));
@@ -80,7 +91,9 @@ async function main() {
     { id: 'spine.naturalProgressionOnly', crit: true, pass: fakeClears.length === 0,
       detail: fakeClears.length ? `beaten-but-not-cleared: ${JSON.stringify(fakeClears.map((s) => s.stage))}` : 'every beaten stage ended status=cleared via genuine boss-kill (no ?level=/force-kill/N-skip)' },
     { id: 'invariant.weaponRevertsOnDeath', crit: true, pass: badRevert.length === 0,
-      detail: badRevert.length ? `${badRevert.length} deaths did NOT revert to rifle: ${JSON.stringify(badRevert.slice(0, 3))}` : `all ${deaths.length} deaths reverted the weapon to rifle (Contra single-slot rule holds through the run)` },
+      detail: badRevert.length
+        ? `${badRevert.length} ARCADE-family deaths did NOT revert to rifle: ${JSON.stringify(badRevert.slice(0, 3))}`
+        : `all ${revertDeaths.length} arcade-family deaths reverted to rifle (single-slot invariant holds); casual RETAINED weapon on ${casualRetained.length} death(s) per BAL-4 (mode-gated: accessibility keeps the weapon, arcade stays hard)` },
     { id: 'accessibility.casualClearsStage1', crit: true, pass: !!(ca.stages[0] && ca.stages[0].bossBeaten),
       detail: `casual (5 lives + shield) cleared Stage 1 = ${!!(ca.stages[0] && ca.stages[0].bossBeaten)} (accessibility floor: an ordinary player must pass boss 1 in the assist mode)` },
     // The INTENDED invariant is NOT "zero pit/contact deaths" — pit hazards are a
