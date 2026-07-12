@@ -441,6 +441,17 @@ const LEVEL4_DESERT = {
     // Pre-boss run-in.
     { type: 'grunt',  x: 1900, y: 210 },
     { type: 'grunt',  x: 2000, y: 210 },
+    // Density ramp (rising campaign curve): heavier bombardment across the flats.
+    { type: 'grunt',  x: 400,  y: 210 },
+    { type: 'turret', x: 560,  y: 220 },
+    { type: 'grunt',  x: 650,  y: 210 },
+    { type: 'mortar', x: 1150, y: 224 },
+    { type: 'grunt',  x: 1300, y: 210 },
+    { type: 'grunt',  x: 1550, y: 210 },
+    { type: 'grunt',  x: 1650, y: 210 },
+    { type: 'mortar', x: 1750, y: 224 },
+    { type: 'turret', x: 1820, y: 220 },
+    { type: 'grunt',  x: 1850, y: 210 },
     // STAGE-4 BOSS — the Gunship (chopper), retuned via the CAMPAIGN row's boss override.
     { type: 'chopper', x: 2340, y: 120 },
   ],
@@ -500,6 +511,16 @@ const LEVEL5_FOUNDRY = {
     { type: 'grunt',  x: 1900, y: 210 },
     { type: 'grunt',  x: 2050, y: 210 },
     { type: 'turret', x: 1980, y: 174 }, // on the 1950 landing (top y190 → y174)
+    // Density ramp (rising campaign curve): more stacked sentries + floor squads.
+    { type: 'grunt',  x: 300,  y: 210 },
+    { type: 'turret', x: 620,  y: 109 }, // on the 600 catwalk (top y125 → y109)
+    { type: 'grunt',  x: 1000, y: 210 },
+    { type: 'turret', x: 1470, y: 104 }, // on the 1450 catwalk (top y120 → y104)
+    { type: 'grunt',  x: 1560, y: 210 },
+    { type: 'mortar', x: 1650, y: 224 },
+    { type: 'grunt',  x: 1780, y: 210 },
+    { type: 'turret', x: 1130, y: 220 },
+    { type: 'grunt',  x: 1850, y: 210 },
     // STAGE-5 BOSS — the Sentinel, retuned via the CAMPAIGN row's boss override.
     { type: 'boss',   x: 2340, y: 184 },
   ],
@@ -564,6 +585,19 @@ const LEVEL7_FORTRESS = {
     { type: 'turret', x: 1880, y: 129 }, // on the 1850 keep tower (top y145 → y129)
     { type: 'mortar', x: 1900, y: 224 },
     { type: 'grunt',  x: 2100, y: 210 },
+    // Density ramp (rising campaign curve): the densest finale — every axis, doubled.
+    { type: 'grunt',  x: 300,  y: 210 },
+    { type: 'grunt',  x: 550,  y: 210 },
+    { type: 'flyer',  x: 750,  y: 110 },
+    { type: 'grunt',  x: 1000, y: 210 },
+    { type: 'turret', x: 1120, y: 220 },
+    { type: 'mortar', x: 1350, y: 224 },
+    { type: 'grunt',  x: 1550, y: 210 },
+    { type: 'flyer',  x: 1750, y: 110 },
+    { type: 'grunt',  x: 1950, y: 210 },
+    { type: 'grunt',  x: 2000, y: 210 },
+    { type: 'turret', x: 2050, y: 220 },
+    { type: 'flyer',  x: 2150, y: 110 },
     // STAGE-7 BOSS — the Red Falcon (Sentinel family), retuned via the CAMPAIGN override.
     { type: 'boss',   x: 2340, y: 184 },
   ],
@@ -621,6 +655,14 @@ const LEVEL3_SNOW = {
     { type: 'grunt',  x: 1900, y: 210 },
     { type: 'grunt',  x: 2050, y: 210 },
     { type: 'turret', x: 2020, y: 179 }, // on the 2000 ledge (top y195 → y179)
+    // Density ramp (rising campaign curve): more aerial pressure + ridge squads.
+    { type: 'grunt',  x: 340,  y: 210 },
+    { type: 'grunt',  x: 600,  y: 210 },
+    { type: 'flyer',  x: 950,  y: 100 },
+    { type: 'grunt',  x: 1350, y: 210 },
+    { type: 'flyer',  x: 1550, y: 100 },
+    { type: 'grunt',  x: 1820, y: 210 },
+    { type: 'flyer',  x: 2150, y: 100 },
     { type: 'boss',   x: 2340, y: 184 },
   ],
   pickups: [
@@ -671,6 +713,17 @@ const LEVEL6_CAVERNS = {
     { type: 'mortar', x: 1750, y: 224 },
     { type: 'grunt',  x: 1900, y: 210 },
     { type: 'grunt',  x: 2050, y: 210 },
+    // Density ramp (rising campaign curve): denser aerial+artillery crossfire.
+    { type: 'grunt',  x: 350,  y: 210 },
+    { type: 'flyer',  x: 550,  y: 110 },
+    { type: 'mortar', x: 750,  y: 224 },
+    { type: 'grunt',  x: 850,  y: 210 },
+    { type: 'flyer',  x: 1250, y: 110 },
+    { type: 'mortar', x: 1450, y: 224 },
+    { type: 'grunt',  x: 1600, y: 210 },
+    { type: 'flyer',  x: 1800, y: 110 },
+    { type: 'grunt',  x: 1950, y: 210 },
+    { type: 'turret', x: 1720, y: 220 },
     { type: 'chopper', x: 2340, y: 120 },
   ],
   pickups: [
@@ -691,7 +744,7 @@ const CAMPAIGN = [
   // Stage 3 — Frozen Ridge (DISTINCT windswept-ridgeline geometry, not a LEVEL1 reskin;
   // the aerial-heavy mix is authored inline in LEVEL3_SNOW along the ridge + open sky).
   { base: LEVEL3_SNOW, theme: 'snow', name: 'Frozen Ridge',
-    boss: { name: 'Ice Sentinel', hp: 72, color: '#7fb6d9', enrageFireEvery: 42 },
+    boss: { name: 'Ice Sentinel', hp: 86, color: '#7fb6d9', enrageFireEvery: 42 },
     decor: [ // snow-laden pines (x over LEVEL3_SNOW ground, clear of the crevasse 1100–1156)
       { x: 360, key: 'decor_snow_pine' },
       { x: 780, key: 'decor_snow_pine' },
