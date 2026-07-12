@@ -1,7 +1,7 @@
 {
-  "ts": "2026-07-12T05:00:14.559Z",
+  "ts": "2026-07-12T05:36:01.826Z",
   "publicUrl": "https://shivaconverge.github.io/contra-run-and-gun/",
-  "localOnly": true,
+  "localOnly": false,
   "ran": [
     {
       "harness": "scope-served",
@@ -10,13 +10,29 @@
       "invalid": false
     },
     {
+      "harness": "scope-served",
+      "mode": "public",
+      "attempts": 2,
+      "invalid": false
+    },
+    {
       "harness": "weapon-fidelity",
       "mode": "local",
       "exit": 0
     },
     {
+      "harness": "weapon-fidelity",
+      "mode": "public",
+      "exit": 0
+    },
+    {
       "harness": "boss-fidelity",
       "mode": "local",
+      "exit": 0
+    },
+    {
+      "harness": "boss-fidelity",
+      "mode": "public",
       "exit": 0
     },
     {
@@ -42,7 +58,37 @@
       "detail": "snow:45x48 desert:74x34 foundry:60x60 caverns:73x48 fortress:56x54"
     },
     {
+      "id": "public.scope_served==7/7",
+      "passed": true,
+      "detail": "7/7"
+    },
+    {
+      "id": "public.victory",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "public.themedBossArtLoaded",
+      "passed": true,
+      "detail": "snow:45x48 desert:74x34 foundry:60x60 caverns:73x48 fortress:56x54"
+    },
+    {
+      "id": "public.deployDrift==none",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "id": "public.normalProgression(keyBindingProven)",
+      "passed": true,
+      "detail": null
+    },
+    {
       "id": "local.weaponEvidenceCaptured",
+      "passed": true,
+      "detail": "16 crops, turret=true"
+    },
+    {
+      "id": "public.weaponEvidenceCaptured",
       "passed": true,
       "detail": "16 crops, turret=true"
     },
@@ -52,9 +98,14 @@
       "detail": "7/7, distinctNames=true"
     },
     {
+      "id": "public.bossesCaptured==7/7 (distinct names)",
+      "passed": true,
+      "detail": "7/7, distinctNames=true"
+    },
+    {
       "id": "local.bossAffordanceGrounded",
       "passed": true,
-      "detail": "reachedNaturally=true sameBoss=true gridΔ=4.86 histΔ=0.092"
+      "detail": "reachedNaturally=true sameBoss=true gridΔ=1.45 histΔ=0.071"
     }
   ],
   "weaponLookingVerdict": {
@@ -71,6 +122,6 @@
     "note": "RENDER PATH CHANGED since the by-looking verdict — a human MUST re-look at frames/weapon/*.png and re-confirm ONE-weapon-per-entity before trusting this axis."
   },
   "scope_served": "7/7",
-  "scope_served_source": "local-serve",
+  "scope_served_source": "public-url",
   "verdict": "PASS"
 }

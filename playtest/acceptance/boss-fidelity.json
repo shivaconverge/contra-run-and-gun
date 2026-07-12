@@ -1,7 +1,7 @@
 {
-  "ts": "2026-07-12T05:00:45.418Z",
+  "ts": "2026-07-12T05:39:13.417Z",
   "mode": "local",
-  "target": "http://127.0.0.1:52525",
+  "target": "http://127.0.0.1:56950",
   "killedProcs": [],
   "bosses": [
     {
@@ -17,8 +17,8 @@
       "theme": "jungle",
       "enraged": false,
       "nearestSibling": 5,
-      "minGridDiff": 28.49,
-      "minHistDiff": 1.136,
+      "minGridDiff": 29.43,
+      "minHistDiff": 1.114,
       "suspectedReuseOf": [],
       "visuallyDistinct": true
     },
@@ -35,8 +35,8 @@
       "theme": "cascade",
       "enraged": false,
       "nearestSibling": 6,
-      "minGridDiff": 27.86,
-      "minHistDiff": 1.136,
+      "minGridDiff": 28.49,
+      "minHistDiff": 1.114,
       "suspectedReuseOf": [],
       "visuallyDistinct": true
     },
@@ -54,7 +54,7 @@
       "enraged": false,
       "nearestSibling": 4,
       "minGridDiff": 91.27,
-      "minHistDiff": 1.697,
+      "minHistDiff": 1.67,
       "suspectedReuseOf": [],
       "visuallyDistinct": true
     },
@@ -71,8 +71,8 @@
       "theme": "desert",
       "enraged": false,
       "nearestSibling": 5,
-      "minGridDiff": 37.77,
-      "minHistDiff": 1.45,
+      "minGridDiff": 37.38,
+      "minHistDiff": 1.446,
       "suspectedReuseOf": [],
       "visuallyDistinct": true
     },
@@ -89,8 +89,8 @@
       "theme": "foundry",
       "enraged": false,
       "nearestSibling": 7,
-      "minGridDiff": 22.52,
-      "minHistDiff": 0.836,
+      "minGridDiff": 23.82,
+      "minHistDiff": 0.822,
       "suspectedReuseOf": [],
       "visuallyDistinct": true
     },
@@ -107,8 +107,8 @@
       "theme": "caverns",
       "enraged": false,
       "nearestSibling": 2,
-      "minGridDiff": 27.86,
-      "minHistDiff": 1.282,
+      "minGridDiff": 28.49,
+      "minHistDiff": 1.305,
       "suspectedReuseOf": [],
       "visuallyDistinct": true
     },
@@ -125,8 +125,8 @@
       "theme": "fortress",
       "enraged": false,
       "nearestSibling": 5,
-      "minGridDiff": 22.52,
-      "minHistDiff": 0.836,
+      "minGridDiff": 23.82,
+      "minHistDiff": 0.822,
       "suspectedReuseOf": [],
       "visuallyDistinct": true
     }
