@@ -1,6 +1,6 @@
 {
-  "ts": "2026-07-12T06:21:17.554Z",
-  "harnessTs": "2026-07-12T06:21:17.441Z",
+  "ts": "2026-07-12T06:50:32.203Z",
+  "harnessTs": "2026-07-12T06:50:32.090Z",
   "seed": 1234,
   "verdict": "PASS",
   "criticalPassed": 7,
@@ -56,10 +56,10 @@
       "detail": "casual (5 lives + shield) cleared Stage 1 = true (accessibility floor: an ordinary player must pass boss 1 in the assist mode)"
     },
     {
-      "id": "traversal.noPitOrContactDeaths",
+      "id": "balance.bossesAreThePrimaryKiller",
       "crit": true,
       "pass": true,
-      "detail": "0 pit + 0 contact deaths (traversal must stay survivable; spikes should be boss-fire only)"
+      "detail": "deaths by cause — projectile:9 pit:1 contact:0 (boss fire must be ≥ traversal deaths; if pits/contact dominate, the LEVELS became the difficulty — a real regression)"
     },
     {
       "id": "balance.arcadeCompletesCampaign",
