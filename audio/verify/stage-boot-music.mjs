@@ -20,7 +20,6 @@ import puppeteer from 'puppeteer-core';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const gameDir = resolve(__dirname, '../../game');
 const manifestPath = resolve(gameDir, 'assets/audio/manifest.json');
-const CAMPAIGN = ['jungle', 'cascade', 'snow', 'desert', 'foundry', 'caverns', 'fortress'];
 
 function findChrome() {
   const base = `${process.env.HOME}/.cache/puppeteer/chrome`;
@@ -62,7 +61,7 @@ function ok(name, pass, detail) { console.log(`  ${pass ? 'PASS' : 'FAIL'}  ${na
   try {
     for (let n = 1; n <= ids.length; n++) {
       const expectId = ids[n - 1];
-      const expectTheme = CAMPAIGN[n - 1];
+      const trackTheme = (manifest.tracks[expectId] || {}).theme; // biome this track is FOR
       await page.goto(`${url}/?level=${n}`, { waitUntil: 'domcontentloaded', timeout: 20000 });
       await page.waitForFunction('window.__booted === true && window.__audio && window.__audio.music', { timeout: 15000 });
       await page.focus('body').catch(() => {});
@@ -73,15 +72,23 @@ function ok(name, pass, detail) { console.log(`  ${pass ? 'PASS' : 'FAIL'}  ${na
       let got = null;
       for (let i = 0; i < 60; i++) { // up to ~15s (decode + selection; cold-start margin)
         got = await page.evaluate(`(() => {
-          const m = window.__audio.music;
-          return { track: m.track, hasBuf: m.hasTrack(${JSON.stringify(expectId)}), src: !!m._trackSource, level: (window.__game && window.__game.stageNum) };
+          const m = window.__audio.music, w = window.__game;
+          // world.level.theme = the theme of the stage the campaign ACTUALLY loaded for ?level=N
+          // (config.js STAGES[N-1].theme, resolved live) — the ground truth to match against.
+          return { track: m.track, hasBuf: m.hasTrack(${JSON.stringify(expectId)}), src: !!m._trackSource,
+                   stageNum: w && w.stageNum, loadedTheme: w && w.level && w.level.theme };
         })()`);
         if (got.track === expectId && got.src) break;
         await sleep(250);
       }
-      const good = got.track === expectId && got.hasBuf && got.src && expectTheme === CAMPAIGN[n - 1];
-      pass &= ok(`?level=${n} → stage ${n} '${expectTheme}' plays ${expectId}`, good,
-        `music.track=${got.track} src=${got.src} stageNum=${got.level} (expected ${expectId})`);
+      // THE contract: the biome the campaign loaded for this stage (got.loadedTheme, live from
+      // config.js) must equal the biome the selected track is for (trackTheme, from the manifest).
+      // A tautology-free, drift-catching check — if the campaign reorders/renames stages, the
+      // selected track's theme stops matching the loaded stage's theme and this FAILS.
+      const themeMatch = got.loadedTheme === trackTheme;
+      const good = got.track === expectId && got.hasBuf && got.src && themeMatch;
+      pass &= ok(`?level=${n} → loaded biome '${got.loadedTheme}' plays ${expectId} (theme '${trackTheme}')`, good,
+        `music.track=${got.track} src=${got.src} loadedTheme=${got.loadedTheme} trackTheme=${trackTheme} themeMatch=${themeMatch}`);
     }
   } catch (e) {
     console.error('CHECK ERROR:', e.message);
