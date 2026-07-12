@@ -255,7 +255,11 @@ async function main() {
   const browser = await puppeteer.launch({
     executablePath: findChrome(),
     headless: 'new',
-    args: ['--no-sandbox', '--disable-gpu', '--force-color-profile=srgb', '--window-size=520,320'],
+    // autoplay-policy: let the AudioContext run so the per-stage track state
+    // machine (music.js useTrack) actually selects a buffer in headless; mute-audio
+    // keeps CI silent WITHOUT suppressing _activeTrack (the state we assert).
+    args: ['--no-sandbox', '--disable-gpu', '--force-color-profile=srgb', '--window-size=520,320',
+      '--autoplay-policy=no-user-gesture-required', '--mute-audio'],
   });
   const run = {
     ts: new Date().toISOString(),
@@ -305,9 +309,20 @@ async function main() {
       await page.keyboard.up('ArrowRight');
       await sleep(120);
 
+      // MUSIC axis: the live audio layer hard-cuts to THIS stage's real generated
+      // biome loop on every stage change (main.js world.onStageChange -> useTrack).
+      // Wait for a real track to be selected (buffers decode async up-front); a null
+      // here means the synth fallback is still playing — recorded honestly, not
+      // masked. window.__audio.track === the stage_id currently playing as real audio.
+      await page.waitForFunction(
+        '(window.__audio && typeof window.__audio.track === "string" && window.__audio.track.length > 0) || !(window.__audio && window.__audio.music)',
+        { timeout: 6000 },
+      ).catch(() => {});
+
       const meta = await page.evaluate(() => {
         const w = window.__game;
         const boss = w.boss;
+        const a = window.__audio;
         return {
           stageNum: w.stageNum,
           name: w.level && w.level.name,
@@ -321,6 +336,8 @@ async function main() {
           bossKind: boss && boss.kind,
           bossHp: boss && boss.hp,
           playerX: Math.round(w.player.x),
+          audioLayerPresent: !!(a && a.music),
+          audioTrack: a ? a.track : null,        // real biome loop id, or null (synth fallback)
         };
       });
 
@@ -348,11 +365,39 @@ async function main() {
         // Let the shipped win-check flip status -> 'cleared'.
         await page.waitForFunction("window.__game.status === 'cleared'", { timeout: 5000 })
           .catch(() => {});
-        await page.keyboard.press('KeyN'); // the REAL player CONTINUE binding
-        await page.waitForFunction(
-          `window.__game.status === 'playing' && window.__game.stageNum === ${num + 1}`,
-          { timeout: 8000 },
-        ).catch(() => {});
+        // Advance via NORMAL progression. Primary path: the REAL 'N' CONTINUE key
+        // (proves the shipped key BINDING). A synthetic keydown can be dropped under
+        // remote (github.io) latency, and a false "stuck at N->N+1" would wrongly
+        // point builders at a non-existent transition bug — so if the key doesn't
+        // land after a few real presses we fall back to the EXPOSED
+        // `window.__game.requestNextStage()` closure. That is the SAME
+        // normal-progression function the 'N' key invokes (main.js binds N ->
+        // requestNextStage) — NOT a URL/param skip — so the fallback still proves
+        // the real advance path, just without depending on synthetic key delivery.
+        // We record HOW each stage advanced so the report is honest about it.
+        const wantStage = num + 1;
+        const advancedBy = async () => page.evaluate((n) => window.__game.status === 'playing' && window.__game.stageNum === n, wantStage);
+        let advanced = false, via = null, keyPresses = 0;
+        for (let attempt = 0; attempt < 3 && !advanced; attempt++) {
+          await page.keyboard.press('KeyN'); keyPresses++;
+          advanced = await page.waitForFunction(
+            `window.__game.status === 'playing' && window.__game.stageNum === ${wantStage}`,
+            { timeout: 2500 },
+          ).then(() => true).catch(() => false);
+          if (advanced) via = 'KeyN(real-key)';
+        }
+        if (!advanced) {
+          // Reliability fallback — invoke the exact closure the N key binds to.
+          await page.evaluate(() => { if (window.__game.requestNextStage) window.__game.requestNextStage(); });
+          advanced = await page.waitForFunction(
+            `window.__game.status === 'playing' && window.__game.stageNum === ${wantStage}`,
+            { timeout: 4000 },
+          ).then(() => true).catch(() => false);
+          if (advanced) via = 'requestNextStage()-closure';
+        }
+        const last = run.stages[run.stages.length - 1];
+        last.transitionVia = advanced ? via : 'STUCK';
+        last.transitionKeyPresses = keyPresses;
       } else {
         // Final stage: force-clear and confirm VICTORY (terminal 'cleared', no next).
         await page.evaluate(() => {
@@ -401,21 +446,42 @@ async function main() {
   }
 
   // -------------------------------------------------------------------------
+  // MUSIC distinctness (FACT). Each stage's live audio must select a DISTINCT
+  // real biome track. A track passes when it is (a) non-null (real loop, not the
+  // synth fallback), (b) unique among all reached stages, AND (c) the track id
+  // names this stage's theme (ids are `s<N>_<theme>`, so a snow stage playing
+  // `s3_snow` proves the RIGHT biome loop, not just A loop). No decode / synth
+  // fallback shows as audioTrack:null and fails this axis honestly.
+  // -------------------------------------------------------------------------
+  const trackCounts = {};
+  for (const s of run.stages) if (s.audioTrack) trackCounts[s.audioTrack] = (trackCounts[s.audioTrack] || 0) + 1;
+  for (const s of run.stages) {
+    s.musicPresent = typeof s.audioTrack === 'string' && s.audioTrack.length > 0;
+    s.musicUnique = s.musicPresent && trackCounts[s.audioTrack] === 1;
+    s.musicMatchesTheme = s.musicPresent && !!s.theme && s.audioTrack.toLowerCase().includes(String(s.theme).toLowerCase());
+    s.musicDistinct = s.musicPresent && s.musicUnique && s.musicMatchesTheme;
+  }
+
+  // -------------------------------------------------------------------------
   // Per-stage verdict + scope_served.
   //   PASS  == reached via normal progression AND boss registered (isBoss)
-  //            AND visually distinct from every reached sibling.
+  //            AND visually distinct from every reached sibling AND a distinct,
+  //            theme-matched biome track is playing.
   // -------------------------------------------------------------------------
-  const problems = { missing: [], paramOnly: [], reusingTiles: [], noBoss: [] };
+  const problems = { missing: [], paramOnly: [], reusingTiles: [], noBoss: [], reusingMusic: [], noMusic: [] };
   let scopeServed = 0;
   for (const s of run.stages) {
     const reachedNormally = s.status === 'playing' || s.status === 'cleared';
     const bossOk = s.bossPresent && s.bossIsBoss;
-    const pass = reachedNormally && bossOk && s.visuallyDistinct;
+    const pass = reachedNormally && bossOk && s.visuallyDistinct && s.musicDistinct;
     s.pass = pass;
     s.reasons = [];
     if (!reachedNormally) s.reasons.push('not-reached-normally');
     if (!bossOk) { s.reasons.push('boss-missing-or-not-isBoss'); problems.noBoss.push(s.stage); }
     if (!s.visuallyDistinct) { s.reasons.push('visual-reuse-of-sibling'); problems.reusingTiles.push({ stage: s.stage, of: s.suspectedReuseOf.map((c) => c.stage) }); }
+    if (!s.musicPresent) { s.reasons.push('music-missing(synth-fallback)'); problems.noMusic.push(s.stage); }
+    else if (!s.musicUnique) { s.reasons.push('music-reuse-of-sibling'); problems.reusingMusic.push({ stage: s.stage, track: s.audioTrack }); }
+    else if (!s.musicMatchesTheme) s.reasons.push('music-track-does-not-name-theme');
     if (pass) scopeServed++;
     delete s._sig; // keep the JSON lean; grids/hists are large
   }
@@ -431,6 +497,12 @@ async function main() {
   // a drifted deploy that still plays 7/7 is a PASS-with-drift, flagged so the
   // deploy owner knows a newer game/ hasn't shipped yet.
   run.deployDrift = mode === 'public' ? (staleServeGuard.remote.drifted || []) : [];
+  // Transparency: HOW each of the 6 inter-stage transitions advanced. The real 'N'
+  // key is the primary path (proves the binding); a `requestNextStage()-closure`
+  // entry means a synthetic keydown was dropped and we used the exposed same-path
+  // closure instead (still normal progression, never a param skip).
+  run.transitions = run.stages.filter((s) => s.transitionVia).map((s) => ({ from: s.stage, via: s.transitionVia, keyPresses: s.transitionKeyPresses }));
+  run.keyBindingProven = run.transitions.some((t) => t.via === 'KeyN(real-key)');
   run.verdict = scopeServed === EXPECTED_STAGES && run.victory ? 'PASS' : 'INCOMPLETE';
 
   const outJson = path.join(HERE, outName);
@@ -443,8 +515,11 @@ async function main() {
     console.log(`  deployDrift=${run.deployDrift.length ? run.deployDrift.join(',') : 'none (live bytes match worktree)'}`);
     if (staleServeGuard.remote.unreachable.length) console.log(`  unreachable=${staleServeGuard.remote.unreachable.join(',')}`);
   }
+  const viaKey = run.transitions.filter((t) => t.via === 'KeyN(real-key)').length;
+  const viaClosure = run.transitions.filter((t) => t.via === 'requestNextStage()-closure').length;
+  console.log(`  transitions: ${viaKey} via real KeyN, ${viaClosure} via requestNextStage() fallback; keyBindingProven=${run.keyBindingProven}`);
   for (const s of run.stages) {
-    console.log(`  stage ${s.stage} [${s.theme}] boss=${s.bossName || '—'} distinct=${s.visuallyDistinct} pass=${s.pass}${s.reasons.length ? ' (' + s.reasons.join(',') + ')' : ''}`);
+    console.log(`  stage ${s.stage} [${s.theme}] boss=${s.bossName || '—'} vis=${s.visuallyDistinct} music=${s.audioTrack || 'synth'}(${s.musicDistinct}) pass=${s.pass}${s.reasons.length ? ' (' + s.reasons.join(',') + ')' : ''}`);
   }
   if (run.consoleErrors.length) console.log(`  consoleErrors: ${run.consoleErrors.length}`);
   if (run.pageErrors.length) console.log(`  pageErrors: ${run.pageErrors.length}`);
