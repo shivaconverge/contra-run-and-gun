@@ -150,7 +150,7 @@ log "resolve-gate: ${#ASSET_PATHS[@]} referenced assets vs the deployed bundle"
 # so an HTTP-200-only check would pass a stale CDN copy. When the local build is
 # beside us, assert each live asset's Content-Length EQUALS the local file's size,
 # proving the public URL serves the CURRENT art — not a lagging cached version.
-LOCAL_GAME_DIR="$(cd "$(dirname "$0")/.." && pwd)/game"
+# (LOCAL_GAME_DIR already set by the module resolve-gate above.)
 ASSET_FAILED=0
 ASSET_STALE=0
 for rel in "${ASSET_PATHS[@]}"; do
