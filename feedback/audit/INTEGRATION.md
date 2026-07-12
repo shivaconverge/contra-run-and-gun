@@ -1,9 +1,14 @@
 # Deploy-gate integration — weapon-defect audit (handoff to root.D)
 
-**Status (2026-07-12):** `deploy/gate.sh` runs `verify.sh` (reachability + byte-currency)
-and `live-selftest.sh` (functional), but has **NO static two-weapon audit step**. This
-doc is the drop-in wiring so the creator round-2 defect is gate-enforced. The audit is
-**owned by `feedback/audit/`**; the gate wire is **root.D's** (this doc only proposes it).
+**Status (2026-07-12, re-checked):** ⚠️ **STILL NOT WIRED.** `deploy/gate.sh` (now 92
+lines, after root.D added the append-only `DEPLOY-LOG.md` audit trail in `e17bc3a`) runs
+only `verify.sh` (reachability + byte-currency) and `live-selftest.sh` (functional) —
+`grep -rn weapon deploy/` finds **nothing**. So the creator round-2 two-weapon defect,
+though proven clean 7/7 today, is **gate-unenforced**: a future render-path regression
+could ship green. This doc is the drop-in wire; the gate edit is **root.D's** (this slice
+owns only `feedback/audit/`, cannot touch `deploy/`). To remove all friction, the wire is
+now a **single line** calling `feedback/audit/gate-step.sh` (below). **Ask to root.D:
+adopt the one-line step as a HARD gate stage.**
 
 ## Why this belongs in the gate
 
@@ -49,26 +54,30 @@ node feedback/audit/weapon-defect-audit.mjs            # grounded → PASS 7/7, 
 WEAPON_AUDIT_STATIC_ONLY=1 node feedback/audit/weapon-defect-audit.mjs   # static-only → PASS 7/7, exit 0, Layer B SKIPPED
 ```
 
-## Drop-in snippet for `deploy/gate.sh` (root.D applies)
+## Drop-in snippet for `deploy/gate.sh` (root.D applies) — ONE line
 
-Add as a **hard** step (the static FACT must pass; a browserless Layer-B SKIP is tolerated,
-exactly like the functional gate). Insert before the final verdict block:
+`feedback/audit/gate-step.sh` is a self-contained wrapper (resolves the repo root
+relative to itself, runs the audit fast/static-only, prints one `[weapon-audit]`
+summary line, fail-closed exit code). So the whole wire is a single call — no
+multi-block paste, no `cd`/env bookkeeping. Insert before the final verdict block:
 
 ```bash
 # 3) Two-weapon defect FACT (static render-path, all 7 stages). HARD: a red stage
 #    means a baked/second weapon or a phantom shot origin shipped — block the release.
-#    Layer B (browser grounding) SKIPs cleanly with no Chrome; the static FACT governs.
 line; log "3/3  two-weapon defect audit (feedback/audit)"; line
-audit_out="$( (cd "${HERE}/.." && WEAPON_AUDIT_STATIC_ONLY="${WEAPON_AUDIT_STATIC_ONLY:-1}" node feedback/audit/weapon-defect-audit.mjs) 2>&1 )"
-audit_rc=$?
+audit_out="$(bash "${HERE}/../feedback/audit/gate-step.sh" 2>&1)"; audit_rc=$?
 printf '%s\n' "$audit_out"
-if [ "$audit_rc" -eq 0 ]; then audit_state="PASS"; else audit_state="FAIL"; fi
+# A missing toolchain prints "[weapon-audit] SKIP:" and rc 0 (tolerated like the
+# functional gate); a real red stage is rc 1. Set WEAPON_AUDIT_REQUIRE=1 to make a
+# missing toolchain HARD-fail instead.
+if printf '%s' "$audit_out" | grep -q '\[weapon-audit\] SKIP:'; then audit_state="SKIPPED";
+elif [ "$audit_rc" -eq 0 ]; then audit_state="PASS"; else audit_state="FAIL"; fi
 ```
 
-Then fold `audit_state` into the verdict (it is a HARD requirement — a red audit blocks):
+Then fold `audit_state` into the verdict (a red audit blocks; SKIP is tolerated):
 
 ```bash
-if [ "$verify_state" = "PASS" ] && [ "$audit_state" = "PASS" ] && [ "$selftest_state" != "FAIL" ]; then
+if [ "$verify_state" = "PASS" ] && [ "$audit_state" != "FAIL" ] && [ "$selftest_state" != "FAIL" ]; then
   verdict="LIVE ✅"; rc=0
 else
   verdict="BLOCKED ❌"; rc=1
@@ -78,13 +87,23 @@ fi
 And add a line to the `GATE-STATUS.txt` block:
 
 ```bash
-  echo "two-weapon audit:      ${audit_state}   (feedback/audit/weapon-defect-audit.mjs)"
+  echo "two-weapon audit:      ${audit_state}   (feedback/audit/gate-step.sh)"
 ```
 
-> `${HERE}/..` is the repo root (`gate.sh` lives in `deploy/`); the audit resolves
-> `game/src` + `game/data/config.js` relative to itself, so the `cd` is only to keep the
-> report paths under `feedback/audit/`. Default `WEAPON_AUDIT_STATIC_ONLY=1` keeps the gate
-> fast and browserless; drop it (or set `=0`) to demand the full browser-grounded run.
+> `${HERE}/../feedback/audit/gate-step.sh` — `gate.sh` lives in `deploy/`, so `${HERE}/..`
+> is the repo root. The wrapper itself resolves the repo root relative to its own location,
+> so it also works if invoked from any CWD. It defaults to `WEAPON_AUDIT_STATIC_ONLY=1`
+> (fast, no browser — verify.sh byte-currency makes local `game/src` authoritative for the
+> live bundle); export `WEAPON_AUDIT_STATIC_ONLY=0` before the call to also drive the
+> browser grounding (it self-SKIPs with no Chrome).
+
+### Verified behaviour (this cycle)
+
+```
+bash feedback/audit/gate-step.sh                       # → PASS 7/7, rc 0, one [weapon-audit] PASS line
+PATH=/bin:/usr/bin bash feedback/audit/gate-step.sh    # no node → [weapon-audit] SKIP, rc 0 (tolerated)
+PATH=/bin:/usr/bin WEAPON_AUDIT_REQUIRE=1 bash …/gate-step.sh   # no node + REQUIRE → rc 1 (hard fail)
+```
 
 ## Boundaries
 
