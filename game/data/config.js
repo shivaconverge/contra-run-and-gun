@@ -792,7 +792,7 @@ const CAMPAIGN = [
   // Stage 6 — Crystal Caverns (DISTINCT descending-cavern geometry, not a LEVEL2 reskin;
   // the mixed aerial+artillery ambush is authored inline in LEVEL6_CAVERNS' outcrops).
   { base: LEVEL6_CAVERNS, theme: 'caverns', name: 'Crystal Caverns',
-    boss: { name: 'Crystal Wing', hp: 96, color: '#b98ad9', enrageFireEvery: 48 }, // eased (was 40)
+    boss: { name: 'Crystal Wing', hp: 82, color: '#b98ad9', enrageFireEvery: 48 }, // hp 96→82 (World.casualBossSurvivalTest: S6 was the ONE boss unbeatable in a fresh casual pool — the outlier-high chopper HP made its long fight exceed the casual budget; 82 aligns it with the survivable S2/S4 choppers)
     decor: [ // glowing violet crystal clusters lining the cavern (over ground, clear of the pit 1000–1056)
       { x: 200,  key: 'decor_caverns_crystal' },
       { x: 380,  key: 'decor_caverns_crystal' },

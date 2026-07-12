@@ -743,4 +743,70 @@ export class World {
     ck(cas.afterRespawn === 'laser', `casual must RETAIN weapon on death, got '${cas.afterRespawn}'`);
     return { pass: errors.length === 0, errors, arcade: arc, casual: cas };
   }
+
+  // CASUAL VICTORY-REACHABILITY oracle — substantiates the GOAL's "real players can reach
+  // victory" for the accessibility path. The merged damage-ON harness (playtest/balance)
+  // drives casual in ONE DEPLETING life-pool (game-overs at S4 as lives carry down); but
+  // the shipped flow lets a player RETRY each stage on game-over with a FRESH casual pool
+  // (5 lives + a 2-hit shield). The report also proves traversal is fair (0 pit / 0
+  // contact deaths — ALL deaths are boss projectiles), so "reaches victory via retry"
+  // reduces to: is EACH stage's boss beatable within one fresh casual pool? This drives a
+  // MORTAL casual bot (invincibility OFF) against each boss from the barrier firing line:
+  // aim-track + fire, PRONE-duck a close incoming bullet (the machine analog of ducking
+  // the cannon), run back after a death, until the boss dies (cleared) or lives run out
+  // (game-over). Per-stage {cleared, deaths, livesLeft}. If all 7 clear in a fresh pool,
+  // casual+retry reaches victory (a LOWER bound — a real human dodges better than this
+  // baseline bot). Calibrate: it must clear S1–S3 (which the merged competent bot cleared)
+  // before trusting its S4–S7 verdict. Facts (reach/defeat/deaths), not a fun judgment.
+  static casualBossSurvivalTest(stages, opts = {}) {
+    const { maxFrames = 12000, seed = 1234, weapon = 'spread' } = opts;
+    const results = stages.map((level, idx) => {
+      const w = new World(level, seed, 'casual');
+      w.enemies = w.enemies.filter((e) => e.def && e.def.isBoss);
+      w.boss = w.enemies[0] || null;
+      if (!w.boss) return { stage: idx + 1, cleared: false, error: 'no boss' };
+      w.boss.active = true;
+      const barrier = level.solids.find((s) => s.kind === 'barrier');
+      const lineX = barrier ? barrier.x - PLAYER.w - 4 : w.boss.x - 200;
+      const g0 = level.solids.find((s) => s.kind === 'ground' && lineX >= s.x && lineX <= s.x + s.w);
+      const groundY = g0 ? g0.y - PLAYER.h : 216;
+      const p = w.player;
+      p.setWeapon(weapon);
+      p.x = lineX; p.y = groundY; w.camera.follow(p, true);
+      let prevLives = w.lives, deaths = 0, cleared = false, f = 0;
+      for (; f < maxFrames; f++) {
+        if (w.lives < prevLives) { deaths += prevLives - w.lives; prevLives = w.lives; }
+        if (w.boss.dead) { cleared = true; break; }
+        if (w.status === 'gameover') break;
+        let input;
+        if (w.respawnTimer > 0 || p.dead) {
+          input = {};
+        } else if (p.x < lineX - 6) {
+          // run back to the firing line after a death (spawn i-frames cover the trip)
+          const aheadX = p.x + p.w + 14, footY = p.y + p.h + 4;
+          const gA = w.solids.some((s) => s.kind === 'ground' && aheadX >= s.x && aheadX <= s.x + s.w && footY >= s.y && footY <= s.y + s.h + 4);
+          const jmp = p.grounded && !gA;
+          input = { right: true, fire: true, jump: jmp, jumpPressed: jmp };
+        } else {
+          const pcx = p.x + p.w / 2, pcy = p.y + p.h / 2;
+          const bcx = w.boss.x + w.boss.w / 2, bcy = w.boss.y + w.boss.h / 2;
+          let threat = false;
+          for (const b of w.bullets) {
+            if (b.from !== 'enemy') continue;
+            const dxb = b.x - pcx;
+            const closing = (b.vx > 0 && dxb < 0) || (b.vx < 0 && dxb > 0);
+            if (Math.abs(dxb) < 70 && Math.abs(b.y - pcy) < 18 && closing) { threat = true; break; }
+          }
+          input = { left: bcx < pcx - 6, right: bcx > pcx + 6, fire: true, up: false, down: false };
+          if (threat) { input.down = true; input.left = false; input.right = false; } // prone-duck
+          else if (bcy < pcy - 20) { input.up = true; } // aim up at a high (chopper) boss
+        }
+        w.step(input);
+      }
+      if (w.lives < prevLives) deaths += prevLives - w.lives;
+      return { stage: idx + 1, boss: w.boss.def.name, cleared, deaths, livesLeft: w.lives, sec: +(f / SIM.STEP_HZ).toFixed(1) };
+    });
+    const early3 = results.slice(0, 3).every((r) => r.cleared);
+    return { pass: results.every((r) => r.cleared), allClear: results.every((r) => r.cleared), calibrated: early3, results };
+  }
 }
