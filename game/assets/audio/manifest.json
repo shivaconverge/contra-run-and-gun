@@ -16,7 +16,8 @@
       "build": "from-master single-encode (trim+fade+loudnorm+q:a6)",
       "requested_key": "E minor",
       "key_estimate": "D# minor",
-      "key_estimate_conf": 0.83
+      "key_estimate_conf": 0.83,
+      "bitrate_kbps": 86
     },
     "s2_cascade": {
       "file": "tracks/s2_cascade.mp3",
@@ -33,7 +34,8 @@
       "build": "from-master single-encode (trim+fade+loudnorm+q:a6)",
       "requested_key": "A minor",
       "key_estimate": "A minor",
-      "key_estimate_conf": 0.77
+      "key_estimate_conf": 0.77,
+      "bitrate_kbps": 121
     },
     "s3_snow": {
       "file": "tracks/s3_snow.mp3",
@@ -50,7 +52,8 @@
       "build": "from-master single-encode (trim+fade+loudnorm+q:a6)",
       "requested_key": "C minor",
       "key_estimate": "G minor",
-      "key_estimate_conf": 0.77
+      "key_estimate_conf": 0.77,
+      "bitrate_kbps": 83
     },
     "s4_desert": {
       "file": "tracks/s4_desert.mp3",
@@ -66,7 +69,8 @@
       "build": "from-master single-encode (trim+fade+loudnorm+q:a6)",
       "requested_key": "D minor",
       "key_estimate": "E minor",
-      "key_estimate_conf": 0.73
+      "key_estimate_conf": 0.73,
+      "bitrate_kbps": 84
     },
     "s5_foundry": {
       "file": "tracks/s5_foundry.mp3",
@@ -82,7 +86,8 @@
       "build": "from-master single-encode (trim+fade+loudnorm+q:a6)",
       "requested_key": "G minor",
       "key_estimate": "A minor",
-      "key_estimate_conf": 0.69
+      "key_estimate_conf": 0.69,
+      "bitrate_kbps": 110
     },
     "s6_caverns": {
       "file": "tracks/s6_caverns.mp3",
@@ -98,7 +103,8 @@
       "build": "from-master single-encode (trim+fade+loudnorm+q:a6)",
       "requested_key": "F# minor",
       "key_estimate": "G minor",
-      "key_estimate_conf": 0.78
+      "key_estimate_conf": 0.78,
+      "bitrate_kbps": 112
     },
     "s7_fortress": {
       "file": "tracks/s7_fortress.mp3",
@@ -114,8 +120,10 @@
       "build": "from-master single-encode (trim+fade+loudnorm+q:a6)",
       "requested_key": "B minor",
       "key_estimate": "A minor",
-      "key_estimate_conf": 0.84
+      "key_estimate_conf": 0.84,
+      "bitrate_kbps": 96
     }
   },
-  "key_note": "'requested_key' = the Udio prompt request; 'key_estimate' = automated chroma/K-K estimate of the ACTUAL audio (approximate). They differ \u2014 the model reharmonised most tracks. Per-stage distinctness is grounded on measured timbre (TRACK-ANALYSIS.md \u00a72), not requested keys."
+  "key_note": "'requested_key' = the Udio prompt request; 'key_estimate' = automated chroma/K-K estimate of the ACTUAL audio (approximate). They differ \u2014 the model reharmonised most tracks. Per-stage distinctness is grounded on measured timbre (TRACK-ANALYSIS.md \u00a72), not requested keys.",
+  "bitrate_note": "libmp3lame VBR q:a 6 \u2192 content-adaptive 83-121 kbps (mean ~99); denser tracks get more bits. Payload 14.5 MB total."
 }

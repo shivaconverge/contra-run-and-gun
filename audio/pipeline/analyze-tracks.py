@@ -263,7 +263,8 @@ def main():
     lines.append("The engine `loadTracks` decodes all 7 at boot, so their combined size is "
                  "what every player downloads (async — the synth covers until they arrive). "
                  "`pipeline/rebuild-clean.py` rebuilds each from its Udio master in ONE encode "
-                 "at a web-appropriate bitrate (~120 kbps VBR).\n")
+                 "at a web-appropriate VBR (libmp3lame q:a 6 → content-adaptive 83–121 kbps, "
+                 "mean ~99; denser tracks get more bits).\n")
     total = 0
     lines.append("| stage_id | size |")
     lines.append("|---|---:|")

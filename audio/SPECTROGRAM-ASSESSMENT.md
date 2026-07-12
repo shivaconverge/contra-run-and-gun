@@ -10,8 +10,8 @@ generated `ffmpeg -i audio/tracks/<id>.mp3 -lavfi
 "showspectrumpic=s=1100x340:mode=combined:legend=1:scale=log:color=intensity" out.png`.
 I read 4 contrasting biomes directly; all 7 share the health traits (same pipeline).
 
-**Common health (all):** full spectrum up to the **~16 kHz mp3 lowpass** (expected at ~120 kbps
-VBR — inaudible ceiling for game BGM), a **strong continuous bass floor** (bright DC–2.5 kHz
+**Common health (all):** full spectrum up to the **~16 kHz mp3 lowpass** (expected for the
+measured **VBR 83–121 kbps** encode — an inaudible ceiling for game BGM), a **strong continuous bass floor** (bright DC–2.5 kHz
 band), **dense regular rhythmic striations** (the driving pulse), and **no dead air** anywhere —
 i.e. real, driving, structurally-complete music, consistent with the seamless-loop trim.
 
