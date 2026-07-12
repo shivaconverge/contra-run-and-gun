@@ -102,7 +102,10 @@ const STEP_CHUNK = (invincible, chunk, stopAtBoss) => {
       if (p.y > gf) cause = 'pit';                       // fell past the floor (dry chasm or water)
       else if (w.enemies.some((e) => !e.dead && overlap(e, p))) cause = 'contact';  // enemy body on us
       else cause = 'projectile';                          // otherwise an enemy bullet
-      B.deaths.push({ frame: w.frame, x: Math.round(p.x), cause, livesAfter: w.lives });
+      // Contra invariant: a death reverts the weapon to the default rifle
+      // (world.js _onPlayerDeath -> resetWeapon, before the lives-- / gameover check).
+      // Record it so the gate can assert the weapon-persistence rule holds every death.
+      B.deaths.push({ frame: w.frame, x: Math.round(p.x), cause, livesAfter: w.lives, weaponAfterDeath: p.weaponKey });
     }
     if (w.boss && w.bossActive) B.reachedBoss = true;
     if (w.boss && !w.boss.dead && w.bossActive) {

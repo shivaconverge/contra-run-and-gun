@@ -54,6 +54,41 @@ limiter; survival is).
 
 ---
 
+## GATED TEST — re-runnable, pass/fail, exit code
+
+[`campaign-gate.mjs`](./campaign-gate.mjs) turns everything below into an **automated
+gate**: it drives the real damage-ON campaign (via the harness) and asserts INTENDED
+behavior over the FACTS, with an exit code so root.C can re-run after tuning.
+
+```bash
+node playtest/balance/campaign-gate.mjs            # fresh real run, exits 0/1
+node playtest/balance/campaign-gate.mjs --reuse    # re-assert over the last run (fast)
+```
+
+Two tiers (mirrors `playtest/e2e/run-all.mjs`): **CRITICAL** = spine + invariants that must
+never break (exit non-zero on any red); **KNOWN-BUG** = the balance defects this seat filed
+(BAL-1/BAL-2), asserted as intended behavior so they read as tracked reds but do **not**
+fail the gate while documented. When root.C tunes a mode to completion, drop its `knownBug`
+flag in the gate and it becomes a CRITICAL regression guard.
+
+**Latest gate: CRITICAL 7/7 PASS · KNOWN-BUG reds: BAL-1, BAL-2 · VERDICT PASS (exit 0).**
+
+| Check | Tier | Result |
+|-------|------|--------|
+| `spine.reachAll7` — all 7 reachable (invincible) | CRITICAL | ✅ |
+| `spine.defeatableAll7` — full-campaign VICTORY (invincible) | CRITICAL | ✅ |
+| `spine.noSoftlocks` — no soft-lock/unwinnable in any pass | CRITICAL | ✅ |
+| `spine.naturalProgressionOnly` — every beaten stage ended `cleared` via genuine boss-kill | CRITICAL | ✅ |
+| `invariant.weaponRevertsOnDeath` — every death reverts weapon to rifle (Contra single-slot) | CRITICAL | ✅ |
+| `accessibility.casualClearsStage1` — assist mode passes boss 1 | CRITICAL | ✅ |
+| `traversal.noPitOrContactDeaths` — spikes are boss-fire only, traversal survivable | CRITICAL | ✅ |
+| `balance.arcadeCompletesCampaign` — arcade run reaches VICTORY | KNOWN-BUG **BAL-1** | ❌ (tracked) |
+| `balance.casualCompletesCampaign` — assist run reaches VICTORY | KNOWN-BUG **BAL-2** | ❌ (tracked) |
+
+Evidence: [`campaign-gate.json`](./campaign-gate.json).
+
+---
+
 ## HEADLINE FACTS (this run)
 
 | Fact | Result |

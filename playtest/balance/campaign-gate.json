@@ -1,0 +1,79 @@
+{
+  "ts": "2026-07-12T06:21:17.554Z",
+  "harnessTs": "2026-07-12T06:21:17.441Z",
+  "seed": 1234,
+  "verdict": "PASS",
+  "criticalPassed": 7,
+  "criticalTotal": 7,
+  "criticalFailures": [],
+  "knownBugsRed": [
+    {
+      "id": "balance.arcadeCompletesCampaign",
+      "bug": "BAL-1",
+      "detail": "arcade victory=false — cleared 0/7, GAME OVER at stage 1 (INTENDED: an ordinary run completes arcade; currently a baseline bot walls at boss 1)"
+    },
+    {
+      "id": "balance.casualCompletesCampaign",
+      "bug": "BAL-2",
+      "detail": "casual victory=false — cleared 1/7, GAME OVER at stage 2 (INTENDED: the assist mode completes the campaign; currently walls at the stage-2 chopper)"
+    }
+  ],
+  "checks": [
+    {
+      "id": "spine.reachAll7",
+      "crit": true,
+      "pass": true,
+      "detail": "invincible ground truth reached boss on 7/7 stages"
+    },
+    {
+      "id": "spine.defeatableAll7",
+      "crit": true,
+      "pass": true,
+      "detail": "invincible full-campaign victory=true (all 7 bosses shot down + VICTORY)"
+    },
+    {
+      "id": "spine.noSoftlocks",
+      "crit": true,
+      "pass": true,
+      "detail": "no soft-lock / unwinnable state in any pass"
+    },
+    {
+      "id": "spine.naturalProgressionOnly",
+      "crit": true,
+      "pass": true,
+      "detail": "every beaten stage ended status=cleared via genuine boss-kill (no ?level=/force-kill/N-skip)"
+    },
+    {
+      "id": "invariant.weaponRevertsOnDeath",
+      "crit": true,
+      "pass": true,
+      "detail": "all 10 deaths reverted the weapon to rifle (Contra single-slot rule holds through the run)"
+    },
+    {
+      "id": "accessibility.casualClearsStage1",
+      "crit": true,
+      "pass": true,
+      "detail": "casual (5 lives + shield) cleared Stage 1 = true (accessibility floor: an ordinary player must pass boss 1 in the assist mode)"
+    },
+    {
+      "id": "traversal.noPitOrContactDeaths",
+      "crit": true,
+      "pass": true,
+      "detail": "0 pit + 0 contact deaths (traversal must stay survivable; spikes should be boss-fire only)"
+    },
+    {
+      "id": "balance.arcadeCompletesCampaign",
+      "crit": false,
+      "knownBug": "BAL-1",
+      "pass": false,
+      "detail": "arcade victory=false — cleared 0/7, GAME OVER at stage 1 (INTENDED: an ordinary run completes arcade; currently a baseline bot walls at boss 1)"
+    },
+    {
+      "id": "balance.casualCompletesCampaign",
+      "crit": false,
+      "knownBug": "BAL-2",
+      "pass": false,
+      "detail": "casual victory=false — cleared 1/7, GAME OVER at stage 2 (INTENDED: the assist mode completes the campaign; currently walls at the stage-2 chopper)"
+    }
+  ]
+}

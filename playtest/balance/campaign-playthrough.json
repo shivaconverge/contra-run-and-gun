@@ -1,6 +1,6 @@
 {
-  "ts": "2026-07-12T05:50:43.057Z",
-  "target": "http://127.0.0.1:58130",
+  "ts": "2026-07-12T06:21:17.441Z",
+  "target": "http://127.0.0.1:61102",
   "seed": 1234,
   "stageBudgetFrames": 15000,
   "botPolicy": "baseline run+gun+gaphop+bossaim + one bullet-hop reflex (documented; NOT skilled-human)",
@@ -221,25 +221,29 @@
               "frame": 1218,
               "x": 2288,
               "cause": "projectile",
-              "livesAfter": 2
+              "livesAfter": 2,
+              "weaponAfterDeath": "rifle"
             },
             {
               "frame": 1380,
               "x": 2159,
               "cause": "projectile",
-              "livesAfter": 1
+              "livesAfter": 1,
+              "weaponAfterDeath": "rifle"
             },
             {
               "frame": 1555,
               "x": 2185,
               "cause": "projectile",
-              "livesAfter": 0
+              "livesAfter": 0,
+              "weaponAfterDeath": "rifle"
             },
             {
               "frame": 1782,
               "x": 2288,
               "cause": "projectile",
-              "livesAfter": -1
+              "livesAfter": -1,
+              "weaponAfterDeath": "rifle"
             }
           ],
           "livesRemaining": -1,
@@ -281,19 +285,22 @@
               "frame": 1445,
               "x": 2288,
               "cause": "projectile",
-              "livesAfter": 4
+              "livesAfter": 4,
+              "weaponAfterDeath": "rifle"
             },
             {
               "frame": 1845,
               "x": 2288,
               "cause": "projectile",
-              "livesAfter": 3
+              "livesAfter": 3,
+              "weaponAfterDeath": "rifle"
             },
             {
               "frame": 2226,
               "x": 2288,
               "cause": "projectile",
-              "livesAfter": 2
+              "livesAfter": 2,
+              "weaponAfterDeath": "rifle"
             }
           ],
           "livesRemaining": 2,
@@ -325,19 +332,22 @@
               "frame": 1434,
               "x": 2128,
               "cause": "projectile",
-              "livesAfter": 1
+              "livesAfter": 1,
+              "weaponAfterDeath": "rifle"
             },
             {
               "frame": 2055,
               "x": 2128,
               "cause": "projectile",
-              "livesAfter": 0
+              "livesAfter": 0,
+              "weaponAfterDeath": "rifle"
             },
             {
               "frame": 2743,
               "x": 2128,
               "cause": "projectile",
-              "livesAfter": -1
+              "livesAfter": -1,
+              "weaponAfterDeath": "rifle"
             }
           ],
           "livesRemaining": -1,
