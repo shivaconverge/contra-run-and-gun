@@ -1,0 +1,82 @@
+{
+  "biome": "foundry",
+  "wired": {
+    "theme_foundry": {
+      "image": "sprites/theme_foundry.png",
+      "type": "tileset",
+      "tileSize": 16,
+      "tiles": [
+        {
+          "name": "cap",
+          "role": "surface",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt",
+          "role": "fill",
+          "x": 16,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt2",
+          "role": "fill",
+          "x": 32,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        }
+      ],
+      "note": "biome tileset for the 'foundry' stage (config THEMES.foundry.tileset). Drop-in same format as `tiles`; engine swaps assets.get('tiles') -> assets.get(world.theme.tileset)."
+    },
+    "bg_foundry": {
+      "image": "sprites/bg_foundry.png",
+      "type": "background",
+      "biome": "foundry",
+      "layer": "far",
+      "frameWidth": 128,
+      "frameHeight": 56,
+      "parallax": 0.15,
+      "anchor": "horizon",
+      "note": "biome far-parallax scenery for 'foundry'. render.js drawParallax blits assets.get('bg_foundry') tiled at camx*0.15, ridge base y=158, over the sky gradient; transparent above the silhouette; procedural fallback."
+    },
+    "boss_foundry": {
+      "image": "sprites/boss_foundry.png",
+      "type": "boss",
+      "biome": "foundry",
+      "bossName": "Foundry Core",
+      "family": "sentinel",
+      "frameWidth": 60,
+      "frameHeight": 60,
+      "hitboxPx": {
+        "w": 46,
+        "h": 52
+      },
+      "facing": "left",
+      "note": "per-stage boss 'Foundry Core' (foundry). Same sentinel silhouette/hitbox as the base; engine swaps via assets.get('boss_foundry') || assets.get('boss')."
+    }
+  },
+  "staged": {
+    "decor_foundry_vat": {
+      "image": "sprites/decor_foundry_vat.png",
+      "type": "decor",
+      "biome": "foundry",
+      "frameWidth": 42,
+      "frameHeight": 38,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 42,
+          "h": 38
+        }
+      ],
+      "anchor": "bottom-center",
+      "note": "biome set-dressing prop for 'foundry'. Base-anchored: engine sits the prop BOTTOM on the ground y. Place via a level decor:[{x, key:'decor_foundry_vat', parallax?}] array + a render blit."
+    }
+  }
+}

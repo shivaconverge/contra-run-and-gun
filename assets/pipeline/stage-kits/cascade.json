@@ -1,0 +1,67 @@
+{
+  "biome": "cascade",
+  "wired": {
+    "theme_cascade": {
+      "image": "sprites/theme_cascade.png",
+      "type": "tileset",
+      "tileSize": 16,
+      "tiles": [
+        {
+          "name": "cap",
+          "role": "surface",
+          "x": 0,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt",
+          "role": "fill",
+          "x": 16,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        },
+        {
+          "name": "dirt2",
+          "role": "fill",
+          "x": 32,
+          "y": 0,
+          "w": 16,
+          "h": 16
+        }
+      ],
+      "note": "biome tileset for the 'cascade' stage (config THEMES.cascade.tileset). Drop-in same format as `tiles`; engine swaps assets.get('tiles') -> assets.get(world.theme.tileset)."
+    },
+    "bg_cascade": {
+      "image": "sprites/bg_cascade.png",
+      "type": "background",
+      "biome": "cascade",
+      "layer": "far",
+      "frameWidth": 128,
+      "frameHeight": 56,
+      "parallax": 0.15,
+      "anchor": "horizon",
+      "note": "biome far-parallax scenery for 'cascade'. render.js drawParallax blits assets.get('bg_cascade') tiled at camx*0.15, ridge base y=158, over the sky gradient; transparent above the silhouette; procedural fallback."
+    }
+  },
+  "staged": {
+    "decor_cascade_valve": {
+      "image": "sprites/decor_cascade_valve.png",
+      "type": "decor",
+      "biome": "cascade",
+      "frameWidth": 42,
+      "frameHeight": 44,
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 42,
+          "h": 44
+        }
+      ],
+      "anchor": "bottom-center",
+      "note": "biome set-dressing prop for 'cascade'. Base-anchored: engine sits the prop BOTTOM on the ground y. Place via a level decor:[{x, key:'decor_cascade_valve', parallax?}] array + a render blit."
+    }
+  }
+}

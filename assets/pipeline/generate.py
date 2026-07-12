@@ -762,17 +762,34 @@ SET_DRESSING = {
 }
 
 
+def gen_decor(tid: str, spec: dict) -> dict:
+    """Produce ONE biome set-dressing prop; save to assets/sprites; return a manifest-ready
+    record. Shared by gen_set_dressing (driver) and gen_stage. NOT synced to game/assets
+    (decor is STAGED -- the engine's level.decor render blit is unwired; see GATE-NOTES)."""
+    key = f"decor_{tid}_{spec['name']}"
+    im = gen_pixflux(spec["prompt"] + PROP_STYLE_BASE, spec["size"],
+                     seed=spec["seed"], tag=key)
+    pack = pack_strip([im], SPRITES / f"{key}.png", tighten=True)
+    return {
+        "image": f"sprites/{key}.png",
+        "type": "decor",
+        "biome": tid,
+        "frameWidth": pack["frameWidth"],
+        "frameHeight": pack["frameHeight"],
+        "frames": pack["frames"],
+        "anchor": "bottom-center",
+        "note": (f"biome set-dressing prop for '{tid}'. Base-anchored: engine sits the "
+                 f"prop BOTTOM on the ground y. Place via a level "
+                 f"decor:[{{x, key:'{key}', parallax?}}] array + a render blit."),
+    }
+
+
 def gen_set_dressing(only: str | None = None) -> None:
     """Deliverable #2 set-dressing driver: produce one signature transparent prop per
-    biome (real PixelLab pixflux), staged for the engine's placement hook.
-
-    Writes assets/sprites/decor_<biome>_<name>.png + a fragment set-dressing.json with
-    manifest-ready records (key `decor_<biome>_<name>`, native frame dims, base-anchored
-    note). NOT synced to game/assets or manifest.json -- there is no engine decor hook
-    yet, so shipping would trip the cross-source gate (orphan). Same produce-ahead-of-
-    wire pattern the biome tilesets used before the engine wired them. RESUMABLE: every
-    API result is cached immediately, so a re-run after any interruption costs $0 and
-    picks up where it left off (mitigates the full-kit-gen timeout risk)."""
+    biome (real PixelLab pixflux), staged for the engine's placement hook. Writes
+    assets/sprites/decor_<biome>_<name>.png + a fragment set-dressing.json. STAGED (no
+    sync/manifest) until the engine wires level.decor render (GATE-NOTES OPEN ISSUE).
+    RESUMABLE via the cache."""
     bal0 = balance()
     print(f"Balance: ${bal0:.2f}")
     if bal0 < MIN_BALANCE_USD:
@@ -784,23 +801,8 @@ def gen_set_dressing(only: str | None = None) -> None:
         if tid not in SET_DRESSING:
             sys.exit(f"unknown biome '{tid}'; known: {', '.join(SET_DRESSING)}")
         spec = SET_DRESSING[tid]
-        key = f"decor_{tid}_{spec['name']}"
         print(f"[decor] {tid}: {spec['name']} ({spec['size']}px native)")
-        im = gen_pixflux(spec["prompt"] + PROP_STYLE_BASE, spec["size"],
-                         seed=spec["seed"], tag=key)
-        pack = pack_strip([im], SPRITES / f"{key}.png", tighten=True)
-        frag[key] = {
-            "image": f"sprites/{key}.png",
-            "type": "decor",
-            "biome": tid,
-            "frameWidth": pack["frameWidth"],
-            "frameHeight": pack["frameHeight"],
-            "frames": pack["frames"],
-            "anchor": "bottom-center",
-            "note": (f"biome set-dressing prop for '{tid}'. Base-anchored: engine sits "
-                     f"the prop BOTTOM on the ground y. Place via a level "
-                     f"decor:[{{x, key:'{key}', parallax?}}] array + a render blit."),
-        }
+        frag[f"decor_{tid}_{spec['name']}"] = gen_decor(tid, spec)
     fragpath = Path(__file__).resolve().parent / "set-dressing.json"
     fragpath.write_text(json.dumps({"sprites": frag}, indent=2))
     print(f"Wrote {fragpath.name} ({len(frag)} prop(s))")
@@ -1353,6 +1355,84 @@ def gen_biome_bosses(only: str | None = None) -> None:
     fragpath = Path(__file__).resolve().parent / "bosses.json"
     fragpath.write_text(json.dumps({"sprites": frag}, indent=2))
     print(f"Wrote {fragpath.name} ({len(frag)} boss(es))")
+    bal1 = balance()
+    print(f"Balance: ${bal1:.2f}  (spent ${bal0 - bal1:.2f})")
+
+
+# --------------------------------------------------------------------------- #
+# UNIFIED PER-STAGE KIT  (deliverable #2 headline: "one command -> a new stage's art kit")
+# --------------------------------------------------------------------------- #
+# The SCALING ENGINE front door (strategy task_scale_generate_batch_7x): compose the four
+# per-class recipes into ONE command that yields a whole stage's art from its biome id.
+# `python generate.py stage <biome>` produces every class DEFINED for that biome:
+#   tileset (BIOME_TILESETS) + background (BIOME_BACKDROPS) + boss (BIOME_BOSSES) + decor
+#   (SET_DRESSING) -- skipping any a biome doesn't have (e.g. cascade has no themed boss;
+#   it uses the base chopper). The WIRED classes (tileset/bg/boss) sync to game/assets and
+#   MERGE into manifest.json (additive, idempotent -- same records run() produces), so one
+#   command makes the stage's art LIVE. Decor stays STAGED (its render blit is unwired --
+#   GATE-NOTES). A combined kit fragment is written to assets/pipeline/stage-kits/<biome>.json.
+#
+# RESUMABLE + timeout-safe (strategy obs_agent_timeout_vs_full_biome_gen): every API result
+# is cached the instant it returns, so a `stage`/`stage all` run that is interrupted mid-way
+# re-runs at $0 and continues; prefer per-biome `stage <id>` over `stage all` to stay well
+# under any single wall-clock window. Adding a NEW biome = add its specs to the four dicts,
+# then `python generate.py stage <biome>` -- the whole art kit, one command.
+STAGE_KITS_DIR = Path(__file__).resolve().parent / "stage-kits"
+# every biome that has at least one class defined = a producible stage kit
+STAGE_BIOMES = sorted(set(BIOME_TILESETS) | set(BIOME_BACKDROPS)
+                      | set(BIOME_BOSSES) | set(SET_DRESSING))
+
+
+def gen_stage(biome: str) -> dict:
+    """Produce a whole stage's art kit from its biome id: every class DEFINED for the biome.
+    Returns {'wired': {key: rec}, 'staged': {key: rec}}. Wired classes (tileset/bg/boss) are
+    synced by their gen_* helpers; decor is staged. Does NOT touch manifest -- the driver
+    merges the wired records."""
+    wired, staged = {}, {}
+    if biome in BIOME_TILESETS:
+        print(f"  [tileset] theme_{biome}")
+        wired[f"theme_{biome}"] = gen_theme_tileset(biome, BIOME_TILESETS[biome])
+    if biome in BIOME_BACKDROPS:
+        print(f"  [background] bg_{biome}")
+        wired[f"bg_{biome}"] = gen_backdrop(biome, BIOME_BACKDROPS[biome])
+    if biome in BIOME_BOSSES:
+        print(f"  [boss] boss_{biome} ({BIOME_BOSSES[biome]['name']})")
+        wired[f"boss_{biome}"] = gen_boss(biome, BIOME_BOSSES[biome])
+    if biome in SET_DRESSING:
+        s = SET_DRESSING[biome]
+        print(f"  [decor] decor_{biome}_{s['name']} (staged)")
+        staged[f"decor_{biome}_{s['name']}"] = gen_decor(biome, s)
+    return {"wired": wired, "staged": staged}
+
+
+def gen_stage_kits(only: str | None = None) -> None:
+    """One command -> a new stage's full art kit. `stage <biome>` = one; `stage all` = every
+    biome. Merges WIRED records into manifest.json (additive), writes a combined per-stage
+    fragment stage-kits/<biome>.json, and prints a per-stage completeness summary. Resumable
+    via the cache (interrupt-safe)."""
+    bal0 = balance()
+    print(f"Balance: ${bal0:.2f}")
+    if bal0 < MIN_BALANCE_USD:
+        sys.exit(f"Balance below ${MIN_BALANCE_USD}; aborting.")
+    SPRITES.mkdir(parents=True, exist_ok=True)
+    STAGE_KITS_DIR.mkdir(parents=True, exist_ok=True)
+    ids = [only] if only and only != "all" else STAGE_BIOMES
+    manifest = json.loads(MANIFEST.read_text())
+    for biome in ids:
+        if biome not in STAGE_BIOMES:
+            sys.exit(f"unknown stage biome '{biome}'; known: {', '.join(STAGE_BIOMES)}")
+        print(f"[stage] {biome} -- producing art kit")
+        kit = gen_stage(biome)
+        # WIRED classes -> manifest (additive, idempotent) so the stage is LIVE.
+        for key, rec in kit["wired"].items():
+            manifest["sprites"][key] = rec
+        classes = sorted(kit["wired"]) + [f"{k} (staged)" for k in sorted(kit["staged"])]
+        (STAGE_KITS_DIR / f"{biome}.json").write_text(json.dumps(
+            {"biome": biome, "wired": kit["wired"], "staged": kit["staged"]}, indent=2))
+        print(f"  -> kit: {', '.join(classes)}")
+    MANIFEST.write_text(json.dumps(manifest, indent=2))
+    print(f"Merged wired records into {MANIFEST.relative_to(ROOT.parent)}; "
+          f"kit fragments in {STAGE_KITS_DIR.name}/")
     bal1 = balance()
     print(f"Balance: ${bal1:.2f}  (spent ${bal0 - bal1:.2f})")
 
@@ -2104,5 +2184,10 @@ if __name__ == "__main__":
         # produce the per-stage boss re-themes (deliverable #2). `bosses` = all 5;
         # `bosses <biome>` = one. Staged for the engine boss_<id> swap hook.
         gen_biome_bosses(sys.argv[2] if len(sys.argv) > 2 else None)
+    elif cmd == "stage":
+        # UNIFIED per-stage kit (deliverable #2 headline / task_scale_generate_batch_7x):
+        # one command -> a whole stage's art (tileset+bg+boss+decor). `stage <biome>` = one;
+        # `stage all` = every biome (resumable via cache).
+        gen_stage_kits(sys.argv[2] if len(sys.argv) > 2 else None)
     else:
         run()
