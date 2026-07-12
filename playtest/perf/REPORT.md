@@ -21,7 +21,7 @@ game.
 | Does the 10× asset payload blow the browser/memory budget? | **YES — via AUDIO, not images.** 14.5 MB of music downloads cold and decodes to **403 MB of resident PCM** in a 480×270 tab. |
 | Is stage-1 boot fast on cold cache, or does it block on all 7 biomes preloading? | **Boot is FAST** (first playable frame 363 ms desktop / 2.14 s mobile). It does **not** block on biome images — they are tiny. But the full cold download runs **75 s on Slow-4G**. |
 | Is per-stage lazy-loading REQUIRED? | **YES, for MUSIC.** 93% of the cold payload and 86% of resident audio RAM belong to stages 2..7 and are loaded upfront. Image lazy-load is optional (images are negligible). |
-| Runtime frame pacing vs the 60fps bar? | **PASS.** Median 59.9 fps, ≤0.2% dropped frames, JS heap flat. The engine is not the bottleneck; the asset-loading *strategy* is. |
+| Runtime frame pacing vs the 60fps bar? | **PASS across all 7 biomes + boss fights**, desktop and 4× CPU: 59.9 fps every stage, worst 2.9% dropped, campaign heap Δ < 1 MB (no leak). The engine is not the bottleneck; the asset-loading *strategy* is. |
 
 ---
 
@@ -102,10 +102,25 @@ Frame pacing is at the reference-corpus 60 fps bar with negligible drops even
 under 4× CPU throttle, and the JS heap is flat (no leak). **The engine is
 healthy; the fix belongs in the loading strategy, not the render loop.**
 
-> Scope note: this cycle samples steady-state pacing at the title/stage-1. Driven
-> frame pacing through all 7 stage transitions + boss fights is the next perf
-> increment (a driving harness on top of the e2e state driver) — tracked in
-> OPEN-ISSUES.md. The cold-load/memory verdict above does not depend on it.
+### 4a. Driven pacing through ALL 7 biomes + boss fights (`campaign-pacing.mjs`)
+
+The steady-state title sample above is confirmed by a **driven** run: the harness
+enters each biome under the live rAF loop (`world.loadStage`), holds Right+Fire to
+scroll and fight, then teleports the player to the boss arena so the boss activates
+and renders — sampling real rAF deltas per stage, tagged field-vs-boss, with live
+combat load on screen (17–28 enemies, up to 89 particles, 14–42 bullets per frame;
+**all 7 bosses activated**). Not vacuous empty scenes.
+
+| Profile | Every stage field | Every stage boss | Worst dropped-frame % | JS heap Δ across all 7 stages |
+|---|---|---|---|---|
+| desktop | 59.9 fps | 59.9 fps | 0.0% | **+0.64 MB** |
+| mobile (4× CPU) | 59.9 fps | 59.9 fps | 2.9% (s1 field; < 5% budget) | **+0.49 MB** |
+
+Every one of the 14 stage×phase pacing checks PASSES on both profiles, and the JS
+heap grows < 1 MB across the entire 7-stage campaign — **no leak accumulates across
+the `loadStage` biome swaps.** The distinct high-fidelity per-biome art does not
+cost frame budget: draw pacing is flat from jungle to fortress. Evidence:
+`results/campaign-pacing-{desktop,mobile}.json`.
 
 ---
 

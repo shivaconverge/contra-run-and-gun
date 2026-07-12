@@ -57,13 +57,22 @@ budget, this reduces the per-stage residual further).
 
 ---
 
-## 2026-07-12 — PERF-3 (follow-up, NOT a defect): driven per-stage pacing not yet captured
+## 2026-07-12 — PERF-3 (RESOLVED, not a defect): driven per-stage pacing now captured — PASS
 
-This cycle measured steady-state rAF pacing at the title/stage-1 (59.9 fps,
-≤0.2% dropped, flat heap — PASS). Frame pacing *driven through all 7 stage
-transitions + boss fights* (and heap growth across a full campaign run) is the
-next perf increment: a driving harness layered on the e2e state driver
-(`playtest/e2e/playthrough.mjs`). Not a defect — a coverage gap in the perf
-seat's own evidence. Tracked here so it is not forgotten.
+Was: steady-state title pacing only. Now closed by `campaign-pacing.mjs`, which
+drives the LIVE build through **all 7 biomes + boss fights** under the real rAF
+render loop with live combat load (17–28 enemies / up to 89 particles / 14–42
+bullets per frame; all 7 bosses activated), on desktop and 4× CPU.
 
-**Status:** OPEN (next perf increment).
+**Result — PASS on both profiles:** every stage field and boss phase holds
+**59.9 fps** (worst dropped-frame fraction 2.9%, under the 5% budget), and the JS
+heap grows **< 1 MB across the entire 7-stage campaign** (desktop +0.64 MB,
+mobile +0.49 MB) — no leak accumulates across the `loadStage` biome swaps. The
+distinct per-biome art costs no frame budget.
+
+**Repro:** `node playtest/perf/campaign-pacing.mjs --profile desktop|mobile`.
+Evidence: `results/campaign-pacing-{desktop,mobile}.json`.
+
+**Status:** RESOLVED — the render loop is confirmed healthy; the only perf defect
+is PERF-1 (eager audio). This harness stays in the suite as a pacing regression
+guard (exits non-zero if any stage drops below the 58 fps bar).
