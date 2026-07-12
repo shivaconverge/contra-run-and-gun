@@ -1,4 +1,4 @@
-=== GO-LIVE verification @ 2026-07-12T00:52:11Z ===
+=== GO-LIVE verification @ 2026-07-12T01:31:32Z ===
 URL: https://shivaconverge.github.io/contra-run-and-gun/
 --- root HTTP 0 ---
 <!doctype html>
@@ -41,28 +41,8 @@ URL: https://shivaconverge.github.io/contra-run-and-gun/
   /* the ID rule above out-specifies the UA [hidden] rule — make hidden authoritative */
   #boot-help[hidden] { display: none !important; }
   #boot-help .card { max-width: 580px; text-align: left; font-size: 13px; line-height: 1.65; }
-
-src/main.js: HTTP 200 (26946 bytes)
-asset resolve-gate: 36/36 referenced assets HTTP 200
-assets/audio/manifest.json: HTTP 200
-audio resolve-gate: 7/7 tracks HTTP 200:
-  assets/audio/s1_jungle.mp3: HTTP 200, audio/mp3, 874327 bytes [current]
-  assets/audio/s2_cascade.mp3: HTTP 200, audio/mp3, 3271502 bytes [current]
-  assets/audio/s3_snow.mp3: HTTP 200, audio/mp3, 1872061 bytes [current]
-  assets/audio/s4_desert.mp3: HTTP 200, audio/mp3, 1383421 bytes [current]
-  assets/audio/s5_foundry.mp3: HTTP 200, audio/mp3, 2674059 bytes [current]
-  assets/audio/s6_caverns.mp3: HTTP 200, audio/mp3, 2706956 bytes [current]
-  assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 2408655 bytes [current]
-RESULT: LIVE ✅
-
-THEMED BOSSES + IRON FOUNDRY (LIVE URL, HEAD 3ccd402):
-  Master added 5 per-stage themed boss sprites (boss_desert/snow/foundry/caverns/
-  fortress.png) wired via render.drawEnemy + Stage 5 'Iron Foundry' vertical
-  industrial geometry. Re-deployed (GitHub runner queue was slow — waited out the
-  backlog). Resolve-gate auto-adapted 31->36 assets; all 36 + 7 tracks HTTP 200,
-  audio byte-current. The 5 new boss PNGs individually confirmed live HTTP 200.
-  Distinct-biome + boss proof via ?level=N on the LIVE URL (JUDGE BY LOOKING):
-    deploy/evidence/live-stage5.png — Stage 5 FOUNDRY (smokestack silhouettes,
-      molten-orange accents, metallic ground, boss on screen)
-    deploy/evidence/live-stage7.png — Stage 7 FORTRESS (crimson metal, fortress
-      turret silhouettes, armored boss center)
+  STALE: assets/boss_caverns.png live=3420 local=3268
+  STALE: assets/boss_desert.png live=2695 local=2681
+  STALE: assets/boss_fortress.png live=4170 local=3795
+  STALE: assets/boss_foundry.png live=3211 local=3181
+  STALE: assets/boss_snow.png live=2409 local=2440
