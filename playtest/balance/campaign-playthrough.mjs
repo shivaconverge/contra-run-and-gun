@@ -64,6 +64,14 @@ const STEP_CHUNK = (invincible, chunk, stopAtBoss) => {
   const gf = w.level.gravityFloor;
   const B = window.__bal;
   const overlap = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+  // LIVE-FAITHFUL RNG (QA-DET-1 fix): the shipped render() draws from the world's SEEDED
+  // RNG (render → feel.shakeOffset → world.rng, 3 draws when shaking) — the SAME stream the
+  // sim uses for bullet spread / particles / enemy behavior. The live rAF loop calls render
+  // EVERY frame, so a faithful headless drive must too, or the RNG desyncs and the fight
+  // outcome diverges from real play. (A previous version called render only at the boss
+  // screenshot — once per stage — which desynced the RNG and made casual look like it
+  // reached S4 when a live/clean run actually walls at S2.) We render after every step.
+  const _ctx = (window.__balRender && document.getElementById('game')) ? document.getElementById('game').getContext('2d') : null;
   let stopped = null;
   for (let i = 0; i < chunk; i++) {
     const preLives = w.lives;
@@ -101,6 +109,7 @@ const STEP_CHUNK = (invincible, chunk, stopAtBoss) => {
     }
     if (invincible) p.iframe = 999;
     w.step({ left, right, up, down, jump, fire: true, swap: false, jumpPressed: jump, swapPressed: false });
+    if (_ctx) window.__balRender(_ctx, w, window.__assets); // live-faithful: advance RNG exactly as the live render loop does
 
     // --- death detection + cause classification -----------------------------
     if (w.lives < preLives) {                            // lost a life THIS frame
@@ -138,6 +147,8 @@ async function bootStage1(page, url, mode) {
   // headless idle scenario, 0 frames → World sits at stage 1 'playing', drivable.
   await page.goto(`${url}/index.html?headless=1&scenario=idle&frames=0&seed=${SEED}&mode=${mode}`, { waitUntil: 'networkidle0' });
   await page.waitForFunction('window.__game && window.__game.status === "playing"');
+  // Load the SHIPPED render() so the drive can call it every frame (QA-DET-1 live-faithful RNG).
+  await page.evaluate(async () => { if (!window.__balRender) { const m = await import('./src/render.js'); window.__balRender = m.render; } });
 }
 
 // Run the chunk loop until `stopAtBoss` pauses at the boss, or the stage ends, or a

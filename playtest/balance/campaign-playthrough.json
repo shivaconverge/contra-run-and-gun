@@ -1,6 +1,6 @@
 {
-  "ts": "2026-07-12T11:35:46.745Z",
-  "target": "http://127.0.0.1:51044",
+  "ts": "2026-07-12T12:37:51.819Z",
+  "target": "http://127.0.0.1:57065",
   "seed": 1234,
   "stageBudgetFrames": 15000,
   "botPolicy": "baseline run+gun+gaphop+bossaim + one bullet-hop reflex (documented; NOT skilled-human)",
@@ -86,8 +86,8 @@
         "reachedBoss": true,
         "bossBeaten": true,
         "status": "cleared",
-        "timeToClearSec": 69.7,
-        "elapsedSec": 69.7,
+        "timeToClearSec": 61.7,
+        "elapsedSec": 61.7,
         "deaths": 0,
         "deathsByCause": {
           "pit": 0,
@@ -96,7 +96,7 @@
         },
         "deathLog": [],
         "livesRemaining": 3,
-        "minBossHpReached": 2,
+        "minBossHpReached": 1,
         "softlock": null,
         "isFinalStage": false,
         "frame": "playtest/balance/frames/arcade-inv/stage-2-boss.png",
@@ -166,7 +166,7 @@
         },
         "deathLog": [],
         "livesRemaining": 3,
-        "minBossHpReached": 5,
+        "minBossHpReached": 2,
         "softlock": null,
         "isFinalStage": false,
         "frame": "playtest/balance/frames/arcade-inv/stage-3-boss.png",
@@ -208,8 +208,8 @@
         "reachedBoss": true,
         "bossBeaten": true,
         "status": "cleared",
-        "timeToClearSec": 73.1,
-        "elapsedSec": 73.1,
+        "timeToClearSec": 77.5,
+        "elapsedSec": 77.5,
         "deaths": 0,
         "deathsByCause": {
           "pit": 0,
@@ -260,8 +260,8 @@
         "reachedBoss": true,
         "bossBeaten": true,
         "status": "cleared",
-        "timeToClearSec": 27.8,
-        "elapsedSec": 27.8,
+        "timeToClearSec": 27.6,
+        "elapsedSec": 27.6,
         "deaths": 0,
         "deathsByCause": {
           "pit": 0,
@@ -312,8 +312,8 @@
         "reachedBoss": true,
         "bossBeaten": true,
         "status": "cleared",
-        "timeToClearSec": 75.9,
-        "elapsedSec": 75.9,
+        "timeToClearSec": 71.2,
+        "elapsedSec": 71.2,
         "deaths": 0,
         "deathsByCause": {
           "pit": 0,
@@ -322,7 +322,7 @@
         },
         "deathLog": [],
         "livesRemaining": 3,
-        "minBossHpReached": 1,
+        "minBossHpReached": 4,
         "softlock": null,
         "isFinalStage": false,
         "frame": "playtest/balance/frames/arcade-inv/stage-6-boss.png",
@@ -364,8 +364,8 @@
         "reachedBoss": true,
         "bossBeaten": true,
         "status": "cleared",
-        "timeToClearSec": 28.2,
-        "elapsedSec": 28.2,
+        "timeToClearSec": 27.6,
+        "elapsedSec": 27.6,
         "deaths": 0,
         "deathsByCause": {
           "pit": 0,
@@ -374,7 +374,7 @@
         },
         "deathLog": [],
         "livesRemaining": 3,
-        "minBossHpReached": 1,
+        "minBossHpReached": 4,
         "softlock": null,
         "isFinalStage": true,
         "frame": "playtest/balance/frames/arcade-inv/stage-7-boss.png",
@@ -428,7 +428,7 @@
           "bossBeaten": false,
           "status": "gameover",
           "timeToClearSec": null,
-          "elapsedSec": 30.2,
+          "elapsedSec": 30.3,
           "deaths": 4,
           "deathsByCause": {
             "pit": 0,
@@ -437,28 +437,28 @@
           },
           "deathLog": [
             {
-              "frame": 1230,
+              "frame": 1236,
               "x": 2288,
               "cause": "projectile",
               "livesAfter": 2,
               "weaponAfterDeath": "rifle"
             },
             {
-              "frame": 1390,
+              "frame": 1396,
               "x": 2176,
               "cause": "projectile",
               "livesAfter": 1,
               "weaponAfterDeath": "rifle"
             },
             {
-              "frame": 1643,
+              "frame": 1649,
               "x": 2288,
               "cause": "projectile",
               "livesAfter": 0,
               "weaponAfterDeath": "rifle"
             },
             {
-              "frame": 1810,
+              "frame": 1816,
               "x": 2176,
               "cause": "projectile",
               "livesAfter": -1,
@@ -516,8 +516,8 @@
       "mode": "casual",
       "invincible": false,
       "victory": false,
-      "stagesCleared": 3,
-      "gameoverAtStage": 4,
+      "stagesCleared": 1,
+      "gameoverAtStage": 2,
       "totalDeaths": 6,
       "stages": [
         {
@@ -530,8 +530,8 @@
           "reachedBoss": true,
           "bossBeaten": true,
           "status": "cleared",
-          "timeToClearSec": 36.9,
-          "elapsedSec": 36.9,
+          "timeToClearSec": 36.3,
+          "elapsedSec": 36.3,
           "deaths": 2,
           "deathsByCause": {
             "pit": 0,
@@ -540,14 +540,14 @@
           },
           "deathLog": [
             {
-              "frame": 1501,
+              "frame": 1504,
               "x": 2288,
               "cause": "projectile",
               "livesAfter": 4,
               "weaponAfterDeath": "machine"
             },
             {
-              "frame": 2037,
+              "frame": 1994,
               "x": 2288,
               "cause": "projectile",
               "livesAfter": 3,
@@ -607,34 +607,48 @@
           "bossHpMax": 78,
           "reachable": true,
           "reachedBoss": true,
-          "bossBeaten": true,
-          "status": "cleared",
-          "timeToClearSec": 72.5,
-          "elapsedSec": 72.5,
-          "deaths": 2,
+          "bossBeaten": false,
+          "status": "gameover",
+          "timeToClearSec": null,
+          "elapsedSec": 67.1,
+          "deaths": 4,
           "deathsByCause": {
             "pit": 0,
             "contact": 0,
-            "projectile": 2
+            "projectile": 4
           },
           "deathLog": [
             {
-              "frame": 1714,
+              "frame": 1717,
               "x": 2128,
               "cause": "projectile",
               "livesAfter": 2,
               "weaponAfterDeath": "spread"
             },
             {
-              "frame": 2414,
+              "frame": 2417,
               "x": 2128,
               "cause": "projectile",
               "livesAfter": 1,
               "weaponAfterDeath": "spread"
+            },
+            {
+              "frame": 3571,
+              "x": 2128,
+              "cause": "projectile",
+              "livesAfter": 0,
+              "weaponAfterDeath": "spread"
+            },
+            {
+              "frame": 4024,
+              "x": 2128,
+              "cause": "projectile",
+              "livesAfter": -1,
+              "weaponAfterDeath": "spread"
             }
           ],
-          "livesRemaining": 1,
-          "minBossHpReached": 2,
+          "livesRemaining": -1,
+          "minBossHpReached": 6,
           "softlock": null,
           "isFinalStage": false,
           "frame": "playtest/balance/frames/casual/stage-2-boss.png",
@@ -678,125 +692,6 @@
             {
               "key": "theme_bridge",
               "role": "bridge",
-              "loaded": true,
-              "missing": false
-            }
-          ],
-          "assetsMissing": []
-        },
-        {
-          "stage": 3,
-          "name": "Frozen Ridge",
-          "theme": "snow",
-          "bossName": "Ice Sentinel",
-          "bossHpMax": 86,
-          "reachable": true,
-          "reachedBoss": true,
-          "bossBeaten": true,
-          "status": "cleared",
-          "timeToClearSec": 24.3,
-          "elapsedSec": 24.3,
-          "deaths": 0,
-          "deathsByCause": {
-            "pit": 0,
-            "contact": 0,
-            "projectile": 0
-          },
-          "deathLog": [],
-          "livesRemaining": 1,
-          "minBossHpReached": 5,
-          "softlock": null,
-          "isFinalStage": false,
-          "frame": "playtest/balance/frames/casual/stage-3-boss.png",
-          "spriteAudit": [
-            {
-              "key": "theme_snow",
-              "role": "tileset",
-              "loaded": true,
-              "missing": false
-            },
-            {
-              "key": "bg_snow",
-              "role": "parallax",
-              "loaded": true,
-              "missing": false
-            },
-            {
-              "key": "boss_snow",
-              "role": "boss-art",
-              "loaded": true,
-              "missing": false
-            },
-            {
-              "key": "decor_snow_pine",
-              "role": "decor",
-              "loaded": true,
-              "missing": false
-            }
-          ],
-          "assetsMissing": []
-        },
-        {
-          "stage": 4,
-          "name": "Scorched Dunes",
-          "theme": "desert",
-          "bossName": "Sand Gunship",
-          "bossHpMax": 88,
-          "reachable": true,
-          "reachedBoss": true,
-          "bossBeaten": false,
-          "status": "gameover",
-          "timeToClearSec": null,
-          "elapsedSec": 38.6,
-          "deaths": 2,
-          "deathsByCause": {
-            "pit": 0,
-            "contact": 0,
-            "projectile": 2
-          },
-          "deathLog": [
-            {
-              "frame": 1458,
-              "x": 2128,
-              "cause": "projectile",
-              "livesAfter": 0,
-              "weaponAfterDeath": "spread"
-            },
-            {
-              "frame": 2314,
-              "x": 2128,
-              "cause": "projectile",
-              "livesAfter": -1,
-              "weaponAfterDeath": "spread"
-            }
-          ],
-          "livesRemaining": -1,
-          "minBossHpReached": 58,
-          "softlock": null,
-          "isFinalStage": false,
-          "frame": "playtest/balance/frames/casual/stage-4-boss.png",
-          "spriteAudit": [
-            {
-              "key": "theme_desert",
-              "role": "tileset",
-              "loaded": true,
-              "missing": false
-            },
-            {
-              "key": "bg_desert",
-              "role": "parallax",
-              "loaded": true,
-              "missing": false
-            },
-            {
-              "key": "boss_desert",
-              "role": "boss-art",
-              "loaded": true,
-              "missing": false
-            },
-            {
-              "key": "decor_desert_cactus",
-              "role": "decor",
               "loaded": true,
               "missing": false
             }
