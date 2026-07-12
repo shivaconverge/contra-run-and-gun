@@ -129,6 +129,27 @@ const CAMPAIGN = ['jungle', 'cascade', 'snow', 'desert', 'foundry', 'caverns', '
       enr.active && enr.intensity === true && enr.lifted > 0.24 && enr.relaxed < 0.24 && enr.lifted > enr.relaxed,
       `_intensity=${enr.intensity} before=${enr.before} lifted=${enr.lifted} relaxed=${enr.relaxed} (base×1.22≈0.27)`);
 
+    // SCENE-GATE on the REAL track: the deliverable's "scene-gate per stage" contract — the
+    // BGM must fade on game-over / victory so the SFX sting lands clean. `sceneGain` is
+    // downstream of trackGain, and main.js runs `audio.setPlaying(world.status==='playing')`
+    // every frame, so forcing a non-playing status should ATTENUATE the live real track (not
+    // just the synth, which live-check already covers). Then restoring 'playing' fades it back.
+    const sg = await page.evaluate(`(async () => {
+      const m = window.__audio.music, w = window.__game;
+      const active = m.track;
+      const playing = +m.sceneGain.gain.value.toFixed(3);
+      w.status = 'gameover';                                  // the game-over screen state
+      await new Promise((res) => setTimeout(res, 500));       // let the per-frame setPlaying fade it
+      const gameover = +m.sceneGain.gain.value.toFixed(3);
+      w.status = 'playing';
+      await new Promise((res) => setTimeout(res, 400));
+      const resumed = +m.sceneGain.gain.value.toFixed(3);
+      return { active, playing, gameover, resumed };
+    })()`);
+    pass &= ok('scene-gate fades the real track on game-over (SFX sting lands), restores on resume',
+      sg.active && sg.playing > 0.9 && sg.gameover < 0.1 && sg.resumed > 0.9,
+      `active=${sg.active} playing=${sg.playing} gameover=${sg.gameover} resumed=${sg.resumed}`);
+
     // return to synth (useTrack(null)) — proves the fallback path still works. Deterministic
     // contract: the real-track source is STOPPED (active===null, srcLive===false) and the
     // synth is re-selected (muted===false). We wait >1 bar (~1.58s @152 BPM) before reading
