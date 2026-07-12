@@ -33,6 +33,32 @@ numbers are real end-user pressure.
 
 ---
 
+## 🔁 2026-07-12 — RE-MEASUREMENT after root.C applied this report (boss fire eased ~15%)
+
+root.C **acted on this seat's findings**: `game/data/config.js` now eases boss fire across
+the campaign, explicitly citing this report — e.g. the Stage-1 Sentinel is
+`fireEvery: 80, enrageFireEvery: 52 // eased ~15% (was 70/44) — BALANCE-REPORT: boss-fire is
+the sole death cause`, and every stage boss's `enrageFireEvery` was raised (Ice Sentinel
+42→50, Sand Gunship 42→50, Foundry Core 74/40→86/48, Crystal Wing 40→48, Red Falcon
+68/36→80/44). I re-drove the **current** (eased) build; the numbers below are refreshed to
+match. **FACT: the easing did NOT move the arcade or casual walls for a baseline run** —
+BAL-1 and BAL-2 both PERSIST:
+
+| Mode | Before (hotter cfg) | After (eased ~15%) | Δ |
+|------|---------------------|--------------------|---|
+| Arcade | GAME OVER @ Stage-1 boss, 4 deaths | **GAME OVER @ Stage-1 boss, 4 deaths** | no change to the wall |
+| Casual | GAME OVER @ Stage-2 boss, cleared S1 | **GAME OVER @ Stage-2 boss, cleared S1** | no change to the wall |
+
+**Read for root.C:** a ~15% cadence ease improves clear-time margin but is **too small to
+let a baseline (non-expert) run past the Stage-1 arcade boss or the Stage-2 casual chopper.**
+If the intent is baseline-clearable (not expert-only), the lever needs to be *larger* — a
+bigger cadence ease, slower bullets, and/or the death→rifle-spiral mitigation (BAL-4). The
+gate (`campaign-gate.mjs`) will flip BAL-1/BAL-2 green automatically when a future config
+crosses the survivable threshold. *(New this run: one Stage-1 casual **pit** death at the
+boss ledge — see [BAL-5].)*
+
+---
+
 ## THE BOT (honest disclosure — read before trusting the arcade numbers)
 
 The driver is a **baseline** run-and-gun heuristic, **not a skilled human**: always advance
@@ -54,6 +80,41 @@ limiter; survival is).
 
 ---
 
+## GATED TEST — re-runnable, pass/fail, exit code
+
+[`campaign-gate.mjs`](./campaign-gate.mjs) turns everything below into an **automated
+gate**: it drives the real damage-ON campaign (via the harness) and asserts INTENDED
+behavior over the FACTS, with an exit code so root.C can re-run after tuning.
+
+```bash
+node playtest/balance/campaign-gate.mjs            # fresh real run, exits 0/1
+node playtest/balance/campaign-gate.mjs --reuse    # re-assert over the last run (fast)
+```
+
+Two tiers (mirrors `playtest/e2e/run-all.mjs`): **CRITICAL** = spine + invariants that must
+never break (exit non-zero on any red); **KNOWN-BUG** = the balance defects this seat filed
+(BAL-1/BAL-2), asserted as intended behavior so they read as tracked reds but do **not**
+fail the gate while documented. When root.C tunes a mode to completion, drop its `knownBug`
+flag in the gate and it becomes a CRITICAL regression guard.
+
+**Latest gate: CRITICAL 7/7 PASS · KNOWN-BUG reds: BAL-1, BAL-2 · VERDICT PASS (exit 0).**
+
+| Check | Tier | Result |
+|-------|------|--------|
+| `spine.reachAll7` — all 7 reachable (invincible) | CRITICAL | ✅ |
+| `spine.defeatableAll7` — full-campaign VICTORY (invincible) | CRITICAL | ✅ |
+| `spine.noSoftlocks` — no soft-lock/unwinnable in any pass | CRITICAL | ✅ |
+| `spine.naturalProgressionOnly` — every beaten stage ended `cleared` via genuine boss-kill | CRITICAL | ✅ |
+| `invariant.weaponRevertsOnDeath` — every death reverts weapon to rifle (Contra single-slot) | CRITICAL | ✅ |
+| `accessibility.casualClearsStage1` — assist mode passes boss 1 | CRITICAL | ✅ |
+| `balance.bossesAreThePrimaryKiller` — boss fire ≥ traversal deaths (levels aren't the killer) | CRITICAL | ✅ |
+| `balance.arcadeCompletesCampaign` — arcade run reaches VICTORY | KNOWN-BUG **BAL-1** | ❌ (tracked) |
+| `balance.casualCompletesCampaign` — assist run reaches VICTORY | KNOWN-BUG **BAL-2** | ❌ (tracked) |
+
+Evidence: [`campaign-gate.json`](./campaign-gate.json).
+
+---
+
 ## HEADLINE FACTS (this run)
 
 | Fact | Result |
@@ -63,14 +124,15 @@ limiter; survival is).
 | **Soft-locks / unwinnable geometry** detected (any mode) | ✅ **none** |
 | Damage-ON **ARCADE** baseline-bot outcome | ❌ **GAME OVER at Stage-1 boss** (0/7 cleared, 4 deaths) |
 | Damage-ON **CASUAL** baseline-bot outcome | ⚠️ **GAME OVER at Stage-2 boss** (1/7 cleared, 6 deaths) |
-| **Every** damage-on death cause | **projectile, 100%** — at the boss barrier |
-| Pit / contact deaths across all traversal, both modes | **0 / 0** |
+| Damage-on death cause split (both modes) | **projectile 9 · pit 1 · contact 0** (90% boss fire) |
+| Traversal deaths | **1 pit** — the tracked BAL-5 boss-ledge fall; **0 contact** |
 
 **One-line read:** the campaign's spine is sound (reachable, defeatable, no soft-locks, all
-7 biomes distinct), and **level traversal is fair** — zero pit and zero contact deaths, the
-gap-hops and enemy mix are survivable. **The entire difficulty is boss-projectile
-survival**, and the **arcade first-boss wall is very steep** for anything short of skilled
-human pattern-play.
+7 biomes distinct), and **the bosses are the primary killer** — 90% of deaths are boss-fire
+projectiles; the single traversal death is the boss-arena footing interaction [BAL-5], not a
+level-traversal failure. **The difficulty is boss survival**, and the **arcade first-boss
+wall is steep** for anything short of skilled human pattern-play — and (see the re-measurement
+above) **root.C's ~15% cadence ease did not move that wall for a baseline run.**
 
 ---
 
@@ -81,13 +143,17 @@ Same bot, invincibility ON, natural `requestNextStage` between stages. This isol
 
 | Stage | Biome | Boss (HP) | Reached boss | Beaten | Boss-inclusive clear |
 |------:|-------|-----------|:---:|:---:|--------:|
-| 1 | Jungle Approach | Sentinel (90) | ✅ | ✅ | **30.7 s** |
-| 2 | Cascade Base | Gunship (78) | ✅ | ✅ | **65.0 s** |
-| 3 | Frozen Ridge | Ice Sentinel (86) | ✅ | ✅ | **23.2 s** |
-| 4 | Scorched Dunes | Sand Gunship (88) | ✅ | ✅ | **73.2 s** |
-| 5 | Iron Foundry | Foundry Core (104) | ✅ | ✅ | **26.3 s** |
-| 6 | Crystal Caverns | Crystal Wing (96) | ✅ | ✅ | **82.9 s** |
-| 7 | Red Falcon Keep | Red Falcon (128) | ✅ | ✅ | **27.0 s** |
+| 1 | Jungle Approach | Sentinel (90) | ✅ | ✅ | **30.8 s** |
+| 2 | Cascade Base | Gunship (78) | ✅ | ✅ | **69.7 s** |
+| 3 | Frozen Ridge | Ice Sentinel (86) | ✅ | ✅ | **23.4 s** |
+| 4 | Scorched Dunes | Sand Gunship (88) | ✅ | ✅ | **73.1 s** |
+| 5 | Iron Foundry | Foundry Core (104) | ✅ | ✅ | **27.8 s** |
+| 6 | Crystal Caverns | Crystal Wing (96) | ✅ | ✅ | **90.7 s** |
+| 7 | Red Falcon Keep | Red Falcon (128) | ✅ | ✅ | **28.1 s** |
+
+*(Clear times refreshed 2026-07-12 against the eased config; HP unchanged. The chopper
+stages 2/4/6 remain the long fights — the eased cadence did not shorten the DPS-bound kill,
+only the fire pressure.)*
 
 VICTORY reached. The chopper stages (2 / 4 / 6 — Gunship family, sweeping targets) take
 **~2–3× longer** to down than the fixed Sentinel bosses (1 / 3 / 5 / 7): the sweeping boss
@@ -104,22 +170,23 @@ spends much of its arc off the player's firing lane, so effective DPS is low. Th
 |------:|:---:|:---:|---|---:|---|
 | 1 Jungle | ✅ | ❌ | **4** (projectile ×4) | −1 | **GAME OVER** |
 
-Per-death timeline (Stage 1): first death at **20.3 s** into the run — i.e. the bot cleared
-the whole level and survived ~10 s of boss fire — then dies at 23.0 s, 25.9 s, 29.7 s.
-Best boss HP reached: **55/90**. It never got close: the fixed Sentinel's aimed fire density
-outpaces a 3-life budget over the ~30 s DPS-bound kill time.
+Per-death timeline (Stage 1, eased config): first death at **20.5 s** — the bot cleared the
+whole level and survived ~10 s of boss fire — then 23.2 s, 27.4 s, 30.2 s. Best boss HP
+reached: **60/90** (vs 55/90 pre-easing — marginally better, still nowhere near a kill). The
+fixed Sentinel's aimed fire still outpaces a 3-life budget over the ~31 s DPS-bound kill time.
 
 ### CASUAL (5 lives + 2-hit shield ≈ 7 effective hits) — baseline bot
 
 | Stage | Reached boss | Beaten | Deaths (cause) | Lives left | Outcome |
 |------:|:---:|:---:|---|---:|---|
-| 1 Jungle | ✅ | ✅ | 3 (projectile ×3) | 2 | cleared @ **44.5 s** |
+| 1 Jungle | ✅ | ✅ | 3 (projectile ×2, **pit ×1** [BAL-5]) | 2 | cleared @ **42.0 s** |
 | 2 Cascade | ✅ | ❌ | 3 (projectile ×3) | −1 | **GAME OVER** |
 
 Casual **can** clear Stage 1 (boss to 1 HP, then down) with margin (2 lives spare), which
-confirms the fight is winnable at a survival budget of ~7 hits. It then wears out at the
-**Stage-2 Gunship**, whose sweeping arc doubles the fight length (65 s invincible) — more
-seconds under fire = more projectile deaths.
+confirms the fight is winnable at a survival budget of ~7 hits — deaths at 25.0 s, 32.8 s,
+and a **36.9 s pit fall at the boss ledge** [BAL-5]. It then wears out at the **Stage-2
+Gunship** (deaths 28.7 / 40.8 / 47.2 s, boss floored to 50/78), whose sweeping arc roughly
+doubles the fight length (69.7 s invincible) — more seconds under fire = more deaths.
 
 *(Full per-death frame/x/cause log for every stage is in `campaign-playthrough.json` →
 `damageOn.{arcade,casual}.stages[].deathLog`.)*
@@ -221,8 +288,28 @@ headroom item for root.B, not a distinctness failure.
   BAL-1/BAL-2 are **directional** evidence + a request for root.C to set the intended curve,
   **not** a claim the game is unwinnable. The invincible pass proves every boss is beatable.
 
-*(No pit/contact/soft-lock/unwinnable issues found — traversal and the campaign spine are
-clean this run.)*
+### 2026-07-12 — [BAL-5] Stage-1 boss firing ledge is a pit-death trap over the pre-boss chasm
+- **Severity:** low-medium (level-design / balance; NOT a soft-lock — the stage is clearable).
+- **Repro:** `node playtest/balance/campaign-gate.mjs` → `damageOn.casual.stages[0].deathLog`
+  contains a **pit death at x=2241, ~36.9 s** into the Stage-1 boss fight. `level1.js` puts a
+  **58 px chasm at x2220–2278** immediately left of the boss barrier (x2300), leaving only a
+  **~22 px firing ledge** (2278–2300) for a 12 px-wide player.
+- **Mechanism (measured):** it emerges with *time at the barrier* — it appears in **casual**
+  (which survives longer via shield + 5 lives) but not in **arcade** (which dies to projectiles
+  first). Firing recoil pushes the player back (−aim) and dodge-hops add drift, so extended
+  boss exposure nudges the player off the narrow ledge into the chasm. The bot already refuses
+  to *weave* left into a gap (ground-checked); the residual death is recoil/hop drift, which a
+  human under fire also faces.
+- **Intended behavior (the gate asserts the correct invariant):** the *levels* must not be the
+  primary killer — `balance.bossesAreThePrimaryKiller` asserts boss-fire deaths ≥ traversal
+  deaths (currently 9 ≥ 1, PASS). A designed pit hazard causing an occasional death is fine; a
+  **boss arena you get shoved into a pit from** may not be.
+- **Owner/fix (root.C, `level1.js` geometry):** confirm intended tension, or widen the boss
+  firing ledge / shift the chasm left so the player isn't recoil-drifted into a fall mid-fight.
+  Recorded, not masked — the per-death log keeps surfacing it until addressed.
+
+*(Spine clean this run: 7/7 reachable + defeatable, no soft-locks, weapon-revert holds. The
+only traversal death is the tracked BAL-5 boss-ledge pit; bosses remain the primary killer.)*
 
 ---
 

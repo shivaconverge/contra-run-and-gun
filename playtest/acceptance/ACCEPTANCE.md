@@ -68,6 +68,20 @@ A stage counts toward `scope_served` **only** when all three hold:
    stage's theme (track ids are `s<N>_<theme>`, so a snow stage must be playing
    `s3_snow`). A stage on the synth fallback, or reusing a sibling's track, is
    dropped from `scope_served`.
+5. **Set-dressing present** — every `decor_*` sprite this stage's `world.decor`
+   REFERENCES resolves to a loaded asset. `render.js drawDecor` blits a prop only if
+   `assets.get(d.key)` resolves — an **unloaded decor key silently draws nothing**
+   (no fallback), so a stage whose deploy dropped its decor art would lose its
+   set-dressing while the sibling palette-diff still passes. The sensor enumerates
+   the referenced keys per stage and FAILS the stage (`set-dressing-art-missing:<key>`
+   → `problems.missingDecorArt`, fed to B) if any is unloaded. Stages whose dressing
+   is procedural (jungle grass, `decorCount 0`) reference no keys and pass. Also
+   records `decorOnScreen` (props in view at capture) so the frame evidence shows
+   them. Latest: stages 2–7 each load their themed key with ~2 props on-screen
+   (`decor_snow_pine`, `decor_desert_cactus`, `decor_foundry_vat`,
+   `decor_caverns_crystal`, `decor_fortress_brazier`, `decor_cascade_valve`) —
+   confirmed by looking (e.g. two snow pines in `frames/stage-3-snow.png`, two molten
+   vats in `frames/stage-5-foundry.png`).
 
 > The CV grid/palette diff is an **advisory pre-filter, not the fidelity verdict.**
 > The frames are written to disk so a human LOOKS at them side-by-side. The

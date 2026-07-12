@@ -1,6 +1,6 @@
 {
-  "ts": "2026-07-12T05:50:43.057Z",
-  "target": "http://127.0.0.1:58130",
+  "ts": "2026-07-12T06:50:32.090Z",
+  "target": "http://127.0.0.1:63927",
   "seed": 1234,
   "stageBudgetFrames": 15000,
   "botPolicy": "baseline run+gun+gaphop+bossaim + one bullet-hop reflex (documented; NOT skilled-human)",
@@ -22,8 +22,8 @@
         "reachedBoss": true,
         "bossBeaten": true,
         "status": "cleared",
-        "timeToClearSec": 30.7,
-        "elapsedSec": 30.7,
+        "timeToClearSec": 30.8,
+        "elapsedSec": 30.8,
         "deaths": 0,
         "deathsByCause": {
           "pit": 0,
@@ -47,8 +47,8 @@
         "reachedBoss": true,
         "bossBeaten": true,
         "status": "cleared",
-        "timeToClearSec": 65,
-        "elapsedSec": 65,
+        "timeToClearSec": 69.7,
+        "elapsedSec": 69.7,
         "deaths": 0,
         "deathsByCause": {
           "pit": 0,
@@ -57,7 +57,7 @@
         },
         "deathLog": [],
         "livesRemaining": 3,
-        "minBossHpReached": 5,
+        "minBossHpReached": 2,
         "softlock": null,
         "isFinalStage": false,
         "frame": "playtest/balance/frames/arcade-inv/stage-2-boss.png"
@@ -72,8 +72,8 @@
         "reachedBoss": true,
         "bossBeaten": true,
         "status": "cleared",
-        "timeToClearSec": 23.2,
-        "elapsedSec": 23.2,
+        "timeToClearSec": 23.4,
+        "elapsedSec": 23.4,
         "deaths": 0,
         "deathsByCause": {
           "pit": 0,
@@ -97,8 +97,8 @@
         "reachedBoss": true,
         "bossBeaten": true,
         "status": "cleared",
-        "timeToClearSec": 73.2,
-        "elapsedSec": 73.2,
+        "timeToClearSec": 73.1,
+        "elapsedSec": 73.1,
         "deaths": 0,
         "deathsByCause": {
           "pit": 0,
@@ -107,7 +107,7 @@
         },
         "deathLog": [],
         "livesRemaining": 3,
-        "minBossHpReached": 2,
+        "minBossHpReached": 1,
         "softlock": null,
         "isFinalStage": false,
         "frame": "playtest/balance/frames/arcade-inv/stage-4-boss.png"
@@ -122,8 +122,8 @@
         "reachedBoss": true,
         "bossBeaten": true,
         "status": "cleared",
-        "timeToClearSec": 26.3,
-        "elapsedSec": 26.3,
+        "timeToClearSec": 27.8,
+        "elapsedSec": 27.8,
         "deaths": 0,
         "deathsByCause": {
           "pit": 0,
@@ -132,7 +132,7 @@
         },
         "deathLog": [],
         "livesRemaining": 3,
-        "minBossHpReached": 4,
+        "minBossHpReached": 1,
         "softlock": null,
         "isFinalStage": false,
         "frame": "playtest/balance/frames/arcade-inv/stage-5-boss.png"
@@ -147,8 +147,8 @@
         "reachedBoss": true,
         "bossBeaten": true,
         "status": "cleared",
-        "timeToClearSec": 82.9,
-        "elapsedSec": 82.9,
+        "timeToClearSec": 90.7,
+        "elapsedSec": 90.7,
         "deaths": 0,
         "deathsByCause": {
           "pit": 0,
@@ -172,8 +172,8 @@
         "reachedBoss": true,
         "bossBeaten": true,
         "status": "cleared",
-        "timeToClearSec": 27,
-        "elapsedSec": 27,
+        "timeToClearSec": 28.1,
+        "elapsedSec": 28.1,
         "deaths": 0,
         "deathsByCause": {
           "pit": 0,
@@ -182,7 +182,7 @@
         },
         "deathLog": [],
         "livesRemaining": 3,
-        "minBossHpReached": 5,
+        "minBossHpReached": 1,
         "softlock": null,
         "isFinalStage": true,
         "frame": "playtest/balance/frames/arcade-inv/stage-7-boss.png"
@@ -209,7 +209,7 @@
           "bossBeaten": false,
           "status": "gameover",
           "timeToClearSec": null,
-          "elapsedSec": 29.7,
+          "elapsedSec": 30.2,
           "deaths": 4,
           "deathsByCause": {
             "pit": 0,
@@ -218,32 +218,36 @@
           },
           "deathLog": [
             {
-              "frame": 1218,
+              "frame": 1230,
               "x": 2288,
               "cause": "projectile",
-              "livesAfter": 2
+              "livesAfter": 2,
+              "weaponAfterDeath": "rifle"
             },
             {
-              "frame": 1380,
-              "x": 2159,
+              "frame": 1390,
+              "x": 2176,
               "cause": "projectile",
-              "livesAfter": 1
+              "livesAfter": 1,
+              "weaponAfterDeath": "rifle"
             },
             {
-              "frame": 1555,
-              "x": 2185,
-              "cause": "projectile",
-              "livesAfter": 0
-            },
-            {
-              "frame": 1782,
+              "frame": 1643,
               "x": 2288,
               "cause": "projectile",
-              "livesAfter": -1
+              "livesAfter": 0,
+              "weaponAfterDeath": "rifle"
+            },
+            {
+              "frame": 1810,
+              "x": 2176,
+              "cause": "projectile",
+              "livesAfter": -1,
+              "weaponAfterDeath": "rifle"
             }
           ],
           "livesRemaining": -1,
-          "minBossHpReached": 55,
+          "minBossHpReached": 60,
           "softlock": null,
           "isFinalStage": false,
           "frame": "playtest/balance/frames/arcade/stage-1-boss.png"
@@ -268,32 +272,35 @@
           "reachedBoss": true,
           "bossBeaten": true,
           "status": "cleared",
-          "timeToClearSec": 44.5,
-          "elapsedSec": 44.5,
+          "timeToClearSec": 42,
+          "elapsedSec": 42,
           "deaths": 3,
           "deathsByCause": {
-            "pit": 0,
+            "pit": 1,
             "contact": 0,
-            "projectile": 3
+            "projectile": 2
           },
           "deathLog": [
             {
-              "frame": 1445,
+              "frame": 1501,
               "x": 2288,
               "cause": "projectile",
-              "livesAfter": 4
+              "livesAfter": 4,
+              "weaponAfterDeath": "rifle"
             },
             {
-              "frame": 1845,
+              "frame": 1969,
               "x": 2288,
               "cause": "projectile",
-              "livesAfter": 3
+              "livesAfter": 3,
+              "weaponAfterDeath": "rifle"
             },
             {
-              "frame": 2226,
-              "x": 2288,
-              "cause": "projectile",
-              "livesAfter": 2
+              "frame": 2216,
+              "x": 2242,
+              "cause": "pit",
+              "livesAfter": 2,
+              "weaponAfterDeath": "rifle"
             }
           ],
           "livesRemaining": 2,
@@ -313,7 +320,7 @@
           "bossBeaten": false,
           "status": "gameover",
           "timeToClearSec": null,
-          "elapsedSec": 45.7,
+          "elapsedSec": 47.2,
           "deaths": 3,
           "deathsByCause": {
             "pit": 0,
@@ -322,26 +329,29 @@
           },
           "deathLog": [
             {
-              "frame": 1434,
+              "frame": 1723,
               "x": 2128,
               "cause": "projectile",
-              "livesAfter": 1
+              "livesAfter": 1,
+              "weaponAfterDeath": "rifle"
             },
             {
-              "frame": 2055,
+              "frame": 2449,
               "x": 2128,
               "cause": "projectile",
-              "livesAfter": 0
+              "livesAfter": 0,
+              "weaponAfterDeath": "rifle"
             },
             {
-              "frame": 2743,
+              "frame": 2833,
               "x": 2128,
               "cause": "projectile",
-              "livesAfter": -1
+              "livesAfter": -1,
+              "weaponAfterDeath": "rifle"
             }
           ],
           "livesRemaining": -1,
-          "minBossHpReached": 52,
+          "minBossHpReached": 50,
           "softlock": null,
           "isFinalStage": false,
           "frame": "playtest/balance/frames/casual/stage-2-boss.png"

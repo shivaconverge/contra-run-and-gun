@@ -36,6 +36,11 @@
 //        (their own art). Closes the mandate's "every armed enemy", not just {hero,
 //        turret}; per-stage `keys.everyArmedEnemyOneWeapon` enumerates each with its
 //        static procedural-weapon-draw count.
+//     A7 COVERAGE guard: every enemy kind in game/data/config.js ENEMIES is MODELED by
+//        the audit (RESOLVE+weaponDrawMap). Fails CLOSED the moment the campaign adds a
+//        new enemy/boss the audit hasn't weapon-classified, so the two-weapon FACT can
+//        never silently lose coverage as content grows (per-stage `keys.allSpawnsModeled`
+//        localizes the drift to the stage that introduced it).
 //   LAYER B  (RUNTIME — drive the REAL browser build headless, one load per stage):
 //     B1 the stage boots on its configured theme; the enumerated armed entities
 //        actually instantiate in the live world.
@@ -213,6 +218,23 @@ async function layerA() {
     `drawChopper weaponCalls={gun:${chopW.gun},barrel:${chopW.barrel}}, ` +
     `drawGun-in-drawEnemy=${enemyDrawGun} ⇒ boss/chopper/flyer/mortar/grunt carry no procedural overlay`);
 
+  // A7 — COVERAGE / ANTI-STALENESS guard. Every audit above is only as complete as the
+  // set of enemy kinds it MODELS (RESOLVE + weaponDrawMap). The campaign GOAL keeps
+  // adding stages, enemy mixes and bosses — so a NEW kind in game/data/config.js's
+  // ENEMIES that the audit does not model would slip through the per-stage fallback as
+  // "single weapon, no overlay" and ship GREEN without ever being weapon-checked. A7
+  // fails CLOSED the instant config introduces an enemy kind the audit hasn't
+  // classified: the two-weapon FACT cannot silently lose coverage as content grows.
+  // (Owner action on red: this audit — add the new kind to RESOLVE + weaponDrawMap and
+  // assert its weapon; it is NOT a source bug, it is an audit-coverage gap.)
+  const modeledKinds = new Set(Object.keys(RESOLVE).filter((k) => k !== 'hero'));
+  const configKinds = Object.keys(ENEMIES);
+  const unmodeled = configKinds.filter((k) => !modeledKinds.has(k));
+  add('A7.everyConfigKindModeled', unmodeled.length === 0,
+    unmodeled.length
+      ? `config ENEMIES kinds NOT modeled by the audit: [${unmodeled.join(', ')}] — update RESOLVE+weaponDrawMap and assert their weapon (audit-coverage gap, not a source bug)`
+      : `all ${configKinds.length} config ENEMIES kinds modeled: [${configKinds.join(', ')}] (+hero) — no unaudited kind`);
+
   // Per-enemy-kind procedural-weapon TYPES, DERIVED from the parse above, so a stage
   // record can state a machine-checked fact for EACH armed enemy it resolves. `gun`/
   // `barrel` are the draw-SITE counts of each weapon TYPE (multiple sites are the same
@@ -379,8 +401,18 @@ function stageRecord(stageNum, staticLayer, rt, skipRuntime = false) {
 
   // 1. static render-path invariants (shared; a source regression fails every stage)
   add('static.renderPathInvariants', staticOk, staticOk
-    ? 'LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)'
+    ? 'LAYER A A1..A7 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free, every config kind modeled)'
     : 'LAYER A invariant(s) FAILED — see report.staticLayer (source regression → root.A)');
+
+  // 1b. COVERAGE — every enemy kind THIS stage spawns is modeled by the audit (no '?'
+  // fallback slipping through as an unchecked "single weapon"). A7 guards the config
+  // globally; this localizes drift to the exact stage that introduced an unaudited kind,
+  // so a new stage's enemy mix cannot silently ship without a weapon check.
+  const unmodeledSpawns = spawnTypes.filter((t) => !RESOLVE[t]);
+  add('keys.allSpawnsModeled', unmodeledSpawns.length === 0,
+    unmodeledSpawns.length
+      ? `stage spawns kinds the audit does not model: [${unmodeledSpawns.join(', ')}] — update RESOLVE (audit-coverage gap)`
+      : `all ${spawnTypes.length} spawned kinds modeled: [${spawnTypes.join(', ')}]`);
 
   // 2. no armed (two-weapon-surface) entity resolves to a baked-weapon body key
   const bakedHits = entities

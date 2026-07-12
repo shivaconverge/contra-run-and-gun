@@ -90,8 +90,14 @@ const STEP_CHUNK = (invincible, chunk, stopAtBoss) => {
     if (bo && w.bossActive && !bo.dead) {
       const bcy = bo.y + bo.h / 2;
       up = bcy < pcy0 - 6; down = down || bcy > pcy0 + 6;
-      // small horizontal weave off the barrier when a shot is dead-on and level
-      if (danger && !dHigh && !jump && Math.abs(danger.y + 1 - pcy0) < 8) { left = true; right = false; }
+      // small horizontal weave off the barrier when a shot is dead-on and level —
+      // but ONLY if there is solid ground under the left foot. A competent player
+      // never dodges into a chasm; without this guard the bot walks itself off the
+      // narrow boss-arena ledge (e.g. Stage-1's 58px chasm at x2220–2278, immediately
+      // left of the x2300 barrier) and the death is bot-suicide, not real difficulty.
+      const leftFootX = p.x - 6;
+      const groundLeft = w.solids.some((g) => g.kind === 'ground' && leftFootX >= g.x && leftFootX <= g.x + g.w && (p.y + p.h + 4) >= g.y && (p.y + p.h + 4) <= g.y + g.h + 6);
+      if (danger && !dHigh && !jump && groundLeft && Math.abs(danger.y + 1 - pcy0) < 8) { left = true; right = false; }
     }
     if (invincible) p.iframe = 999;
     w.step({ left, right, up, down, jump, fire: true, swap: false, jumpPressed: jump, swapPressed: false });
@@ -102,7 +108,10 @@ const STEP_CHUNK = (invincible, chunk, stopAtBoss) => {
       if (p.y > gf) cause = 'pit';                       // fell past the floor (dry chasm or water)
       else if (w.enemies.some((e) => !e.dead && overlap(e, p))) cause = 'contact';  // enemy body on us
       else cause = 'projectile';                          // otherwise an enemy bullet
-      B.deaths.push({ frame: w.frame, x: Math.round(p.x), cause, livesAfter: w.lives });
+      // Contra invariant: a death reverts the weapon to the default rifle
+      // (world.js _onPlayerDeath -> resetWeapon, before the lives-- / gameover check).
+      // Record it so the gate can assert the weapon-persistence rule holds every death.
+      B.deaths.push({ frame: w.frame, x: Math.round(p.x), cause, livesAfter: w.lives, weaponAfterDeath: p.weaponKey });
     }
     if (w.boss && w.bossActive) B.reachedBoss = true;
     if (w.boss && !w.boss.dead && w.bossActive) {
