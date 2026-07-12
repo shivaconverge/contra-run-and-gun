@@ -1,0 +1,831 @@
+{
+  "when": "2026-07-12T01:13:40.139Z",
+  "tool": "feedback/audit/weapon-defect-audit.mjs",
+  "scope": "creator round-2 two-weapon defect (hero drawGun + turret drawTurretBarrel) across all 7 stages",
+  "epsPx": 2,
+  "staticLayer": {
+    "ok": true,
+    "checks": [
+      {
+        "id": "A1.heroWeaponlessKeysOnly",
+        "ok": true,
+        "detail": "drawPlayer hero-body keys = [player_idle_noweapon, player_prone_noweapon, player_jump_noweapon, player_run_noweapon]; baked keys blitted = [none]"
+      },
+      {
+        "id": "A2.turretWeaponlessBody",
+        "ok": true,
+        "detail": "turret_base=true weaponlessFallback=true drawsBase=true bakedTurretBlitted=false"
+      },
+      {
+        "id": "A3.oneProceduralWeaponConfined",
+        "ok": true,
+        "detail": "drawGun calls=3 (all in drawPlayer=true); drawTurretBarrel calls=2 (all in drawEnemy=true)"
+      },
+      {
+        "id": "A4.heroShotFromDrawnMuzzle",
+        "ok": true,
+        "detail": "HERO_GUN{pivotY:0.30,muzzle:11} shared: render.drawGun uses .muzzle=true, player.shoot via heroMuzzle=true"
+      },
+      {
+        "id": "A5.turretShotFromDrawnBarrel",
+        "ok": true,
+        "detail": "render.drawTurretBarrel uses e.def.barrel{Pivot,Len}=true; enemy.js fire uses this.def.barrel{Pivot,Len}=true"
+      }
+    ]
+  },
+  "passed": 7,
+  "total": 7,
+  "verdict": "PASS",
+  "stages": [
+    {
+      "stage": 1,
+      "name": "Jungle Approach",
+      "theme": "jungle",
+      "armedTypes": [
+        "grunt",
+        "turret",
+        "flyer",
+        "mortar",
+        "boss"
+      ],
+      "twoWeaponSurface": [
+        "hero",
+        "turret"
+      ],
+      "entities": [
+        {
+          "kind": "hero",
+          "label": "hero (commando)",
+          "procWeapon": "drawGun",
+          "bodyKeys": [
+            "player_idle_noweapon",
+            "player_run_noweapon",
+            "player_jump_noweapon",
+            "player_prone_noweapon"
+          ],
+          "bakedForbidden": [
+            "player_idle",
+            "player_run",
+            "player_jump",
+            "player_prone"
+          ],
+          "count": 1
+        },
+        {
+          "kind": "grunt",
+          "label": "grunt",
+          "procWeapon": null,
+          "bodyKeys": [
+            "grunt"
+          ],
+          "bakedForbidden": [],
+          "count": 15
+        },
+        {
+          "kind": "turret",
+          "label": "turret (purple cannon)",
+          "procWeapon": "drawTurretBarrel",
+          "bodyKeys": [
+            "turret_base"
+          ],
+          "bakedForbidden": [
+            "turret"
+          ],
+          "count": 5
+        },
+        {
+          "kind": "flyer",
+          "label": "flyer (drone)",
+          "procWeapon": null,
+          "bodyKeys": [
+            "flyer"
+          ],
+          "bakedForbidden": [],
+          "count": 2
+        },
+        {
+          "kind": "mortar",
+          "label": "mortar (emplacement)",
+          "procWeapon": null,
+          "bodyKeys": [
+            "mortar"
+          ],
+          "bakedForbidden": [],
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "label": "boss (sentinel)",
+          "procWeapon": null,
+          "bodyKeys": [
+            "boss_<theme>||boss_enraged||boss"
+          ],
+          "bakedForbidden": [],
+          "count": 1
+        }
+      ],
+      "checks": [
+        {
+          "id": "static.renderPathInvariants",
+          "ok": true,
+          "detail": "LAYER A A1..A5 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle)"
+        },
+        {
+          "id": "keys.noBakedWeaponBody",
+          "ok": true,
+          "detail": "two-weapon entities [turret, hero] resolve to weaponless bodies only"
+        },
+        {
+          "id": "runtime.themeBoots",
+          "ok": true,
+          "detail": "booted theme='jungle' (config='jungle'), status=playing"
+        },
+        {
+          "id": "runtime.heroFromHandMuzzle",
+          "ok": true,
+          "detail": "bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)"
+        },
+        {
+          "id": "runtime.turretFromBarrelTip",
+          "ok": true,
+          "detail": "5/5 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
+        }
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "stage": 2,
+      "name": "Cascade Base",
+      "theme": "cascade",
+      "armedTypes": [
+        "grunt",
+        "turret",
+        "flyer",
+        "mortar",
+        "chopper"
+      ],
+      "twoWeaponSurface": [
+        "hero",
+        "turret"
+      ],
+      "entities": [
+        {
+          "kind": "hero",
+          "label": "hero (commando)",
+          "procWeapon": "drawGun",
+          "bodyKeys": [
+            "player_idle_noweapon",
+            "player_run_noweapon",
+            "player_jump_noweapon",
+            "player_prone_noweapon"
+          ],
+          "bakedForbidden": [
+            "player_idle",
+            "player_run",
+            "player_jump",
+            "player_prone"
+          ],
+          "count": 1
+        },
+        {
+          "kind": "grunt",
+          "label": "grunt",
+          "procWeapon": null,
+          "bodyKeys": [
+            "grunt"
+          ],
+          "bakedForbidden": [],
+          "count": 11
+        },
+        {
+          "kind": "turret",
+          "label": "turret (purple cannon)",
+          "procWeapon": "drawTurretBarrel",
+          "bodyKeys": [
+            "turret_base"
+          ],
+          "bakedForbidden": [
+            "turret"
+          ],
+          "count": 4
+        },
+        {
+          "kind": "flyer",
+          "label": "flyer (drone)",
+          "procWeapon": null,
+          "bodyKeys": [
+            "flyer"
+          ],
+          "bakedForbidden": [],
+          "count": 3
+        },
+        {
+          "kind": "mortar",
+          "label": "mortar (emplacement)",
+          "procWeapon": null,
+          "bodyKeys": [
+            "mortar"
+          ],
+          "bakedForbidden": [],
+          "count": 2
+        },
+        {
+          "kind": "chopper",
+          "label": "boss (chopper)",
+          "procWeapon": null,
+          "bodyKeys": [
+            "boss_<theme>||chopper_enraged||chopper"
+          ],
+          "bakedForbidden": [],
+          "count": 1
+        }
+      ],
+      "checks": [
+        {
+          "id": "static.renderPathInvariants",
+          "ok": true,
+          "detail": "LAYER A A1..A5 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle)"
+        },
+        {
+          "id": "keys.noBakedWeaponBody",
+          "ok": true,
+          "detail": "two-weapon entities [turret, hero] resolve to weaponless bodies only"
+        },
+        {
+          "id": "runtime.themeBoots",
+          "ok": true,
+          "detail": "booted theme='cascade' (config='cascade'), status=playing"
+        },
+        {
+          "id": "runtime.heroFromHandMuzzle",
+          "ok": true,
+          "detail": "bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)"
+        },
+        {
+          "id": "runtime.turretFromBarrelTip",
+          "ok": true,
+          "detail": "4/4 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
+        }
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "stage": 3,
+      "name": "Frozen Ridge",
+      "theme": "snow",
+      "armedTypes": [
+        "grunt",
+        "turret",
+        "flyer",
+        "mortar",
+        "boss"
+      ],
+      "twoWeaponSurface": [
+        "hero",
+        "turret"
+      ],
+      "entities": [
+        {
+          "kind": "hero",
+          "label": "hero (commando)",
+          "procWeapon": "drawGun",
+          "bodyKeys": [
+            "player_idle_noweapon",
+            "player_run_noweapon",
+            "player_jump_noweapon",
+            "player_prone_noweapon"
+          ],
+          "bakedForbidden": [
+            "player_idle",
+            "player_run",
+            "player_jump",
+            "player_prone"
+          ],
+          "count": 1
+        },
+        {
+          "kind": "grunt",
+          "label": "grunt",
+          "procWeapon": null,
+          "bodyKeys": [
+            "grunt"
+          ],
+          "bakedForbidden": [],
+          "count": 16
+        },
+        {
+          "kind": "turret",
+          "label": "turret (purple cannon)",
+          "procWeapon": "drawTurretBarrel",
+          "bodyKeys": [
+            "turret_base"
+          ],
+          "bakedForbidden": [
+            "turret"
+          ],
+          "count": 5
+        },
+        {
+          "kind": "flyer",
+          "label": "flyer (drone)",
+          "procWeapon": null,
+          "bodyKeys": [
+            "flyer"
+          ],
+          "bakedForbidden": [],
+          "count": 5
+        },
+        {
+          "kind": "mortar",
+          "label": "mortar (emplacement)",
+          "procWeapon": null,
+          "bodyKeys": [
+            "mortar"
+          ],
+          "bakedForbidden": [],
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "label": "boss (sentinel)",
+          "procWeapon": null,
+          "bodyKeys": [
+            "boss_<theme>||boss_enraged||boss"
+          ],
+          "bakedForbidden": [],
+          "count": 1
+        }
+      ],
+      "checks": [
+        {
+          "id": "static.renderPathInvariants",
+          "ok": true,
+          "detail": "LAYER A A1..A5 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle)"
+        },
+        {
+          "id": "keys.noBakedWeaponBody",
+          "ok": true,
+          "detail": "two-weapon entities [turret, hero] resolve to weaponless bodies only"
+        },
+        {
+          "id": "runtime.themeBoots",
+          "ok": true,
+          "detail": "booted theme='snow' (config='snow'), status=playing"
+        },
+        {
+          "id": "runtime.heroFromHandMuzzle",
+          "ok": true,
+          "detail": "bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)"
+        },
+        {
+          "id": "runtime.turretFromBarrelTip",
+          "ok": true,
+          "detail": "5/5 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
+        }
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "stage": 4,
+      "name": "Scorched Dunes",
+      "theme": "desert",
+      "armedTypes": [
+        "grunt",
+        "turret",
+        "mortar",
+        "chopper"
+      ],
+      "twoWeaponSurface": [
+        "hero",
+        "turret"
+      ],
+      "entities": [
+        {
+          "kind": "hero",
+          "label": "hero (commando)",
+          "procWeapon": "drawGun",
+          "bodyKeys": [
+            "player_idle_noweapon",
+            "player_run_noweapon",
+            "player_jump_noweapon",
+            "player_prone_noweapon"
+          ],
+          "bakedForbidden": [
+            "player_idle",
+            "player_run",
+            "player_jump",
+            "player_prone"
+          ],
+          "count": 1
+        },
+        {
+          "kind": "grunt",
+          "label": "grunt",
+          "procWeapon": null,
+          "bodyKeys": [
+            "grunt"
+          ],
+          "bakedForbidden": [],
+          "count": 6
+        },
+        {
+          "kind": "turret",
+          "label": "turret (purple cannon)",
+          "procWeapon": "drawTurretBarrel",
+          "bodyKeys": [
+            "turret_base"
+          ],
+          "bakedForbidden": [
+            "turret"
+          ],
+          "count": 2
+        },
+        {
+          "kind": "mortar",
+          "label": "mortar (emplacement)",
+          "procWeapon": null,
+          "bodyKeys": [
+            "mortar"
+          ],
+          "bakedForbidden": [],
+          "count": 2
+        },
+        {
+          "kind": "chopper",
+          "label": "boss (chopper)",
+          "procWeapon": null,
+          "bodyKeys": [
+            "boss_<theme>||chopper_enraged||chopper"
+          ],
+          "bakedForbidden": [],
+          "count": 1
+        }
+      ],
+      "checks": [
+        {
+          "id": "static.renderPathInvariants",
+          "ok": true,
+          "detail": "LAYER A A1..A5 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle)"
+        },
+        {
+          "id": "keys.noBakedWeaponBody",
+          "ok": true,
+          "detail": "two-weapon entities [turret, hero] resolve to weaponless bodies only"
+        },
+        {
+          "id": "runtime.themeBoots",
+          "ok": true,
+          "detail": "booted theme='desert' (config='desert'), status=playing"
+        },
+        {
+          "id": "runtime.heroFromHandMuzzle",
+          "ok": true,
+          "detail": "bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)"
+        },
+        {
+          "id": "runtime.turretFromBarrelTip",
+          "ok": true,
+          "detail": "2/2 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
+        }
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "stage": 5,
+      "name": "Iron Foundry",
+      "theme": "foundry",
+      "armedTypes": [
+        "grunt",
+        "turret",
+        "mortar",
+        "boss"
+      ],
+      "twoWeaponSurface": [
+        "hero",
+        "turret"
+      ],
+      "entities": [
+        {
+          "kind": "hero",
+          "label": "hero (commando)",
+          "procWeapon": "drawGun",
+          "bodyKeys": [
+            "player_idle_noweapon",
+            "player_run_noweapon",
+            "player_jump_noweapon",
+            "player_prone_noweapon"
+          ],
+          "bakedForbidden": [
+            "player_idle",
+            "player_run",
+            "player_jump",
+            "player_prone"
+          ],
+          "count": 1
+        },
+        {
+          "kind": "grunt",
+          "label": "grunt",
+          "procWeapon": null,
+          "bodyKeys": [
+            "grunt"
+          ],
+          "bakedForbidden": [],
+          "count": 5
+        },
+        {
+          "kind": "turret",
+          "label": "turret (purple cannon)",
+          "procWeapon": "drawTurretBarrel",
+          "bodyKeys": [
+            "turret_base"
+          ],
+          "bakedForbidden": [
+            "turret"
+          ],
+          "count": 6
+        },
+        {
+          "kind": "mortar",
+          "label": "mortar (emplacement)",
+          "procWeapon": null,
+          "bodyKeys": [
+            "mortar"
+          ],
+          "bakedForbidden": [],
+          "count": 1
+        },
+        {
+          "kind": "boss",
+          "label": "boss (sentinel)",
+          "procWeapon": null,
+          "bodyKeys": [
+            "boss_<theme>||boss_enraged||boss"
+          ],
+          "bakedForbidden": [],
+          "count": 1
+        }
+      ],
+      "checks": [
+        {
+          "id": "static.renderPathInvariants",
+          "ok": true,
+          "detail": "LAYER A A1..A5 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle)"
+        },
+        {
+          "id": "keys.noBakedWeaponBody",
+          "ok": true,
+          "detail": "two-weapon entities [turret, hero] resolve to weaponless bodies only"
+        },
+        {
+          "id": "runtime.themeBoots",
+          "ok": true,
+          "detail": "booted theme='foundry' (config='foundry'), status=playing"
+        },
+        {
+          "id": "runtime.heroFromHandMuzzle",
+          "ok": true,
+          "detail": "bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)"
+        },
+        {
+          "id": "runtime.turretFromBarrelTip",
+          "ok": true,
+          "detail": "6/6 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
+        }
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "stage": 6,
+      "name": "Crystal Caverns",
+      "theme": "caverns",
+      "armedTypes": [
+        "grunt",
+        "turret",
+        "flyer",
+        "mortar",
+        "chopper"
+      ],
+      "twoWeaponSurface": [
+        "hero",
+        "turret"
+      ],
+      "entities": [
+        {
+          "kind": "hero",
+          "label": "hero (commando)",
+          "procWeapon": "drawGun",
+          "bodyKeys": [
+            "player_idle_noweapon",
+            "player_run_noweapon",
+            "player_jump_noweapon",
+            "player_prone_noweapon"
+          ],
+          "bakedForbidden": [
+            "player_idle",
+            "player_run",
+            "player_jump",
+            "player_prone"
+          ],
+          "count": 1
+        },
+        {
+          "kind": "grunt",
+          "label": "grunt",
+          "procWeapon": null,
+          "bodyKeys": [
+            "grunt"
+          ],
+          "bakedForbidden": [],
+          "count": 12
+        },
+        {
+          "kind": "turret",
+          "label": "turret (purple cannon)",
+          "procWeapon": "drawTurretBarrel",
+          "bodyKeys": [
+            "turret_base"
+          ],
+          "bakedForbidden": [
+            "turret"
+          ],
+          "count": 4
+        },
+        {
+          "kind": "flyer",
+          "label": "flyer (drone)",
+          "procWeapon": null,
+          "bodyKeys": [
+            "flyer"
+          ],
+          "bakedForbidden": [],
+          "count": 5
+        },
+        {
+          "kind": "mortar",
+          "label": "mortar (emplacement)",
+          "procWeapon": null,
+          "bodyKeys": [
+            "mortar"
+          ],
+          "bakedForbidden": [],
+          "count": 4
+        },
+        {
+          "kind": "chopper",
+          "label": "boss (chopper)",
+          "procWeapon": null,
+          "bodyKeys": [
+            "boss_<theme>||chopper_enraged||chopper"
+          ],
+          "bakedForbidden": [],
+          "count": 1
+        }
+      ],
+      "checks": [
+        {
+          "id": "static.renderPathInvariants",
+          "ok": true,
+          "detail": "LAYER A A1..A5 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle)"
+        },
+        {
+          "id": "keys.noBakedWeaponBody",
+          "ok": true,
+          "detail": "two-weapon entities [turret, hero] resolve to weaponless bodies only"
+        },
+        {
+          "id": "runtime.themeBoots",
+          "ok": true,
+          "detail": "booted theme='caverns' (config='caverns'), status=playing"
+        },
+        {
+          "id": "runtime.heroFromHandMuzzle",
+          "ok": true,
+          "detail": "bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)"
+        },
+        {
+          "id": "runtime.turretFromBarrelTip",
+          "ok": true,
+          "detail": "4/4 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
+        }
+      ],
+      "verdict": "PASS"
+    },
+    {
+      "stage": 7,
+      "name": "Red Falcon Keep",
+      "theme": "fortress",
+      "armedTypes": [
+        "grunt",
+        "turret",
+        "flyer",
+        "mortar",
+        "boss"
+      ],
+      "twoWeaponSurface": [
+        "hero",
+        "turret"
+      ],
+      "entities": [
+        {
+          "kind": "hero",
+          "label": "hero (commando)",
+          "procWeapon": "drawGun",
+          "bodyKeys": [
+            "player_idle_noweapon",
+            "player_run_noweapon",
+            "player_jump_noweapon",
+            "player_prone_noweapon"
+          ],
+          "bakedForbidden": [
+            "player_idle",
+            "player_run",
+            "player_jump",
+            "player_prone"
+          ],
+          "count": 1
+        },
+        {
+          "kind": "grunt",
+          "label": "grunt",
+          "procWeapon": null,
+          "bodyKeys": [
+            "grunt"
+          ],
+          "bakedForbidden": [],
+          "count": 18
+        },
+        {
+          "kind": "turret",
+          "label": "turret (purple cannon)",
+          "procWeapon": "drawTurretBarrel",
+          "bodyKeys": [
+            "turret_base"
+          ],
+          "bakedForbidden": [
+            "turret"
+          ],
+          "count": 7
+        },
+        {
+          "kind": "flyer",
+          "label": "flyer (drone)",
+          "procWeapon": null,
+          "bodyKeys": [
+            "flyer"
+          ],
+          "bakedForbidden": [],
+          "count": 4
+        },
+        {
+          "kind": "mortar",
+          "label": "mortar (emplacement)",
+          "procWeapon": null,
+          "bodyKeys": [
+            "mortar"
+          ],
+          "bakedForbidden": [],
+          "count": 2
+        },
+        {
+          "kind": "boss",
+          "label": "boss (sentinel)",
+          "procWeapon": null,
+          "bodyKeys": [
+            "boss_<theme>||boss_enraged||boss"
+          ],
+          "bakedForbidden": [],
+          "count": 1
+        }
+      ],
+      "checks": [
+        {
+          "id": "static.renderPathInvariants",
+          "ok": true,
+          "detail": "LAYER A A1..A5 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle)"
+        },
+        {
+          "id": "keys.noBakedWeaponBody",
+          "ok": true,
+          "detail": "two-weapon entities [turret, hero] resolve to weaponless bodies only"
+        },
+        {
+          "id": "runtime.themeBoots",
+          "ok": true,
+          "detail": "booted theme='fortress' (config='fortress'), status=playing"
+        },
+        {
+          "id": "runtime.heroFromHandMuzzle",
+          "ok": true,
+          "detail": "bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)"
+        },
+        {
+          "id": "runtime.turretFromBarrelTip",
+          "ok": true,
+          "detail": "7/7 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)"
+        }
+      ],
+      "verdict": "PASS"
+    }
+  ]
+}
