@@ -597,4 +597,55 @@ export class World {
     });
     return { pass: violations.length === 0, violations, keys: [...keys] };
   }
+
+  // CAMPAIGN STRUCTURE guard — the GOAL's per-stage-DISTINCTNESS + escalation invariants,
+  // as one committed regression check. Motivated by a real miss: a prior cycle silently
+  // DROPPED enemy density after stage 2 and every existing guard (spine/defeatable/
+  // footing/decor) still passed — the regression was only found by hand-counting. This
+  // asserts the structural facts so that class of drift fails loudly next time:
+  //   • 7 stages, each with UNIQUE geometry (no two share a solids array) and a UNIQUE
+  //     theme id — i.e. no reskin/biome-collision regression.
+  //   • each stage registers EXACTLY ONE isBoss spawn (the win target).
+  //   • difficulty ESCALATES: non-boss enemy density is non-decreasing across the
+  //     post-opening stages (S2→S7) and the finale (S7) is the densest AND its boss HP
+  //     is the campaign maximum.
+  // Structural invariants (facts), NOT a fairness/fun verdict — that stays human-playtest.
+  static validateCampaignStructure(stages) {
+    const errors = [];
+    const ck = (c, m) => { if (!c) errors.push(m); };
+    ck(stages.length === 7, `expected 7 stages, got ${stages.length}`);
+
+    // Unique geometry + unique theme (distinctness).
+    ck(new Set(stages.map((s) => s.solids)).size === stages.length,
+      'geometry reuse: two stages share a solids array (reskin regression)');
+    ck(new Set(stages.map((s) => s.theme)).size === stages.length,
+      'theme collision: two stages share a theme id');
+
+    // Exactly one boss per stage.
+    const density = [];
+    stages.forEach((s, i) => {
+      const bosses = s.spawns.filter((sp) => ENEMIES[sp.type] && ENEMIES[sp.type].isBoss);
+      ck(bosses.length === 1, `stage ${i + 1}: expected exactly 1 boss spawn, got ${bosses.length}`);
+      density[i] = s.spawns.length - bosses.length; // non-boss enemy count
+    });
+
+    // Escalation: non-decreasing density S2→S7, finale is the densest.
+    for (let i = 2; i < density.length; i++) {
+      ck(density[i] >= density[i - 1],
+        `difficulty regression: stage ${i + 1} density ${density[i]} < stage ${i} density ${density[i - 1]}`);
+    }
+    const maxDensity = Math.max(...density);
+    ck(density[density.length - 1] === maxDensity,
+      `finale (stage 7) density ${density[density.length - 1]} is not the campaign max (${maxDensity})`);
+
+    // Finale boss HP is the campaign max (the hardest fight last).
+    const bossHp = stages.map((s) => {
+      const b = s.spawns.find((sp) => ENEMIES[sp.type] && ENEMIES[sp.type].isBoss);
+      return b.override && b.override.hp !== undefined ? b.override.hp : ENEMIES[b.type].hp;
+    });
+    ck(bossHp[6] === Math.max(...bossHp),
+      `finale boss HP ${bossHp[6]} is not the campaign max (${Math.max(...bossHp)})`);
+
+    return { pass: errors.length === 0, errors, density, bossHp };
+  }
 }
