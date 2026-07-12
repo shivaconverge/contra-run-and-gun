@@ -1,4 +1,4 @@
-=== GO-LIVE verification @ 2026-07-12T03:41:24Z ===
+=== GO-LIVE verification @ 2026-07-12T04:05:25Z ===
 URL: https://shivaconverge.github.io/contra-run-and-gun/
 --- root HTTP 0 ---
 <!doctype html>
@@ -55,20 +55,15 @@ audio resolve-gate: 7/7 tracks HTTP 200:
   assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 2408655 bytes [current]
 RESULT: LIVE ✅
 
-SET-DRESSING DECOR + ENTRY-CHECK RETRY HARDENING (LIVE URL, HEAD 20713bf):
-  Master added 6 per-biome set-dressing decor sprites (decor_cascade_valve/
-  caverns_crystal/desert_cactus/fortress_brazier/foundry_vat/snow_pine.png) +
-  boss enrage lifting REAL tracks + validateRespawnSafety in selftest.
-  Re-deployed; both gates green:
-    verify.sh  — 42 assets (auto-adapted 36->42, incl. 6 new decor) + 7 tracks current
-    live-selftest.sh — passed=119 total=119 ok=true failures=0 (respawn-safety
-      test bumped the suite 118->119); campaign.* invariants all PASS live.
-  DEFECT FOUND IN MY GATE (not the deliverable): verify.sh's ENTRY curl (root
-  HTML) hit a transient 'Couldn't connect' and hard-failed the whole gate, while
-  live-selftest passed 119/119 the same second — proving the site was up. Last
-  cycle's retry covered head_meta but NOT fetch()/code(). FIX: fetch() retries 3x
-  on curl failure; code() retries 3x only on '000' (connection-level), never on a
-  real HTTP status. Re-run: clean pass. The gate no longer false-fails on request #1.
-  Set-dressing renders live (JUDGE BY LOOKING):
-    deploy/evidence/live-stage4.png — S4 desert: saguaro CACTUS decor on the sand.
-    deploy/evidence/live-stage5.png — S5 foundry: glowing molten VAT decor.
+REFINED DECOR PLACEMENT + CONSOLIDATED RELEASE GATE (LIVE URL, HEAD 916aed4):
+  Master advanced source-only (config.js/level2.js/render.js) — refined per-biome
+  decor placement. Re-deployed; both gates green (42 assets + 7 tracks current;
+  live-selftest 119/119, campaign invariants PASS).
+  NEW deploy/gate.sh — the single ship-authorization command: runs verify.sh
+  (reachability+currency) THEN live-selftest.sh (functional) and emits one
+  combined verdict to GATE-STATUS.txt. Ran it this cycle:
+    reachability+currency: PASS   functional self-test: PASS   VERDICT: LIVE ✅
+  Reachability is the HARD requirement; a no-browser SKIP of the functional gate
+  is tolerated (it's an added assurance, not the reachability check). Also
+  refreshed deploy/README.md (was stale: '118 tests'/'a sprite reachable' → now
+  describes the full byte-currency + 119-test functional gates + gate.sh).
