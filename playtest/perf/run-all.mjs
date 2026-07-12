@@ -6,9 +6,11 @@
 //   node playtest/perf/run-all.mjs
 //
 // Probes (in order):
-//   cold-load.mjs --profile desktop   cold waterfall + payload + pacing (desktop)
-//   cold-load.mjs --profile mobile    same, throttled Slow-4G + 4x CPU
-//   music-memory.mjs                  decoded-audio resident RAM (the memory budget)
+//   cold-load.mjs --profile desktop        cold waterfall + payload + pacing (desktop)
+//   cold-load.mjs --profile mobile         same, throttled Slow-4G + 4x CPU
+//   music-memory.mjs                       decoded-audio resident RAM (the memory budget)
+//   campaign-pacing.mjs --profile desktop  driven rAF pacing through all 7 stages + bosses
+//   campaign-pacing.mjs --profile mobile   same, under 4x CPU throttle
 
 import { spawn } from 'node:child_process';
 import path from 'node:path';
@@ -24,6 +26,8 @@ const results = [];
 results.push(await run('cold-load.mjs', ['--profile', 'desktop']));
 results.push(await run('cold-load.mjs', ['--profile', 'mobile']));
 results.push(await run('music-memory.mjs'));
+results.push(await run('campaign-pacing.mjs', ['--profile', 'desktop']));
+results.push(await run('campaign-pacing.mjs', ['--profile', 'mobile']));
 
 console.log('\n' + '='.repeat(70));
 console.log('PERF SUITE ROLL-UP');

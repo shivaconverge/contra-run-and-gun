@@ -31,6 +31,7 @@ a hard-budget failure (so it can gate a release / CI). Uses `puppeteer-core`
 - `harness.mjs` — live-URL locator, Chrome locator, stage→biome asset classifier, `BUDGET`, profiles.
 - `cold-load.mjs` — cold waterfall + payload breakdown + ttff + pacing + heap; `--profile desktop|mobile`.
 - `music-memory.mjs` — decodes all 7 tracks in a real AudioContext, sums resident PCM.
+- `campaign-pacing.mjs` — drives the live loop through all 7 biomes + boss fights, grades rAF pacing per stage + campaign heap growth; `--profile desktop|mobile`.
 - `run-all.mjs` — runs the suite, prints a PASS/FAIL roll-up.
 - `results/*.json` — machine-readable evidence (regenerated each run).
 - `REPORT.md` / `BUDGET.md` / `OPEN-ISSUES.md` — synthesis, thresholds, open defects.
