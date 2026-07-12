@@ -577,22 +577,122 @@ const LEVEL7_FORTRESS = {
   goalX: 2340, // Sentinel x is the fight trigger; boss.dead = stage clear
 };
 
+// DISTINCT STAGE GEOMETRY — Stage 3 "Frozen Ridge": a WINDSWEPT RIDGELINE — its
+// signature is a long HIGH ice-ledge you run along (the ridge) over the open cold sky,
+// with a single crevasse gap. Aerial-heavy (drones own the sky). Distinct from S4/S5/S7
+// (open flats / vertical climb / battlements). Sentinel boss (Ice Sentinel) on the
+// PROVEN arena tail (barrier@2300, sentinel@2340).
+const LEVEL3_SNOW = {
+  name: 'Frozen Ridge',
+  theme: 'snow',
+  width: 2500,
+  height: 270,
+  gravityFloor: 268,
+  solids: [
+    // One crevasse gap (56px = proven jump reach) splits the ridge approach.
+    { x: 0,    y: 236, w: 1100, h: 40, kind: 'ground' },
+    // — 56px ice crevasse (x1100–1156) —
+    { x: 1156, y: 236, w: 1344, h: 40, kind: 'ground' }, // far ridge + arena
+    // Icy ledges rising to a long RIDGE you traverse up high (the signature).
+    { x: 250,  y: 195, w: 100, h: 8, kind: 'platform' },
+    { x: 450,  y: 165, w: 120, h: 8, kind: 'platform' },
+    { x: 700,  y: 135, w: 200, h: 8, kind: 'platform' }, // THE RIDGE (long high ledge)
+    // step down off the ridge — kept LEFT of the crevasse JUMP ZONE (~x1074–1164) so it
+    // never overhangs the cross-jump (an earlier x1000/w110 version head-bonked the jump
+    // arc → the oracle caught repeated pit deaths at S3; fixed by pulling it clear).
+    { x: 900,  y: 180, w: 90,  h: 8, kind: 'platform' },
+    { x: 1300, y: 185, w: 110, h: 8, kind: 'platform' },
+    { x: 1550, y: 150, w: 140, h: 8, kind: 'platform' },
+    { x: 1800, y: 175, w: 120, h: 8, kind: 'platform' },
+    { x: 2000, y: 195, w: 110, h: 8, kind: 'platform' },
+    { x: 2300, y: 96, w: 12, h: 140, kind: 'barrier', noBullet: true }, // Sentinel arena
+  ],
+  spawns: [
+    { type: 'grunt',  x: 200,  y: 210 },
+    { type: 'grunt',  x: 400,  y: 210 },
+    { type: 'flyer',  x: 500,  y: 100 }, // drones patrol the ridge (aerial signature)
+    { type: 'turret', x: 720,  y: 119 }, // on THE RIDGE (top y135 → y119)
+    { type: 'flyer',  x: 750,  y: 95 },
+    { type: 'flyer',  x: 1050, y: 100 },
+    { type: 'grunt',  x: 1250, y: 210 }, // far ridge (over ground 1156+)
+    { type: 'flyer',  x: 1400, y: 100 },
+    { type: 'turret', x: 1580, y: 134 }, // on the 1550 ledge (top y150 → y134)
+    { type: 'flyer',  x: 1700, y: 100 },
+    { type: 'grunt',  x: 1900, y: 210 },
+    { type: 'grunt',  x: 2050, y: 210 },
+    { type: 'turret', x: 2020, y: 179 }, // on the 2000 ledge (top y195 → y179)
+    { type: 'boss',   x: 2340, y: 184 },
+  ],
+  pickups: [
+    { weapon: 'spread',  x: 200,  y: 218 },
+    { weapon: 'machine', x: 1000, y: 218 },
+    { weapon: 'spread',  x: 2050, y: 218 },
+  ],
+  playerStart: { x: 40, y: 200 },
+  goalX: 2340,
+};
+
+// DISTINCT STAGE GEOMETRY — Stage 6 "Crystal Caverns": an enclosed DESCENDING cavern —
+// its signature is a broken crystal floor (a pit) crossed while low crystal outcrops
+// step down into the dark, a mixed aerial+artillery ambush. Distinct from the others.
+// Gunship boss (Crystal Wing) on the PROVEN chopper arena tail (barrier@2140, chopper@2340).
+const LEVEL6_CAVERNS = {
+  name: 'Crystal Caverns',
+  theme: 'caverns',
+  width: 2500,
+  height: 270,
+  gravityFloor: 268,
+  solids: [
+    { x: 0,    y: 236, w: 1000, h: 40, kind: 'ground' },
+    // — 56px crystal-floor pit (x1000–1056) —
+    { x: 1056, y: 236, w: 1444, h: 40, kind: 'ground' }, // lower cavern + arena
+    // Low crystal outcrops (descending clusters, tight — the cavern read).
+    { x: 250,  y: 150, w: 100, h: 8, kind: 'platform' }, // enter high
+    { x: 450,  y: 175, w: 100, h: 8, kind: 'platform' },
+    { x: 650,  y: 200, w: 90,  h: 8, kind: 'platform' }, // …stepping down
+    { x: 850,  y: 175, w: 110, h: 8, kind: 'platform' },
+    { x: 1200, y: 160, w: 110, h: 8, kind: 'platform' },
+    { x: 1400, y: 185, w: 110, h: 8, kind: 'platform' },
+    { x: 1650, y: 205, w: 120, h: 8, kind: 'platform' },
+    { x: 1900, y: 180, w: 110, h: 8, kind: 'platform' },
+    { x: 2140, y: 90, w: 12, h: 146, kind: 'barrier', noBullet: true }, // chopper arena
+  ],
+  spawns: [
+    { type: 'grunt',  x: 200,  y: 210 },
+    { type: 'turret', x: 280,  y: 134 }, // on the 250 outcrop (top y150 → y134)
+    { type: 'flyer',  x: 400,  y: 110 },
+    { type: 'mortar', x: 600,  y: 224 },
+    { type: 'grunt',  x: 800,  y: 210 },
+    { type: 'flyer',  x: 900,  y: 110 },
+    { type: 'grunt',  x: 1200, y: 210 }, // lower cavern (over ground 1056+)
+    { type: 'mortar', x: 1300, y: 224 },
+    { type: 'flyer',  x: 1500, y: 110 },
+    { type: 'turret', x: 1420, y: 169 }, // on the 1400 outcrop (top y185 → y169)
+    { type: 'mortar', x: 1750, y: 224 },
+    { type: 'grunt',  x: 1900, y: 210 },
+    { type: 'grunt',  x: 2050, y: 210 },
+    { type: 'chopper', x: 2340, y: 120 },
+  ],
+  pickups: [
+    { weapon: 'spread',  x: 250,  y: 218 },
+    { weapon: 'laser',   x: 1150, y: 218 }, // pierce for the outcrop sentries
+    { weapon: 'spread',  x: 2050, y: 218 }, // pre-boss fan for the sweeping gunship
+  ],
+  playerStart: { x: 40, y: 200 },
+  goalX: 2340,
+};
+
 // Ground-emplacement Y helpers (base ground top = y236): a gravity-less turret (h16)
 // sits at 220, a mortar (h12) at 224; grunts spawn at 210 and fall onto the ground.
 // One row per stage. `boss` folds onto the base boss spawn; `mix` adds the signature.
 const CAMPAIGN = [
   { base: LEVEL1 },  // Stage 1 — Jungle Approach (authored; theme in level1.js)
   { base: LEVEL2 },  // Stage 2 — Cascade Base   (authored; theme in level2.js)
-  // Stage 3 — Frozen Ridge (AIR pressure: drones own the cold open sky).
-  { base: LEVEL1, theme: 'snow', name: 'Frozen Ridge',
+  // Stage 3 — Frozen Ridge (DISTINCT windswept-ridgeline geometry, not a LEVEL1 reskin;
+  // the aerial-heavy mix is authored inline in LEVEL3_SNOW along the ridge + open sky).
+  { base: LEVEL3_SNOW, theme: 'snow', name: 'Frozen Ridge',
     boss: { name: 'Ice Sentinel', hp: 72, color: '#7fb6d9', enrageFireEvery: 42 },
-    mix: [
-      { type: 'flyer', x: 520,  y: 120 },
-      { type: 'flyer', x: 1120, y: 115 },
-      { type: 'flyer', x: 1500, y: 120 },
-      { type: 'grunt', x: 1150, y: 210 },
-    ],
-    decor: [ // snow-laden pines lining the ridge (x over LEVEL1 ground [0,1700])
+    decor: [ // snow-laden pines (x over LEVEL3_SNOW ground, clear of the crevasse 1100–1156)
       { x: 360, key: 'decor_snow_pine' },
       { x: 780, key: 'decor_snow_pine' },
       { x: 1280, key: 'decor_snow_pine' },
@@ -617,17 +717,11 @@ const CAMPAIGN = [
       { x: 1080, key: 'decor_foundry_vat' },
       { x: 1600, key: 'decor_foundry_vat' },
     ] },
-  // Stage 6 — Crystal Caverns (MIXED ambush: aerial + artillery crossfire).
-  { base: LEVEL2, theme: 'caverns', name: 'Crystal Caverns',
+  // Stage 6 — Crystal Caverns (DISTINCT descending-cavern geometry, not a LEVEL2 reskin;
+  // the mixed aerial+artillery ambush is authored inline in LEVEL6_CAVERNS' outcrops).
+  { base: LEVEL6_CAVERNS, theme: 'caverns', name: 'Crystal Caverns',
     boss: { name: 'Crystal Wing', hp: 96, color: '#b98ad9', enrageFireEvery: 40 },
-    mix: [
-      { type: 'flyer',  x: 850,  y: 115 },
-      { type: 'flyer',  x: 1620, y: 120 },
-      { type: 'mortar', x: 1000, y: 224 },
-      { type: 'mortar', x: 1750, y: 224 },
-      { type: 'grunt',  x: 1560, y: 210 },
-    ],
-    decor: [ // glowing violet crystal clusters (clear of the gap 1290–1346)
+    decor: [ // glowing violet crystal clusters (x over LEVEL6_CAVERNS ground, clear of the pit 1000–1056)
       { x: 380,  key: 'decor_caverns_crystal' },
       { x: 950,  key: 'decor_caverns_crystal' },
       { x: 1640, key: 'decor_caverns_crystal' },
