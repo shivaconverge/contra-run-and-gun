@@ -67,6 +67,18 @@ const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/jav
     g = await page.evaluate(`window.__gains()`);
     pass &= ok('switch tracks: source swaps, still hot', g.active === 's2_cascade' && g.src && g.trackGain > 0.1, JSON.stringify(g));
 
+    // Boss phase-2 ENRAGE lift now applies to the REAL track too (fixed _applyGain): with a
+    // real track playing, setIntensity(true) raises trackGain ×intensityBoost (the audible
+    // "it just got serious" cue on the shipped biome track), and setIntensity(false) relaxes it.
+    await page.evaluate(`window.__mk.setIntensity(true)`); await sleep(220);
+    let gi = await page.evaluate(`window.__gains()`);
+    pass &= ok('enrage LIFTS the real track (trackGain → base×boost)', gi.active === 's2_cascade' && gi.trackGain > 0.24,
+      `trackGain=${gi.trackGain} (base×1.22≈0.27)`);
+    await page.evaluate(`window.__mk.setIntensity(false)`); await sleep(220);
+    gi = await page.evaluate(`window.__gains()`);
+    pass &= ok('enrage RELAXES the real track (trackGain → base)', gi.trackGain > 0.15 && gi.trackGain < 0.24,
+      `trackGain=${gi.trackGain} (base≈0.22)`);
+
     await page.evaluate(`window.__use(null)`); await sleep(250);
     g = await page.evaluate(`window.__gains()`);
     // Audible fallback contract: the real-track SOURCE is stopped (bus emits silence
