@@ -11,7 +11,7 @@ import { aabbOverlap } from './util.js';
 import { LEVEL1 } from '../data/level1.js';
 import { LEVEL2 } from '../data/level2.js';
 import { ASSET_MANIFEST } from '../data/assets.js';
-import { PLAYER, WEAPONS, ENEMIES } from '../data/config.js';
+import { PLAYER, WEAPONS, ENEMIES, STAGES } from '../data/config.js';
 import { AudioKit } from './audio.js';
 import { MusicKit } from './music.js';
 
@@ -862,6 +862,21 @@ export function runSelfTest() {
     const x0 = w.player.x;
     for (let i = 0; i < 20; i++) w.step({ ...none, right: true });
     check('stagexfer.stage2Playable', w.player.x > x0 && w.enemies.some((e) => e.kind === 'chopper'), `moved=${(w.player.x - x0).toFixed(0)} chopper=${w.enemies.some((e) => e.kind === 'chopper')}`);
+  }
+
+  // 29. CAMPAIGN STRUCTURE guard (World.validateCampaignStructure over the REAL
+  //     shipping STAGES ladder): the GOAL's per-stage-DISTINCTNESS + escalation
+  //     invariants as a committed regression check — 7 stages, each with UNIQUE
+  //     geometry + UNIQUE theme, EXACTLY ONE boss each, non-decreasing non-boss
+  //     density S2→S7, and the finale (S7) both the densest AND the max-HP boss.
+  //     Motivated by a real miss (a prior cycle silently DROPPED density after
+  //     stage 2 and every other guard still passed); wiring it here makes that
+  //     class of drift fail the self-test loudly. Structural facts, not fun.
+  {
+    const cs = World.validateCampaignStructure(STAGES);
+    check('campaign.structureInvariantsHold', cs.pass, cs.errors.join('; ') || `density=[${cs.density}] bossHp=[${cs.bossHp}]`);
+    check('campaign.sevenDistinctStages', STAGES.length === 7 && new Set(STAGES.map((s) => s.theme)).size === 7, `n=${STAGES.length} themes=${new Set(STAGES.map((s) => s.theme)).size}`);
+    check('campaign.finaleIsDensestAndHardest', cs.density[6] === Math.max(...cs.density) && cs.bossHp[6] === Math.max(...cs.bossHp), `density=[${cs.density}] bossHp=[${cs.bossHp}]`);
   }
 
   const passed = results.filter((r) => r.pass).length;
