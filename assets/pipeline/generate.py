@@ -878,9 +878,15 @@ BIOME_BACKDROPS = {
     "foundry": {"seed": 624, "scene": "seamless tileable horizontal strip of a distant "
         "industrial skyline, dark steel smokestacks and factory towers with glowing "
         "molten-orange windows and rising smoke"},
-    "caverns": {"seed": 625, "scene": "seamless tileable horizontal strip of a distant "
-        "underground cavern wall, dark purple rock spires and hanging stalactites with "
-        "glowing violet crystal veins"},
+    # v2 (seed 635): v1 (seed 625) had evenly-spaced tall crystal spires that tiled into an
+    # obvious 4x sawtooth repeat (the worst periodicity offender, experiments/backgrounds/
+    # periodicity/). Re-authored as IRREGULAR clustered crystals of varied heights + evenly-
+    # spread veins (no single dominant spire) so the 4x tile reads as one continuous crystal
+    # wall -- verified far less periodic by looking (v2-compare.png), still distinctly violet.
+    "caverns": {"seed": 635, "scene": "seamless tileable horizontal strip of a distant "
+        "underground cavern wall, IRREGULAR clustered violet-purple crystal formations of "
+        "VARIED heights and sizes, uneven jagged dark rock, glowing lavender crystal veins "
+        "spread evenly across, no single dominant spire, continuous"},
     "fortress":{"seed": 626, "scene": "seamless tileable horizontal strip of a distant "
         "dark fortress skyline, grey-red castle towers battlements and spires with red "
         "banners against a smoky sky"},
