@@ -115,9 +115,22 @@ async function main() {
     summary.ran.push({ harness: 'weapon-fidelity', mode: 'public', exit: weaponPublicExit });
   }
 
+  // 3. Boss fidelity — fresh per-stage boss frames, local then public.
+  await sleep(3000);
+  const bossLocalExit = runHarness('boss-fidelity (local serve)', ['boss-fidelity.mjs']);
+  summary.ran.push({ harness: 'boss-fidelity', mode: 'local', exit: bossLocalExit });
+  let bossPublicExit = null;
+  if (!localOnly) {
+    await sleep(3000);
+    bossPublicExit = runHarness('boss-fidelity (public URL)', ['boss-fidelity.mjs', `--url=${PUBLIC_URL}`]);
+    summary.ran.push({ harness: 'boss-fidelity', mode: 'public', exit: bossPublicExit });
+  }
+
   // ---- Aggregate the real FACTS from each harness's JSON output ----
   const weaponLocal = await readJson(path.join(HERE, 'weapon-fidelity.json')).catch(() => null);
   const weaponPublic = localOnly ? null : await readJson(path.join(HERE, 'weapon-fidelity-live.json')).catch(() => null);
+  const bossLocal = await readJson(path.join(HERE, 'boss-fidelity.json')).catch(() => null);
+  const bossPublic = localOnly ? null : await readJson(path.join(HERE, 'boss-fidelity-live.json')).catch(() => null);
 
   const check = (id, passed, detail) => summary.checks.push({ id, passed: !!passed, detail });
 
@@ -141,6 +154,13 @@ async function main() {
   const weaponEvidenceOk = (w) => w && w.captures && w.captures.length >= 12 && w.turretCaptured === true && (w.heroPoses || []).length >= 3;
   check('local.weaponEvidenceCaptured', weaponEvidenceOk(weaponLocal), weaponLocal && `${weaponLocal.captures.length} crops, turret=${weaponLocal.turretCaptured}`);
   if (!localOnly) check('public.weaponEvidenceCaptured', weaponEvidenceOk(weaponPublic), weaponPublic && `${weaponPublic.captures.length} crops, turret=${weaponPublic.turretCaptured}`);
+
+  // Boss evidence FACTS: all 7 bosses captured with distinct names. The visible
+  // DISTINCTNESS of the 7 boss designs is a by-looking judgment recorded in
+  // ACCEPTANCE.md (the CV pre-filter under `distinctCV` is advisory only).
+  const bossEvidenceOk = (b) => b && b.bossesCaptured === '7/7' && b.distinctNames === true;
+  check('local.bossesCaptured==7/7 (distinct names)', bossEvidenceOk(bossLocal), bossLocal && `${bossLocal.bossesCaptured}, distinctNames=${bossLocal.distinctNames}`);
+  if (!localOnly) check('public.bossesCaptured==7/7 (distinct names)', bossEvidenceOk(bossPublic), bossPublic && `${bossPublic.bossesCaptured}, distinctNames=${bossPublic.distinctNames}`);
 
   // Weapon BY-LOOKING verdict — replayed from record, with a staleness guard.
   const verdict = await readJson(path.join(HERE, 'weapon-verdict.json')).catch(() => null);

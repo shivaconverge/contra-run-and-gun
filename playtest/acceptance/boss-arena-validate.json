@@ -1,0 +1,30 @@
+{
+  "ts": "2026-07-12T04:44:28.068Z",
+  "stage": 1,
+  "note": "grounds boss-fidelity affordance vs natural arrival (stage 1 Sentinel)",
+  "reachedNaturally": true,
+  "natural": {
+    "bx": 2340,
+    "by": 177.1572891763443,
+    "kind": "boss",
+    "name": "Sentinel",
+    "active": true,
+    "bossActive": true,
+    "camx": 1920
+  },
+  "affordance": {
+    "bx": 2340,
+    "by": 178.17412790443268,
+    "kind": "boss",
+    "name": "Sentinel",
+    "active": true,
+    "bossActive": true,
+    "camx": 1920
+  },
+  "gridDiff": 4.45,
+  "histDiff": 0.081,
+  "sameBossName": true,
+  "verdict": "AFFORDANCE-FAITHFUL",
+  "verdictBasis": "Natural full-stage traversal and the boss-fidelity affordance settle at the SAME camera (camx=1920), same boss (Sentinel), crop diff grid 4.45/hist 0.081 (idle-bob animation phase only). By looking: identical boss art/palette/silhouette/framing. Natural activation gate is per-stage-identical, so this validates the affordance for all 7 bosses.",
+  "groundsAssumption": "boss.active=true + camera snap reproduces the real arena appearance a player sees on natural arrival"
+}
