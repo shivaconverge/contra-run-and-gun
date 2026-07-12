@@ -45,7 +45,10 @@ for (const lvl of levels) {
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
   const scen = args.scenario ? `&scenario=${args.scenario}` : '';
-  const url = `${base}/game/index.html?headless=1&frames=${frames}&level=${lvl}&seed=1234${scen}`;
+  // local static server serves the repo, game at game/index.html; the deployed Pages
+  // site publishes game/ AT THE ROOT, so index.html. Override with --gamepath index.html.
+  const gamepath = args.gamepath || 'game/index.html';
+  const url = `${base}/${gamepath}?headless=1&frames=${frames}&level=${lvl}&seed=1234${scen}`;
   await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
   await page.waitForFunction('window.__bench !== undefined', { timeout: 30000 });
   const info = await page.evaluate(() => ({
