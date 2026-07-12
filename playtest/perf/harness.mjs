@@ -56,7 +56,24 @@ export function findChrome() {
 }
 
 export function loadPuppeteer() {
-  return require('puppeteer-core');
+  // Prefer the local install (playtest/perf/node_modules per README). If that
+  // isn't present (fresh checkout / CI that hasn't `npm install`ed the perf
+  // seat), fall back to the copy vendored under reference/tools so the whole
+  // suite — including run-all.mjs's spawned children, which don't inherit a
+  // NODE_PATH — runs standalone. Same puppeteer-core@21 version either way.
+  const bases = [
+    HERE,                                              // playtest/perf (local install)
+    path.join(REPO_ROOT, 'reference', 'tools'),        // vendored fallback
+    REPO_ROOT,
+  ];
+  let lastErr;
+  for (const base of bases) {
+    try {
+      const req = createRequire(path.join(base, 'noop.js'));
+      return req('puppeteer-core');
+    } catch (e) { lastErr = e; }
+  }
+  throw new Error(`puppeteer-core not resolvable from any of [${bases.join(', ')}] — run 'npm install' in playtest/perf. (${lastErr && lastErr.message})`);
 }
 
 // ---------------------------------------------------------------------------

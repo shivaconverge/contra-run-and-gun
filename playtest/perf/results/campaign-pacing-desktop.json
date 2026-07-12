@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-12T12:25:41.776Z",
+  "generatedAt": "2026-07-12T12:54:20.839Z",
   "profile": "desktop",
   "url": "https://shivaconverge.github.io/contra-run-and-gun/",
   "chrome": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
@@ -12,18 +12,18 @@
       "stage": 1,
       "biome": "Jungle Approach",
       "field": {
-        "frames": 213,
+        "frames": 212,
         "medianFps": 59.9,
-        "p95Ms": 18.4,
+        "p95Ms": 18.6,
         "worstMs": 18.7,
         "dropped": 0,
         "droppedFrac": 0
       },
       "boss": {
-        "frames": 214,
+        "frames": 213,
         "medianFps": 59.9,
-        "p95Ms": 18.4,
-        "worstMs": 18.7,
+        "p95Ms": 18.6,
+        "worstMs": 18.8,
         "dropped": 0,
         "droppedFrac": 0
       },
@@ -31,14 +31,14 @@
       "peakEntities": {
         "field": {
           "enemies": 24,
-          "bullets": 22,
-          "particles": 38,
+          "bullets": 23,
+          "particles": 36,
           "fx": 1
         },
         "boss": {
           "enemies": 21,
-          "bullets": 21,
-          "particles": 89,
+          "bullets": 25,
+          "particles": 71,
           "fx": 1
         }
       }
@@ -55,42 +55,7 @@
         "droppedFrac": 0
       },
       "boss": {
-        "frames": 212,
-        "medianFps": 59.9,
-        "p95Ms": 18.5,
-        "worstMs": 18.7,
-        "dropped": 0,
-        "droppedFrac": 0
-      },
-      "bossReached": true,
-      "peakEntities": {
-        "field": {
-          "enemies": 21,
-          "bullets": 14,
-          "particles": 37,
-          "fx": 1
-        },
-        "boss": {
-          "enemies": 18,
-          "bullets": 24,
-          "particles": 32,
-          "fx": 1
-        }
-      }
-    },
-    {
-      "stage": 3,
-      "biome": "Frozen Ridge",
-      "field": {
-        "frames": 213,
-        "medianFps": 59.9,
-        "p95Ms": 18.5,
-        "worstMs": 18.7,
-        "dropped": 0,
-        "droppedFrac": 0
-      },
-      "boss": {
-        "frames": 213,
+        "frames": 214,
         "medianFps": 59.9,
         "p95Ms": 18.6,
         "worstMs": 18.7,
@@ -101,14 +66,49 @@
       "peakEntities": {
         "field": {
           "enemies": 21,
+          "bullets": 14,
+          "particles": 39,
+          "fx": 1
+        },
+        "boss": {
+          "enemies": 18,
           "bullets": 24,
+          "particles": 39,
+          "fx": 1
+        }
+      }
+    },
+    {
+      "stage": 3,
+      "biome": "Frozen Ridge",
+      "field": {
+        "frames": 214,
+        "medianFps": 59.9,
+        "p95Ms": 18.5,
+        "worstMs": 18.6,
+        "dropped": 0,
+        "droppedFrac": 0
+      },
+      "boss": {
+        "frames": 214,
+        "medianFps": 59.9,
+        "p95Ms": 18.6,
+        "worstMs": 18.7,
+        "dropped": 0,
+        "droppedFrac": 0
+      },
+      "bossReached": true,
+      "peakEntities": {
+        "field": {
+          "enemies": 21,
+          "bullets": 25,
           "particles": 37,
           "fx": 1
         },
         "boss": {
           "enemies": 17,
           "bullets": 28,
-          "particles": 44,
+          "particles": 43,
           "fx": 0
         }
       }
@@ -119,13 +119,13 @@
       "field": {
         "frames": 213,
         "medianFps": 59.9,
-        "p95Ms": 18.5,
-        "worstMs": 18.7,
+        "p95Ms": 18.6,
+        "worstMs": 18.8,
         "dropped": 0,
         "droppedFrac": 0
       },
       "boss": {
-        "frames": 212,
+        "frames": 213,
         "medianFps": 59.9,
         "p95Ms": 18.6,
         "worstMs": 18.7,
@@ -136,14 +136,14 @@
       "peakEntities": {
         "field": {
           "enemies": 21,
-          "bullets": 17,
-          "particles": 45,
+          "bullets": 18,
+          "particles": 47,
           "fx": 1
         },
         "boss": {
           "enemies": 17,
-          "bullets": 33,
-          "particles": 38,
+          "bullets": 34,
+          "particles": 31,
           "fx": 1
         }
       }
@@ -154,15 +154,15 @@
       "field": {
         "frames": 213,
         "medianFps": 59.9,
-        "p95Ms": 18.6,
-        "worstMs": 18.7,
+        "p95Ms": 18.7,
+        "worstMs": 18.8,
         "dropped": 0,
         "droppedFrac": 0
       },
       "boss": {
         "frames": 213,
         "medianFps": 59.9,
-        "p95Ms": 18.6,
+        "p95Ms": 18.5,
         "worstMs": 18.8,
         "dropped": 0,
         "droppedFrac": 0
@@ -171,13 +171,13 @@
       "peakEntities": {
         "field": {
           "enemies": 22,
-          "bullets": 25,
-          "particles": 45,
+          "bullets": 26,
+          "particles": 43,
           "fx": 1
         },
         "boss": {
           "enemies": 19,
-          "bullets": 27,
+          "bullets": 25,
           "particles": 46,
           "fx": 0
         }
@@ -189,7 +189,7 @@
       "field": {
         "frames": 213,
         "medianFps": 59.9,
-        "p95Ms": 18.6,
+        "p95Ms": 18.1,
         "worstMs": 18.7,
         "dropped": 0,
         "droppedFrac": 0
@@ -197,8 +197,8 @@
       "boss": {
         "frames": 213,
         "medianFps": 59.9,
-        "p95Ms": 18.1,
-        "worstMs": 18.6,
+        "p95Ms": 18.4,
+        "worstMs": 18.7,
         "dropped": 0,
         "droppedFrac": 0
       },
@@ -206,14 +206,14 @@
       "peakEntities": {
         "field": {
           "enemies": 24,
-          "bullets": 26,
-          "particles": 38,
+          "bullets": 27,
+          "particles": 42,
           "fx": 1
         },
         "boss": {
-          "enemies": 22,
-          "bullets": 42,
-          "particles": 33,
+          "enemies": 21,
+          "bullets": 43,
+          "particles": 37,
           "fx": 1
         }
       }
@@ -224,16 +224,16 @@
       "field": {
         "frames": 213,
         "medianFps": 59.9,
-        "p95Ms": 18.5,
-        "worstMs": 18.7,
+        "p95Ms": 18.7,
+        "worstMs": 18.8,
         "dropped": 0,
         "droppedFrac": 0
       },
       "boss": {
-        "frames": 212,
+        "frames": 214,
         "medianFps": 59.9,
-        "p95Ms": 18.6,
-        "worstMs": 18.7,
+        "p95Ms": 18.4,
+        "worstMs": 18.8,
         "dropped": 0,
         "droppedFrac": 0
       },
@@ -241,14 +241,14 @@
       "peakEntities": {
         "field": {
           "enemies": 28,
-          "bullets": 24,
-          "particles": 46,
+          "bullets": 22,
+          "particles": 45,
           "fx": 1
         },
         "boss": {
           "enemies": 24,
           "bullets": 26,
-          "particles": 38,
+          "particles": 47,
           "fx": 0
         }
       }
@@ -257,59 +257,59 @@
   "heapSeries": [
     {
       "point": "boot",
-      "bytes": 1723888
+      "bytes": 1741428
     },
     {
       "point": "after-stage-1",
-      "bytes": 2333955
+      "bytes": 2313171
     },
     {
       "point": "after-stage-2",
-      "bytes": 2371442
+      "bytes": 2365562
     },
     {
       "point": "after-stage-3",
-      "bytes": 2355849
+      "bytes": 2382590
     },
     {
       "point": "after-stage-4",
-      "bytes": 2392401
+      "bytes": 2341310
     },
     {
       "point": "after-stage-5",
-      "bytes": 2401763
+      "bytes": 2391080
     },
     {
       "point": "after-stage-6",
-      "bytes": 2433810
+      "bytes": 2455735
     },
     {
       "point": "after-stage-7",
-      "bytes": 2396036
+      "bytes": 2435206
     }
   ],
-  "heapGrowthMB": 0.64,
+  "heapGrowthMB": 0.66,
   "pageErrors": [],
   "checks": [
     {
       "id": "s1.field.median-fps",
       "pass": true,
-      "detail": "Jungle Approach field: median 59.9fps (p95 18.4ms, worst 18.7ms) vs bar 58"
+      "detail": "Jungle Approach field: median 59.9fps (p95 18.6ms, worst 18.7ms) vs bar 58"
     },
     {
       "id": "s1.field.dropped",
       "pass": true,
-      "detail": "Jungle Approach field: dropped 0/213 (0.0%) vs ≤5%"
+      "detail": "Jungle Approach field: dropped 0/212 (0.0%) vs ≤5%"
     },
     {
       "id": "s1.boss.median-fps",
       "pass": true,
-      "detail": "Jungle Approach boss: median 59.9fps (p95 18.4ms, worst 18.7ms) vs bar 58"
+      "detail": "Jungle Approach boss: median 59.9fps (p95 18.6ms, worst 18.8ms) vs bar 58"
     },
     {
       "id": "s1.boss.dropped",
       "pass": true,
-      "detail": "Jungle Approach boss: dropped 0/214 (0.0%) vs ≤5%"
+      "detail": "Jungle Approach boss: dropped 0/213 (0.0%) vs ≤5%"
     },
     {
       "id": "s2.field.median-fps",
@@ -324,22 +324,22 @@
     {
       "id": "s2.boss.median-fps",
       "pass": true,
-      "detail": "Cascade Base boss: median 59.9fps (p95 18.5ms, worst 18.7ms) vs bar 58"
+      "detail": "Cascade Base boss: median 59.9fps (p95 18.6ms, worst 18.7ms) vs bar 58"
     },
     {
       "id": "s2.boss.dropped",
       "pass": true,
-      "detail": "Cascade Base boss: dropped 0/212 (0.0%) vs ≤5%"
+      "detail": "Cascade Base boss: dropped 0/214 (0.0%) vs ≤5%"
     },
     {
       "id": "s3.field.median-fps",
       "pass": true,
-      "detail": "Frozen Ridge field: median 59.9fps (p95 18.5ms, worst 18.7ms) vs bar 58"
+      "detail": "Frozen Ridge field: median 59.9fps (p95 18.5ms, worst 18.6ms) vs bar 58"
     },
     {
       "id": "s3.field.dropped",
       "pass": true,
-      "detail": "Frozen Ridge field: dropped 0/213 (0.0%) vs ≤5%"
+      "detail": "Frozen Ridge field: dropped 0/214 (0.0%) vs ≤5%"
     },
     {
       "id": "s3.boss.median-fps",
@@ -349,12 +349,12 @@
     {
       "id": "s3.boss.dropped",
       "pass": true,
-      "detail": "Frozen Ridge boss: dropped 0/213 (0.0%) vs ≤5%"
+      "detail": "Frozen Ridge boss: dropped 0/214 (0.0%) vs ≤5%"
     },
     {
       "id": "s4.field.median-fps",
       "pass": true,
-      "detail": "Scorched Dunes field: median 59.9fps (p95 18.5ms, worst 18.7ms) vs bar 58"
+      "detail": "Scorched Dunes field: median 59.9fps (p95 18.6ms, worst 18.8ms) vs bar 58"
     },
     {
       "id": "s4.field.dropped",
@@ -369,12 +369,12 @@
     {
       "id": "s4.boss.dropped",
       "pass": true,
-      "detail": "Scorched Dunes boss: dropped 0/212 (0.0%) vs ≤5%"
+      "detail": "Scorched Dunes boss: dropped 0/213 (0.0%) vs ≤5%"
     },
     {
       "id": "s5.field.median-fps",
       "pass": true,
-      "detail": "Iron Foundry field: median 59.9fps (p95 18.6ms, worst 18.7ms) vs bar 58"
+      "detail": "Iron Foundry field: median 59.9fps (p95 18.7ms, worst 18.8ms) vs bar 58"
     },
     {
       "id": "s5.field.dropped",
@@ -384,7 +384,7 @@
     {
       "id": "s5.boss.median-fps",
       "pass": true,
-      "detail": "Iron Foundry boss: median 59.9fps (p95 18.6ms, worst 18.8ms) vs bar 58"
+      "detail": "Iron Foundry boss: median 59.9fps (p95 18.5ms, worst 18.8ms) vs bar 58"
     },
     {
       "id": "s5.boss.dropped",
@@ -394,7 +394,7 @@
     {
       "id": "s6.field.median-fps",
       "pass": true,
-      "detail": "Crystal Caverns field: median 59.9fps (p95 18.6ms, worst 18.7ms) vs bar 58"
+      "detail": "Crystal Caverns field: median 59.9fps (p95 18.1ms, worst 18.7ms) vs bar 58"
     },
     {
       "id": "s6.field.dropped",
@@ -404,7 +404,7 @@
     {
       "id": "s6.boss.median-fps",
       "pass": true,
-      "detail": "Crystal Caverns boss: median 59.9fps (p95 18.1ms, worst 18.6ms) vs bar 58"
+      "detail": "Crystal Caverns boss: median 59.9fps (p95 18.4ms, worst 18.7ms) vs bar 58"
     },
     {
       "id": "s6.boss.dropped",
@@ -414,7 +414,7 @@
     {
       "id": "s7.field.median-fps",
       "pass": true,
-      "detail": "Red Falcon Keep field: median 59.9fps (p95 18.5ms, worst 18.7ms) vs bar 58"
+      "detail": "Red Falcon Keep field: median 59.9fps (p95 18.7ms, worst 18.8ms) vs bar 58"
     },
     {
       "id": "s7.field.dropped",
@@ -424,17 +424,17 @@
     {
       "id": "s7.boss.median-fps",
       "pass": true,
-      "detail": "Red Falcon Keep boss: median 59.9fps (p95 18.6ms, worst 18.7ms) vs bar 58"
+      "detail": "Red Falcon Keep boss: median 59.9fps (p95 18.4ms, worst 18.8ms) vs bar 58"
     },
     {
       "id": "s7.boss.dropped",
       "pass": true,
-      "detail": "Red Falcon Keep boss: dropped 0/212 (0.0%) vs ≤5%"
+      "detail": "Red Falcon Keep boss: dropped 0/214 (0.0%) vs ≤5%"
     },
     {
       "id": "campaign.heap-growth",
       "pass": true,
-      "detail": "JS heap grew 0.64MB across all 7 stages (post-GC) vs ≤16MB"
+      "detail": "JS heap grew 0.66MB across all 7 stages (post-GC) vs ≤16MB"
     },
     {
       "id": "campaign.no-page-errors",
