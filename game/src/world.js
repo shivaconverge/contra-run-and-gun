@@ -652,4 +652,49 @@ export class World {
 
     return { pass: errors.length === 0, errors, density, bossHp };
   }
+
+  // RESPAWN-SAFETY guard — a pit death must NEVER respawn the player back into a pit,
+  // or the campaign dead-ends in an infinite death loop (game over → retry → fall →
+  // repeat). This is a real risk on the 5 authored GAP-heavy stages (canyons/crevasses/
+  // moats). It exercises the ACTUAL respawn logic (_safeGroundX, from _doRespawn) across
+  // every camera position in every stage and asserts the chosen respawn x sits over a
+  // `kind:'ground'` solid — plus one END-TO-END pit-death→respawn per stage that must
+  // leave the player alive and grounded. Guards the geometry this loop authored.
+  static validateRespawnSafety(stages) {
+    const violations = [];
+    stages.forEach((lvl, i) => {
+      const w = new World(lvl, 1234, 'arcade');
+      const overGround = (cx) => lvl.solids.some((s) => s.kind === 'ground' && cx >= s.x && cx <= s.x + s.w);
+      // Sample every camera position: the respawn x must land over ground.
+      for (let camX = 0; camX <= lvl.width; camX += 32) {
+        w.camera.x = camX;
+        const rx = w._safeGroundX(Math.max(camX + 40, 20));
+        if (!overGround(rx + w.player.w / 2)) {
+          violations.push({ stage: i + 1, camX, rx, reason: 'respawn x not over ground' });
+        }
+      }
+      // End-to-end: drop the player into a gap and run the real respawn cycle.
+      const gapMid = (() => {
+        const grounds = lvl.solids.filter((s) => s.kind === 'ground').sort((a, b) => a.x - b.x);
+        for (let g = 0; g < grounds.length - 1; g++) {
+          const gapStart = grounds[g].x + grounds[g].w, gapEnd = grounds[g + 1].x;
+          if (gapEnd > gapStart) return (gapStart + gapEnd) / 2; // midpoint of the first pit
+        }
+        return null;
+      })();
+      if (gapMid !== null) {
+        const w2 = new World(lvl, 1234, 'arcade');
+        w2.camera.x = Math.max(0, gapMid - 100);
+        w2.player.x = gapMid; w2.player.y = lvl.gravityFloor + 10; // in the pit, below floor
+        w2._onPitFall();
+        for (let f = 0; f < 80 && w2.status === 'playing'; f++) w2.step({});
+        const p = w2.player;
+        const grounded = overGround(p.x + p.w / 2);
+        if (w2.status === 'playing' && (p.dead || !grounded)) {
+          violations.push({ stage: i + 1, gapMid, reason: 'post-pit respawn left player dead/ungrounded', px: Math.round(p.x), dead: p.dead });
+        }
+      }
+    });
+    return { pass: violations.length === 0, violations };
+  }
 }
