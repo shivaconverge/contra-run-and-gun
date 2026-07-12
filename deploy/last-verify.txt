@@ -1,4 +1,4 @@
-=== GO-LIVE verification @ 2026-07-12T01:31:32Z ===
+=== GO-LIVE verification @ 2026-07-12T01:32:53Z ===
 URL: https://shivaconverge.github.io/contra-run-and-gun/
 --- root HTTP 0 ---
 <!doctype html>
@@ -41,8 +41,27 @@ URL: https://shivaconverge.github.io/contra-run-and-gun/
   /* the ID rule above out-specifies the UA [hidden] rule — make hidden authoritative */
   #boot-help[hidden] { display: none !important; }
   #boot-help .card { max-width: 580px; text-align: left; font-size: 13px; line-height: 1.65; }
-  STALE: assets/boss_caverns.png live=3420 local=3268
-  STALE: assets/boss_desert.png live=2695 local=2681
-  STALE: assets/boss_fortress.png live=4170 local=3795
-  STALE: assets/boss_foundry.png live=3211 local=3181
-  STALE: assets/boss_snow.png live=2409 local=2440
+
+src/main.js: HTTP 200 (26946 bytes)
+asset resolve-gate: 36/36 referenced assets HTTP 200
+assets/audio/manifest.json: HTTP 200
+audio resolve-gate: 7/7 tracks HTTP 200:
+  assets/audio/s1_jungle.mp3: HTTP 200, audio/mp3, 874327 bytes [current]
+  assets/audio/s2_cascade.mp3: HTTP 200, audio/mp3, 3271502 bytes [current]
+  assets/audio/s3_snow.mp3: HTTP 200, audio/mp3, 1872061 bytes [current]
+  assets/audio/s4_desert.mp3: HTTP 200, audio/mp3, 1383421 bytes [current]
+  assets/audio/s5_foundry.mp3: HTTP 200, audio/mp3, 2674059 bytes [current]
+  assets/audio/s6_caverns.mp3: HTTP 200, audio/mp3, 2706956 bytes [current]
+  assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 2408655 bytes [current]
+RESULT: LIVE ✅
+
+FINALIZED BOSSES + STAGE-7 KEEP + FULL BYTE-CURRENCY GATE (LIVE URL, HEAD f691ad5):
+  Master finalized the 5 themed boss sprites (PNG bytes changed, same names) +
+  Stage 7 'Red Falcon Keep' fortress geometry + audio-manifest key metadata
+  (mp3 bytes unchanged). NEW: the ASSET resolve-gate now also enforces byte-
+  currency (Content-Length == local file size), matching the audio gate — it
+  FIRST caught all 5 finalized boss PNGs as STALE pre-deploy (an HTTP-200-only
+  check would have passed them), then post-deploy all 36 assets + 7 tracks are
+  [current]. The whole served bundle is now provably fresh, not just reachable.
+  Stage 7 renders live: deploy/evidence/live-stage7.png — crimson fortress
+  crenellations, armored boss, aerial + ninja enemy mix.
