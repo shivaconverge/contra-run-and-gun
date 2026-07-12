@@ -235,11 +235,13 @@ async function waitForPort(proc) {
       if (!setup.ok) {
         pass &= ok('enrage intensity engages live', false, `setup: ${setup.why}`);
       } else {
-        // wait >1 bar (~1.58s @152 BPM) so the synth scheduler resumes feeding musicGain —
-        // otherwise headless-shell returns a stale value for a momentarily source-less node.
-        await sleep(1900);
+        // POLL (robust to back-to-back suite load) for the synth scheduler to resume feeding
+        // musicGain AND the enrage lift to engage — a fixed sleep+read flaked when Chromium
+        // contention slowed the AudioContext scheduler past the wait. Generous timeout absorbs
+        // load; the assertion still fails fast if the lift genuinely doesn't happen.
+        await sleep(300);
         let engaged = true;
-        try { await p2.waitForFunction('window.__audio.music._intensity === true && window.__audio.music.musicGain.gain.value > 0.24', { timeout: 3000 }); } catch { engaged = false; }
+        try { await p2.waitForFunction('window.__audio.music._intensity === true && window.__audio.music.musicGain.gain.value > 0.24', { timeout: 7000 }); } catch { engaged = false; }
         pass &= ok('enrage lifts the live music (musicGain → ~base×1.22)', engaged, `_intensity=${await p2.evaluate('window.__audio.music._intensity')} musicGain=${(await musicGain()).toFixed(3)} (base=${setup.base}, >0.24)`);
         // restart clears the enrage → intensity relaxes back to base
         await p2.evaluate('window.__game.reset()');
@@ -261,12 +263,15 @@ async function waitForPort(proc) {
       // is the layer under test — the shipped build's boot track would otherwise keep it at 0).
       a.setPlaying(true); a.setSection('stage'); if (a.muted) a.toggleMute(); a.useTrack(null);
     })()`);
-    // (a) GAINS are continuous ramps (<=0.35s) → settle fast. This is the real
-    //     stuck-gain guard: after churn every gain must converge to its target. Wait >1 bar
-    //     so the synth scheduler resumes feeding musicGain after the final useTrack(null).
-    await sleep(1900);
+    // (a) GAINS are continuous ramps (<=0.35s) → settle fast. This is the real stuck-gain
+    //     guard: after churn every gain must converge to its target. POLL for musicGain to
+    //     settle (the synth scheduler must resume feeding it after the final useTrack(null)) —
+    //     a fixed wait+read flaked under back-to-back suite load; generous timeout absorbs it.
+    await sleep(300);
+    let churnSettled = true;
+    try { await p2.waitForFunction('Math.abs(window.__audio.music.musicGain.gain.value - 0.22) < 0.02 && window.__audio.music.sceneGain.gain.value > 0.9 && window.__audio.music.duckGain.gain.value > 0.9', { timeout: 7000 }); } catch { churnSettled = false; }
     const churn = await p2.evaluate('({ scene: +window.__audio.music.sceneGain.gain.value.toFixed(4), music: +window.__audio.music.musicGain.gain.value.toFixed(4), duck: +window.__audio.music.duckGain.gain.value.toFixed(4), muted: window.__audio.music.muted, running: window.__audio.music.running })');
-    const gainsOk = churn.scene > 0.9 && Math.abs(churn.music - 0.22) < 0.02 && churn.duck > 0.9 && churn.muted === false && churn.running === true;
+    const gainsOk = churnSettled && churn.scene > 0.9 && Math.abs(churn.music - 0.22) < 0.02 && churn.duck > 0.9 && churn.muted === false && churn.running === true;
     pass &= ok('gains settle correctly after rapid churn (no stuck gain)', gainsOk, JSON.stringify(churn));
     // (b) SECTION is deliberately downbeat-quantized (queued to the next bar, <=1.58s,
     //     for a clean musical cut) — NOT instant. So poll for convergence within a bar+;
