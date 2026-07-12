@@ -524,9 +524,14 @@ export class MusicKit {
     // Exactly one path is audible: the synth (when no real track is active) or the real
     // track (when one is selected). Mute (KeyM) silences whichever is live.
     const onTrack = !!this._activeTrack;
-    const synthTarget = (this.muted || onTrack)
-      ? 0.0001 : this._base * (this._intensity ? this._intensityBoost : 1);
-    const trackTarget = (this.muted || !onTrack) ? 0.0001 : this._base;
+    // Boss phase-2 ENRAGE lifts the mix ×intensityBoost. This applies to WHICHEVER layer is
+    // audible — the synth (via musicGain) AND a real generated track (via trackGain). A real
+    // track can't gain double-time hats (it's a rendered mp3), but the hotter-mix lift is the
+    // audible "it just got serious" cue, so the boss escalation now lands on the shipped
+    // per-biome tracks too, not only the procedural fallback.
+    const boost = this._intensity ? this._intensityBoost : 1;
+    const synthTarget = (this.muted || onTrack) ? 0.0001 : this._base * boost;
+    const trackTarget = (this.muted || !onTrack) ? 0.0001 : this._base * boost;
     this._ramp(this.musicGain.gain, synthTarget, 0.05);
     if (this.trackGain) this._ramp(this.trackGain.gain, trackTarget, 0.05);
   }

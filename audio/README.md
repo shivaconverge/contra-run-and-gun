@@ -137,14 +137,23 @@ served mp3s are **byte-identical** to this build (the 14.5 MB web-optimized rebu
 live manifest carries the `key_estimate` correction — so real players get the current
 per-stage music. Doubles as a deploy-freshness gate for the audio layer.
 
-> 🔁 **OPEN NEED — re-sync `game/src/music.js` from `audio/music.js`.** This cycle added a
-> `_stopTrackSource` hygiene fix (pins the stopped real-track bus's schedule to silence) to
-> the source of truth. `game/src/music.js` (owned by the integrator, kept as a verbatim
-> copy) must be re-synced (`cp audio/music.js game/src/music.js`) to carry it. Byte-safe: the
-> served build's 7-track playback already passes today; this only tidies the sourceless-bus
-> gain state. (Finding: the "trackGain lingers hot after useTrack(null)" I chased is a
-> **headless-shell readback artifact on a sourceless GainNode**, not an audible defect — the
-> bus emits silence regardless; verifiers now assert the audible contract, not that value.)
+> 🔁 **OPEN NEED — re-sync `game/src/music.js` from `audio/music.js`.** The source of truth
+> carries two engine-side improvements the integrator's verbatim copy still lacks; re-sync
+> (`cp audio/music.js game/src/music.js`) to ship them. Both are byte-safe (the served
+> build's 7-track playback passes today regardless):
+> 1. **Boss ENRAGE now lifts REAL tracks** (this cycle). `_applyGain` applied the
+>    `_intensityBoost` only to the synth's `musicGain`, so on the shipped build — where a real
+>    per-biome track plays during boss fights — phase-2 enrage produced NO audible escalation
+>    (parent-confirmed: `trackTarget=this._base`, no boost). Fixed: `trackTarget` now takes the
+>    same `×intensityBoost` lift, so the "it just got serious" cue lands on the shipped biome
+>    track too (a rendered mp3 can't gain double-time hats — the hotter-mix lift is the cue).
+>    Grounded on `audio/music.js` by `verify/track-handoff-check.mjs`: with a real track
+>    active, `setIntensity(true)` raises `trackGain`→0.268 (base×1.22), `setIntensity(false)`
+>    relaxes →0.22. **7/7.**
+> 2. **`_stopTrackSource` hygiene** (prior cycle) — pins the stopped real-track bus's schedule
+>    to silence. (The "trackGain lingers hot after useTrack(null)" is a headless-shell readback
+>    artifact on a sourceless GainNode, not an audible defect; verifiers assert the audible
+>    contract, not that value.)
 
 > Open need (parent to confirm): the boss fight currently keeps the stage's real biome
 > loop (no per-biome *boss* track yet — confirmed: `onStageChange` fires only on stage
