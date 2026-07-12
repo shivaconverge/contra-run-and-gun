@@ -1,6 +1,6 @@
 # Weapon-Defect Audit — creator round-2 (all 7 stages)
 
-_Generated 2026-07-12T01:13:40.139Z by `feedback/audit/weapon-defect-audit.mjs`. Regenerate: `node feedback/audit/weapon-defect-audit.mjs`._
+_Generated 2026-07-12T01:36:25.023Z by `feedback/audit/weapon-defect-audit.mjs`. Regenerate: `node feedback/audit/weapon-defect-audit.mjs`._
 
 **VERDICT: PASS** — 7/7 stages clean. Muzzle tolerance 2px.
 
@@ -138,9 +138,9 @@ Resolved bodies (armed entities):
 Resolved bodies (armed entities):
 
 - **hero (commando)** ×1 → body `player_idle_noweapon | player_run_noweapon | player_jump_noweapon | player_prone_noweapon` + procedural `drawGun`
-- **grunt** ×18 → body `grunt` (single weapon, no overlay)
-- **turret (purple cannon)** ×7 → body `turret_base` + procedural `drawTurretBarrel`
-- **flyer (drone)** ×4 → body `flyer` (single weapon, no overlay)
+- **grunt** ×5 → body `grunt` (single weapon, no overlay)
+- **turret (purple cannon)** ×6 → body `turret_base` + procedural `drawTurretBarrel`
+- **flyer (drone)** ×2 → body `flyer` (single weapon, no overlay)
 - **mortar (emplacement)** ×2 → body `mortar` (single weapon, no overlay)
 - **boss (sentinel)** ×1 → body `boss_<theme>||boss_enraged||boss` (single weapon, no overlay)
 
@@ -148,7 +148,7 @@ Resolved bodies (armed entities):
 - ✅ `keys.noBakedWeaponBody` — two-weapon entities [turret, hero] resolve to weaponless bodies only
 - ✅ `runtime.themeBoots` — booted theme='fortress' (config='fortress'), status=playing
 - ✅ `runtime.heroFromHandMuzzle` — bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)
-- ✅ `runtime.turretFromBarrelTip` — 7/7 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)
+- ✅ `runtime.turretFromBarrelTip` — 6/6 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)
 
 ## OPEN ISSUES
 
