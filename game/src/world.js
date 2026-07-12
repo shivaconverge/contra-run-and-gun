@@ -670,7 +670,18 @@ export class World {
     const dec = World.validateDecor(stages);
     ck(dec.pass, `decor: ${JSON.stringify(dec.violations.slice(0, 3))}`);
 
-    return { pass: errors.length === 0, errors, density, bossHp, footing: foot.pass, decor: dec.pass };
+    // Fold in the CASUAL-ACCESSIBILITY invariant (the GOAL's "real players can reach
+    // victory") so it's GATED too, not just a one-off measurement. It drives a calibrated
+    // mortal casual bot against each boss in a fresh casual pool and requires EVERY stage
+    // clearable (== casual+retry reaches victory, a lower bound). Deterministic (seed
+    // 1234) and cheap (~100ms). If a future edit makes any stage unbeatable in a fresh
+    // casual pool (e.g. a boss HP bump like the S6 96→82 fix this addressed), the wired
+    // gate fails loudly instead of shipping an unwinnable accessibility path.
+    const cas = World.casualBossSurvivalTest(stages);
+    ck(cas.calibrated, `casual bot lost calibration (must clear S1–S3): ${JSON.stringify(cas.results.slice(0, 3).map((r) => r.cleared))}`);
+    ck(cas.allClear, `casual accessibility regression: not every boss beatable in a fresh casual pool → casual+retry can't reach victory. Failing stages: ${JSON.stringify(cas.results.filter((r) => !r.cleared).map((r) => ({ stage: r.stage, boss: r.boss, deaths: r.deaths })))}`);
+
+    return { pass: errors.length === 0, errors, density, bossHp, footing: foot.pass, decor: dec.pass, casualAllClear: cas.allClear };
   }
 
   // RESPAWN-SAFETY guard — a pit death must NEVER respawn the player back into a pit,
