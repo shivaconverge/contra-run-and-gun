@@ -512,7 +512,7 @@ function drawFps(ctx, fps) {
 // INTERIM: this belongs in render.js long-term (open need); it lives here so the
 // victory payoff + correct next-stage label SHIP now without editing another loop's file.
 function drawCampaignEndOverlay(ctx, world) {
-  if (!world || world.status !== 'cleared') return;
+  if (!world || (world.status !== 'cleared' && world.status !== 'gameover')) return;
   const W = SIM.VIEW_W, H = SIM.VIEW_H, cx = W / 2, cy = H / 2;
   const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints || 0) > 0;
   const score = 'SCORE ' + String(world.score || 0).padStart(6, '0');
@@ -525,7 +525,32 @@ function drawCampaignEndOverlay(ctx, world) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
-  if (world.isFinalStage) {
+  if (world.status === 'gameover') {
+    // GAME OVER — R RETRIES THE CURRENT STAGE (fresh lives, campaign position kept),
+    // NOT a restart from stage 1. render's generic "press R to restart" is ambiguous;
+    // this makes the retry-current-stage model explicit so a player who ran out of
+    // lives on a late stage doesn't think they've lost all progress. This retry loop is
+    // the parent-endorsed CASUAL accessibility path to victory (BALANCE-REPORT).
+    ctx.fillStyle = '#ff6b6b';
+    ctx.font = '16px monospace';
+    ctx.fillText('GAME OVER', cx, cy - 34);
+    ctx.fillStyle = '#ffe36e';
+    ctx.font = '10px monospace';
+    ctx.fillText(score, cx, cy - 16);
+    if (world.newHigh) {
+      ctx.fillStyle = '#ffd23c'; ctx.font = '8px monospace';
+      ctx.fillText('★ NEW HIGH SCORE ★', cx, cy - 3);
+    } else {
+      ctx.fillStyle = '#8a97a8'; ctx.font = '8px monospace';
+      ctx.fillText('HI ' + String(hi).padStart(6, '0'), cx, cy - 3);
+    }
+    ctx.fillStyle = '#ffd27a';
+    ctx.font = '9px monospace';
+    ctx.fillText(isTouch ? 'TAP TO RETRY THIS STAGE' : 'press R to retry this stage', cx, cy + 16);
+    ctx.fillStyle = '#cfe';
+    ctx.font = '7px monospace';
+    ctx.fillText('▶  STAGE ' + (world.stageNum || 1) + '  —  ' + String((world.level && world.level.name) || '').toUpperCase(), cx, cy + 30);
+  } else if (world.isFinalStage) {
     // FINAL VICTORY — the campaign payoff after clearing stage 7.
     ctx.fillStyle = '#ffd23c';
     ctx.font = '24px monospace';
