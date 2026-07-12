@@ -60,16 +60,30 @@ render-path regression fails **every** stage (correct — it is a global break).
 ## Run
 
 ```
-node feedback/audit/weapon-defect-audit.mjs
+node feedback/audit/weapon-defect-audit.mjs                     # full: static FACT + browser grounding
+WEAPON_AUDIT_STATIC_ONLY=1 node feedback/audit/weapon-defect-audit.mjs   # fast: deterministic static FACT only
 ```
 
 Deterministic (no rng in the audit; the sim is seeded). Exit `0` iff all 7 stages
 are clean, else `1` — so a deploy gate can consume it directly.
 
+**Fail-closed static / skip-when-no-browser.** Layer A + the static `keys.*` checks
+are the HARD two-weapon FACT and run with only Node (no Chrome). Layer B (per-stage
+runtime grounding) drives a real headless browser; with **no headless Chrome /
+`puppeteer-core` it SKIPS gracefully** (`[weapon-audit] SKIP:`, `runtime.*` marked
+`skipped`, never red) and the static FACT still governs the exit code — exactly like
+`deploy/live-selftest.sh`. A browser that IS present but a stage then fails to drive,
+or a runtime origin assertion that goes red, is a **real** failure and blocks. This
+makes the audit safe to run in a browserless gate. See **`INTEGRATION.md`** for the
+drop-in `deploy/gate.sh` wiring (handoff to root.D).
+
 Outputs (this dir only):
-- `report/weapon-audit.json` — one machine-checked record per stage (verdict + every check).
+- `report/weapon-audit.json` — one machine-checked record per stage (verdict + every
+  check); top-level `layerB.grounded` distinguishes a browser-grounded PASS from a
+  static-only PASS.
 - `REPORT.md` — regenerated human summary, with an `## OPEN ISSUES` section listing any
   failing fact (severity + repro + owner) so a real defect is recorded, never masked.
+- `INTEGRATION.md` — the proposed deploy-gate wire (exit-code + report contract) for root.D.
 
 ## Ownership & boundaries
 
