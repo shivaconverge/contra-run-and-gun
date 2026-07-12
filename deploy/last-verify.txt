@@ -1,4 +1,4 @@
-=== GO-LIVE verification @ 2026-07-12T06:12:59Z ===
+=== GO-LIVE verification @ 2026-07-12T06:39:17Z ===
 URL: https://shivaconverge.github.io/contra-run-and-gun/
 --- root HTTP 0 ---
 <!doctype html>
@@ -55,12 +55,10 @@ audio resolve-gate: 7/7 tracks HTTP 200:
   assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 2408655 bytes [current]
 RESULT: LIVE ✅
 
-SOURCE-CHANGE REFRESH — MODULE GATE PROVES CURRENCY (LIVE URL, HEAD 644ef98):
-  Master advanced source-only (enemy.js/main.js/render.js — setBossTrack cap +
-  misc). Re-deployed; full release gate LIVE ✅ (reachability+currency PASS,
-  functional 119/119 PASS). The module byte-currency gate added last cycle did
-  exactly its job on a source-only change: the 3 CHANGED modules verified
-  byte-exact live == local —
-    src/enemy.js  12458==12458   src/main.js 29382==29382   src/render.js 80610==80610
-  — proving the source reached players (not just returns 200). Boots clean:
-  deploy/evidence/live-boot.png (stage-1 jungle).
+BOSS-CADENCE BALANCE REFRESH (LIVE URL, HEAD f943950):
+  Master advanced source-only (config.js — eased boss fire cadence ~15%,
+  Sentinel 82/46->92/54 etc.). A numeric balance tweak is invisible in a static
+  frame, so the proof is byte-currency + functional: re-deployed, release gate
+  LIVE ✅ (reachability+currency PASS, functional 119/119 PASS). The changed
+  module verified byte-exact live == local: data/config.js 43393==43393 —
+  proving the eased cadence reached players, not just a green deploy.
