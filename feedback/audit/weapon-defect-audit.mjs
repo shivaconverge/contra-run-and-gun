@@ -347,7 +347,7 @@ function isArmedKind(k) {
   return !!d && (d.fireEvery != null || d.shotSpeed != null || d.shellVy != null || d.isBoss === true);
 }
 
-function stageRecord(stageNum, staticLayer, rt) {
+function stageRecord(stageNum, staticLayer, rt, skipRuntime = false) {
   const staticOk = staticLayer.ok;
   const weaponDrawMap = staticLayer.weaponDrawMap || {};
   const stage = STAGES[stageNum - 1];
@@ -368,6 +368,14 @@ function stageRecord(stageNum, staticLayer, rt) {
 
   const checks = [];
   const add = (id, ok, detail) => checks.push({ id, ok: !!ok, detail });
+  // A runtime (Layer-B) check that is SKIPPED because no headless browser is
+  // available is NOT a failure — like live-selftest.sh's SKIP, the deterministic
+  // static two-weapon FACT (Layer A + keys.*) still governs the verdict. It is
+  // recorded (skipped:true, ok:true so it can't turn a stage red) but flagged so a
+  // gate/report never mistakes an unrun runtime probe for a passed one.
+  const addRuntime = (id, ok, detail) => skipRuntime
+    ? checks.push({ id, ok: true, skipped: true, detail: 'SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs' })
+    : checks.push({ id, ok: !!ok, detail });
 
   // 1. static render-path invariants (shared; a source regression fails every stage)
   add('static.renderPathInvariants', staticOk, staticOk
@@ -407,12 +415,12 @@ function stageRecord(stageNum, staticLayer, rt) {
       : `all ${armedWeapons.length} armed kinds draw one weapon type: ${armedWeapons.map((a) => `${a.kind}→${a.weaponTypes[0] || 'none'}`).join(', ')} (hero=gun, turret=barrel, rest=none; none draws two)`);
 
   // 3. runtime: stage booted on its configured theme
-  add('runtime.themeBoots', rt && rt.boot && rt.boot.theme === stage.theme,
+  addRuntime('runtime.themeBoots', rt && rt.boot && rt.boot.theme === stage.theme,
     rt && rt.boot ? `booted theme='${rt.boot.theme}' (config='${stage.theme}'), status=${rt.boot.status}` : 'no boot');
 
   // 4. runtime: hero fires from the hand muzzle (upper body, ahead of centre)
   const h = rt && rt.hero;
-  add('runtime.heroFromHandMuzzle', h && h.fired && h.frac < 0.55 && h.forward,
+  addRuntime('runtime.heroFromHandMuzzle', h && h.fired && h.frac < 0.55 && h.forward,
     h && h.fired ? `bullet spawns ${Math.round(h.frac * 100)}% down body, forward-of-centre=${h.forward} (<55% ⇒ hands, not waist)`
       : 'hero produced no bullet');
 
@@ -420,9 +428,9 @@ function stageRecord(stageNum, staticLayer, rt) {
   const tu = rt && rt.turret;
   const hasTurret = armedTypes.includes('turret');
   if (!hasTurret) {
-    add('runtime.turretFromBarrelTip', true, 'no turret in this stage (N/A)');
+    addRuntime('runtime.turretFromBarrelTip', true, 'no turret in this stage (N/A)');
   } else {
-    add('runtime.turretFromBarrelTip', tu && tu.hasTurret && tu.fired > 0 && tu.allFromTip,
+    addRuntime('runtime.turretFromBarrelTip', tu && tu.hasTurret && tu.fired > 0 && tu.allFromTip,
       tu && tu.hasTurret
         ? `${tu.fired}/${tu.n} turrets fired; all shots at the drawn barrel tip=${tu.allFromTip} (maxTipDist=${tu.maxTipDist}px ≤${EPS_PX}, minDomeDist=${tu.minDomeDist}px ⇒ displaced from hull centre along the barrel)`
         : 'turret expected but none observed firing');
@@ -446,40 +454,68 @@ async function main() {
   for (const c of staticLayer.checks) console.log(`  ${c.ok ? 'PASS' : 'FAIL'}  ${c.id}  —  ${c.detail}`);
   console.log(`  → LAYER A ${staticLayer.ok ? 'PASS' : 'FAIL'}\n`);
 
-  const srv = await serveGame();
-  const puppeteer = loadPuppeteer();
-  const browser = await puppeteer.launch({ executablePath: findChrome(), headless: 'new',
-    args: ['--no-sandbox', '--disable-gpu', '--mute-audio'] });
+  // Layer B drives the REAL browser build. It is a GROUNDING assurance on top of the
+  // deterministic static FACT — so, exactly like deploy/live-selftest.sh, a MISSING
+  // headless Chrome / puppeteer is a graceful SKIP, not a gate failure: Layer A + the
+  // static keys.* checks are the hard two-weapon requirement and still govern the exit
+  // code. (A browser that IS present but a stage that then fails to drive, or a runtime
+  // assertion that goes red, is a REAL failure and still blocks — see below.)
+  let srv = null, browser = null, skipRuntime = false, skipReason = null;
+  try {
+    // WEAPON_AUDIT_STATIC_ONLY=1 → deliberately run only the deterministic static FACT
+    // (no browser/server spin-up). Lets a fast deploy gate enforce the two-weapon
+    // invariant cheaply and defer the browser-grounded Layer B to a nightly/full run.
+    if (process.env.WEAPON_AUDIT_STATIC_ONLY === '1') throw new Error('WEAPON_AUDIT_STATIC_ONLY=1 (static-only mode requested)');
+    srv = await serveGame();
+    const puppeteer = loadPuppeteer();
+    browser = await puppeteer.launch({ executablePath: findChrome(), headless: 'new',
+      args: ['--no-sandbox', '--disable-gpu', '--mute-audio'] });
+  } catch (e) {
+    skipRuntime = true; skipReason = e.message;
+    if (browser) { try { await browser.close(); } catch { /* ignore */ } browser = null; }
+    if (srv) { try { await srv.close(); } catch { /* ignore */ } srv = null; }
+    console.log(`[weapon-audit] SKIP: Layer-B runtime grounding — ${skipReason}`);
+    console.log('  (no headless browser; the deterministic static two-weapon FACT below still governs the verdict)\n');
+  }
 
   const stages = [];
   try {
-    console.log('LAYER B — per-stage runtime grounding:');
+    console.log('LAYER B — per-stage runtime grounding:' + (skipRuntime ? ' (SKIPPED — static FACT governs)' : ''));
     for (let n = 1; n <= STAGES.length; n++) {
       let rt = null, err = null;
-      try { rt = await runtimeForStage(browser, srv.url, n); }
-      catch (e) { err = e.message; }
-      const rec = stageRecord(n, staticLayer, rt);
+      if (!skipRuntime) {
+        try { rt = await runtimeForStage(browser, srv.url, n); }
+        catch (e) { err = e.message; }
+      }
+      const rec = stageRecord(n, staticLayer, rt, skipRuntime);
+      // A drive error while the browser IS available is a REAL failure (not a skip).
       if (err) { rec.verdict = 'FAIL'; rec.checks.push({ id: 'runtime.driveError', ok: false, detail: err }); }
       stages.push(rec);
       const bad = rec.checks.filter((c) => !c.ok).map((c) => c.id);
-      console.log(`  Stage ${n} [${rec.theme}] ${rec.verdict}${bad.length ? '  (red: ' + bad.join(', ') + ')' : ''}`);
+      const skipped = rec.checks.filter((c) => c.skipped).length;
+      console.log(`  Stage ${n} [${rec.theme}] ${rec.verdict}${bad.length ? '  (red: ' + bad.join(', ') + ')' : ''}${skipped ? `  (${skipped} runtime SKIP)` : ''}`);
     }
   } finally {
-    await browser.close();
-    await srv.close();
+    if (browser) await browser.close();
+    if (srv) await srv.close();
   }
 
   const passed = stages.filter((s) => s.verdict === 'PASS').length;
   const verdict = staticLayer.ok && passed === stages.length ? 'PASS' : `FAIL (${stages.length - passed}/${stages.length} stages red)`;
   const report = { when: started, tool: 'feedback/audit/weapon-defect-audit.mjs',
     scope: 'creator round-2 two-weapon defect (hero drawGun + turret drawTurretBarrel) across all 7 stages',
-    epsPx: EPS_PX, staticLayer, passed, total: stages.length, verdict, stages };
+    epsPx: EPS_PX,
+    // Machine-readable Layer-B state so a gate can distinguish grounded PASS from
+    // static-only PASS (browser absent) without scraping console text.
+    layerB: { grounded: !skipRuntime, skipped: skipRuntime, skipReason },
+    staticLayer, passed, total: stages.length, verdict, stages };
 
   await mkdir(path.join(HERE, 'report'), { recursive: true });
   await writeFile(path.join(HERE, 'report', 'weapon-audit.json'), JSON.stringify(report, null, 2));
   await writeFile(path.join(HERE, 'REPORT.md'), renderMarkdown(report));
 
-  console.log(`\n=== WEAPON-DEFECT AUDIT: ${verdict} — ${passed}/${stages.length} stages clean ===`);
+  const grounding = skipRuntime ? ' (Layer B SKIPPED — static FACT only)' : '';
+  console.log(`\n=== WEAPON-DEFECT AUDIT: ${verdict} — ${passed}/${stages.length} stages clean${grounding} ===`);
   console.log('   report/weapon-audit.json + REPORT.md written');
   process.exit(verdict === 'PASS' ? 0 : 1);
 }
@@ -492,6 +528,16 @@ function renderMarkdown(r) {
   L.push('');
   L.push(`**VERDICT: ${r.verdict}** — ${r.passed}/${r.total} stages clean. Muzzle tolerance ${r.epsPx}px.`);
   L.push('');
+  if (r.layerB && r.layerB.skipped) {
+    L.push(`> ⏭ **Layer B (runtime grounding) SKIPPED** — no headless browser (\`${r.layerB.skipReason}\`).`);
+    L.push('> The deterministic **static two-weapon FACT (Layer A + \`keys.*\`) still governs** this verdict,');
+    L.push('> exactly like `deploy/live-selftest.sh`\'s SKIP. Run on a machine with Chrome to add the');
+    L.push('> per-stage runtime muzzle-origin grounding.');
+    L.push('');
+  } else if (r.layerB && r.layerB.grounded) {
+    L.push('> ✅ **Layer B (runtime grounding) RAN** — every stage driven in a real headless browser build.');
+    L.push('');
+  }
   L.push('The creator round-2 REJECT is a FACT: does any armed entity show TWO weapons (a');
   L.push('gun baked into the sprite art AND a procedural code-drawn one)? The two entities');
   L.push('that overlay a procedural aiming weapon on a body — the surface of the defect — are');
@@ -533,7 +579,7 @@ function renderMarkdown(r) {
       }
       L.push('');
     }
-    for (const c of s.checks) L.push(`- ${c.ok ? '✅' : '❌'} \`${c.id}\` — ${c.detail}`);
+    for (const c of s.checks) L.push(`- ${c.skipped ? '⏭' : (c.ok ? '✅' : '❌')} \`${c.id}\` — ${c.detail}`);
     L.push('');
   }
   const fails = r.stages.flatMap((s) => s.checks.filter((c) => !c.ok).map((c) => ({ s, c })))
