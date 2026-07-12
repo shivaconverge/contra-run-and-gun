@@ -352,7 +352,8 @@ function runLive(ctx, world, assets) {
   world.highScore = high;
   world.newHigh = false;
   let prevStatus = world.status;
-  let introFrames = 0; // STAGE-INTRO card countdown (render frames), set on entering a stage
+  let introFrames = 0;   // STAGE-INTRO card countdown (render frames), set on entering a stage
+  let lastIntroStage = 0; // which stage we last announced — so a same-stage RETRY skips the card
 
   let last = performance.now();
   let acc = 0;
@@ -419,7 +420,10 @@ function runLive(ctx, world, assets) {
       saveHigh(high);
     } else if (world.status === 'playing' && prevStatus !== 'playing') {
       world.newHigh = false;
-      introFrames = 96; // entered a stage (boot / CONTINUE / retry) → announce it (~1.6s)
+      // Announce the stage on entering a NEW one (boot / CONTINUE / campaign restart),
+      // but SKIP the card on a same-stage RETRY (game-over → R) so grinding a hard
+      // one-hit-death stage gets you straight back in rather than re-watching ~1.6s.
+      if (world.stageNum !== lastIntroStage) { introFrames = 96; lastIntroStage = world.stageNum; }
     }
     prevStatus = world.status;
 
@@ -477,9 +481,15 @@ function drawStageIntro(ctx, world, frames) {
   ctx.fillRect(0, bandY + bandH - 1, SIM.VIEW_W, 1);
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillStyle = accent;
   ctx.font = '8px monospace';
-  ctx.fillText('STAGE ' + (world.stageNum || 1) + '  /  ' + (world.stageCount || 7), cx, bandY + 15);
+  // The last stage announces itself as the climax; earlier stages show "STAGE N / 7".
+  if (world.isFinalStage) {
+    ctx.fillStyle = '#ff6b6b';
+    ctx.fillText('★  FINAL STAGE  ★', cx, bandY + 15);
+  } else {
+    ctx.fillStyle = accent;
+    ctx.fillText('STAGE ' + (world.stageNum || 1) + '  /  ' + (world.stageCount || 7), cx, bandY + 15);
+  }
   ctx.fillStyle = '#fff';
   ctx.font = '15px monospace';
   ctx.fillText(String((world.level && world.level.name) || '').toUpperCase(), cx, bandY + 32);
