@@ -2080,15 +2080,16 @@ def verify_contract() -> int:
             rprob.extend(pprob)
 
             # DECOR-reference reachability (the set-dressing analogue of the no-
-            # placeholder-enemy check): every prop PLACED in a level's
+            # placeholder-enemy check): every prop PLACED in a stage's
             # `decor:[{key:'decor_*'}]` array must (a) be a sprite my pipeline actually
             # produces, (b) be keyed in game/data/assets.js so it LOADS, and (c) be
             # BLITTED by render.js (a level.decor draw path) -- else the placed prop is
-            # INVISIBLE in-game. Catches the current gap: level2 (Cascade) places
-            # decor_cascade_valve but render.js has NO decor blit, so Stage-2 set-dressing
-            # renders nothing (verified live, experiments/set-dressing/live/).
+            # INVISIBLE in-game. Scan ALL of game/data/ (not just level*.js): the campaign
+            # now places per-stage decor in config.js (CAMPAIGN[].decor for stages 3-7),
+            # so a level*.js-only scan UNDER-reported the gap (caught 1 of 6 placed props).
             dprob = []
-            placed_decor = set(_re.findall(r"key:\s*'(decor_\w+)'", lvl))
+            decor_src = "".join(f.read_text() for f in sorted(gdata.glob("*.js")))
+            placed_decor = set(_re.findall(r"key:\s*'(decor_\w+)'", decor_src))
             has_decor_render = bool(_re.search(r"\bdecor\b", render_src))
             for key in sorted(placed_decor):
                 gaps = []
