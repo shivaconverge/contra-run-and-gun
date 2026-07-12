@@ -1387,6 +1387,10 @@ function drawGun(ctx, p, x, y, assets) {
   // (2026-07-12): exactly ONE rifle per aim, pointing where the bullet leaves,
   // reads at least as clearly as the arcade original. Do NOT reintroduce a baked
   // sprite weapon under this (see enemy.js ONE-WEAPON audit) — that is the reject.
+  // Weapon-TYPE axis also verified by looking: the SAME single rifle art is drawn
+  // for rifle/spread/machine/laser/fire (arcade-faithful — the pickup changes the
+  // PROJECTILE, not the gun), and every type's shot leaves this muzzle (clearest on
+  // laser: the cyan beam emerges from the drawn tip). One gun, all weapons.
   const gx = x + p.w / 2, gy = y + p.h * HERO_GUN.pivotY;
   const ang = Math.atan2(p.aim.y, p.aim.x);
   const muzzle = HERO_GUN.muzzle; // barrel tip distance from the pivot (== bullet spawn)
