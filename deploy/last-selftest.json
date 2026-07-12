@@ -1,6 +1,6 @@
 {
-  "passed": 119,
-  "total": 119,
+  "passed": 122,
+  "total": 122,
   "ok": true,
   "results": [
     {
@@ -597,6 +597,21 @@
       "name": "campaign.respawnNeverIntoPit",
       "pass": true,
       "detail": "7 stages clean"
+    },
+    {
+      "name": "weaponOnDeath.arcadeReverts",
+      "pass": true,
+      "detail": "got 'rifle'"
+    },
+    {
+      "name": "weaponOnDeath.casualRetains",
+      "pass": true,
+      "detail": "got 'laser'"
+    },
+    {
+      "name": "weaponOnDeath.invariantHolds",
+      "pass": true,
+      "detail": ""
     }
   ]
 }
