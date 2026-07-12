@@ -36,8 +36,20 @@ so the sky gradient shows through.
 - `snow-tile-seam.png` — 3× horizontal tile: the treeline joins continuously.
 - `snow_far_strip*_4x.png`, `snow_peak_prop_4x.png` — the initial approach experiment.
 
-## KNOWN LIMITATION — periodicity, ASSESSED by looking (minor polish, not a defect)
-The 128px strip repeats ~4× across the 480px view (engine `BG.w=128`, hardcoded).
+## PERIODICITY — caverns FIXED (drop-in v2); foundry kept; rest acceptable
+The 128px strip repeats ~4× across the 480px view (engine `BG.w=128`, CONFIRMED at
+`render.js:173` + the tile loop `:196-198` — `for(x=-off; x<VIEW_W+BG.w; x+=BG.w)`).
+**Fixed this cycle without any engine change** (128px stays; only the strip content changed):
+- ✅ **caverns** (was the WORST offender — evenly-spaced spires → obvious sawtooth): re-authored
+  v2 (seed 635) as IRREGULAR varied-height clustered crystals + evenly-spread veins → the 4×
+  tile reads as one continuous crystal wall. Verified less-periodic by looking
+  (`periodicity/v2-compare.png`) and LIVE at `?level=6` (`periodicity/` capture) — still
+  distinctly violet-crystal. Finalized (synced + manifest).
+- ⏸️ **foundry** (2nd worst): tried v2 + v3 — v2 killed the coral MOLTEN sky (lost the hot-
+  foundry identity); v3 kept a beautiful sunset but its bright SUN repeats 4× (no net
+  periodicity win). KEPT the current (mild repeat + strong molten atmosphere is the better
+  trade). Candidates recorded in `periodicity/` for a future pass.
+- **desert / snow / fortress / cascade**: mild/none, acceptable as-shipped (see below).
 **Assessment (evidence: `tiled-4x-all.png` = all 6 strips tiled 4× at worst-case static
 full-opacity, no foreground):** ranked by how visible the repeat is —
 - **desert**: barely (uniform dunes read as a continuous horizon) — fine.
