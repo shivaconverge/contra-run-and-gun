@@ -1360,6 +1360,12 @@ function drawGun(ctx, p, x, y, assets) {
   if (p.aim.x < 0) ctx.scale(1, -1); // keep the rifle upright when aiming left
   // Local space: barrel points +x, tip at `muzzle`. Layered dark→mid→light for
   // shading (no flat outline-following — STYLE-BIBLE §hue-shift discipline).
+  // LOAD-BEARING (do not flatten): the DARK under-shadow (below) + the LIGHT top
+  // highlight (further down) give the gun DUAL contrast — the dark edge reads on
+  // pale biomes (snow ground #4a5a6a), the light edge reads on dark biomes
+  // (night jungle). VERIFIED BY LOOKING across jungle/snow/desert (2026-07-12):
+  // the single rifle stays legible on every biome backdrop. Collapsing this to a
+  // single mid-tone would make the gun vanish into the snow/desert terrain.
   ctx.fillStyle = '#181b21';                 // under-shadow silhouette (stock→muzzle)
   ctx.fillRect(-5, -1, muzzle + 6, 4);
   ctx.fillStyle = '#3d444e';                 // wooden/dark stock behind the grip
