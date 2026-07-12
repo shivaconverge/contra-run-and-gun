@@ -20,8 +20,30 @@ log() { printf '\033[36m[verify]\033[0m %s\n' "$*"; }
 fail() { printf '\033[31m[verify] FAIL:\033[0m %s\n' "$*" >&2; exit 1; }
 pass() { printf '\033[32m[verify] OK:\033[0m %s\n' "$*"; }
 
-fetch() { curl -fsSL --max-time 25 "$1"; }
-code() { curl -s -o /dev/null -w '%{http_code}' --max-time 25 "$1"; }
+# RETRY on transient network blips (same rationale as head_meta below): a single
+# curl can fail to connect on a healthy deploy — observed the ROOT-HTML fetch fail
+# once with "Couldn't connect" while the live self-test passed 119/119 the same
+# second. Retry up to 3x on a curl-level failure so the entry checks (root HTML,
+# main.js) don't false-fail the whole gate. A real HTTP body/code is returned as-is.
+fetch() {
+  local try
+  for try in 1 2 3; do
+    curl -fsSL --max-time 25 "$1" && return 0
+    sleep 2
+  done
+  return 1
+}
+# %{http_code} is "000" on a connection-level failure (vs a real 404). Retry only
+# the 000 case — a genuine HTTP status is a definitive answer, kept fast.
+code() {
+  local c try
+  for try in 1 2 3; do
+    c="$(curl -s -o /dev/null -w '%{http_code}' --max-time 25 "$1")"
+    [ "$c" != "000" ] && { printf '%s' "$c"; return 0; }
+    sleep 2
+  done
+  printf '%s' "$c"
+}
 # HTTP status + Content-Type + byte size, tab-separated (for binary assets we
 # must NOT slurp the body — mp3 tracks are multi-MB). Follows redirects.
 # RETRY: a single HEAD can hit a transient network blip (curl exits non-zero,
