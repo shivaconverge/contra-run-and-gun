@@ -453,6 +453,65 @@ const LEVEL4_DESERT = {
   goalX: 2340, // chopper x is the fight trigger; boss.dead = stage clear
 };
 
+// DISTINCT STAGE GEOMETRY — Stage 5 "Iron Foundry" is a VERTICAL industrial layout
+// (the deliberate contrast to S4's open horizontal desert): rising catwalk staircases
+// + upper gantries (dense multi-height traversal — the creator's "move at multiple
+// heights"), a molten-pit jump gap, turret-heavy per the foundry theme. Sentinel boss
+// on its PROVEN arena tail (barrier@2300, sentinel@2340) so the prone-duck cannon fight
+// + defeatability are unchanged. Same schema as level1/level2.
+const LEVEL5_FOUNDRY = {
+  name: 'Iron Foundry',
+  theme: 'foundry',
+  width: 2500,
+  height: 270,
+  gravityFloor: 268,
+  solids: [
+    // Ground broken by ONE molten pit (x900–956, 56px = the proven jump reach).
+    { x: 0,   y: 236, w: 900,  h: 40, kind: 'ground' },
+    // — 56px molten pit (x900–956): drop through = death —
+    { x: 956, y: 236, w: 1544, h: 40, kind: 'ground' }, // continuous through the arena
+    // Rising catwalk STAIRCASE (a real vertical climb — stacked heights, not one plane).
+    { x: 250,  y: 195, w: 90,  h: 8, kind: 'platform' },
+    { x: 420,  y: 160, w: 90,  h: 8, kind: 'platform' },
+    { x: 600,  y: 125, w: 90,  h: 8, kind: 'platform' }, // top of the climb
+    // Upper GANTRIES + landings past the pit (multi-tier industrial).
+    { x: 1050, y: 190, w: 110, h: 8, kind: 'platform' },
+    { x: 1250, y: 155, w: 100, h: 8, kind: 'platform' },
+    { x: 1450, y: 120, w: 100, h: 8, kind: 'platform' }, // high catwalk
+    { x: 1700, y: 165, w: 120, h: 8, kind: 'platform' },
+    { x: 1950, y: 190, w: 120, h: 8, kind: 'platform' },
+    // Boss-arena barrier — SAME as LEVEL1 (Sentinel arena) so the cannon fight geometry
+    // + prone-duck firing line are the proven ones.
+    { x: 2300, y: 96, w: 12, h: 140, kind: 'barrier', noBullet: true },
+  ],
+  spawns: [
+    // The climb — grunts on the floor, sentries stacked up the staircase (foundry theme).
+    { type: 'grunt',  x: 200,  y: 210 },
+    { type: 'grunt',  x: 350,  y: 210 },
+    { type: 'turret', x: 280,  y: 179 }, // on the 250 catwalk (top y195 → y179)
+    { type: 'turret', x: 460,  y: 144 }, // on the 420 catwalk (top y160 → y144)
+    // Past the pit — gantry sentries + a floor mortar.
+    { type: 'grunt',  x: 1000, y: 210 },
+    { type: 'turret', x: 1080, y: 174 }, // on the 1050 gantry (top y190 → y174)
+    { type: 'turret', x: 1290, y: 139 }, // on the 1250 gantry (top y155 → y139)
+    { type: 'mortar', x: 1550, y: 224 },
+    { type: 'turret', x: 1740, y: 149 }, // on the 1700 gantry (top y165 → y149)
+    // Pre-boss run-in.
+    { type: 'grunt',  x: 1900, y: 210 },
+    { type: 'grunt',  x: 2050, y: 210 },
+    { type: 'turret', x: 1980, y: 174 }, // on the 1950 landing (top y190 → y174)
+    // STAGE-5 BOSS — the Sentinel, retuned via the CAMPAIGN row's boss override.
+    { type: 'boss',   x: 2340, y: 184 },
+  ],
+  pickups: [
+    { weapon: 'spread',  x: 220,  y: 218 },
+    { weapon: 'laser',   x: 1150, y: 218 }, // pierce for the stacked sentries
+    { weapon: 'spread',  x: 2050, y: 218 }, // pre-boss fan
+  ],
+  playerStart: { x: 40, y: 200 },
+  goalX: 2340, // Sentinel x is the fight trigger; boss.dead = stage clear
+};
+
 // Ground-emplacement Y helpers (base ground top = y236): a gravity-less turret (h16)
 // sits at 220, a mortar (h12) at 224; grunts spawn at 210 and fall onto the ground.
 // One row per stage. `boss` folds onto the base boss spawn; `mix` adds the signature.
@@ -484,17 +543,11 @@ const CAMPAIGN = [
       { x: 1500, key: 'decor_desert_cactus' },
       { x: 2050, key: 'decor_desert_cactus' },
     ] },
-  // Stage 5 — Iron Foundry (TURRET fortress: automated sentries lock the lanes).
-  { base: LEVEL1, theme: 'foundry', name: 'Iron Foundry',
+  // Stage 5 — Iron Foundry (DISTINCT vertical industrial geometry, not a LEVEL1 reskin;
+  // the turret-fortress enemy mix is authored inline in LEVEL5_FOUNDRY for the catwalks).
+  { base: LEVEL5_FOUNDRY, theme: 'foundry', name: 'Iron Foundry',
     boss: { name: 'Foundry Core', hp: 104, color: '#9aa4b0', fireEvery: 74, enrageFireEvery: 40 },
-    mix: [
-      { type: 'turret', x: 640,  y: 220 },
-      { type: 'turret', x: 1150, y: 220 },
-      { type: 'turret', x: 1950, y: 169 }, // on the 1900 platform (top y185)
-      { type: 'grunt',  x: 1000, y: 210 },
-      { type: 'grunt',  x: 1980, y: 210 },
-    ],
-    decor: [ // molten smelting vats along the foundry floor
+    decor: [ // molten smelting vats on the foundry floor (x over ground, clear of the pit 900–956)
       { x: 450,  key: 'decor_foundry_vat' },
       { x: 1080, key: 'decor_foundry_vat' },
       { x: 1600, key: 'decor_foundry_vat' },
