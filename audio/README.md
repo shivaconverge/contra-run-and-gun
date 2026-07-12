@@ -53,20 +53,26 @@ workstream) and **hard-cuts to each stage's biome loop** on stage change (`main.
 `world.onStageChange`). `stage_id` order (`s<N>_`) === campaign stage index; `theme` ===
 `game/data/config.js` THEMES id (confirmed against the real STAGES registry):
 
-| stage | theme id | track file | key | status |
-|---:|---|---|---|---|
-| 1 | `jungle`   | `s1_jungle.mp3`   | E min  | generated |
-| 2 | `cascade`  | `s2_cascade.mp3`  | A min  | generated |
-| 3 | `snow`     | `s3_snow.mp3`     | C min  | generated |
-| 4 | `desert`   | `s4_desert.mp3`   | D min  | generated |
-| 5 | `foundry`  | `s5_foundry.mp3`  | G min  | generated |
-| 6 | `caverns`  | `s6_caverns.mp3`  | F# min | generated |
-| 7 | `fortress` | `s7_fortress.mp3` | B min  | generated |
+| stage | theme id | track file | requested key¹ | measured key² | status |
+|---:|---|---|---|---|---|
+| 1 | `jungle`   | `s1_jungle.mp3`   | E min  | D# min | generated |
+| 2 | `cascade`  | `s2_cascade.mp3`  | A min  | A min  | generated |
+| 3 | `snow`     | `s3_snow.mp3`     | C min  | G min  | generated |
+| 4 | `desert`   | `s4_desert.mp3`   | D min  | E min  | generated |
+| 5 | `foundry`  | `s5_foundry.mp3`  | G min  | A min  | generated |
+| 6 | `caverns`  | `s6_caverns.mp3`  | F# min | G min  | generated |
+| 7 | `fortress` | `s7_fortress.mp3` | B min  | A min  | generated |
+
+¹ what the Udio prompt asked for (manifest `requested_key`). ² automated chroma/K-K estimate
+of the ACTUAL audio (manifest `key_estimate`; approximate). **They differ** — a generative
+model does not honor a requested key exactly (tonic match 1/7), so the per-stage
+**distinctness is grounded on measured timbre, not on key** (see below).
 
 Grounded by `pipeline/analyze-tracks.py` → `TRACK-ANALYSIS.md` (numpy/ffmpeg measurement
-of the real files): all 7 are real/non-silent (RMS ≈ −12…−14 dB), each in a distinct key,
-min pairwise timbre distance 0.017 (none identical), and every `theme` matches the campaign
-stage order (7/7 OK). Regenerate/extend: `source ../../.provider_secrets.env && python3
+of the real files): all 7 are real/non-silent (RMS ≈ −12…−14 dB), **distinct by measured
+timbre** (§2, min pairwise band-fingerprint distance 0.017 — none identical), harmonic key
+requested-vs-measured audited honestly (§1e), and every `theme` matches the campaign stage
+order (7/7 OK). Regenerate/extend: `source ../../.provider_secrets.env && python3
 audio/pipeline/generate-udio.py`; re-verify: `python3 audio/pipeline/analyze-tracks.py`.
 
 **SEAMLESS LOOPS (`pipeline/make-seamless.py`).** The engine loops each track whole
