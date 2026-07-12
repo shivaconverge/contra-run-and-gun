@@ -1,6 +1,6 @@
 {
-  "ts": "2026-07-12T11:35:46.860Z",
-  "harnessTs": "2026-07-12T11:35:46.745Z",
+  "ts": "2026-07-12T12:37:51.932Z",
+  "harnessTs": "2026-07-12T12:37:51.819Z",
   "seed": 1234,
   "verdict": "PASS",
   "criticalPassed": 8,
@@ -15,7 +15,7 @@
     {
       "id": "balance.casualCompletesCampaign",
       "bug": "BAL-2",
-      "detail": "casual victory=false — cleared 3/7, GAME OVER at stage 4 (INTENDED: the assist mode completes the campaign; currently walls at the stage-4 chopper)"
+      "detail": "casual victory=false — cleared 1/7, GAME OVER at stage 2 (INTENDED: the assist mode completes the campaign; currently walls at the stage-2 chopper)"
     }
   ],
   "renderPathAudit": {
@@ -291,7 +291,7 @@
       "crit": false,
       "knownBug": "BAL-2",
       "pass": false,
-      "detail": "casual victory=false — cleared 3/7, GAME OVER at stage 4 (INTENDED: the assist mode completes the campaign; currently walls at the stage-4 chopper)"
+      "detail": "casual victory=false — cleared 1/7, GAME OVER at stage 2 (INTENDED: the assist mode completes the campaign; currently walls at the stage-2 chopper)"
     }
   ]
 }

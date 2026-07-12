@@ -33,6 +33,28 @@ numbers are real end-user pressure.
 
 ---
 
+## ⚠️ 2026-07-12 — CORRECTION (QA-DET-1): casual reach was OVER-reported; true wall is STAGE 2
+
+**A determinism defect in THIS harness inflated the casual reach.** The shipped `render()`
+draws from the world's **seeded RNG** (`render → feel.shakeOffset → world.rng`, the same
+stream the sim uses for bullet spread / enemy behavior). A prior version of this harness
+called `render()` only **once per stage** (at the boss screenshot), which **desynced the RNG**
+and made casual look like it reached **Stage 4 (3/7)**. A live player calls `render()` **every
+frame**; driving that way — AND a clean no-render drive — BOTH agree casual actually **walls at
+Stage 2 (1/7)**. The harness is now fixed to render every frame (live-faithful). **All casual
+"S4 / 3-of-7" claims below are SUPERSEDED** — see [QA-DET-1] in OPEN ISSUES for the mechanism,
+repro, and fix.
+
+**Corrected end-user facts (live-faithful, seed 1234):**
+- **Casual:** clears S1 (near-death, boss→1 HP, 2 deaths, 3 lives left) → **GAME OVER at the
+  Stage-2 Gunship** (4 deaths, boss floored to 6/78). **1/7.** BAL-4 weapon-retention did **not**
+  move the casual wall off S2 for a baseline run — the earlier "+2 stages" was the artifact.
+- **Arcade:** unchanged — GAME OVER at Stage-1 boss (0/7). Robust across all drive methods.
+- **Spine / render audit:** unaffected (RNG-independent) — invincible still 7/7 VICTORY, gate
+  CRITICAL 8/8.
+
+---
+
 ## 🔁 2026-07-12 — RE-MEASUREMENT after root.C applied this report (boss fire eased ~15%)
 
 root.C **acted on this seat's findings**: `game/data/config.js` now eases boss fire across
@@ -61,6 +83,11 @@ boss ledge — see [BAL-5].)*
 
 ## 🔁 2026-07-12 (later) — RE-MEASUREMENT after root.C shipped BAL-4 (mode-gated weapon-on-death)
 
+> **⛔ SUPERSEDED by QA-DET-1 (see correction banner above).** The "casual → Stage 4 / +2
+> stages" numbers in this block were an instrument artifact (render→RNG desync). Live-faithful
+> truth: casual still walls at **Stage 2 (1/7)**. BAL-4's weapon-retention is real and correct,
+> but it did NOT move the casual reach. Kept for audit trail.
+
 root.C then shipped **BAL-4** (`game/src/world.js`): weapon-on-death is now **mode-gated** —
 **ARCADE reverts to the rifle** (the 1987 single-slot invariant the hard mode must keep),
 but **CASUAL RETAINS its weapon** on death so a lost life doesn't cripple the retry (the
@@ -82,7 +109,12 @@ hard mode still walls at boss 1, correctly awaiting root.C's difficulty-target d
 
 ---
 
-## 🔑 2026-07-12 (latest) — WHY casual walls at S4: CUMULATIVE ATTRITION, not S4's difficulty
+## 🔑 2026-07-12 — WHY casual walls at S4: CUMULATIVE ATTRITION, not S4's difficulty
+
+> **⛔ SUPERSEDED / RETRACTED by QA-DET-1.** This whole analysis rests on the artifact data
+> (casual reaching S4). Under the live-faithful (render-every-frame) drive, casual never reaches
+> S4 — it walls at the **Stage-2 Gunship (1/7)**. The attrition narrative below is INVALID; kept
+> only as an audit trail of the correction. See the correction banner + [QA-DET-1].
 
 root.C added `World.casualBossSurvivalTest` (an **isolated, fresh-pool** per-boss check) and,
 on its evidence, eased **Stage-6 Crystal Wing hp 96→82** ("the ONE boss unbeatable in a fresh
@@ -180,7 +212,7 @@ Evidence: [`campaign-gate.json`](./campaign-gate.json).
 | All 7 bosses **defeatable** by genuinely shooting them (invincible) → VICTORY | ✅ **yes** |
 | **Soft-locks / unwinnable geometry** detected (any mode) | ✅ **none** |
 | Damage-ON **ARCADE** baseline-bot outcome | ❌ **GAME OVER at Stage-1 boss** (0/7 cleared, 4 deaths) |
-| Damage-ON **CASUAL** baseline-bot outcome | ⚠️ **GAME OVER at Stage-4 boss** (3/7 cleared, 6 deaths) — BAL-4 moved this +2 stages |
+| Damage-ON **CASUAL** baseline-bot outcome | ⚠️ **GAME OVER at Stage-2 Gunship** (1/7 cleared) — live-faithful; earlier 3/7 was QA-DET-1 artifact |
 | Weapon-on-death (BAL-4, mode-gated) | arcade → **rifle** (revert); casual → **retains** (machine/spread observed) |
 | Damage-on death cause split (both modes) | **projectile 10 · pit 0 · contact 0** (100% boss fire this run) |
 | Traversal deaths | **0** this run (BAL-5 pit did not recur — intermittent, time-at-ledge dependent) |
@@ -235,18 +267,17 @@ fixed Sentinel's aimed fire still outpaces a 3-life budget over the ~31 s DPS-bo
 
 ### CASUAL (5 lives + 2-hit shield; **BAL-4: retains weapon on death**) — baseline bot
 
+*Live-faithful (render every frame, post QA-DET-1 fix), seed 1234:*
+
 | Stage | Reached boss | Beaten | Deaths (cause) | Lives left | Weapon@death | Outcome |
 |------:|:---:|:---:|---|---:|---|---|
-| 1 Jungle | ✅ | ✅ | 2 (projectile ×2) | 3 | machine | cleared @ **36.9 s** |
-| 2 Cascade | ✅ | ✅ | 2 (projectile ×2) | 1 | spread | cleared @ **72.5 s** |
-| 3 Frozen Ridge | ✅ | ✅ | 0 | 1 | — | cleared @ **24.3 s** |
-| 4 Scorched Dunes | ✅ | ❌ | 2 (projectile ×2) | −1 | spread | **GAME OVER** |
+| 1 Jungle | ✅ | ✅ | 2 (projectile ×2) | 3 | machine | cleared @ **36.3 s** (boss→1 HP) |
+| 2 Cascade | ✅ | ❌ | 4 (projectile ×4) | −1 | spread | **GAME OVER** (boss→6/78) |
 
-With **BAL-4** casual now clears **S1→S2→S3** and walls at the **Stage-4 Sand Gunship**
-(chopper). Retaining the weapon after death is visible in the log (`machine`, `spread` at
-respawn instead of rifle) and speeds the fights — Stage 1 fell in **36.9 s / 2 deaths** (vs
-42.0 s / 3 deaths pre-BAL-4, and the [BAL-5] pit death did **not** recur). The wall is again a
-**chopper** (Stage 4), consistent with finding #3: sweeping bosses stretch time-under-fire.
+Casual clears Stage 1 only by the skin of its teeth (boss to 1 HP, 2 lives spent), then
+**walls at the Stage-2 Gunship** — 4 deaths, the sweeping chopper floored to just 6/78. Even
+with a retained weapon (BAL-4, `spread` at respawn) the baseline bot can't outlast the S2
+sweep. **1/7.** (The earlier "clears S1→S2→S3, walls at S4" table was the QA-DET-1 artifact.)
 
 *(Full per-death frame/x/cause log for every stage is in `campaign-playthrough.json` →
 `damageOn.{arcade,casual}.stages[].deathLog`.)*
@@ -385,25 +416,40 @@ referenced decor key loads (no invisible set-dressing). The full matrix is in
   passes. Recorded, not worked around; re-run the gate to confirm arcade reaches ≥ Stage 2
   after any DPS-side change. Data: `boss1-sensitivity.json`.
 
-### 2026-07-12 — [BAL-2] Casual campaign stalls at a chopper survival spike — now **Stage-4** (was Stage-2)
-- **Status update (BAL-4 shipped):** root.C's mode-gated weapon-retention (BAL-4) moved this
-  wall **+2 stages** — casual now clears S1/S2/S3 and GAME-OVERs at the **Stage-4 Sand
-  Gunship** (deaths 2×, boss floored to 50/88). The mid-campaign chopper is still the wall.
-- **Severity:** low-medium (balance). Casual reaches 3/7.
-- **⚠️ ROOT CAUSE CORRECTED (2026-07-12, cumulative-attrition analysis):** S4 is **not**
-  individually the wall — the bot enters S4 with only **1 life** because S1 (boss→1 HP) and S2
-  (boss→2 HP) are *near-death* clears costing 2 lives each. At S4 the boss is barely dented
-  (58/88) before the last life is gone. So the campaign walls from **front-loaded cumulative
-  attrition on S1/S2**, not S4's isolated difficulty.
-- **Divergence from `casualBossSurvivalTest`:** root.C's isolated fresh-pool test (each boss,
-  full resources) can report "all bosses beatable" — and it eased S6 (hp 96→82) on that basis —
-  yet the **continuous** natural campaign still fails at S4. An isolated per-boss test cannot
-  see attrition; this seat's full-run grounding is the end-user-truthful signal.
-- **Owner/fix (REDIRECTED):** root.C — the lever is the **early-boss cost** (make S1/S2 clears
-  cheaper — lower HP or fire so the bot doesn't spend ~2 lives each) **and/or** a larger casual
-  **life/shield budget**, NOT just easing the late choppers (S6 hp cut doesn't help a run that
-  dies at S4). Recorded, not masked; re-run the gate to confirm casual reaches ≥ Stage 5 after
-  tuning. Data: `campaign-playthrough.json → damageOn.casual.stages[].{livesRemaining,deaths}`.
+### 2026-07-12 — [QA-DET-1] Harness over-reported casual reach (render→seeded-RNG desync) — FIXED
+- **Severity:** HIGH (instrument correctness — it made a required-scope number wrong for cycles).
+- **Defect:** the shipped `render()` consumes the world's SEEDED RNG (`render → feel.shakeOffset()`
+  draws 3× from `world.rng` when trauma>0.01 — feel.js:39-41 — the same stream the sim uses for
+  bullet spread / particles / enemy behavior; util.js confirms "spread, particles all draw from
+  this"). The harness called `render()` only **once per stage** (at the boss screenshot), which
+  desynced the RNG mid-run and changed the fight → casual falsely appeared to reach **Stage 4**.
+- **Ground truth (repro):** driving with `render()` **every frame** (exactly the live rAF loop)
+  AND a clean **no-render** drive BOTH yield casual = **Stage 2 (1/7)**. Only the once-per-stage
+  render (the old harness) yields 3/7. Engine has NO unseeded `Math.random` (grep: both hits are
+  comments), so this is purely the render/RNG-consumption cadence.
+- **Fix (this commit):** `campaign-playthrough.mjs` now loads the shipped `render()` at boot and
+  calls it after **every** `w.step()` in the drive — live-faithful, deterministic. Re-run:
+  `node playtest/balance/campaign-gate.mjs`.
+- **Impact:** casual reach corrected S4→**S2**; the BAL-4 "+2 stages" and the cumulative-attrition
+  "reaches S4 on 1 life" findings (prior cycles) were artifacts of this defect and are SUPERSEDED.
+  Arcade (dies at S1 before any transition) and the render/spine checks were unaffected.
+
+### 2026-07-12 — [BAL-2] Casual campaign walls at the **Stage-2 Gunship** (1/7) — CORRECTED from S4 (QA-DET-1)
+- **Live-faithful result (post QA-DET-1 fix):** casual clears S1 (near-death: boss→1 HP, 2
+  deaths, 3 lives left) then **GAME OVER at the Stage-2 Gunship** — 4 deaths, boss floored to
+  only **6/78**. So the **Stage-2 chopper itself is the wall**: even entering with 3 lives + a
+  retained weapon (BAL-4), the baseline bot can't outlast the sweeping Gunship's fire.
+- **Severity:** medium (balance / accessibility). Casual reaches only **1/7** — the assist mode
+  stalls at the SECOND boss, which is a steep early wall for a "more players reach the boss" mode.
+- **SUPERSEDED (prior cycles):** the "BAL-4 moved casual to S4 (3/7)" and "cumulative attrition,
+  walls at S4 on 1 life / diverges from casualBossSurvivalTest" write-ups were built on the
+  QA-DET-1 artifact data and are **retracted**. The real wall never left S2.
+- **Owner/fix:** root.C — the Stage-2 Gunship (chopper) is the casual bottleneck. Ease it
+  (lower HP or fire tax, or a slower/tighter sweep so the bot lands more DPS) and/or raise the
+  casual life/shield budget, then re-run the gate to confirm casual reaches ≥ Stage 3. Note:
+  root.C's `casualBossSurvivalTest` (isolated fresh-pool) may still report S2 "beatable" — but a
+  continuous run with damage on walls there; this seat's full-run grounding is the end-user
+  truth. Data: `campaign-playthrough.json → damageOn.casual`.
 
 ### 2026-07-12 — [BAL-4 / RESOLVED-IN-PART] Mode-gated weapon-on-death shipped and grounded
 - root.C shipped BAL-4 in `game/src/world.js`: **arcade reverts to rifle** (1987 invariant),
