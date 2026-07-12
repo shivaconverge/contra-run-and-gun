@@ -627,12 +627,13 @@ function drawEnemy(ctx, e, world, assets) {
   }
 
   if (img) {
-    // Turret: draw a WEAPONLESS dome (real turret_base sprite if the pipeline
-    // shipped it, else the baked barrel stripped at runtime) so the ONLY weapon
-    // is the single procedural rotating barrel — the CREATOR round-2 fix for CR-3.
-    // The baked sprite barrel can't aim, so leaving it in read as a second turret.
+    // Turret: draw a WEAPONLESS dome (the pipeline's real turret_base sprite; base
+    // `turret` art is already barrel-less so `img` is a safe fallback) so the ONLY
+    // weapon is the single procedural rotating barrel — the CREATOR round-2 fix for
+    // CR-3. Single weapon-source-of-truth = the weaponless ART; the old runtime
+    // barrel-strip route was deleted (see note where weaponlessTurret used to live).
     if (e.kind === 'turret') {
-      const base = (assets && assets.get('turret_base')) || weaponlessTurret(img);
+      const base = (assets && assets.get('turret_base')) || img;
       drawEnemySprite(ctx, e, base, white);
       drawTurretBarrel(ctx, e, world);
     } else {
@@ -1058,69 +1059,16 @@ function whiteTinted(img) { return tintedSilhouette(_flashScratch, img, '#ffffff
 // as player flashes, so a shared canvas would clobber).
 const _bossScratch = {};
 
-// Strip the turret sprite's BAKED cannon barrel so the only weapon on screen is
-// the ONE procedural rotating barrel (drawTurretBarrel) — the CREATOR round-2 fix
-// for CR-3. The baked barrel is a fixed LEFT-pointing appendage the static art
-// can't aim, so it read as a second "phantom" turret beside the aiming one. We
-// erase that protruding barrel and fill its dark bore, leaving a clean weaponless
-// dome; the aiming barrel is drawn on top. Region is proportional to the sprite
-// (verified against the native 26×27 armed art) and cached per source image.
-//
-// STATUS: the pipeline now ships a WEAPONLESS base turret (assets/turret.png, a
-// clean 32×32 dome, NO barrel), and drawEnemy resolves `turret_base` → that file,
-// so this strip is NOT invoked on the live path (verified live: one barrel).
-//
-// KNOWN BUG (latent, dead-path only — 2026-07-12): the probe threshold below was
-// calibrated for the OLD 26×27 armed turret. On the CURRENT 32×32 clean dome the
-// far-left probe zone counts protrude=16 (the wider dome fills it), so if this
-// function were ever invoked on the current weaponless art (e.g. the `turret_base`
-// key removed so drawEnemy hits the `|| weaponlessTurret(img)` fallback) it would
-// FALSE-STRIP and chop the dome's left side. Safe today because the fallback never
-// fires. If that fallback is ever reactivated, recalibrate the probe to detect a
-// NARROW horizontal barrel protrusion (rows-opaque-at-leftmost-column), not raw
-// opaque-pixel count in the zone. Do NOT reactivate the fallback without that fix.
-const _turretBaseCache = new WeakMap();
-function weaponlessTurret(img) {
-  if (!img) return null;
-  const hit = _turretBaseCache.get(img);
-  if (hit) return hit;
-  const w = img.width, h = img.height;
-  const c = document.createElement('canvas');
-  c.width = w; c.height = h;
-  const g = c.getContext('2d');
-  g.drawImage(img, 0, 0);
-  let data;
-  try { data = g.getImageData(0, 0, w, h); } catch (e) { return img; } // tainted → leave as-is
-  const d = data.data;
-  const y0 = Math.round(h * 0.22), y1 = Math.round(h * 0.52); // barrel vertical band
-  const bx = Math.round(w * 0.31);   // dome left edge — barrel protrudes left of this
-  const fx = Math.round(w * 0.56);   // bore depth into the dome face
-  // IDEMPOTENT / DUAL-CONTRACT SAFE: the pipeline plans to ship the weaponless
-  // turret at the SAME `turret` key (byte-compatible drop-in, per
-  // assets/pipeline/experiments/weaponless/README.md), so this may receive an
-  // ALREADY barrel-less dome. PROBE the far-left protrusion zone for opaque
-  // pixels: a barrel muzzle sticks out here, a bare dome leaves it transparent.
-  // No protrusion ⇒ the art is already weaponless ⇒ return it untouched (never
-  // chop a clean dome). Works whether the pipeline overwrites `turret` weaponless
-  // OR ships a distinct `turret_base` (drawEnemy prefers that key when present).
-  const probeX = Math.round(w * 0.18);
-  let protrude = 0;
-  for (let y = y0; y < y1; y++) for (let x = 0; x < probeX; x++) if (d[(y * w + x) * 4 + 3] > 8) protrude++;
-  if (protrude < 3) { _turretBaseCache.set(img, img); return img; }
-  for (let y = y0; y < y1; y++) {
-    for (let x = 0; x < fx; x++) {
-      const i = (y * w + x) * 4;
-      if (x < bx) { d[i + 3] = 0; }   // erase the protruding barrel
-      else if (d[i + 3] > 8 && d[i] < 55 && d[i + 1] < 55 && d[i + 2] < 55) {
-        d[i] = 96; d[i + 1] = 55; d[i + 2] = 116; // fill the dark bore with dome purple
-      }
-    }
-  }
-  g.putImageData(data, 0, 0);
-  _turretBaseCache.set(img, c);
-  return c;
-}
-
+// [REMOVED 2026-07-12] weaponlessTurret() — the runtime barrel-STRIP route.
+// Two remedies for the CR-3 turret two-gun defect had both merged: (1) this code
+// route that stripped the baked barrel off the OLD armed sprite, and (2) the art
+// route where the pipeline ships a WEAPONLESS base turret (assets/turret.png, a
+// clean 32×32 dome, no barrel). Collapsed to ONE source of truth — the art:
+// drawEnemy draws turret_base (→ the weaponless dome) + the single procedural
+// drawTurretBarrel. The strip was dead code (turret_base always resolves) AND was
+// miscalibrated for the 32×32 dome (would false-strip it), so it was deleted
+// rather than fixed. If a future armed turret variant ever needs runtime stripping,
+// author it fresh against that art — do not resurrect this probe.
 // STYLE-BIBLE hero palette (assets/STYLE-BIBLE.md §2) for the procedural
 // weaponless commando body used until the pipeline ships weaponless hero art.
 const HERO_PAL = {
