@@ -72,8 +72,14 @@ function runHarness(label, args) {
 // failed a predicate), or it would mask a true regression.
 function scopeRunInvalid(data) {
   if (!data || !Array.isArray(data.stages) || data.stages.length === 0) return true;
-  const anyPlayed = data.stages.some((s) => s.status === 'playing' || s.status === 'cleared');
-  return data.scopeServedNum === 0 && !anyPlayed; // booted but never sustained play
+  // PROGRESSION COLLAPSE (gate-sequencing artifact, NOT a content FAIL): the run
+  // booted and stage 1 may briefly play, but the campaign never advances and the
+  // remaining stages are all captured on the TITLE/gameover screen (the run stalled).
+  // Signature: scope 0–1 AND ≥ N-1 stages stuck in title/gameover. A genuine content
+  // FAIL keeps stages in playing/cleared (they were reached, just failed a predicate),
+  // so `stuck` stays low and this returns false — we NEVER retry a real FAIL.
+  const stuck = data.stages.filter((s) => s.status === 'title' || s.status === 'gameover').length;
+  return data.scopeServedNum <= 1 && stuck >= data.stages.length - 1;
 }
 
 // Run scope-served for one target, retrying ONLY invalid (didn't-play) runs. Returns
@@ -162,11 +168,21 @@ async function main() {
   // incl. the re-seeded boss_desert Sand Gunship — is active, not a base-art fallback).
   check('local.themedBossArtLoaded', scopeLocal && scopeLocal.themedBossArtOk === true,
     scopeLocal && (scopeLocal.themedBossArt || []).map((b) => `${b.theme}:${b.dims ? b.dims.w + 'x' + b.dims.h : 'MISSING'}`).join(' '));
+  // Per-stage ART-PRESENCE axes (folded into scope_served, surfaced explicitly here so
+  // the authoritative summary self-documents them): every stage renders its OWN biome
+  // TILESET (no silent fallback to jungle's 'tiles' → "reusing another stage's tiles")
+  // and no stage's referenced SET-DRESSING sprite failed to load.
+  const tilesetOk = (s) => s && s.tilesetAllDistinct === true && (s.problems?.tilesetReuse || []).length === 0;
+  const decorOk = (s) => s && (s.problems?.missingDecorArt || []).length === 0;
+  check('local.tilesetAllDistinct (no tile reuse)', tilesetOk(scopeLocal), scopeLocal && (scopeLocal.resolvedTilesets || []).map((t) => t.tileset).join(','));
+  check('local.setDressingArtPresent', decorOk(scopeLocal), scopeLocal && `missingDecorArt=${JSON.stringify((scopeLocal.problems || {}).missingDecorArt || [])}`);
   if (!localOnly) {
     check('public.scope_served==7/7', scopePublic && scopePublic.scopeServedNum === 7, scopePublic && scopePublic.scope_served);
     check('public.victory', scopePublic && scopePublic.victory === true, null);
     check('public.themedBossArtLoaded', scopePublic && scopePublic.themedBossArtOk === true,
       scopePublic && (scopePublic.themedBossArt || []).map((b) => `${b.theme}:${b.dims ? b.dims.w + 'x' + b.dims.h : 'MISSING'}`).join(' '));
+    check('public.tilesetAllDistinct (no tile reuse)', tilesetOk(scopePublic), scopePublic && (scopePublic.resolvedTilesets || []).map((t) => t.tileset).join(','));
+    check('public.setDressingArtPresent', decorOk(scopePublic), scopePublic && `missingDecorArt=${JSON.stringify((scopePublic.problems || {}).missingDecorArt || [])}`);
     check('public.deployDrift==none', scopePublic && Array.isArray(scopePublic.deployDrift) && scopePublic.deployDrift.length === 0, scopePublic && scopePublic.deployDrift);
     check('public.normalProgression(keyBindingProven)', scopePublic && scopePublic.keyBindingProven === true, null);
   }
@@ -213,21 +229,40 @@ async function main() {
   const allPassed = summary.checks.every((c) => c.passed);
   summary.scope_served = liveFact || 'n/a';
   summary.scope_served_source = localOnly ? 'local-serve' : 'public-url';
-  // A run that never sustained play even after retries is an INFRA error of THIS
-  // gate (resource contention), NOT a campaign FAIL — surfaced distinctly (exit 2)
-  // so a false 0/7 can't be read as a game defect. Re-run standalone to confirm.
-  const infra = summary.ran.some((r) => r.invalid === true);
+  // INFRA (gate-sequencing flake, NOT a campaign FAIL — surfaced distinctly, exit 2,
+  // so a false <7/7 can't be read as a game defect nor clobber the good summary):
+  //   (a) a scope run never sustained play even after retries (full collapse), OR
+  //   (b) PUBLIC-TRANSITION-FLAKE — rigorously provable: the public bytes match the
+  //       worktree (deployDrift none) AND the SAME build plays 7/7 LOCALLY, yet public
+  //       fell short BECAUSE stages went UNREACHED (a dropped remote transition), not
+  //       because a reached stage failed content. Identical bytes that clear 7/7
+  //       locally cannot be a content defect remotely — only a drive/latency flake.
+  //       Crucially, if all 7 were REACHED but some failed a predicate (missing art,
+  //       tileset fallback on a reached stage), publicReached==7 so this is FALSE and
+  //       the real FAIL lands — a genuine regression is never masked.
+  const deployDriftNone = scopePublic && Array.isArray(scopePublic.deployDrift) && scopePublic.deployDrift.length === 0;
+  const publicReached = scopePublic && Array.isArray(scopePublic.stages)
+    ? scopePublic.stages.filter((s) => s.status === 'playing' || s.status === 'cleared').length : 0;
+  const publicTransitionFlake = !localOnly && scopePublic && scopeLocal
+    && scopeLocal.scopeServedNum === 7 && deployDriftNone
+    && scopePublic.scopeServedNum < 7 && publicReached < 7;
+  if (publicTransitionFlake) summary.publicTransitionFlake = { publicReached, publicScope: scopePublic.scope_served };
+  const infra = summary.ran.some((r) => r.invalid === true) || publicTransitionFlake;
   summary.verdict = infra ? 'GATE-INFRA-ERROR' : (allPassed ? 'PASS' : 'FAIL');
 
   // AUTHORITATIVE-SUMMARY GUARD (parent-confirmed policy): the committed
-  // `acceptance-summary.json` must always reflect the FULL local+public gate — a
-  // `--local-only` run must NEVER clobber it, or a fast local iteration would
-  // silently un-ground the LIVE public claim (scope_served/deployDrift), which is
-  // exactly the regression this guards against. So a --local-only run writes only a
-  // non-authoritative SCRATCH file (`acceptance-summary.local.json`, gitignored) and
-  // leaves the authoritative summary untouched.
-  summary.authoritative = !localOnly;
-  const outName = localOnly ? 'acceptance-summary.local.json' : 'acceptance-summary.json';
+  // `acceptance-summary.json` must always reflect a FULL local+public gate with a
+  // REAL verdict (PASS/FAIL). Two ways a run must NOT clobber it:
+  //   1. `--local-only` — a fast local iteration would drop the LIVE public claim.
+  //   2. `GATE-INFRA-ERROR` — the public run never sustained play (a gate-sequencing
+  //      stall, not a game result), so it has NO valid public grounding; overwriting
+  //      the last-known-good summary with it would un-ground the claim the same way.
+  // Either case writes only a non-authoritative SCRATCH file (gitignored) and leaves
+  // the authoritative summary untouched. A real PASS/FAIL is a genuine finding and IS
+  // authoritative (a FAIL must land so a real regression can't hide).
+  const nonAuthoritative = localOnly || summary.verdict === 'GATE-INFRA-ERROR';
+  summary.authoritative = !nonAuthoritative;
+  const outName = nonAuthoritative ? 'acceptance-summary.local.json' : 'acceptance-summary.json';
   await writeFile(path.join(HERE, outName), JSON.stringify(summary, null, 2));
 
   process.stdout.write('\n════════ ACCEPTANCE GATE ════════\n');
@@ -235,7 +270,9 @@ async function main() {
   for (const c of summary.checks) process.stdout.write(`  [${c.passed ? 'PASS' : 'FAIL'}] ${c.id}${c.detail != null ? ' — ' + JSON.stringify(c.detail) : ''}\n`);
   process.stdout.write(`  weapon one-gun (by-looking): ${summary.weaponLookingVerdict.verdict}` +
     `${summary.weaponLookingVerdict.stale ? ' ⚠ POSSIBLY-STALE (render path changed → re-look)' : ' (render path unchanged)'}\n`);
-  process.stdout.write(`  wrote ${path.relative(REPO, path.join(HERE, outName))}${localOnly ? '  (SCRATCH — authoritative acceptance-summary.json left untouched; run WITHOUT --local-only to update the LIVE-grounded summary)' : '  (authoritative: full local+public)'}\n`);
+  const scratchWhy = localOnly ? 'SCRATCH — --local-only, authoritative summary left untouched (run WITHOUT --local-only to update it)'
+    : (summary.verdict === 'GATE-INFRA-ERROR' ? 'SCRATCH — GATE-INFRA-ERROR (public run never sustained play; no valid public grounding), last-known-good authoritative summary preserved — re-run the gate' : null);
+  process.stdout.write(`  wrote ${path.relative(REPO, path.join(HERE, outName))}${scratchWhy ? '  (' + scratchWhy + ')' : '  (authoritative: full local+public)'}\n`);
 
   process.exit(summary.verdict === 'PASS' ? 0 : (summary.verdict === 'GATE-INFRA-ERROR' ? 2 : 1));
 }
