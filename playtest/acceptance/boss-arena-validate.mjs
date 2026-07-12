@@ -39,6 +39,14 @@ import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
+// Resolve puppeteer-core robustly: prefer a local install (playtest/acceptance/node_modules
+// after `npm install`), but fall back to the always-present vendored copy under
+// reference/tools/node_modules — the same path ground-desert-boss.mjs relies on. Without
+// this, a bare require fails in a worktree that was never `npm install`ed.
+function loadPuppeteer() {
+  try { return require('puppeteer-core'); }
+  catch { return require(path.join(REPO, 'reference', 'tools', 'node_modules', 'puppeteer-core')); }
+}
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(HERE, '..', '..');
@@ -111,7 +119,7 @@ async function main() {
   await mkdir(OUT_DIR, { recursive: true });
   killLingeringServers();
   const server = await serveGame();
-  const puppeteer = require('puppeteer-core');
+  const puppeteer = loadPuppeteer();
   const browser = await puppeteer.launch({ executablePath: findChrome(), headless: 'new', args: ['--no-sandbox', '--disable-gpu', '--force-color-profile=srgb', '--window-size=520,320', '--autoplay-policy=no-user-gesture-required', '--mute-audio'] });
   const run = { ts: new Date().toISOString(), stage: 1, note: 'grounds boss-fidelity affordance vs natural arrival (stage 1 Sentinel)' };
   try {
@@ -175,16 +183,27 @@ async function main() {
       run.histDiff = +histDiff(nat.sig.hist, aff.sig.hist).toFixed(3);
       run.sameBossName = nat.info.name === aff.info.name;
     }
+    // MECHANICAL grounding fact the gate reads: the boss-fidelity affordance is faithful
+    // iff we reached the boss NATURALLY, the affordance shows the SAME boss, and the two
+    // crops are near-identical (small residual = idle-bob animation phase only). Thresholds
+    // sit ~2-3x above the observed grounding (grid 4.45/255, hist 0.081) for animation slack.
+    // The by-looking "same appearance" judgment stays in ACCEPTANCE.md; this is the fact.
+    run.affordanceFaithful = run.reachedNaturally === true && run.sameBossName === true
+      && typeof run.gridDiff === 'number' && run.gridDiff <= 12
+      && typeof run.histDiff === 'number' && run.histDiff <= 0.25;
   } finally {
     await browser.close();
     await server.close();
   }
 
   await writeFile(path.join(HERE, 'boss-arena-validate.json'), JSON.stringify(run, null, 2));
-  console.log(`boss-arena-validate: reachedNaturally=${run.reachedNaturally} sameBoss=${run.sameBossName} gridDiff=${run.gridDiff} histDiff=${run.histDiff}`);
+  console.log(`boss-arena-validate: reachedNaturally=${run.reachedNaturally} sameBoss=${run.sameBossName} gridDiff=${run.gridDiff} histDiff=${run.histDiff} affordanceFaithful=${run.affordanceFaithful}`);
   console.log(`  natural: ${JSON.stringify(run.natural)}`);
   console.log(`  affordance: ${JSON.stringify(run.affordance)}`);
   console.log('  NEXT: LOOK at frames/boss-validate/stage1-{natural,affordance}.png — same boss appearance?');
+  // Exit non-zero if the affordance is NOT grounded, so the harness gates standalone and
+  // the run-acceptance section sees a real failure signal (not just a silent JSON field).
+  process.exit(run.affordanceFaithful ? 0 : 1);
 }
 
 main().catch((e) => { console.error('boss-arena-validate ERROR:', e); process.exit(2); });

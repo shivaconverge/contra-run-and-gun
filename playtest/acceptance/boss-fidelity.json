@@ -1,7 +1,7 @@
 {
-  "ts": "2026-07-12T04:14:55.988Z",
+  "ts": "2026-07-12T05:00:45.418Z",
   "mode": "local",
-  "target": "http://127.0.0.1:65393",
+  "target": "http://127.0.0.1:52525",
   "killedProcs": [],
   "bosses": [
     {
@@ -18,7 +18,7 @@
       "enraged": false,
       "nearestSibling": 5,
       "minGridDiff": 28.49,
-      "minHistDiff": 1.049,
+      "minHistDiff": 1.136,
       "suspectedReuseOf": [],
       "visuallyDistinct": true
     },
@@ -35,8 +35,8 @@
       "theme": "cascade",
       "enraged": false,
       "nearestSibling": 6,
-      "minGridDiff": 33.22,
-      "minHistDiff": 1.049,
+      "minGridDiff": 27.86,
+      "minHistDiff": 1.136,
       "suspectedReuseOf": [],
       "visuallyDistinct": true
     },
@@ -53,7 +53,7 @@
       "theme": "snow",
       "enraged": false,
       "nearestSibling": 4,
-      "minGridDiff": 82.73,
+      "minGridDiff": 91.27,
       "minHistDiff": 1.697,
       "suspectedReuseOf": [],
       "visuallyDistinct": true
@@ -71,8 +71,8 @@
       "theme": "desert",
       "enraged": false,
       "nearestSibling": 5,
-      "minGridDiff": 44.43,
-      "minHistDiff": 1.654,
+      "minGridDiff": 37.77,
+      "minHistDiff": 1.45,
       "suspectedReuseOf": [],
       "visuallyDistinct": true
     },
@@ -106,9 +106,9 @@
       "name": "Crystal Wing",
       "theme": "caverns",
       "enraged": false,
-      "nearestSibling": 5,
-      "minGridDiff": 28.32,
-      "minHistDiff": 1.652,
+      "nearestSibling": 2,
+      "minGridDiff": 27.86,
+      "minHistDiff": 1.282,
       "suspectedReuseOf": [],
       "visuallyDistinct": true
     },

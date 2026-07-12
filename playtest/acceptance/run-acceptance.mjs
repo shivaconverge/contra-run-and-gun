@@ -14,6 +14,11 @@
 //     distinct theme-matched MUSIC, deploy content-hash drift guard.
 //   • weapon-fidelity.mjs (local + public): fresh zoomed weapon crops for the
 //     creator's two-weapon defect.
+//   • boss-fidelity.mjs (local + public): fresh per-stage boss frames — all 7 bosses
+//     captured with distinct names off the live canvas.
+//   • boss-arena-validate.mjs (local): GROUNDS the boss-fidelity capture affordance —
+//     proves forcing the boss active + snapping the camera reproduces the SAME boss a
+//     player meets on natural arrival (stage 1), so the boss frames are real evidence.
 //
 // FACTS vs JUDGMENTS — the honest boundary this gate holds:
 //   The campaign facts (scope_served, victory, drift, transitions) are COMPUTED and
@@ -126,11 +131,23 @@ async function main() {
     summary.ran.push({ harness: 'boss-fidelity', mode: 'public', exit: bossPublicExit });
   }
 
+  // 4. Boss-arena grounding — GROUNDS the boss-fidelity capture affordance itself. The
+  //    boss frames above are captured by FORCING the boss active + snapping the camera;
+  //    this proves (stage 1, on the local build) that move reproduces the SAME boss a
+  //    player meets on NATURAL arrival, so the boss-fidelity evidence is trustworthy and
+  //    not a degraded/pre-entry pose. Stage 1 is representative — the natural activation
+  //    gate (camera-proximity, world.js) is per-stage-identical. Local only: it drives
+  //    the served build's internals to compare natural-vs-affordance, not a per-URL fact.
+  await sleep(3000);
+  const arenaExit = runHarness('boss-arena-validate (grounds affordance, local)', ['boss-arena-validate.mjs']);
+  summary.ran.push({ harness: 'boss-arena-validate', mode: 'local', exit: arenaExit });
+
   // ---- Aggregate the real FACTS from each harness's JSON output ----
   const weaponLocal = await readJson(path.join(HERE, 'weapon-fidelity.json')).catch(() => null);
   const weaponPublic = localOnly ? null : await readJson(path.join(HERE, 'weapon-fidelity-live.json')).catch(() => null);
   const bossLocal = await readJson(path.join(HERE, 'boss-fidelity.json')).catch(() => null);
   const bossPublic = localOnly ? null : await readJson(path.join(HERE, 'boss-fidelity-live.json')).catch(() => null);
+  const bossArena = await readJson(path.join(HERE, 'boss-arena-validate.json')).catch(() => null);
 
   const check = (id, passed, detail) => summary.checks.push({ id, passed: !!passed, detail });
 
@@ -161,6 +178,13 @@ async function main() {
   const bossEvidenceOk = (b) => b && b.bossesCaptured === '7/7' && b.distinctNames === true;
   check('local.bossesCaptured==7/7 (distinct names)', bossEvidenceOk(bossLocal), bossLocal && `${bossLocal.bossesCaptured}, distinctNames=${bossLocal.distinctNames}`);
   if (!localOnly) check('public.bossesCaptured==7/7 (distinct names)', bossEvidenceOk(bossPublic), bossPublic && `${bossPublic.bossesCaptured}, distinctNames=${bossPublic.distinctNames}`);
+
+  // Boss-arena GROUNDING FACT: the capture affordance above is faithful — driving to the
+  // boss naturally and the boss-fidelity snap settle on the SAME boss/arena (stage 1),
+  // so the 7 boss frames are real player-facing evidence, not a forced/degraded pose.
+  const arenaOk = bossArena && bossArena.affordanceFaithful === true;
+  check('local.bossAffordanceGrounded', arenaOk,
+    bossArena && `reachedNaturally=${bossArena.reachedNaturally} sameBoss=${bossArena.sameBossName} gridΔ=${bossArena.gridDiff} histΔ=${bossArena.histDiff}`);
 
   // Weapon BY-LOOKING verdict — replayed from record, with a staleness guard.
   const verdict = await readJson(path.join(HERE, 'weapon-verdict.json')).catch(() => null);

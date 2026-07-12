@@ -182,7 +182,11 @@ async function main() {
   if (mode === 'public') { bootUrl = TARGET_URL.endsWith('/') ? TARGET_URL : TARGET_URL + '/'; }
   else { killed = killLingeringServers(); const s = await serveGame(); bootUrl = s.url; closeServer = s.close; }
 
-  const puppeteer = require('puppeteer-core');
+  // Prefer a local install; fall back to the vendored copy under reference/tools so the
+  // harness runs in a worktree that was never `npm install`ed (matches ground-desert-boss.mjs).
+  let puppeteer;
+  try { puppeteer = require('puppeteer-core'); }
+  catch { puppeteer = require(path.join(REPO, 'reference', 'tools', 'node_modules', 'puppeteer-core')); }
   const browser = await puppeteer.launch({
     executablePath: findChrome(), headless: 'new',
     args: ['--no-sandbox', '--disable-gpu', '--force-color-profile=srgb', '--window-size=520,320'],

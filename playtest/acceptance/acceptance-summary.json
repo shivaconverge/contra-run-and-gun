@@ -1,5 +1,5 @@
 {
-  "ts": "2026-07-12T04:14:24.864Z",
+  "ts": "2026-07-12T05:00:14.559Z",
   "publicUrl": "https://shivaconverge.github.io/contra-run-and-gun/",
   "localOnly": true,
   "ran": [
@@ -18,6 +18,11 @@
       "harness": "boss-fidelity",
       "mode": "local",
       "exit": 0
+    },
+    {
+      "harness": "boss-arena-validate",
+      "mode": "local",
+      "exit": 0
     }
   ],
   "checks": [
@@ -32,6 +37,11 @@
       "detail": null
     },
     {
+      "id": "local.themedBossArtLoaded",
+      "passed": true,
+      "detail": "snow:45x48 desert:74x34 foundry:60x60 caverns:73x48 fortress:56x54"
+    },
+    {
       "id": "local.weaponEvidenceCaptured",
       "passed": true,
       "detail": "16 crops, turret=true"
@@ -40,6 +50,11 @@
       "id": "local.bossesCaptured==7/7 (distinct names)",
       "passed": true,
       "detail": "7/7, distinctNames=true"
+    },
+    {
+      "id": "local.bossAffordanceGrounded",
+      "passed": true,
+      "detail": "reachedNaturally=true sameBoss=true gridΔ=4.86 histΔ=0.092"
     }
   ],
   "weaponLookingVerdict": {
@@ -50,7 +65,7 @@
       "game/src/render.js"
     ],
     "renderHashesNow": {
-      "game/src/render.js": "7d45942375f317e1",
+      "game/src/render.js": "744504a04ae0f417",
       "game/src/player.js": "216a310f71151ab4"
     },
     "note": "RENDER PATH CHANGED since the by-looking verdict — a human MUST re-look at frames/weapon/*.png and re-confirm ONE-weapon-per-entity before trusting this axis."
