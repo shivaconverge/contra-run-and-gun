@@ -217,14 +217,19 @@ export const ENEMIES = {
     contactDamage: 1,
     score: 3000,
     gravity: false,
-    fireEvery: 82,      // frames between cannon volleys
+    fireEvery: 92,      // frames between cannon volleys (eased from 82 — see below)
     shotSpeed: 2.1,     // slow + telegraphed → dodgeable
     color: '#c65b8a',
     // Phase-2 "enrage": at/below this HP fraction the Sentinel speeds up and
     // fires a denser volley. Bullets stay at chest height so PRONE still ducks
     // them (fair), but a standing/jumping player feels a real escalation.
+    // BALANCE (playtest/balance/BALANCE-REPORT.md, damage-ON): 100% of deaths were
+    // boss projectiles; a baseline bot GAME-OVERed at THIS boss even in CASUAL-adjacent
+    // budgets. Eased the fire cadence ~15% (82→92 base, 46→54 enrage) so real players
+    // can survive the ~30s DPS-bound fight and reach victory — DPS/defeatability is
+    // unchanged (cadence doesn't affect kill-time). Still 1.7× denser when enraged.
     enrageAt: 0.4,
-    enrageFireEvery: 46,
+    enrageFireEvery: 54,
     // Movement (CREATOR_FEEDBACK CR-4: "boss has no movement"). The Sentinel now
     // HOVERS with a vertical bob so it reads as a live, breathing threat. Vertical
     // only: horizontal distance (fight balance) is unchanged and the cannon volley
@@ -252,7 +257,7 @@ export const ENEMIES = {
     gravity: false,
     isBoss: true,            // HP bar + name callout + win path (generalized boss-finder)
     shotSpeed: 2.6,
-    fireEvery: 70, enrageFireEvery: 44,
+    fireEvery: 80, enrageFireEvery: 52, // eased ~15% (was 70/44) — BALANCE-REPORT: boss-fire is the sole death cause
     bombEvery: 130, enrageBombEvery: 90,
     // CHOP-1 COMPLETABILITY FIX (root.C 2026-07-12): sweepAmp was 90 — REPRODUCED as
     // UNBEATABLE at the barrier firing line (headless aim-tracking spread bot STALLS at
@@ -744,7 +749,7 @@ const CAMPAIGN = [
   // Stage 3 — Frozen Ridge (DISTINCT windswept-ridgeline geometry, not a LEVEL1 reskin;
   // the aerial-heavy mix is authored inline in LEVEL3_SNOW along the ridge + open sky).
   { base: LEVEL3_SNOW, theme: 'snow', name: 'Frozen Ridge',
-    boss: { name: 'Ice Sentinel', hp: 86, color: '#7fb6d9', enrageFireEvery: 42 },
+    boss: { name: 'Ice Sentinel', hp: 86, color: '#7fb6d9', enrageFireEvery: 50 }, // eased (was 42) per BALANCE-REPORT
     decor: [ // snow-laden pines dotting the ridge (over ground, clear of the crevasse 1100–1156)
       { x: 200,  key: 'decor_snow_pine' },
       { x: 360,  key: 'decor_snow_pine' },
@@ -759,7 +764,7 @@ const CAMPAIGN = [
   // Stage 4 — Scorched Dunes (DISTINCT open-desert geometry, not a LEVEL2 reskin; the
   // artillery/mortar enemy mix is authored inline in LEVEL4_DESERT for the open flats).
   { base: LEVEL4_DESERT, theme: 'desert', name: 'Scorched Dunes',
-    boss: { name: 'Sand Gunship', hp: 88, color: '#d9b06a', enrageFireEvery: 42 },
+    boss: { name: 'Sand Gunship', hp: 88, color: '#d9b06a', enrageFireEvery: 50 }, // eased (was 42)
     decor: [ // saguaro cacti dotting the flats (over ground, clear of the canyon 1000–1056)
       { x: 150,  key: 'decor_desert_cactus' },
       { x: 350,  key: 'decor_desert_cactus' },
@@ -773,7 +778,7 @@ const CAMPAIGN = [
   // Stage 5 — Iron Foundry (DISTINCT vertical industrial geometry, not a LEVEL1 reskin;
   // the turret-fortress enemy mix is authored inline in LEVEL5_FOUNDRY for the catwalks).
   { base: LEVEL5_FOUNDRY, theme: 'foundry', name: 'Iron Foundry',
-    boss: { name: 'Foundry Core', hp: 104, color: '#9aa4b0', fireEvery: 74, enrageFireEvery: 40 },
+    boss: { name: 'Foundry Core', hp: 104, color: '#9aa4b0', fireEvery: 86, enrageFireEvery: 48 }, // eased (was 74/40)
     decor: [ // molten smelting vats along the foundry floor (over ground, clear of the pit 900–956)
       { x: 200,  key: 'decor_foundry_vat' },
       { x: 450,  key: 'decor_foundry_vat' },
@@ -787,7 +792,7 @@ const CAMPAIGN = [
   // Stage 6 — Crystal Caverns (DISTINCT descending-cavern geometry, not a LEVEL2 reskin;
   // the mixed aerial+artillery ambush is authored inline in LEVEL6_CAVERNS' outcrops).
   { base: LEVEL6_CAVERNS, theme: 'caverns', name: 'Crystal Caverns',
-    boss: { name: 'Crystal Wing', hp: 96, color: '#b98ad9', enrageFireEvery: 40 },
+    boss: { name: 'Crystal Wing', hp: 96, color: '#b98ad9', enrageFireEvery: 48 }, // eased (was 40)
     decor: [ // glowing violet crystal clusters lining the cavern (over ground, clear of the pit 1000–1056)
       { x: 200,  key: 'decor_caverns_crystal' },
       { x: 380,  key: 'decor_caverns_crystal' },
@@ -800,7 +805,7 @@ const CAMPAIGN = [
   // Stage 7 — Red Falcon Keep (DISTINCT fortress-climax geometry, not a LEVEL1 reskin;
   // the densest gauntlet mix is authored inline in LEVEL7_FORTRESS for the ramparts).
   { base: LEVEL7_FORTRESS, theme: 'fortress', name: 'Red Falcon Keep',
-    boss: { name: 'Red Falcon', hp: 128, color: '#ff5a6e', fireEvery: 68, enrageFireEvery: 36 },
+    boss: { name: 'Red Falcon', hp: 128, color: '#ff5a6e', fireEvery: 80, enrageFireEvery: 44 }, // eased (was 68/36); still the campaign's hottest
     decor: [ // flaming iron braziers lining the keep approach (over ground, clear of both moats)
       { x: 250,  key: 'decor_fortress_brazier' },
       { x: 420,  key: 'decor_fortress_brazier' },
