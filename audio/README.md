@@ -166,10 +166,23 @@ current per-stage music AND the boss escalation. Doubles as a deploy-freshness g
 > GainNode (the bus emits silence regardless of gain), NOT an audible defect. `cp
 > audio/music.js game/src/music.js` closes it; no player-facing effect either way.
 
-> Open need (parent to confirm): the boss fight currently keeps the stage's real biome
-> loop (no per-biome *boss* track yet — confirmed: `onStageChange` fires only on stage
-> change, so the boss inherits the stage loop by construction). If a distinct boss cue per
-> stage is wanted, that's a follow-up generation pass — flag it and I'll produce boss loops.
+> 🎚️ **READY TO GREENLIGHT — distinct BOSS theme (engine capability landed, dormant).**
+> The boss fight currently keeps the stage's biome loop (+ the enrage lift). A *distinct* boss
+> theme is now **one asset + one line away**: `MusicKit.setBossTrack(id)` (added this cycle,
+> `audio/music.js`) makes the boss theme ride the **existing** per-frame `audio.setSection('boss'
+> |'stage')` hook main.js already calls — entering a boss section hard-cuts the real audio to
+> the boss theme, leaving it restores the biome loop. **Dormant + byte-safe**: no boss track
+> registered ⇒ zero behaviour change (all 7 verifiers unaffected). Grounded on the source of
+> truth by `verify/track-handoff-check.mjs` (dormant-no-op + swap-to-boss + restore-to-stage,
+> 10/10). To ship it, the parent/campaign confirms **one shared boss loop** (1 Udio generation —
+> I'll produce + process it like the stage tracks) added to the manifest, plus a one-line
+> `audio.music.setBossTrack('boss')` in main.js after `loadTracks`, then `cp audio/music.js
+> game/src/music.js`. Not started speculatively — awaiting the greenlight (the parent has
+> repeatedly deprioritised a separate boss cue, so this stays a ready option, not a build).
+
+> 🔁 **OPEN NEED (minor) — re-sync the `_stopTrackSource` hygiene pin AND the `setBossTrack`
+> capability** from `audio/music.js` into `game/src/music.js` when the boss theme is greenlit
+> (both are byte-safe/dormant; the shipped build is unaffected until then).
 
 ## Status: LIVE ✅ (integrated by root.B, commit `89f6f80`)
 The music is wired into the shipped build and **verified live end-to-end** by

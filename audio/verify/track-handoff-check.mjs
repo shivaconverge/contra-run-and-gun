@@ -79,6 +79,26 @@ const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/jav
     pass &= ok('enrage RELAXES the real track (trackGain → base)', gi.trackGain > 0.15 && gi.trackGain < 0.24,
       `trackGain=${gi.trackGain} (base≈0.22)`);
 
+    // OPTIONAL distinct-boss-theme swap (setBossTrack). DORMANT by default: with no boss
+    // track registered, setSection('boss') must NOT change the active real track.
+    await page.evaluate(`window.__use('s1_jungle')`); await sleep(150);
+    await page.evaluate(`window.__mk.setSection('boss')`); await sleep(150);
+    let bt = await page.evaluate(`window.__gains()`);
+    pass &= ok('boss-track DORMANT: setSection(boss) is a no-op when unregistered', bt.active === 's1_jungle',
+      `active=${bt.active} (expected s1_jungle, unchanged)`);
+    // FUNCTIONAL: register s2_cascade as the boss theme (stand-in for the test) → setSection('boss')
+    // hard-cuts the real audio to it; setSection('stage') restores the stage's biome track.
+    await page.evaluate(`window.__mk.setSection('stage'); window.__use('s1_jungle'); window.__mk.setBossTrack('s2_cascade')`); await sleep(150);
+    await page.evaluate(`window.__mk.setSection('boss')`); await sleep(200);
+    bt = await page.evaluate(`window.__gains()`);
+    pass &= ok('boss-track FUNCTIONAL: setSection(boss) swaps to the boss theme', bt.active === 's2_cascade' && bt.src && bt.trackGain > 0.1,
+      `active=${bt.active} (expected s2_cascade)`);
+    await page.evaluate(`window.__mk.setSection('stage')`); await sleep(200);
+    bt = await page.evaluate(`window.__gains()`);
+    pass &= ok('boss-track FUNCTIONAL: setSection(stage) restores the biome track', bt.active === 's1_jungle' && bt.src,
+      `active=${bt.active} (expected s1_jungle restored)`);
+    await page.evaluate(`window.__mk.setBossTrack(null)`); // back to dormant for the rest
+
     await page.evaluate(`window.__use(null)`); await sleep(250);
     g = await page.evaluate(`window.__gains()`);
     // Audible fallback contract: the real-track SOURCE is stopped (bus emits silence
