@@ -910,6 +910,28 @@ export function runSelfTest() {
     check('weaponOnDeath.invariantHolds', wd.pass, wd.errors.join('; '));
   }
 
+  // 32. CASUAL VICTORY-REACHABILITY oracle (World.casualBossSurvivalTest over the
+  //     REAL shipping STAGES ladder): substantiates the GOAL's "real players can
+  //     reach victory" for the accessibility path. The invincible campaign oracle
+  //     (guard 28/29) proves the campaign is TRAVERSABLE but never exercises a
+  //     MORTAL casual fight — so a boss tuned unbeatable-in-one-casual-pool would
+  //     dead-end retry-mode invisibly (exactly the S6 Crystal Wing outlier the
+  //     hp96→82 calibration fixed). This drives a mortal casual bot (invincibility
+  //     OFF) against each stage's boss from the barrier firing line with a fresh
+  //     5-life pool + shield, and asserts EACH of the 7 bosses is beatable — the
+  //     retry-mode victory-reachability lower bound. `calibrated` (S1–S3 clear,
+  //     matching the competent bot) guards against a degenerate always-fail bot.
+  //     Reach/defeat FACTS, not a fun judgment. Fails loudly on any boss regressing
+  //     back above the casual budget.
+  {
+    const cbs = World.casualBossSurvivalTest(STAGES);
+    check('campaign.casualBotCalibrated', cbs.calibrated,
+      `S1-S3 cleared=[${cbs.results.slice(0, 3).map((r) => r.cleared).join(',')}]`);
+    check('campaign.casualRetryReachesVictory', cbs.allClear,
+      cbs.results.filter((r) => !r.cleared).map((r) => `S${r.stage}(${r.boss || r.error})`).join('; ')
+        || `all 7 bosses clear in a fresh casual pool [${cbs.results.map((r) => r.deaths).join(',')} deaths]`);
+  }
+
   const passed = results.filter((r) => r.pass).length;
   return { passed, total: results.length, ok: passed === results.length, results };
 }
