@@ -1229,6 +1229,10 @@ function drawPlayer(ctx, p, assets) {
 
   // Prone: a purpose-built low silhouette (drawProne is already weaponless), or a
   // weaponless prone sprite if the pipeline ships one. The ONE gun on top.
+  // VERIFIED BY LOOKING (2026-07-12): prone-firing both facings = the real
+  // weaponless prone body (player_prone.png, 24×10, confirmed gunless) + the single
+  // procedural rifle, muzzle flash at the tip. This completes one-weapon coverage of
+  // ALL hero stances (idle/run/jump/prone) × 8-way aim — see the drawPlayer header.
   if (p.prone) {
     const nw = get('player_prone_noweapon');
     if (nw) drawPlayerSprite(ctx, p, nw, x, y);
