@@ -1201,6 +1201,11 @@ function drawHeroBody(ctx, p, x, y, pose, frame) {
 // it has loaded, and otherwise draw the procedural weaponless commando
 // (drawHeroBody / drawProne). The gun-baked sprites (player_idle/run/jump/prone)
 // are NEVER drawn for the hero, so no baked gun can appear beside the aiming one.
+// VERIFIED BY LOOKING (one weapon, all axes): 8-way idle fire + turret; every
+// armed enemy (see enemy.js audit); 1× vs the arcade reference; across biome
+// backdrops (jungle/snow/desert); and RUN-AND-GUN motion — the real 4-frame
+// weaponless run strip (player_run.png, confirmed gunless) under the single
+// procedural rifle across all 4 run frames (2026-07-12). No baked gun in motion.
 function drawPlayer(ctx, p, assets) {
   const get = (k) => (assets && assets.get(k)) || null;
 
