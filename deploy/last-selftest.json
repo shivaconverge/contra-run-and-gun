@@ -1,0 +1,597 @@
+{
+  "passed": 118,
+  "total": 118,
+  "ok": true,
+  "results": [
+    {
+      "name": "collision.grounded",
+      "pass": true,
+      "detail": "vy=0"
+    },
+    {
+      "name": "collision.restsOnTop",
+      "pass": true,
+      "detail": "y=216"
+    },
+    {
+      "name": "onehit.dies",
+      "pass": true,
+      "detail": "dead=true"
+    },
+    {
+      "name": "onehit.invulnBlocks",
+      "pass": true,
+      "detail": "dead=false"
+    },
+    {
+      "name": "casual.startsWithShield",
+      "pass": true,
+      "detail": "shield=2 lives=5"
+    },
+    {
+      "name": "casual.shieldAbsorbs",
+      "pass": true,
+      "detail": "dead=false shield=1"
+    },
+    {
+      "name": "casual.shieldDrains",
+      "pass": true,
+      "detail": "dead=false shield=0"
+    },
+    {
+      "name": "casual.diesWhenDrained",
+      "pass": true,
+      "detail": "dead=true"
+    },
+    {
+      "name": "arcade.noShield",
+      "pass": true,
+      "detail": "shield=0 lives=3"
+    },
+    {
+      "name": "death.hadSpread",
+      "pass": true,
+      "detail": "w=spread"
+    },
+    {
+      "name": "death.lifeLost",
+      "pass": true,
+      "detail": "lives=2"
+    },
+    {
+      "name": "death.weaponReverts",
+      "pass": true,
+      "detail": "w=rifle"
+    },
+    {
+      "name": "death.respawnQueued",
+      "pass": true,
+      "detail": "t=48"
+    },
+    {
+      "name": "respawn.aliveAgain",
+      "pass": true,
+      "detail": "dead=false iframe=90"
+    },
+    {
+      "name": "pickup.startsRifle",
+      "pass": true,
+      "detail": "w=rifle"
+    },
+    {
+      "name": "pickup.grantsSpread",
+      "pass": true,
+      "detail": "w=spread"
+    },
+    {
+      "name": "pickup.consumed",
+      "pass": true,
+      "detail": "n=6 (was 7)"
+    },
+    {
+      "name": "kill.enemyRemoved",
+      "pass": true,
+      "detail": "alive=23"
+    },
+    {
+      "name": "kill.scoreAwarded",
+      "pass": true,
+      "detail": "score=100"
+    },
+    {
+      "name": "kill.hitStop",
+      "pass": true,
+      "detail": "hs=7 tr=0.5"
+    },
+    {
+      "name": "victory.notByGoalWhileBossAlive",
+      "pass": true,
+      "detail": "status=playing bossDead=false"
+    },
+    {
+      "name": "victory.bossDefeatClears",
+      "pass": true,
+      "detail": "status=cleared"
+    },
+    {
+      "name": "boss.volleyProneDuckable",
+      "pass": true,
+      "detail": "n=3 maxBottom=225"
+    },
+    {
+      "name": "boss.volleyHitsStanding",
+      "pass": true,
+      "detail": "n=3"
+    },
+    {
+      "name": "boss.beatableByProne",
+      "pass": true,
+      "detail": "status=cleared dead=false lives=3 steps=382"
+    },
+    {
+      "name": "spine.reachesBossFromStart",
+      "pass": true,
+      "detail": "maxX=2288 reachedBoss=true status=cleared"
+    },
+    {
+      "name": "spine.startToBossWinIntegrated",
+      "pass": true,
+      "detail": "cleared=true status=cleared maxX=2288"
+    },
+    {
+      "name": "bossDeath.multiBlastFx",
+      "pass": true,
+      "detail": "dead=true fxAdded=7"
+    },
+    {
+      "name": "bossDeath.awardsScoreAndFreezes",
+      "pass": true,
+      "detail": "scoreAdded=3000 hitStop=18"
+    },
+    {
+      "name": "bossDeath.emitsSfx",
+      "pass": true,
+      "detail": "ev=bossEnrage,bossDeath"
+    },
+    {
+      "name": "boss.hoversVertically",
+      "pass": true,
+      "detail": "yspan=14.0"
+    },
+    {
+      "name": "boss.horizontalStableForBalance",
+      "pass": true,
+      "detail": "x0=2340"
+    },
+    {
+      "name": "boss.hoverVolleyStillDuckable",
+      "pass": true,
+      "detail": "n=3 maxBottom=225"
+    },
+    {
+      "name": "prone.standingHit",
+      "pass": true,
+      "detail": "h=20"
+    },
+    {
+      "name": "prone.shrinks",
+      "pass": true,
+      "detail": "h=11"
+    },
+    {
+      "name": "prone.feetPlanted",
+      "pass": true,
+      "detail": "bottom=236"
+    },
+    {
+      "name": "prone.ducksFire",
+      "pass": true,
+      "detail": "top=225"
+    },
+    {
+      "name": "prone.standsBack",
+      "pass": true,
+      "detail": "h=20"
+    },
+    {
+      "name": "prone.blockedByCeiling",
+      "pass": true,
+      "detail": "h=11 prone=true"
+    },
+    {
+      "name": "impact.bulletDies",
+      "pass": true,
+      "detail": "dead=true solid=true"
+    },
+    {
+      "name": "impact.sparksSpawned",
+      "pass": true,
+      "detail": "particles=4"
+    },
+    {
+      "name": "density.dormantFar",
+      "pass": true,
+      "detail": "active=false x=2340"
+    },
+    {
+      "name": "density.activatesNear",
+      "pass": true,
+      "detail": "active=true"
+    },
+    {
+      "name": "jump.fixedArc",
+      "pass": true,
+      "detail": "tapApexY=146.3 heldApexY=146.3"
+    },
+    {
+      "name": "jump.actuallyLeavesGround",
+      "pass": true,
+      "detail": "heldApexY=146.3"
+    },
+    {
+      "name": "sfx.shootEmitted",
+      "pass": true,
+      "detail": "ev=shoot_rifle"
+    },
+    {
+      "name": "sfx.killEmitsExplosion",
+      "pass": true,
+      "detail": "ev=explosion"
+    },
+    {
+      "name": "sfx.drainClears",
+      "pass": true,
+      "detail": "drained=1 left=0"
+    },
+    {
+      "name": "audio.synthNoThrow",
+      "pass": true,
+      "detail": "ok"
+    },
+    {
+      "name": "audio.musicNoThrow",
+      "pass": true,
+      "detail": "ok"
+    },
+    {
+      "name": "title.defaultBootsPlaying",
+      "pass": true,
+      "detail": "status=playing"
+    },
+    {
+      "name": "title.toTitleEntersTitle",
+      "pass": true,
+      "detail": "status=title"
+    },
+    {
+      "name": "title.stepFrozen",
+      "pass": true,
+      "detail": "frame=0 status=title"
+    },
+    {
+      "name": "title.modeSelectStaysTitle",
+      "pass": true,
+      "detail": "status=title mode=casual"
+    },
+    {
+      "name": "title.startBeginsPlay",
+      "pass": true,
+      "detail": "status=playing"
+    },
+    {
+      "name": "attract.runsSimOnTitle",
+      "pass": true,
+      "detail": "x 40->100 frame=30 status=title"
+    },
+    {
+      "name": "attract.victorySuppressed",
+      "pass": true,
+      "detail": "bossDead=true status=title"
+    },
+    {
+      "name": "machine.rapidFire",
+      "pass": true,
+      "detail": "machine=3 rifle=7"
+    },
+    {
+      "name": "laser.piercesBoth",
+      "pass": true,
+      "detail": "alive=0 score=200"
+    },
+    {
+      "name": "laser.beamSurvives",
+      "pass": true,
+      "detail": "dead=false"
+    },
+    {
+      "name": "fire.corkscrewsPerp",
+      "pass": true,
+      "detail": "spanY=10.0"
+    },
+    {
+      "name": "fire.advancesForward",
+      "pass": true,
+      "detail": "x=220.0"
+    },
+    {
+      "name": "fire.strandsOppositePhase",
+      "pass": true,
+      "detail": "a=102.40 c=97.60"
+    },
+    {
+      "name": "boss.notEnragedAtFull",
+      "pass": true,
+      "detail": "enraged=undefined"
+    },
+    {
+      "name": "boss.enragesBelowThreshold",
+      "pass": true,
+      "detail": "enraged=true hp=35"
+    },
+    {
+      "name": "boss.enrageVolleyDenser",
+      "pass": true,
+      "detail": "n=4"
+    },
+    {
+      "name": "boss.enrageStillProneFair",
+      "pass": true,
+      "detail": "maxBottom=225"
+    },
+    {
+      "name": "flyer.hoversNoGravity",
+      "pass": true,
+      "detail": "y in [110,130] (never falls)"
+    },
+    {
+      "name": "flyer.bobs",
+      "pass": true,
+      "detail": "span=20.0"
+    },
+    {
+      "name": "flyer.strafesTowardPlayer",
+      "pass": true,
+      "detail": "x=710"
+    },
+    {
+      "name": "flyer.firesAimedShots",
+      "pass": true,
+      "detail": "enemyBullets=1"
+    },
+    {
+      "name": "flyer.killableAwardsScore",
+      "pass": true,
+      "detail": "alive=0 score=200"
+    },
+    {
+      "name": "turret.telegraphsBeforeFiring",
+      "pass": true,
+      "detail": "peak=11"
+    },
+    {
+      "name": "turret.telegraphClearsOnShot",
+      "pass": true,
+      "detail": "telAtShot=0"
+    },
+    {
+      "name": "flyer.telegraphsBeforeFiring",
+      "pass": true,
+      "detail": "peak=11"
+    },
+    {
+      "name": "flyer.telegraphClearsOnShot",
+      "pass": true,
+      "detail": "telAtShot=0"
+    },
+    {
+      "name": "turret.firesFromBarrelTip",
+      "pass": true,
+      "detail": "tip=(698.01,208.49) spawn=(698.01,208.49)"
+    },
+    {
+      "name": "turret.muzzleOffsetFromHullCentre",
+      "pass": true,
+      "detail": "centreX=709.0 tipX=698.0"
+    },
+    {
+      "name": "death.entersDyingState",
+      "pass": true,
+      "detail": "dying=true rt=48"
+    },
+    {
+      "name": "death.flingsUpAndSpins",
+      "pass": true,
+      "detail": "minY=194 y0=200 ang=0.34"
+    },
+    {
+      "name": "death.clearsOnRespawn",
+      "pass": true,
+      "detail": "dying=false dead=false lives=2"
+    },
+    {
+      "name": "somersault.airborneTracksRise",
+      "pass": true,
+      "detail": "grounded=0 rise=1 vy=-8.1"
+    },
+    {
+      "name": "somersault.resetsOnLand",
+      "pass": true,
+      "detail": "grounded=true air=0"
+    },
+    {
+      "name": "input.mergesTouchAndKeyboard",
+      "pass": true,
+      "detail": "right=true fire=true left=false"
+    },
+    {
+      "name": "input.mergedJumpPressedOnEdge",
+      "pass": true,
+      "detail": "jump=true pressed=true"
+    },
+    {
+      "name": "input.jumpPressedClearsWhenHeld",
+      "pass": true,
+      "detail": "pressed=false"
+    },
+    {
+      "name": "mortar.lobsGravityShell",
+      "pass": true,
+      "detail": "gravity=0.16"
+    },
+    {
+      "name": "mortar.telegraphsBeforeLob",
+      "pass": true,
+      "detail": "sawTel=true"
+    },
+    {
+      "name": "mortar.shellArcsUpThenDown",
+      "pass": true,
+      "detail": "vy0=-4.6 vyMax=5.6"
+    },
+    {
+      "name": "pit.fallKills",
+      "pass": true,
+      "detail": "lives 3->2 rt=48"
+    },
+    {
+      "name": "pit.safeRespawnAvoidsChasm",
+      "pass": true,
+      "detail": "safeX=2214 overGround=true"
+    },
+    {
+      "name": "pit.runningJumpClears",
+      "pass": true,
+      "detail": "x=2279 crossed=true lives=3"
+    },
+    {
+      "name": "bridge.isSolidGroundKind",
+      "pass": true,
+      "detail": "bridge={\"x\":1700,\"y\":236,\"w\":90,\"h\":40,\"kind\":\"ground\",\"bridge\":true}"
+    },
+    {
+      "name": "bridge.hasWaterChannelBelow",
+      "pass": true,
+      "detail": "water={\"x\":1700,\"y\":244,\"w\":200,\"h\":24}"
+    },
+    {
+      "name": "bridge.playerStandsOnDeck",
+      "pass": true,
+      "detail": "grounded=true feetY=236.0 deckY=236 dead=false"
+    },
+    {
+      "name": "multiheight.catwalkAboveBridge",
+      "pass": true,
+      "detail": "catwalkY=112 bridgeY=236"
+    },
+    {
+      "name": "multiheight.playerStandsOnCatwalk",
+      "pass": true,
+      "detail": "grounded=true feetY=112.0 deckY=112 dead=false"
+    },
+    {
+      "name": "bridgegap.gapBreaksDeck",
+      "pass": true,
+      "detail": "gap=1790..1846 (56px), clearable\u226479"
+    },
+    {
+      "name": "bridgegap.fallInWaterKills",
+      "pass": true,
+      "detail": "lives 3->2 rt=48"
+    },
+    {
+      "name": "bridgegap.runningJumpClears",
+      "pass": true,
+      "detail": "x=1852 crossed=true lives=3"
+    },
+    {
+      "name": "bridgegap.catwalkBypassesGap",
+      "pass": true,
+      "detail": "catwalk=1745..1855 gap=1790..1846"
+    },
+    {
+      "name": "multiheight.catwalkReachableByJump",
+      "pass": true,
+      "detail": "reachedCatwalk=true x=1764 feetY=112 catY=112"
+    },
+    {
+      "name": "splash.waterFallSplashes",
+      "pass": true,
+      "detail": "fx=true sfx=true"
+    },
+    {
+      "name": "splash.dryChasmNoSplash",
+      "pass": true,
+      "detail": "died=true sawSplash=false"
+    },
+    {
+      "name": "theme.tilesWiredInManifest",
+      "pass": true,
+      "detail": "bridge=assets/theme_bridge.png water=assets/theme_water.png top=assets/theme_water_top.png"
+    },
+    {
+      "name": "land.hardLandingPuffs",
+      "pass": true,
+      "detail": "dust=true squash=true grounded=true"
+    },
+    {
+      "name": "land.flatRunNoPuff",
+      "pass": true,
+      "detail": "dustWhileRunning=false grounded=true"
+    },
+    {
+      "name": "pause.freezesSim",
+      "pass": true,
+      "detail": "frame 6->6 x 46.7->46.7"
+    },
+    {
+      "name": "pause.resumesSim",
+      "pass": true,
+      "detail": "frame 7 (want 7) x 49.0"
+    },
+    {
+      "name": "boss.stage1SentinelRegisters",
+      "pass": true,
+      "detail": "boss=boss"
+    },
+    {
+      "name": "boss.stage2ChopperRegisters",
+      "pass": true,
+      "detail": "boss=chopper"
+    },
+    {
+      "name": "chopper.sweepsAndFires",
+      "pass": true,
+      "detail": "sweep=155 fired=true"
+    },
+    {
+      "name": "chopper.defeatableFiresFinale",
+      "pass": true,
+      "detail": "dead=true fxAdded=7 status=cleared"
+    },
+    {
+      "name": "stagexfer.loadsNextLevelCarryingRun",
+      "pass": true,
+      "detail": "level2=true status=playing score=4200 lives=2 boss=chopper weapon=rifle"
+    },
+    {
+      "name": "stagexfer.stage2Playable",
+      "pass": true,
+      "detail": "moved=39 chopper=true"
+    },
+    {
+      "name": "campaign.structureInvariantsHold",
+      "pass": true,
+      "detail": "density=[23,20,20,20,21,23,27] bossHp=[90,78,86,88,104,96,128]"
+    },
+    {
+      "name": "campaign.sevenDistinctStages",
+      "pass": true,
+      "detail": "n=7 themes=7"
+    },
+    {
+      "name": "campaign.finaleIsDensestAndHardest",
+      "pass": true,
+      "detail": "density=[23,20,20,20,21,23,27] bossHp=[90,78,86,88,104,96,128]"
+    }
+  ]
+}

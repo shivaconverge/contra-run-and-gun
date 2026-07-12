@@ -1,4 +1,4 @@
-=== GO-LIVE verification @ 2026-07-12T02:26:58Z ===
+=== GO-LIVE verification @ 2026-07-12T02:54:15Z ===
 URL: https://shivaconverge.github.io/contra-run-and-gun/
 --- root HTTP 0 ---
 <!doctype html>
@@ -55,13 +55,15 @@ audio resolve-gate: 7/7 tracks HTTP 200:
   assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 2408655 bytes [current]
 RESULT: LIVE ✅
 
-DIFFICULTY-CURVE FIX + GATE RETRY-HARDENING (LIVE URL, HEAD b0c5a1c):
-  Master advanced source-only (config.js + render.js) — difficulty-curve
-  regression fix. Re-deployed; game boots live (deploy/evidence/live-boot.png).
-  DEFECT FOUND IN MY GATE (not the deliverable): a single HEAD on s7_fortress.mp3
-  hit a transient network blip (HTTP empty) and produced a FALSE 'STALE' verdict;
-  two immediate retries returned HTTP 200 len=2408655 == local (track is fine).
-  FIX: head_meta() now retries up to 3x when the status comes back EMPTY (curl-
-  level failure), but does NOT retry a real HTTP code (404 stays fast). Re-run:
-  all 36 assets + 7 tracks [current], clean pass. The gate no longer cries wolf
-  on transient flakes — false failures erode the go-live signal.
+CAMPAIGN-STRUCTURE REGRESSION LIVE (HEAD 848ee96):
+  Master wired World.validateCampaignStructure into runSelfTest (source-only:
+  render.js/selftest.js/world.js). Re-deployed; reachability+currency gate green
+  (36 assets + 7 tracks current). NEW deploy/live-selftest.sh drives the DEPLOYED
+  URL with ?selftest=1 in headless Chrome and asserts the served build passes its
+  OWN suite: passed=118 total=118 ok=true failures=0, with the core GOAL
+  invariants PASSING LIVE:
+    campaign.sevenDistinctStages       PASS
+    campaign.finaleIsDensestAndHardest PASS
+    campaign.structureInvariantsHold   PASS
+  Full report: deploy/last-selftest.json. This grounds 'a 7-distinct-stage
+  campaign' on the PUBLIC build, not just locally — functional, not just reachable.
