@@ -59,6 +59,29 @@ boss ledge — see [BAL-5].)*
 
 ---
 
+## 🔁 2026-07-12 (later) — RE-MEASUREMENT after root.C shipped BAL-4 (mode-gated weapon-on-death)
+
+root.C then shipped **BAL-4** (`game/src/world.js`): weapon-on-death is now **mode-gated** —
+**ARCADE reverts to the rifle** (the 1987 single-slot invariant the hard mode must keep),
+but **CASUAL RETAINS its weapon** on death so a lost life doesn't cripple the retry (the
+accessibility path). I re-drove the merged build; this **moved the casual wall two stages
+deeper**:
+
+| Mode | After ~15% ease | After BAL-4 (merged) | Δ |
+|------|-----------------|----------------------|---|
+| Arcade | GAME OVER @ Stage-1 boss (0/7) | **GAME OVER @ Stage-1 boss (0/7)** | unchanged (BAL-4 exempts arcade by design) |
+| Casual | GAME OVER @ Stage-2 boss (1/7) | **GAME OVER @ Stage-4 boss (3/7 cleared)** | **+2 stages** — clears S1/S2/S3, walls at the Scorched Dunes chopper |
+
+**FACT (weapon retention observed):** casual deaths this run kept `machine` / `spread` at
+respawn (not rifle); arcade deaths all reverted to `rifle` — the mode-gating is live and
+correct (gate `invariant.weaponRevertsOnDeath` PASS, arcade-family only). Retaining the
+weapon also **downed the Stage-1 boss faster (36.9 s, 2 deaths, then reached S2 with the
+weapon)** and, as a side effect, the BAL-5 pit death **did not recur** (less time drifting at
+the boss ledge — see [BAL-5], now marked intermittent). **BAL-1 (arcade) is untouched** — the
+hard mode still walls at boss 1, correctly awaiting root.C's difficulty-target decision.
+
+---
+
 ## THE BOT (honest disclosure — read before trusting the arcade numbers)
 
 The driver is a **baseline** run-and-gun heuristic, **not a skilled human**: always advance
@@ -124,16 +147,17 @@ Evidence: [`campaign-gate.json`](./campaign-gate.json).
 | All 7 bosses **defeatable** by genuinely shooting them (invincible) → VICTORY | ✅ **yes** |
 | **Soft-locks / unwinnable geometry** detected (any mode) | ✅ **none** |
 | Damage-ON **ARCADE** baseline-bot outcome | ❌ **GAME OVER at Stage-1 boss** (0/7 cleared, 4 deaths) |
-| Damage-ON **CASUAL** baseline-bot outcome | ⚠️ **GAME OVER at Stage-2 boss** (1/7 cleared, 6 deaths) |
-| Damage-on death cause split (both modes) | **projectile 9 · pit 1 · contact 0** (90% boss fire) |
-| Traversal deaths | **1 pit** — the tracked BAL-5 boss-ledge fall; **0 contact** |
+| Damage-ON **CASUAL** baseline-bot outcome | ⚠️ **GAME OVER at Stage-4 boss** (3/7 cleared, 6 deaths) — BAL-4 moved this +2 stages |
+| Weapon-on-death (BAL-4, mode-gated) | arcade → **rifle** (revert); casual → **retains** (machine/spread observed) |
+| Damage-on death cause split (both modes) | **projectile 10 · pit 0 · contact 0** (100% boss fire this run) |
+| Traversal deaths | **0** this run (BAL-5 pit did not recur — intermittent, time-at-ledge dependent) |
 
 **One-line read:** the campaign's spine is sound (reachable, defeatable, no soft-locks, all
-7 biomes distinct), and **the bosses are the primary killer** — 90% of deaths are boss-fire
-projectiles; the single traversal death is the boss-arena footing interaction [BAL-5], not a
-level-traversal failure. **The difficulty is boss survival**, and the **arcade first-boss
-wall is steep** for anything short of skilled human pattern-play — and (see the re-measurement
-above) **root.C's ~15% cadence ease did not move that wall for a baseline run.**
+7 biomes distinct), and **the bosses are the primary killer** — 100% of deaths this run are
+boss-fire projectiles, zero traversal deaths. **The difficulty is boss survival.** root.C's
+BAL-4 mode-gated weapon-retention pushed the **casual** wall from Stage-2 to **Stage-4** (a
+real accessibility gain); the **arcade first-boss wall is unchanged** (BAL-4 exempts arcade by
+design) and still steep for anything short of skilled human pattern-play.
 
 ---
 
@@ -176,18 +200,20 @@ whole level and survived ~10 s of boss fire — then 23.2 s, 27.4 s, 30.2 s. Bes
 reached: **60/90** (vs 55/90 pre-easing — marginally better, still nowhere near a kill). The
 fixed Sentinel's aimed fire still outpaces a 3-life budget over the ~31 s DPS-bound kill time.
 
-### CASUAL (5 lives + 2-hit shield ≈ 7 effective hits) — baseline bot
+### CASUAL (5 lives + 2-hit shield; **BAL-4: retains weapon on death**) — baseline bot
 
-| Stage | Reached boss | Beaten | Deaths (cause) | Lives left | Outcome |
-|------:|:---:|:---:|---|---:|---|
-| 1 Jungle | ✅ | ✅ | 3 (projectile ×2, **pit ×1** [BAL-5]) | 2 | cleared @ **42.0 s** |
-| 2 Cascade | ✅ | ❌ | 3 (projectile ×3) | −1 | **GAME OVER** |
+| Stage | Reached boss | Beaten | Deaths (cause) | Lives left | Weapon@death | Outcome |
+|------:|:---:|:---:|---|---:|---|---|
+| 1 Jungle | ✅ | ✅ | 2 (projectile ×2) | 3 | machine | cleared @ **36.9 s** |
+| 2 Cascade | ✅ | ✅ | 2 (projectile ×2) | 1 | spread | cleared @ **72.5 s** |
+| 3 Frozen Ridge | ✅ | ✅ | 0 | 1 | — | cleared @ **24.3 s** |
+| 4 Scorched Dunes | ✅ | ❌ | 2 (projectile ×2) | −1 | spread | **GAME OVER** |
 
-Casual **can** clear Stage 1 (boss to 1 HP, then down) with margin (2 lives spare), which
-confirms the fight is winnable at a survival budget of ~7 hits — deaths at 25.0 s, 32.8 s,
-and a **36.9 s pit fall at the boss ledge** [BAL-5]. It then wears out at the **Stage-2
-Gunship** (deaths 28.7 / 40.8 / 47.2 s, boss floored to 50/78), whose sweeping arc roughly
-doubles the fight length (69.7 s invincible) — more seconds under fire = more deaths.
+With **BAL-4** casual now clears **S1→S2→S3** and walls at the **Stage-4 Sand Gunship**
+(chopper). Retaining the weapon after death is visible in the log (`machine`, `spread` at
+respawn instead of rifle) and speeds the fights — Stage 1 fell in **36.9 s / 2 deaths** (vs
+42.0 s / 3 deaths pre-BAL-4, and the [BAL-5] pit death did **not** recur). The wall is again a
+**chopper** (Stage 4), consistent with finding #3: sweeping bosses stretch time-under-fire.
 
 *(Full per-death frame/x/cause log for every stage is in `campaign-playthrough.json` →
 `damageOn.{arcade,casual}.stages[].deathLog`.)*
@@ -304,9 +330,9 @@ referenced decor key loads (no invisible set-dressing). The full matrix is in
 
 ### 2026-07-12 — [BAL-1] Arcade campaign not completable by a baseline (non-expert) run — GAME OVER at Stage-1 boss
 - **Severity:** medium (balance / accessibility; NOT a soft-lock — the boss IS defeatable).
-- **Repro:** `node playtest/balance/campaign-playthrough.mjs` → `damageOn.arcade`: reaches
-  the Stage-1 Sentinel, dies 4× to boss projectiles (first at 20.3 s), GAME OVER, best boss
-  HP 55/90.
+- **Repro (merged build):** `node playtest/balance/campaign-playthrough.mjs` → `damageOn.arcade`:
+  reaches the Stage-1 Sentinel, dies 4× to boss projectiles (first at ~20.5 s), GAME OVER,
+  best boss HP 60/90. Unchanged by BAL-4 (arcade reverts to rifle by design).
 - **Intended behavior (the test asserts this):** a real player of *ordinary* skill should be
   able to progress past boss 1 in the default (arcade) mode without perfect pattern-play.
 - **Owner/fix:** root.C — decide intended arcade boss-1 difficulty; if too steep, ease
@@ -314,41 +340,55 @@ referenced decor key loads (no invisible set-dressing). The full matrix is in
   capsule to blunt the death→rifle spiral (BAL-4). Left as a **recorded finding**, not
   worked around — re-run this harness to confirm arcade reaches ≥ Stage 2 after tuning.
 
-### 2026-07-12 — [BAL-2] Casual campaign stalls at Stage-2 Gunship (chopper survival spike)
-- **Severity:** low-medium (balance). Casual clears Stage 1 with margin but GAME-OVERs at
-  the Stage-2 chopper (deaths at 24.0 / 34.4 / 45.8 s, all projectile).
-- **Cause (measured):** chopper bosses take 2–3× longer to down (sweep off-lane) → more
-  time under fire. See finding #3.
+### 2026-07-12 — [BAL-2] Casual campaign stalls at a chopper survival spike — now **Stage-4** (was Stage-2)
+- **Status update (BAL-4 shipped):** root.C's mode-gated weapon-retention (BAL-4) moved this
+  wall **+2 stages** — casual now clears S1/S2/S3 and GAME-OVERs at the **Stage-4 Sand
+  Gunship** (deaths 2×, boss floored to 50/88). The mid-campaign chopper is still the wall.
+- **Severity:** low-medium (balance). Casual reaches 3/7.
+- **Cause (measured):** chopper bosses (Stages 2/4/6) take ~2–3× longer to down (sweep
+  off-lane) → more time under fire. See finding #3. BAL-4 helped by preserving DPS across
+  deaths, but the Stage-4 chopper still outlasts the casual budget.
 - **Owner/fix:** root.C — raise chopper effective DPS window or lower its fire tax so casual
-  can clear the mid-campaign chopper stages. Recorded, not masked.
+  clears the mid-campaign chopper stages. Recorded, not masked; re-run the gate to confirm
+  casual reaches ≥ Stage 5 after tuning.
+
+### 2026-07-12 — [BAL-4 / RESOLVED-IN-PART] Mode-gated weapon-on-death shipped and grounded
+- root.C shipped BAL-4 in `game/src/world.js`: **arcade reverts to rifle** (1987 invariant),
+  **casual retains its weapon** on death (accessibility). I re-drove the merged build and
+  confirmed it live: casual deaths kept `machine`/`spread` at respawn; arcade deaths reverted
+  to `rifle` (gate `invariant.weaponRevertsOnDeath` PASS, arcade-family only). **Effect:**
+  casual wall Stage-2 → **Stage-4** (+2 stages). Arcade unchanged by design (BAL-1 still open).
 
 ### 2026-07-12 — [BAL-3 / caveat] Arcade numbers are a baseline-bot upper bound, not a human-skill verdict
 - The bot does not memorise boss patterns. A skilled human likely survives boss 1 in arcade.
   BAL-1/BAL-2 are **directional** evidence + a request for root.C to set the intended curve,
   **not** a claim the game is unwinnable. The invincible pass proves every boss is beatable.
 
-### 2026-07-12 — [BAL-5] Stage-1 boss firing ledge is a pit-death trap over the pre-boss chasm
-- **Severity:** low-medium (level-design / balance; NOT a soft-lock — the stage is clearable).
-- **Repro:** `node playtest/balance/campaign-gate.mjs` → `damageOn.casual.stages[0].deathLog`
-  contains a **pit death at x=2241, ~36.9 s** into the Stage-1 boss fight. `level1.js` puts a
-  **58 px chasm at x2220–2278** immediately left of the boss barrier (x2300), leaving only a
-  **~22 px firing ledge** (2278–2300) for a 12 px-wide player.
-- **Mechanism (measured):** it emerges with *time at the barrier* — it appears in **casual**
-  (which survives longer via shield + 5 lives) but not in **arcade** (which dies to projectiles
-  first). Firing recoil pushes the player back (−aim) and dodge-hops add drift, so extended
-  boss exposure nudges the player off the narrow ledge into the chasm. The bot already refuses
-  to *weave* left into a gap (ground-checked); the residual death is recoil/hop drift, which a
-  human under fire also faces.
+### 2026-07-12 — [BAL-5] Stage-1 boss firing ledge is a pit-death risk over the pre-boss chasm (INTERMITTENT)
+- **Severity:** low (level-design / balance; NOT a soft-lock — the stage is clearable).
+- **Status update:** this pit death **did NOT recur** in the post-BAL-4 run — casual now
+  retains its weapon, downs the Stage-1 boss faster (36.9 s / 2 deaths vs 42.0 s / 3), and so
+  spends less time drifting at the ledge. It is therefore **intermittent** (time-at-barrier
+  dependent), not deterministic — but the underlying geometry hazard remains.
+- **Repro (prior run):** `damageOn.casual.stages[0].deathLog` contained a **pit death at
+  x=2241, ~36.9 s** into the Stage-1 boss fight. `level1.js` puts a **58 px chasm at
+  x2220–2278** immediately left of the boss barrier (x2300), leaving only a **~22 px firing
+  ledge** (2278–2300) for a 12 px-wide player.
+- **Mechanism (measured):** it emerges with *time at the barrier* — firing recoil pushes the
+  player back (−aim) and dodge-hops add drift, so extended boss exposure can nudge the player
+  off the narrow ledge into the chasm. The bot already refuses to *weave* left into a gap
+  (ground-checked); the residual risk is recoil/hop drift, which a human under fire also faces.
 - **Intended behavior (the gate asserts the correct invariant):** the *levels* must not be the
   primary killer — `balance.bossesAreThePrimaryKiller` asserts boss-fire deaths ≥ traversal
-  deaths (currently 9 ≥ 1, PASS). A designed pit hazard causing an occasional death is fine; a
-  **boss arena you get shoved into a pit from** may not be.
+  deaths (currently 10 ≥ 0, PASS). A designed pit hazard causing a rare death is fine; a **boss
+  arena you get shoved into a pit from** may not be.
 - **Owner/fix (root.C, `level1.js` geometry):** confirm intended tension, or widen the boss
-  firing ledge / shift the chasm left so the player isn't recoil-drifted into a fall mid-fight.
-  Recorded, not masked — the per-death log keeps surfacing it until addressed.
+  firing ledge / shift the chasm left. Recorded, not masked — the per-death log re-surfaces it
+  whenever a run spends long enough at the ledge.
 
-*(Spine clean this run: 7/7 reachable + defeatable, no soft-locks, weapon-revert holds. The
-only traversal death is the tracked BAL-5 boss-ledge pit; bosses remain the primary killer.)*
+*(Spine clean this run: 7/7 reachable + defeatable, no soft-locks, mode-gated weapon rule
+holds (arcade reverts, casual retains). Zero traversal deaths this run; bosses remain the
+primary killer.)*
 
 ---
 
