@@ -1,4 +1,4 @@
-=== GO-LIVE verification @ 2026-07-12T12:17:25Z ===
+=== GO-LIVE verification @ 2026-07-12T13:03:02Z ===
 URL: https://shivaconverge.github.io/contra-run-and-gun/
 --- root HTTP 0 ---
 <!doctype html>
@@ -55,15 +55,13 @@ audio resolve-gate: 7/7 tracks HTTP 200:
   assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 2408655 bytes [current]
 RESULT: LIVE ✅
 
-VERIFY-ONLY CYCLE (no served-file change) + SERVED-REV PRECISION (HEAD db99615):
-  Master advanced (PRs #148-152: playtest/perf, QA-gate wiring, docs) but the
-  game/ diff vs the last-deployed commit (c697782) is EMPTY — NO served file
-  changed. So NO redeploy was needed; instead I VERIFIED the live URL is current:
-    reachability+currency PASS | sha256 parity 72/72 byte-current | functional
-    PASS | two-weapon PASS  -> LIVE ✅
-  Reconciled: the served build rev (last game/-touching commit = 6ecdfd6) is an
-  ANCESTOR of the deployed commit c697782 → already live; no undeployed game change.
-  IMPROVEMENT: gate.sh's GATE-STATUS now records BOTH the gated HEAD and the
-  served-build revision (last commit touching game/), so the operate-phase record
-  is unambiguous about WHICH game content is live vs which HEAD authorized the run
-  — precise on cycles (like this one) that only touch deploy/docs/tooling.
+WORLD.JS REFRESH (served build advanced) — LIVE (HEAD 950bdc6, served rev 0d26a87):
+  This cycle master's SERVED build changed: game/src/world.js (0d26a87 — removed a
+  redundant casual-survival double-run in validateCampaignStructure). Pre-deploy the
+  gate would have caught it: live world.js was 41621 vs local 42222 (STALE). Re-
+  deployed; 4-step gate now all-PASS -> LIVE ✅:
+    1/4 reachability+currency PASS  2/4 sha256 parity 72/72 byte-current
+    3/4 functional PASS             4/4 two-weapon PASS (7/7 clean)
+  world.js now byte-current live: 42222==42222. GATE-STATUS served-rev tracking
+  (added last cycle) correctly identifies the live game content as 0d26a87, distinct
+  from the gated HEAD 950bdc6 — the served-build precision paid off on a real refresh.

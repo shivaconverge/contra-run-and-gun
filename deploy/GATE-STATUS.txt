@@ -1,7 +1,7 @@
-=== RELEASE GATE @ 2026-07-12T12:17:25Z ===
+=== RELEASE GATE @ 2026-07-12T13:03:02Z ===
 URL:                 https://shivaconverge.github.io/contra-run-and-gun/
-gated HEAD:          db99615
-served build rev:    6ecdfd6   (last commit touching game/)
+gated HEAD:          950bdc6
+served build rev:    0d26a87   (last commit touching game/)
 reachability+currency: PASS   (verify.sh)
 full-surface parity:   PASS   (deploy-parity.mjs, sha256)
 functional self-test:  PASS   (live-selftest.sh)

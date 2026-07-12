@@ -1,6 +1,6 @@
 # Weapon-Defect Audit — creator round-2 (all 7 stages)
 
-_Generated 2026-07-12T12:17:45.639Z by `feedback/audit/weapon-defect-audit.mjs`. Regenerate: `node feedback/audit/weapon-defect-audit.mjs`._
+_Generated 2026-07-12T13:03:53.354Z by `feedback/audit/weapon-defect-audit.mjs`. Regenerate: `node feedback/audit/weapon-defect-audit.mjs`._
 
 **VERDICT: PASS** — 7/7 stages clean. Muzzle tolerance 2px.
 
