@@ -893,6 +893,23 @@ export function runSelfTest() {
       rs.violations.slice(0, 4).map((v) => `stage${v.stage}:${v.reason}`).join('; ') || `${STAGES.length} stages clean`);
   }
 
+  // 31. WEAPON-ON-DEATH guard (World.weaponOnDeathTest over the REAL death→respawn
+  //     path): the BAL-4 accessibility invariant is subtle and mode-conditional —
+  //     ARCADE reverts to the default rifle on death (the pure 1987 challenge) while
+  //     CASUAL RETAINS the picked-up weapon so a boss death doesn't trigger the
+  //     DPS-death-spiral (measured: lifts a baseline casual run from clearing 1 stage
+  //     to 3 per life-pool, without trivializing it — casual still walls at the S4
+  //     Gunship). Every other guard runs with the default weapon or never exercises
+  //     player DEATH, so a silent regression here (someone making the revert
+  //     mode-agnostic again) would pass unseen. Wiring it drives the ACTUAL
+  //     _onPlayerDeath + _doRespawn for BOTH modes and fails loudly on drift.
+  {
+    const wd = World.weaponOnDeathTest(LEVEL1);
+    check('weaponOnDeath.arcadeReverts', wd.arcade.afterRespawn === 'rifle', `got '${wd.arcade.afterRespawn}'`);
+    check('weaponOnDeath.casualRetains', wd.casual.afterRespawn === 'laser', `got '${wd.casual.afterRespawn}'`);
+    check('weaponOnDeath.invariantHolds', wd.pass, wd.errors.join('; '));
+  }
+
   const passed = results.filter((r) => r.pass).length;
   return { passed, total: results.length, ok: passed === results.length, results };
 }
