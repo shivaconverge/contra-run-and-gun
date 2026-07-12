@@ -1,5 +1,5 @@
 {
-  "ts": "2026-07-12T03:53:13.639Z",
+  "ts": "2026-07-12T05:39:02.693Z",
   "mode": "public",
   "target": "https://shivaconverge.github.io/contra-run-and-gun/",
   "killedProcs": [],
@@ -15,7 +15,7 @@
         "y": 0
       },
       "prone": false,
-      "bullets": 2
+      "bullets": 4
     },
     {
       "entity": "hero",
@@ -28,7 +28,7 @@
         "y": 0
       },
       "prone": false,
-      "bullets": 4
+      "bullets": 6
     },
     {
       "entity": "hero",
@@ -41,7 +41,7 @@
         "y": 0
       },
       "prone": false,
-      "bullets": 5
+      "bullets": 7
     },
     {
       "entity": "hero",
@@ -54,7 +54,7 @@
         "y": -1
       },
       "prone": false,
-      "bullets": 4
+      "bullets": 8
     },
     {
       "entity": "hero",
@@ -67,7 +67,7 @@
         "y": -1
       },
       "prone": false,
-      "bullets": 6
+      "bullets": 7
     },
     {
       "entity": "hero",
@@ -80,7 +80,7 @@
         "y": -1
       },
       "prone": false,
-      "bullets": 8
+      "bullets": 7
     },
     {
       "entity": "hero",
@@ -93,7 +93,7 @@
         "y": -0.7071067811865476
       },
       "prone": false,
-      "bullets": 12
+      "bullets": 10
     },
     {
       "entity": "hero",
@@ -106,7 +106,7 @@
         "y": -0.7071067811865476
       },
       "prone": false,
-      "bullets": 12
+      "bullets": 10
     },
     {
       "entity": "hero",
@@ -132,7 +132,7 @@
         "y": 0
       },
       "prone": true,
-      "bullets": 7
+      "bullets": 10
     },
     {
       "entity": "hero",
@@ -145,7 +145,7 @@
         "y": 0
       },
       "prone": true,
-      "bullets": 7
+      "bullets": 10
     },
     {
       "entity": "hero",
@@ -158,39 +158,39 @@
         "y": 0
       },
       "prone": true,
-      "bullets": 7
+      "bullets": 10
+    },
+    {
+      "entity": "turret",
+      "pose": "at-x241",
+      "frame": "playtest/acceptance/frames/weapon/public/turret-0.png",
+      "kind": "turret",
+      "active": true,
+      "px": 241
     },
     {
       "entity": "turret",
       "pose": "at-x246",
-      "frame": "playtest/acceptance/frames/weapon/public/turret-0.png",
+      "frame": "playtest/acceptance/frames/weapon/public/turret-1.png",
       "kind": "turret",
       "active": true,
       "px": 246
     },
     {
       "entity": "turret",
-      "pose": "at-x251",
-      "frame": "playtest/acceptance/frames/weapon/public/turret-1.png",
-      "kind": "turret",
-      "active": true,
-      "px": 251
-    },
-    {
-      "entity": "turret",
-      "pose": "at-x251",
+      "pose": "at-x246",
       "frame": "playtest/acceptance/frames/weapon/public/turret-2.png",
       "kind": "turret",
       "active": true,
-      "px": 251
+      "px": 246
     },
     {
       "entity": "turret",
-      "pose": "at-x251",
+      "pose": "at-x246",
       "frame": "playtest/acceptance/frames/weapon/public/turret-3.png",
       "kind": "turret",
       "active": true,
-      "px": 251
+      "px": 246
     }
   ],
   "consoleErrors": [

@@ -181,9 +181,10 @@ verdict. Every boss is distinguishable.
 **Feed-to-builder note (B = art):** within a family the base silhouette is shared and
 differentiated by palette recolor + biome background — cascade Gunship vs desert Sand
 Gunship are the same helicopter chassis in different liveries; Sentinel vs Ice
-Sentinel the same walker recolored. They ARE distinguishable as-is; if a higher
-distinctness bar is wanted later, the chopper/mech families are where added silhouette
-variation would pay off. (Foundry Core already breaks its family's mold — a good model.)
+Sentinel the same walker recolored. They clear the *differentiable floor* as-is, but
+that is BELOW a strong per-boss silhouette bar — logged as a dated OPEN ISSUE
+("same-chassis boss families share silhouette") with per-family evidence and the fix
+for B. (Foundry Core already breaks its family's mold — the model to follow.)
 
 ---
 
@@ -276,6 +277,27 @@ without masking (`scope_served` still reflects the bytes the URL actually served
 ---
 
 ## OPEN ISSUES
+
+### 2026-07-12 — same-chassis boss families share silhouette (gap → builder B = art)
+- **Severity:** minor / enhancement. The DISTINCTNESS FLOOR is met (all 7 bosses are
+  differentiable by looking — recolor + biome background), but two families reuse one
+  base silhouette rather than being *silhouette-distinct*:
+  - **Choppers:** stage 2 `Gunship` and stage 4 `Sand Gunship` are the same helicopter
+    chassis, differing only in livery (dark vs sand-camo) + backdrop.
+  - **Walkers:** stage 1 `Sentinel` and stage 3 `Ice Sentinel` are the same mech
+    chassis, recolored (steel/red vs ice-blue/cyan).
+- **Why recorded (parent corrected my earlier call):** I had judged shared-chassis
+  recolors as fully "visibly distinct." Corrected: recolor+biome clears the *floor*
+  (differentiable) but is below a strong per-boss silhouette bar. Logging it so it is
+  not silently treated as fully solved.
+- **Impact:** none on scope_served (bosses are PRESENT, named-distinct, and pass the
+  differentiable look); this is a fidelity-ceiling improvement, not a blocker.
+- **Repro / evidence:** `frames/boss/stage-2-cascade-gunship.png` vs
+  `frames/boss/stage-4-desert-sand-gunship.png`; `stage-1-jungle-sentinel.png` vs
+  `stage-3-snow-ice-sentinel.png` — same silhouette, different palette.
+- **Feed to B (art):** give the chopper and walker families per-biome silhouette
+  variation (frame/canopy/limb changes), the way `Foundry Core` already breaks its
+  family's mold. Then the 7 bosses are silhouette-distinct, not just recolor-distinct.
 
 ### 2026-07-12 — favicon.ico 404 (cosmetic, non-blocking)
 - **Severity:** trivial / cosmetic.

@@ -1,11 +1,11 @@
 {
-  "ts": "2026-07-12T05:01:00.498Z",
+  "ts": "2026-07-12T05:39:46.292Z",
   "stage": 1,
   "note": "grounds boss-fidelity affordance vs natural arrival (stage 1 Sentinel)",
   "reachedNaturally": true,
   "natural": {
     "bx": 2340,
-    "by": 177.23958857565552,
+    "by": 177.58683844275382,
     "kind": "boss",
     "name": "Sentinel",
     "active": true,
@@ -14,15 +14,15 @@
   },
   "affordance": {
     "bx": 2340,
-    "by": 177.98745854601387,
+    "by": 177.51929722370588,
     "kind": "boss",
     "name": "Sentinel",
     "active": true,
     "bossActive": true,
     "camx": 1920
   },
-  "gridDiff": 4.86,
-  "histDiff": 0.092,
+  "gridDiff": 1.45,
+  "histDiff": 0.071,
   "sameBossName": true,
   "affordanceFaithful": true
 }

@@ -1,5 +1,5 @@
 {
-  "ts": "2026-07-12T04:12:31.427Z",
+  "ts": "2026-07-12T05:39:28.821Z",
   "mode": "public",
   "target": "https://shivaconverge.github.io/contra-run-and-gun/",
   "killedProcs": [],
@@ -17,8 +17,8 @@
       "theme": "jungle",
       "enraged": false,
       "nearestSibling": 5,
-      "minGridDiff": 28.36,
-      "minHistDiff": 1.044,
+      "minGridDiff": 27.34,
+      "minHistDiff": 0.993,
       "suspectedReuseOf": [],
       "visuallyDistinct": true
     },
@@ -35,8 +35,8 @@
       "theme": "cascade",
       "enraged": false,
       "nearestSibling": 6,
-      "minGridDiff": 33.5,
-      "minHistDiff": 1.044,
+      "minGridDiff": 31.1,
+      "minHistDiff": 0.993,
       "suspectedReuseOf": [],
       "visuallyDistinct": true
     },
@@ -53,8 +53,8 @@
       "theme": "snow",
       "enraged": false,
       "nearestSibling": 4,
-      "minGridDiff": 82.39,
-      "minHistDiff": 1.694,
+      "minGridDiff": 89.33,
+      "minHistDiff": 1.69,
       "suspectedReuseOf": [],
       "visuallyDistinct": true
     },
@@ -71,8 +71,8 @@
       "theme": "desert",
       "enraged": false,
       "nearestSibling": 5,
-      "minGridDiff": 44.34,
-      "minHistDiff": 1.656,
+      "minGridDiff": 39.65,
+      "minHistDiff": 1.437,
       "suspectedReuseOf": [],
       "visuallyDistinct": true
     },
@@ -89,8 +89,8 @@
       "theme": "foundry",
       "enraged": false,
       "nearestSibling": 7,
-      "minGridDiff": 22.11,
-      "minHistDiff": 0.831,
+      "minGridDiff": 24.51,
+      "minHistDiff": 0.77,
       "suspectedReuseOf": [],
       "visuallyDistinct": true
     },
@@ -107,8 +107,8 @@
       "theme": "caverns",
       "enraged": false,
       "nearestSibling": 5,
-      "minGridDiff": 28.61,
-      "minHistDiff": 1.656,
+      "minGridDiff": 29.56,
+      "minHistDiff": 1.666,
       "suspectedReuseOf": [],
       "visuallyDistinct": true
     },
@@ -125,8 +125,8 @@
       "theme": "fortress",
       "enraged": false,
       "nearestSibling": 5,
-      "minGridDiff": 22.11,
-      "minHistDiff": 0.831,
+      "minGridDiff": 24.51,
+      "minHistDiff": 0.77,
       "suspectedReuseOf": [],
       "visuallyDistinct": true
     }

@@ -1,5 +1,5 @@
 {
-  "ts": "2026-07-12T03:07:39.073Z",
+  "ts": "2026-07-12T05:38:32.223Z",
   "mode": "public",
   "target": "https://shivaconverge.github.io/contra-run-and-gun/",
   "staleServeGuard": {
@@ -18,15 +18,15 @@
         {
           "rel": "src/main.js",
           "httpStatus": 200,
-          "remoteSha": "8bc26f8f52bc0bcb",
-          "localSha": "8bc26f8f52bc0bcb",
+          "remoteSha": "1b2509f118a97673",
+          "localSha": "1b2509f118a97673",
           "matchesLocal": true
         },
         {
           "rel": "data/config.js",
           "httpStatus": 200,
-          "remoteSha": "72b9da766b4b1730",
-          "localSha": "72b9da766b4b1730",
+          "remoteSha": "a5264df391769144",
+          "localSha": "a5264df391769144",
           "matchesLocal": true
         },
         {
@@ -65,15 +65,18 @@
       "bossName": "Sentinel",
       "bossKind": "boss",
       "bossHp": 90,
+      "themedBossKey": "boss_jungle",
+      "themedBossLoaded": false,
+      "themedBossDims": null,
       "playerX": 131,
       "audioLayerPresent": true,
       "audioTrack": "s1_jungle",
-      "distinctBins": 117,
+      "distinctBins": 114,
       "transitionVia": "KeyN(real-key)",
       "transitionKeyPresses": 1,
       "nearestSibling": 2,
-      "minGridDiff": 18.47,
-      "minHistDiff": 0.592,
+      "minGridDiff": 16.77,
+      "minHistDiff": 0.603,
       "suspectedReuseOf": [],
       "visuallyDistinct": true,
       "musicPresent": true,
@@ -98,15 +101,18 @@
       "bossName": "Gunship",
       "bossKind": "chopper",
       "bossHp": 78,
-      "playerX": 131,
+      "themedBossKey": "boss_cascade",
+      "themedBossLoaded": false,
+      "themedBossDims": null,
+      "playerX": 129,
       "audioLayerPresent": true,
       "audioTrack": "s2_cascade",
-      "distinctBins": 133,
+      "distinctBins": 140,
       "transitionVia": "KeyN(real-key)",
       "transitionKeyPresses": 1,
       "nearestSibling": 1,
-      "minGridDiff": 18.47,
-      "minHistDiff": 0.592,
+      "minGridDiff": 16.77,
+      "minHistDiff": 0.603,
       "suspectedReuseOf": [],
       "visuallyDistinct": true,
       "musicPresent": true,
@@ -131,6 +137,12 @@
       "bossName": "Ice Sentinel",
       "bossKind": "boss",
       "bossHp": 86,
+      "themedBossKey": "boss_snow",
+      "themedBossLoaded": true,
+      "themedBossDims": {
+        "w": 45,
+        "h": 48
+      },
       "playerX": 131,
       "audioLayerPresent": true,
       "audioTrack": "s3_snow",
@@ -138,8 +150,8 @@
       "transitionVia": "KeyN(real-key)",
       "transitionKeyPresses": 1,
       "nearestSibling": 4,
-      "minGridDiff": 54.01,
-      "minHistDiff": 1.477,
+      "minGridDiff": 49.5,
+      "minHistDiff": 1.197,
       "suspectedReuseOf": [],
       "visuallyDistinct": true,
       "musicPresent": true,
@@ -164,15 +176,21 @@
       "bossName": "Sand Gunship",
       "bossKind": "chopper",
       "bossHp": 88,
+      "themedBossKey": "boss_desert",
+      "themedBossLoaded": true,
+      "themedBossDims": {
+        "w": 74,
+        "h": 34
+      },
       "playerX": 131,
       "audioLayerPresent": true,
       "audioTrack": "s4_desert",
-      "distinctBins": 105,
+      "distinctBins": 109,
       "transitionVia": "KeyN(real-key)",
       "transitionKeyPresses": 1,
       "nearestSibling": 5,
-      "minGridDiff": 49.55,
-      "minHistDiff": 1.717,
+      "minGridDiff": 45.44,
+      "minHistDiff": 1.713,
       "suspectedReuseOf": [],
       "visuallyDistinct": true,
       "musicPresent": true,
@@ -197,15 +215,21 @@
       "bossName": "Foundry Core",
       "bossKind": "boss",
       "bossHp": 104,
-      "playerX": 131,
+      "themedBossKey": "boss_foundry",
+      "themedBossLoaded": true,
+      "themedBossDims": {
+        "w": 60,
+        "h": 60
+      },
+      "playerX": 129,
       "audioLayerPresent": true,
       "audioTrack": "s5_foundry",
-      "distinctBins": 137,
+      "distinctBins": 145,
       "transitionVia": "KeyN(real-key)",
       "transitionKeyPresses": 1,
       "nearestSibling": 7,
-      "minGridDiff": 10.13,
-      "minHistDiff": 0.56,
+      "minGridDiff": 8.52,
+      "minHistDiff": 0.449,
       "suspectedReuseOf": [],
       "visuallyDistinct": true,
       "musicPresent": true,
@@ -230,15 +254,21 @@
       "bossName": "Crystal Wing",
       "bossKind": "chopper",
       "bossHp": 96,
+      "themedBossKey": "boss_caverns",
+      "themedBossLoaded": true,
+      "themedBossDims": {
+        "w": 73,
+        "h": 48
+      },
       "playerX": 131,
       "audioLayerPresent": true,
       "audioTrack": "s6_caverns",
-      "distinctBins": 171,
+      "distinctBins": 161,
       "transitionVia": "KeyN(real-key)",
       "transitionKeyPresses": 1,
       "nearestSibling": 7,
-      "minGridDiff": 18.46,
-      "minHistDiff": 1.614,
+      "minGridDiff": 17.41,
+      "minHistDiff": 1.418,
       "suspectedReuseOf": [],
       "visuallyDistinct": true,
       "musicPresent": true,
@@ -263,13 +293,19 @@
       "bossName": "Red Falcon",
       "bossKind": "boss",
       "bossHp": 128,
+      "themedBossKey": "boss_fortress",
+      "themedBossLoaded": true,
+      "themedBossDims": {
+        "w": 56,
+        "h": 54
+      },
       "playerX": 131,
       "audioLayerPresent": true,
       "audioTrack": "s7_fortress",
-      "distinctBins": 113,
+      "distinctBins": 125,
       "nearestSibling": 5,
-      "minGridDiff": 10.13,
-      "minHistDiff": 0.56,
+      "minGridDiff": 8.52,
+      "minHistDiff": 0.449,
       "suspectedReuseOf": [],
       "visuallyDistinct": true,
       "musicPresent": true,
@@ -336,5 +372,59 @@
     }
   ],
   "keyBindingProven": true,
+  "themedBossArt": [
+    {
+      "stage": 3,
+      "theme": "snow",
+      "key": "boss_snow",
+      "loaded": true,
+      "dims": {
+        "w": 45,
+        "h": 48
+      }
+    },
+    {
+      "stage": 4,
+      "theme": "desert",
+      "key": "boss_desert",
+      "loaded": true,
+      "dims": {
+        "w": 74,
+        "h": 34
+      }
+    },
+    {
+      "stage": 5,
+      "theme": "foundry",
+      "key": "boss_foundry",
+      "loaded": true,
+      "dims": {
+        "w": 60,
+        "h": 60
+      }
+    },
+    {
+      "stage": 6,
+      "theme": "caverns",
+      "key": "boss_caverns",
+      "loaded": true,
+      "dims": {
+        "w": 73,
+        "h": 48
+      }
+    },
+    {
+      "stage": 7,
+      "theme": "fortress",
+      "key": "boss_fortress",
+      "loaded": true,
+      "dims": {
+        "w": 56,
+        "h": 54
+      }
+    }
+  ],
+  "themedBossArtProblems": [],
+  "themedBossArtOk": true,
   "verdict": "PASS"
 }
