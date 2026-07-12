@@ -112,6 +112,39 @@ pre-filter. No stage reuses another's art.
 
 ---
 
+## TWO-WEAPON defect — player-POV verification (the creator's REJECT gate)
+
+`CREATOR_FEEDBACK.md` round 2 keeps the build REJECTED until the **two-weapon
+defect** is fixed: the hero and the purple turret each showed TWO weapons on screen
+— a gun baked into the sprite art (fixed) PLUS a procedural aiming gun drawn over it
+— so you saw "a second gun at the waist" / a "phantom turret". The creator was
+explicit: **"Verify by looking: one weapon per entity"**, and **"do not
+self-certify from frame comparison alone."** That is exactly a judge-by-looking,
+player-POV check — so `weapon-fidelity.mjs` drives the LIVE build, makes the hero
+actually FIRE in each aim pose and a turret actually fire, and captures a **zoomed
+crop of each weapon off the live canvas** (`frames/weapon/…`, public under
+`frames/weapon/public/…`). I then READ the crops.
+
+**By-looking verdict (BOTH local + public URL, 2026-07-12): ONE weapon per entity —
+defect FIXED.**
+
+- **Hero, `aim-right`** — holds a single rifle in **both hands**, horizontal; the
+  muzzle flash sits at the **barrel tip**, exactly where the shot spawns. No waist
+  gun. (`frames/weapon/hero-aim-right-*.png`)
+- **Hero, `aim-up`** — the same single rifle rotates to point **straight up**, held
+  in the hands, bullet leaving the muzzle. One gun, following the aim.
+  (`frames/weapon/hero-aim-up-*.png`)
+- **Turret** — a single grey gunmetal cannon barrel on a **weaponless purple dome**
+  (the canonical rotating-barrel-over-weaponless-base solution). No second baked
+  gun. (`frames/weapon/turret-*.png`)
+
+The weapon you SEE and the weapon that FIRES are the same one, for both entities, on
+the deployed build. This clears the *behavioral* half of the creator's gate from the
+player's eyes; the formal **creator APPROVE** artifact is the feedback loop's to
+record.
+
+---
+
 ## PUBLIC-URL grounding — the LIVE deploy real players reach
 
 `scope_served` is now proven against **both** the local worktree AND the deployed
@@ -167,6 +200,19 @@ without masking (`scope_served` still reflects the bytes the URL actually served
   than swept so it is not mistaken for a missing game asset.
 - **Repro:** boot the served build, watch the network panel — a single 404 for
   `/favicon.ico`. Fix (art/index owner): add a 16×16 favicon + `<link rel="icon">`.
+
+### 2026-07-12 — harness (mine): prone weapon crop doesn't reliably frame the hero
+- **Severity:** harness coverage gap (NOT a game defect).
+- **Symptom:** `weapon-fidelity.mjs` frames the hero cleanly for `aim-right`,
+  `aim-up`, and `aim-diag-up`, but the `prone` crop often catches only ground — the
+  flat, low prone sprite sits at the crop edge and blends with the floor band.
+- **Not a game issue:** prone FIRING works (bullet count increments every prone
+  capture) and the horizontal `aim-right` pose already proves the same one-gun
+  geometry the prone pose would; the defect verdict does not depend on the prone
+  frame. The two-weapon fix is confirmed by the other three captures + the turret.
+- **Repro:** run the harness; open `frames/weapon/hero-prone-*.png`. Follow-up
+  (mine): anchor the prone crop to the sprite's drawn bounds (render offset), not the
+  shrunk hitbox center, so the low pose frames reliably.
 
 ### 2026-07-12 — harness (mine): dropped synthetic `KeyN` caused a FALSE 5/7 (fixed)
 - **Severity:** harness robustness (NOT a game/deploy defect) — but a *false* fail
