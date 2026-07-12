@@ -74,17 +74,37 @@ else
   log "assets.js not found at $ASSETS_JS — checking core sprite only"
 fi
 log "resolve-gate: ${#ASSET_PATHS[@]} referenced assets vs the deployed bundle"
+# Local image dir for byte-freshness (same idea as the audio gate): finalized
+# assets (boss re-gen, tileset tweak) rewrite the PNG bytes but keep the filename,
+# so an HTTP-200-only check would pass a stale CDN copy. When the local build is
+# beside us, assert each live asset's Content-Length EQUALS the local file's size,
+# proving the public URL serves the CURRENT art — not a lagging cached version.
+LOCAL_GAME_DIR="$(cd "$(dirname "$0")/.." && pwd)/game"
 ASSET_FAILED=0
+ASSET_STALE=0
 for rel in "${ASSET_PATHS[@]}"; do
-  ac="$(code "${BASE}/${rel}")"
+  IFS=$'\t' read -r ac _atype alen <<<"$(head_meta "${BASE}/${rel}")"
   if [ "$ac" != "200" ]; then
     printf '\033[31m[verify]   MISSING\033[0m %s -> HTTP %s\n' "$rel" "$ac"
     echo "  MISSING: $rel -> HTTP $ac" >>"$OUT"
     ASSET_FAILED=$((ASSET_FAILED+1))
+    continue
+  fi
+  # Byte-freshness vs the local build (only when the local file is present).
+  if [ -f "${LOCAL_GAME_DIR}/${rel}" ]; then
+    lsz="$(stat -f%z "${LOCAL_GAME_DIR}/${rel}" 2>/dev/null || stat -c%s "${LOCAL_GAME_DIR}/${rel}" 2>/dev/null)"
+    if [ -n "$lsz" ] && [ "${alen:-x}" != "$lsz" ]; then
+      printf '\033[31m[verify]   STALE\033[0m %s live=%s local=%s\n' "$rel" "${alen:-?}" "$lsz"
+      echo "  STALE: $rel live=${alen:-?} local=$lsz" >>"$OUT"
+      ASSET_STALE=$((ASSET_STALE+1))
+    fi
   fi
 done
 [ "$ASSET_FAILED" -eq 0 ] || fail "$ASSET_FAILED/${#ASSET_PATHS[@]} referenced assets are NOT published (see above)"
-pass "all ${#ASSET_PATHS[@]} referenced assets reachable (HTTP 200) — incl. per-stage biome tilesets"
+if [ "$ASSET_STALE" -gt 0 ]; then
+  fail "$ASSET_STALE/${#ASSET_PATHS[@]} live assets are STALE (size != local build) — public URL not current with master; wait for the deploy run or re-run go-live.sh"
+fi
+pass "all ${#ASSET_PATHS[@]} referenced assets reachable + byte-current with local build (incl. biome tilesets + themed bosses)"
 
 # 4) AUDIO RESOLVE-GATE — the live campaign decodes EVERY per-stage Udio track at
 #    boot (main.js reads assets/audio/manifest.json, sorts by s<N>_ prefix, then

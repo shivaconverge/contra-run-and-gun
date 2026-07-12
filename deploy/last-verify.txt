@@ -1,4 +1,4 @@
-=== GO-LIVE verification @ 2026-07-12T00:52:11Z ===
+=== GO-LIVE verification @ 2026-07-12T01:32:53Z ===
 URL: https://shivaconverge.github.io/contra-run-and-gun/
 --- root HTTP 0 ---
 <!doctype html>
@@ -55,14 +55,13 @@ audio resolve-gate: 7/7 tracks HTTP 200:
   assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 2408655 bytes [current]
 RESULT: LIVE ✅
 
-THEMED BOSSES + IRON FOUNDRY (LIVE URL, HEAD 3ccd402):
-  Master added 5 per-stage themed boss sprites (boss_desert/snow/foundry/caverns/
-  fortress.png) wired via render.drawEnemy + Stage 5 'Iron Foundry' vertical
-  industrial geometry. Re-deployed (GitHub runner queue was slow — waited out the
-  backlog). Resolve-gate auto-adapted 31->36 assets; all 36 + 7 tracks HTTP 200,
-  audio byte-current. The 5 new boss PNGs individually confirmed live HTTP 200.
-  Distinct-biome + boss proof via ?level=N on the LIVE URL (JUDGE BY LOOKING):
-    deploy/evidence/live-stage5.png — Stage 5 FOUNDRY (smokestack silhouettes,
-      molten-orange accents, metallic ground, boss on screen)
-    deploy/evidence/live-stage7.png — Stage 7 FORTRESS (crimson metal, fortress
-      turret silhouettes, armored boss center)
+FINALIZED BOSSES + STAGE-7 KEEP + FULL BYTE-CURRENCY GATE (LIVE URL, HEAD f691ad5):
+  Master finalized the 5 themed boss sprites (PNG bytes changed, same names) +
+  Stage 7 'Red Falcon Keep' fortress geometry + audio-manifest key metadata
+  (mp3 bytes unchanged). NEW: the ASSET resolve-gate now also enforces byte-
+  currency (Content-Length == local file size), matching the audio gate — it
+  FIRST caught all 5 finalized boss PNGs as STALE pre-deploy (an HTTP-200-only
+  check would have passed them), then post-deploy all 36 assets + 7 tracks are
+  [current]. The whole served bundle is now provably fresh, not just reachable.
+  Stage 7 renders live: deploy/evidence/live-stage7.png — crimson fortress
+  crenellations, armored boss, aerial + ninja enemy mix.
