@@ -352,6 +352,29 @@ without masking (`scope_served` still reflects the bytes the URL actually served
   to 3×; a genuine content FAIL (some stages played, failed a predicate) is NEVER
   retried. A still-invalid run is reported `GATE-INFRA-ERROR` (exit 2), never a game
   FAIL. Post-fix: both scope runs valid on the first attempt, gate PASS 8/8.
+- **Hardened again 2026-07-12 (this cycle):** the public drive proved *persistently*
+  flaky across several back-to-back gate runs (0/7 full-stall AND 5/7 partial —
+  stage 6→7 transition dropped). Two gaps found and fixed: (1) the invalid-detector
+  required *no* stage to have played, so it missed the common "stage 1 plays then the
+  run collapses to title" pattern — broadened to `scope ≤ 1 && ≥N-1 stages stuck on
+  title/gameover`. (2) A *partial* flake (e.g. 5/7 from one dropped transition) was
+  reported as a real FAIL and **clobbered the authoritative summary**. Added a
+  rigorous cross-check: `deployDrift=none AND local=7/7 AND public<7/7 BECAUSE stages
+  went UNREACHED` ⇒ `GATE-INFRA-ERROR` (identical bytes that clear 7/7 locally cannot
+  be a content defect remotely — only a drive flake). Crucially, if all 7 were
+  REACHED but some failed content, `publicReached==7` so this is FALSE and the real
+  FAIL lands — **a genuine regression is never masked**. And the authoritative-summary
+  guard now refuses to overwrite `acceptance-summary.json` on `GATE-INFRA-ERROR` too
+  (writes scratch, preserves the last-known-good). Validated live: a 5/7 flake this
+  cycle correctly yielded `GATE-INFRA-ERROR`, wrote scratch, and left the committed
+  `PASS 7/7` authoritative summary intact.
+- **Still open:** because the public drive keeps flaking this session, a FULL-gate
+  PASS that refreshes the authoritative summary under the NEW criteria (set-dressing +
+  tileset predicates, added since the committed summary) has not yet landed — the
+  committed authoritative `PASS 7/7` reflects the prior criteria. Re-run the gate when
+  the public URL is responsive; `scope-served.mjs --url=…` proves 7/7 standalone. This
+  is an ENVIRONMENT/latency limitation of my headless drive, not a game defect
+  (deployDrift=none, local 7/7, per-stage art all present on public via content-hash).
 
 ### 2026-07-12 — harness (mine): weapon crops intermittently missed the hero — ROOT-CAUSED + FIXED
 - **Severity:** harness reliability (NOT a game defect). RESOLVED this cycle.

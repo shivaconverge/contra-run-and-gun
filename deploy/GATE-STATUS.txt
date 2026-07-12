@@ -1,5 +1,6 @@
-=== RELEASE GATE @ 2026-07-12T07:10:29Z ===
+=== RELEASE GATE @ 2026-07-12T08:24:42Z ===
 URL:                 https://shivaconverge.github.io/contra-run-and-gun/
-reachability+currency: PASS   (verify.sh)
+reachability+currency: FAIL   (verify.sh)
 functional self-test:  PASS   (live-selftest.sh)
-VERDICT:             LIVE ✅
+two-weapon audit:      PASS   (feedback/audit/gate-step.sh)
+VERDICT:             BLOCKED ❌

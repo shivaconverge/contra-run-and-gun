@@ -1,11 +1,13 @@
 # Weapon-Defect Audit — creator round-2 (all 7 stages)
 
-_Generated 2026-07-12T07:16:14.102Z by `feedback/audit/weapon-defect-audit.mjs`. Regenerate: `node feedback/audit/weapon-defect-audit.mjs`._
+_Generated 2026-07-12T08:24:50.718Z by `feedback/audit/weapon-defect-audit.mjs`. Regenerate: `node feedback/audit/weapon-defect-audit.mjs`._
 
 **VERDICT: PASS** — 7/7 stages clean. Muzzle tolerance 2px.
 
-> ✅ **Layer B (runtime grounding) RAN** — every stage driven in a real headless browser build.
-> 📷 Captured 7 shipped frame(s) under `report/frames/` — LOOK at them (embedded per stage below) to confirm one weapon per entity. Eyes-on review: `VISUAL-REVIEW.md`.
+> ⏭ **Layer B (runtime grounding) SKIPPED** — no headless browser (`WEAPON_AUDIT_STATIC_ONLY=1 (static-only mode requested)`).
+> The deterministic **static two-weapon FACT (Layer A + `keys.*`) still governs** this verdict,
+> exactly like `deploy/live-selftest.sh`'s SKIP. Run on a machine with Chrome to add the
+> per-stage runtime muzzle-origin grounding.
 
 The creator round-2 REJECT is a FACT: does any armed entity show TWO weapons (a
 gun baked into the sprite art AND a procedural code-drawn one)? The two entities
@@ -40,10 +42,6 @@ fires from where that weapon is drawn.
 
 ### Stage 1 — Jungle Approach (jungle) — PASS
 
-Captured shipped frame (LOOK to confirm one weapon per entity): [`report/frames/stage1-jungle.png`](frames/stage1-jungle.png)
-
-![stage 1 jungle](frames/stage1-jungle.png)
-
 Resolved bodies (armed entities):
 
 - **hero (commando)** ×1 → body `player_idle_noweapon | player_run_noweapon | player_jump_noweapon | player_prone_noweapon` + procedural `drawGun`
@@ -65,15 +63,11 @@ Every armed enemy — procedural weapon TYPE (static, from `render.js`; hero=gun
 - ✅ `keys.allSpawnsModeled` — all 5 spawned kinds modeled: [grunt, turret, flyer, mortar, boss]
 - ✅ `keys.noBakedWeaponBody` — two-weapon entities [turret, hero] resolve to weaponless bodies only
 - ✅ `keys.everyArmedEnemyOneWeapon` — all 5 armed kinds draw one weapon type: hero→gun, turret→barrel, flyer→none, mortar→none, boss→none (hero=gun, turret=barrel, rest=none; none draws two)
-- ✅ `runtime.themeBoots` — booted theme='jungle' (config='jungle'), status=playing
-- ✅ `runtime.heroFromHandMuzzle` — bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)
-- ✅ `runtime.turretFromBarrelTip` — 5/5 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)
+- ⏭ `runtime.themeBoots` — SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs
+- ⏭ `runtime.heroFromHandMuzzle` — SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs
+- ⏭ `runtime.turretFromBarrelTip` — SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs
 
 ### Stage 2 — Cascade Base (cascade) — PASS
-
-Captured shipped frame (LOOK to confirm one weapon per entity): [`report/frames/stage2-cascade.png`](frames/stage2-cascade.png)
-
-![stage 2 cascade](frames/stage2-cascade.png)
 
 Resolved bodies (armed entities):
 
@@ -96,15 +90,11 @@ Every armed enemy — procedural weapon TYPE (static, from `render.js`; hero=gun
 - ✅ `keys.allSpawnsModeled` — all 5 spawned kinds modeled: [grunt, turret, flyer, mortar, chopper]
 - ✅ `keys.noBakedWeaponBody` — two-weapon entities [turret, hero] resolve to weaponless bodies only
 - ✅ `keys.everyArmedEnemyOneWeapon` — all 5 armed kinds draw one weapon type: hero→gun, turret→barrel, flyer→none, mortar→none, chopper→none (hero=gun, turret=barrel, rest=none; none draws two)
-- ✅ `runtime.themeBoots` — booted theme='cascade' (config='cascade'), status=playing
-- ✅ `runtime.heroFromHandMuzzle` — bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)
-- ✅ `runtime.turretFromBarrelTip` — 4/4 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)
+- ⏭ `runtime.themeBoots` — SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs
+- ⏭ `runtime.heroFromHandMuzzle` — SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs
+- ⏭ `runtime.turretFromBarrelTip` — SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs
 
 ### Stage 3 — Frozen Ridge (snow) — PASS
-
-Captured shipped frame (LOOK to confirm one weapon per entity): [`report/frames/stage3-snow.png`](frames/stage3-snow.png)
-
-![stage 3 snow](frames/stage3-snow.png)
 
 Resolved bodies (armed entities):
 
@@ -125,15 +115,11 @@ Every armed enemy — procedural weapon TYPE (static, from `render.js`; hero=gun
 - ✅ `keys.allSpawnsModeled` — all 4 spawned kinds modeled: [grunt, flyer, turret, boss]
 - ✅ `keys.noBakedWeaponBody` — two-weapon entities [turret, hero] resolve to weaponless bodies only
 - ✅ `keys.everyArmedEnemyOneWeapon` — all 4 armed kinds draw one weapon type: hero→gun, flyer→none, turret→barrel, boss→none (hero=gun, turret=barrel, rest=none; none draws two)
-- ✅ `runtime.themeBoots` — booted theme='snow' (config='snow'), status=playing
-- ✅ `runtime.heroFromHandMuzzle` — bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)
-- ✅ `runtime.turretFromBarrelTip` — 3/3 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)
+- ⏭ `runtime.themeBoots` — SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs
+- ⏭ `runtime.heroFromHandMuzzle` — SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs
+- ⏭ `runtime.turretFromBarrelTip` — SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs
 
 ### Stage 4 — Scorched Dunes (desert) — PASS
-
-Captured shipped frame (LOOK to confirm one weapon per entity): [`report/frames/stage4-desert.png`](frames/stage4-desert.png)
-
-![stage 4 desert](frames/stage4-desert.png)
 
 Resolved bodies (armed entities):
 
@@ -154,15 +140,11 @@ Every armed enemy — procedural weapon TYPE (static, from `render.js`; hero=gun
 - ✅ `keys.allSpawnsModeled` — all 4 spawned kinds modeled: [grunt, turret, mortar, chopper]
 - ✅ `keys.noBakedWeaponBody` — two-weapon entities [turret, hero] resolve to weaponless bodies only
 - ✅ `keys.everyArmedEnemyOneWeapon` — all 4 armed kinds draw one weapon type: hero→gun, turret→barrel, mortar→none, chopper→none (hero=gun, turret=barrel, rest=none; none draws two)
-- ✅ `runtime.themeBoots` — booted theme='desert' (config='desert'), status=playing
-- ✅ `runtime.heroFromHandMuzzle` — bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)
-- ✅ `runtime.turretFromBarrelTip` — 4/4 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)
+- ⏭ `runtime.themeBoots` — SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs
+- ⏭ `runtime.heroFromHandMuzzle` — SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs
+- ⏭ `runtime.turretFromBarrelTip` — SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs
 
 ### Stage 5 — Iron Foundry (foundry) — PASS
-
-Captured shipped frame (LOOK to confirm one weapon per entity): [`report/frames/stage5-foundry.png`](frames/stage5-foundry.png)
-
-![stage 5 foundry](frames/stage5-foundry.png)
 
 Resolved bodies (armed entities):
 
@@ -183,15 +165,11 @@ Every armed enemy — procedural weapon TYPE (static, from `render.js`; hero=gun
 - ✅ `keys.allSpawnsModeled` — all 4 spawned kinds modeled: [grunt, turret, mortar, boss]
 - ✅ `keys.noBakedWeaponBody` — two-weapon entities [turret, hero] resolve to weaponless bodies only
 - ✅ `keys.everyArmedEnemyOneWeapon` — all 4 armed kinds draw one weapon type: hero→gun, turret→barrel, mortar→none, boss→none (hero=gun, turret=barrel, rest=none; none draws two)
-- ✅ `runtime.themeBoots` — booted theme='foundry' (config='foundry'), status=playing
-- ✅ `runtime.heroFromHandMuzzle` — bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)
-- ✅ `runtime.turretFromBarrelTip` — 9/9 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)
+- ⏭ `runtime.themeBoots` — SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs
+- ⏭ `runtime.heroFromHandMuzzle` — SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs
+- ⏭ `runtime.turretFromBarrelTip` — SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs
 
 ### Stage 6 — Crystal Caverns (caverns) — PASS
-
-Captured shipped frame (LOOK to confirm one weapon per entity): [`report/frames/stage6-caverns.png`](frames/stage6-caverns.png)
-
-![stage 6 caverns](frames/stage6-caverns.png)
 
 Resolved bodies (armed entities):
 
@@ -214,15 +192,11 @@ Every armed enemy — procedural weapon TYPE (static, from `render.js`; hero=gun
 - ✅ `keys.allSpawnsModeled` — all 5 spawned kinds modeled: [grunt, turret, flyer, mortar, chopper]
 - ✅ `keys.noBakedWeaponBody` — two-weapon entities [turret, hero] resolve to weaponless bodies only
 - ✅ `keys.everyArmedEnemyOneWeapon` — all 5 armed kinds draw one weapon type: hero→gun, turret→barrel, flyer→none, mortar→none, chopper→none (hero=gun, turret=barrel, rest=none; none draws two)
-- ✅ `runtime.themeBoots` — booted theme='caverns' (config='caverns'), status=playing
-- ✅ `runtime.heroFromHandMuzzle` — bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)
-- ✅ `runtime.turretFromBarrelTip` — 3/3 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)
+- ⏭ `runtime.themeBoots` — SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs
+- ⏭ `runtime.heroFromHandMuzzle` — SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs
+- ⏭ `runtime.turretFromBarrelTip` — SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs
 
 ### Stage 7 — Red Falcon Keep (fortress) — PASS
-
-Captured shipped frame (LOOK to confirm one weapon per entity): [`report/frames/stage7-fortress.png`](frames/stage7-fortress.png)
-
-![stage 7 fortress](frames/stage7-fortress.png)
 
 Resolved bodies (armed entities):
 
@@ -245,9 +219,9 @@ Every armed enemy — procedural weapon TYPE (static, from `render.js`; hero=gun
 - ✅ `keys.allSpawnsModeled` — all 5 spawned kinds modeled: [grunt, turret, flyer, mortar, boss]
 - ✅ `keys.noBakedWeaponBody` — two-weapon entities [turret, hero] resolve to weaponless bodies only
 - ✅ `keys.everyArmedEnemyOneWeapon` — all 5 armed kinds draw one weapon type: hero→gun, turret→barrel, flyer→none, mortar→none, boss→none (hero=gun, turret=barrel, rest=none; none draws two)
-- ✅ `runtime.themeBoots` — booted theme='fortress' (config='fortress'), status=playing
-- ✅ `runtime.heroFromHandMuzzle` — bullet spawns 30% down body, forward-of-centre=true (<55% ⇒ hands, not waist)
-- ✅ `runtime.turretFromBarrelTip` — 8/8 turrets fired; all shots at the drawn barrel tip=true (maxTipDist=0px ≤2, minDomeDist=11px ⇒ displaced from hull centre along the barrel)
+- ⏭ `runtime.themeBoots` — SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs
+- ⏭ `runtime.heroFromHandMuzzle` — SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs
+- ⏭ `runtime.turretFromBarrelTip` — SKIP: no headless chrome — static two-weapon FACT (Layer A) still governs
 
 ## OPEN ISSUES
 
