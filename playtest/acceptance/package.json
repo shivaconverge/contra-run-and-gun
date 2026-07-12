@@ -1,0 +1,7 @@
+{
+  "name": "contra-acceptance",
+  "private": true,
+  "type": "module",
+  "description": "Player-POV acceptance sensor: plays the LIVE campaign stage1->7 via NORMAL progression and emits scope_served=N/7.",
+  "dependencies": { "puppeteer-core": "^21.0.0" }
+}
