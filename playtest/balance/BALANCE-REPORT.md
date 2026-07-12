@@ -82,6 +82,32 @@ hard mode still walls at boss 1, correctly awaiting root.C's difficulty-target d
 
 ---
 
+## 🔑 2026-07-12 (latest) — WHY casual walls at S4: CUMULATIVE ATTRITION, not S4's difficulty
+
+root.C added `World.casualBossSurvivalTest` (an **isolated, fresh-pool** per-boss check) and,
+on its evidence, eased **Stage-6 Crystal Wing hp 96→82** ("the ONE boss unbeatable in a fresh
+casual pool"). I adopted the merged build and re-drove the **full natural campaign** — and it
+**still walls at Stage 4 (3/7)**. The two tests measure different things, and the divergence
+is the finding:
+
+| Casual stage | Lives ENTERING | Deaths | Boss floored to | Result |
+|-------------:|:---:|:---:|:---:|--------|
+| S1 Jungle | 5 | 2 | **1/90** (barely) | cleared, 3 left |
+| S2 Cascade | 3 | 2 | **2/78** (barely) | cleared, 1 left |
+| S3 Frozen | 1 | 0 | 5/86 | cleared, 1 left |
+| S4 Desert | **1** | 2 | 58/88 (barely dented) | **GAME OVER** |
+
+**FACT:** casual reaches S4 with only **1 life** because S1 and S2 are *near-death* clears
+(boss to 1 HP and 2 HP, costing 2 lives each). S4 is not individually brutal — a fresh-pool
+test clears it — but the bot **arrives depleted**. So `casualBossSurvivalTest` (isolated) can
+report "all bosses beatable" while the **continuous** campaign is still not completable for a
+baseline run. **Only a full natural-progression run (this seat) sees cumulative attrition; an
+isolated per-boss test structurally cannot.** → The lever for BAL-2 is therefore the **early
+cost of S1/S2** (or the casual life/shield budget), NOT just the late choppers root.C has been
+easing (see updated [BAL-2]).
+
+---
+
 ## THE BOT (honest disclosure — read before trusting the arcade numbers)
 
 The driver is a **baseline** run-and-gun heuristic, **not a skilled human**: always advance
@@ -136,6 +162,13 @@ flag in the gate and it becomes a CRITICAL regression guard.
 | `balance.casualCompletesCampaign` — assist run reaches VICTORY | KNOWN-BUG **BAL-2** | ❌ (tracked) |
 
 Evidence: [`campaign-gate.json`](./campaign-gate.json).
+
+> **Provenance / self-verify (this branch = `loop-root-H`).** `render.stageAssetsIntact` is
+> a live CRITICAL check on THIS branch (8/8). It is **not on `master`** yet — this seat's
+> work propagates to master only when the branch is merged, so a review of `master` will show
+> 7 checks and no `renderPathAudit`. To confirm the branch state directly:
+> `node -e "const g=require('./playtest/balance/campaign-gate.json'); console.log(g.criticalTotal, g.checks.map(c=>c.id))"`
+> → prints `8` and includes `render.stageAssetsIntact`. Re-run `node playtest/balance/campaign-gate.mjs` to regenerate.
 
 ---
 
@@ -357,12 +390,20 @@ referenced decor key loads (no invisible set-dressing). The full matrix is in
   wall **+2 stages** — casual now clears S1/S2/S3 and GAME-OVERs at the **Stage-4 Sand
   Gunship** (deaths 2×, boss floored to 50/88). The mid-campaign chopper is still the wall.
 - **Severity:** low-medium (balance). Casual reaches 3/7.
-- **Cause (measured):** chopper bosses (Stages 2/4/6) take ~2–3× longer to down (sweep
-  off-lane) → more time under fire. See finding #3. BAL-4 helped by preserving DPS across
-  deaths, but the Stage-4 chopper still outlasts the casual budget.
-- **Owner/fix:** root.C — raise chopper effective DPS window or lower its fire tax so casual
-  clears the mid-campaign chopper stages. Recorded, not masked; re-run the gate to confirm
-  casual reaches ≥ Stage 5 after tuning.
+- **⚠️ ROOT CAUSE CORRECTED (2026-07-12, cumulative-attrition analysis):** S4 is **not**
+  individually the wall — the bot enters S4 with only **1 life** because S1 (boss→1 HP) and S2
+  (boss→2 HP) are *near-death* clears costing 2 lives each. At S4 the boss is barely dented
+  (58/88) before the last life is gone. So the campaign walls from **front-loaded cumulative
+  attrition on S1/S2**, not S4's isolated difficulty.
+- **Divergence from `casualBossSurvivalTest`:** root.C's isolated fresh-pool test (each boss,
+  full resources) can report "all bosses beatable" — and it eased S6 (hp 96→82) on that basis —
+  yet the **continuous** natural campaign still fails at S4. An isolated per-boss test cannot
+  see attrition; this seat's full-run grounding is the end-user-truthful signal.
+- **Owner/fix (REDIRECTED):** root.C — the lever is the **early-boss cost** (make S1/S2 clears
+  cheaper — lower HP or fire so the bot doesn't spend ~2 lives each) **and/or** a larger casual
+  **life/shield budget**, NOT just easing the late choppers (S6 hp cut doesn't help a run that
+  dies at S4). Recorded, not masked; re-run the gate to confirm casual reaches ≥ Stage 5 after
+  tuning. Data: `campaign-playthrough.json → damageOn.casual.stages[].{livesRemaining,deaths}`.
 
 ### 2026-07-12 — [BAL-4 / RESOLVED-IN-PART] Mode-gated weapon-on-death shipped and grounded
 - root.C shipped BAL-4 in `game/src/world.js`: **arcade reverts to rifle** (1987 invariant),
