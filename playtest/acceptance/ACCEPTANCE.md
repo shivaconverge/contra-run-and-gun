@@ -293,6 +293,29 @@ future run shows `deployDrift=[…]`, the named files have not shipped to the li
 yet — that gap is the **deploy owner's** to resolve, and the report will flag it
 without masking (`scope_served` still reflects the bytes the URL actually served).
 
+### FULL-coverage content-hash — `deploy-parity.mjs` (the complete stale-serve guard)
+
+`deployDrift` above hashes only **5 core files**, so it can't prove the *per-stage
+biome art* (tilesets, boss/decor sprites, level 2–7 data, music) on the live URL
+matches the worktree — a stale `theme_snow.png` could slip through. `deploy-parity.mjs`
+closes that: it enumerates the **complete served surface** from the real
+`ASSET_MANIFEST` + `src/`/`data/` modules + `index.html` + every audio track, fetches
+each off the public URL, and content-hashes it against `game/`. Fast + deterministic
+(HTTP + sha256, no browser, no flaky playthrough).
+
+```bash
+node playtest/acceptance/deploy-parity.mjs --url=<public URL>
+```
+
+**Latest run: `72/72 byte-current  verdict=BYTE-CURRENT`** — all 42 sprites, 17 `src/`
++ 4 `data/` modules, `index.html`, the audio manifest, and 7 tracks hash-match the
+worktree; the **30 per-stage/biome assets that `deployDrift` never covered** all
+match. Machine-readable at `deploy-parity.json` (`drifted[]` = stale on deploy →
+re-deploy/C; `missingRemote[]` = in build but not served → C/B). Wired into the gate
+as `public.deployByteCurrent`, and it now **backs the transition-flake
+classification** (a public shortfall is only ruled a drive-flake when the FULL deploy
+is byte-current, not just 5 files — the parent's correction).
+
 ## Stale-serve guard (local mode)
 
 - The sensor `pgrep -f`/`kill -9`s any lingering `serve.mjs` / `stage-boot-music` /
