@@ -97,7 +97,7 @@ never break (exit non-zero on any red); **KNOWN-BUG** = the balance defects this
 fail the gate while documented. When root.C tunes a mode to completion, drop its `knownBug`
 flag in the gate and it becomes a CRITICAL regression guard.
 
-**Latest gate: CRITICAL 7/7 PASS · KNOWN-BUG reds: BAL-1, BAL-2 · VERDICT PASS (exit 0).**
+**Latest gate: CRITICAL 8/8 PASS · KNOWN-BUG reds: BAL-1, BAL-2 · VERDICT PASS (exit 0).**
 
 | Check | Tier | Result |
 |-------|------|--------|
@@ -108,6 +108,7 @@ flag in the gate and it becomes a CRITICAL regression guard.
 | `invariant.weaponRevertsOnDeath` — every death reverts weapon to rifle (Contra single-slot) | CRITICAL | ✅ |
 | `accessibility.casualClearsStage1` — assist mode passes boss 1 | CRITICAL | ✅ |
 | `balance.bossesAreThePrimaryKiller` — boss fire ≥ traversal deaths (levels aren't the killer) | CRITICAL | ✅ |
+| `render.stageAssetsIntact` — every stage's required sprite keys load (no 404/broken/absent art) | CRITICAL | ✅ |
 | `balance.arcadeCompletesCampaign` — arcade run reaches VICTORY | KNOWN-BUG **BAL-1** | ❌ (tracked) |
 | `balance.casualCompletesCampaign` — assist run reaches VICTORY | KNOWN-BUG **BAL-2** | ❌ (tracked) |
 
@@ -258,6 +259,44 @@ indie/mobile bar) our per-biome backdrop richness, parallax depth and palette co
 density). Net: **distinctness requirement cleared; at/above the popular indie competitor
 bar; below the Blazing-Chrome pinnacle for boss/biomech sprite detail** — a fidelity-polish
 headroom item for root.B, not a distinctness failure.
+
+---
+
+## Render-path sprite-key audit — all 7 stages (grounds `task_wire_defect_probe_across_7_stages`)
+
+Distinctness-by-looking says the biomes *read* distinct; this audit proves the *wiring* under
+it. During the natural-progression run I enumerate, per stage, the exact sprite keys
+`render.js` resolves — tileset (`theme_<id>`), parallax (`bg_<id>`), boss art
+(`boss_<id>`‖base), decor (`assets.get(d.key)` — **draws nothing if absent**), water/bridge —
+and record each as **loaded** / **absent (no key)** / **MISSING (load failed / 404)** from the
+live `window.__assets`. Gated as CRITICAL `render.stageAssetsIntact`.
+
+| Stage | tileset | parallax | boss art | decor | missing/404 |
+|------:|---------|----------|----------|-------|:---:|
+| 1 Jungle | *procedural* | *procedural* | *base (Sentinel)* | — | none |
+| 2 Cascade | `theme_cascade` ✅ | `bg_cascade` ✅ | *base (Gunship)* | `decor_cascade_valve` ✅ | none |
+| 3 Snow | `theme_snow` ✅ | `bg_snow` ✅ | `boss_snow` ✅ | `decor_snow_pine` ✅ | none |
+| 4 Desert | `theme_desert` ✅ | `bg_desert` ✅ | `boss_desert` ✅ | `decor_desert_cactus` ✅ | none |
+| 5 Foundry | `theme_foundry` ✅ | `bg_foundry` ✅ | `boss_foundry` ✅ | `decor_foundry_vat` ✅ | none |
+| 6 Caverns | `theme_caverns` ✅ | `bg_caverns` ✅ | `boss_caverns` ✅ | `decor_caverns_crystal` ✅ | none |
+| 7 Fortress | `theme_fortress` ✅ | `bg_fortress` ✅ | `boss_fortress` ✅ | `decor_fortress_brazier` ✅ | none |
+
+**VERDICT: render path INTACT.** No stage 404s or fails to load a required sprite
+(`assets.missing = []` throughout). Every generated biome (stages 2–7) loads its themed
+tileset + parallax; every themed-boss stage (3–7) loads its `boss_<id>` sprite; every
+referenced decor key loads (no invisible set-dressing). The full matrix is in
+`campaign-gate.json → renderPathAudit`. Two intentional states are called out below (RP-1/RP-2)
+— they are observations for root.B/root.C, **not** defects (the gate does not fail on them).
+
+- **[RP-1]** Stage 1 (jungle) renders its tileset/parallax **procedurally** (no generated
+  `theme_jungle`/`bg_jungle` key) — it is the original seed baseline the other biomes were
+  built to match. By looking it holds up (see the distinctness frames), but it is the only
+  stage without a *generated* tileset sprite; root.B may want to confirm parity or generate a
+  jungle tileset for consistency.
+- **[RP-2]** Stages 1 & 2 use **base boss art** (Sentinel / Gunship) — no `boss_jungle` /
+  `boss_cascade` sprite (intentional per `render.js:636`). They are distinct bosses by
+  name/stats/behavior, but stages 3–7 additionally have *themed* boss sprites. If the GOAL's
+  "its own boss" implies a themed sprite per stage, stages 1–2 are the gap for root.B.
 
 ---
 

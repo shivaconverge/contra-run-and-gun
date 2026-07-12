@@ -69,6 +69,29 @@ async function main() {
   const beatenStages = [gt, ar, ca].flatMap((r) => r.stages.filter((s) => s.bossBeaten));
   const fakeClears = beatenStages.filter((s) => s.status !== 'cleared');
 
+  // RENDER-PATH SPRITE-KEY AUDIT (grounds task_wire_defect_probe_across_7_stages).
+  // From the invincible pass (visits all 7 via natural progression), find any
+  // render-path defect: a required sprite key that FAILED to load (404/broken), a
+  // generated-biome stage (2–7) whose themed tileset/parallax didn't load, a themed
+  // boss stage (3–7) whose boss sprite didn't load, or a referenced decor key that
+  // draws NOTHING. Stage 1 (procedural jungle seed) and stages 1–2 base-boss-art are
+  // INTENDED and excluded — those are observations (RP-1/RP-2), not defects.
+  const auditIssues = [];
+  for (const s of gt.stages) {
+    for (const a of (s.spriteAudit || [])) {
+      if (a.missing) auditIssues.push({ stage: s.stage, role: a.role, key: a.key, kind: 'MISSING(load-failed)' });
+      else if (!a.loaded) {
+        const intentional = (a.role === 'boss-art' && s.stage <= 2)          // jungle/cascade base art
+          || (a.role !== 'decor' && s.stage === 1);                           // stage-1 procedural seed (tileset/bg/boss)
+        if (a.role === 'decor') auditIssues.push({ stage: s.stage, role: a.role, key: a.key, kind: 'ABSENT(decor draws nothing)' });
+        else if (a.role !== 'boss-art' && s.stage >= 2) auditIssues.push({ stage: s.stage, role: a.role, key: a.key, kind: 'ABSENT(generated biome key not loaded)' });
+        else if (a.role === 'boss-art' && s.stage >= 3) auditIssues.push({ stage: s.stage, role: a.role, key: a.key, kind: 'ABSENT(themed boss sprite not loaded)' });
+        else if (!intentional) auditIssues.push({ stage: s.stage, role: a.role, key: a.key, kind: 'ABSENT' });
+      }
+    }
+    for (const m of (s.assetsMissing || [])) auditIssues.push({ stage: s.stage, role: 'assets.missing', key: m, kind: 'MISSING(engine)' });
+  }
+
   const checks = [
     // ---- CRITICAL: spine + invariants -------------------------------------
     { id: 'spine.reachAll7', crit: true, pass: gt.stages.length === 7 && gt.stages.every((s) => s.reachedBoss),
@@ -92,6 +115,8 @@ async function main() {
     { id: 'balance.bossesAreThePrimaryKiller', crit: true,
       pass: (deaths.filter((x) => x.cause === 'projectile').length) >= (deaths.filter((x) => x.cause !== 'projectile').length),
       detail: `deaths by cause — projectile:${deaths.filter((x) => x.cause === 'projectile').length} pit:${deaths.filter((x) => x.cause === 'pit').length} contact:${deaths.filter((x) => x.cause === 'contact').length} (boss fire must be ≥ traversal deaths; if pits/contact dominate, the LEVELS became the difficulty — a real regression)` },
+    { id: 'render.stageAssetsIntact', crit: true, pass: auditIssues.length === 0,
+      detail: auditIssues.length ? `render-path defects: ${JSON.stringify(auditIssues)}` : 'all 7 stages: every required sprite key loads — no 404/broken art, stages 2–7 generated tileset/parallax + stages 3–7 themed boss + all decor keys present (task_wire_defect_probe_across_7_stages)' },
 
     // ---- KNOWN-BUG: the balance defects this seat filed (non-blocking) ------
     { id: 'balance.arcadeCompletesCampaign', crit: false, knownBug: 'BAL-1', pass: ar.victory === true,
@@ -110,6 +135,11 @@ async function main() {
     verdict, criticalPassed: critPass, criticalTotal: checks.filter((c) => c.crit).length,
     criticalFailures: critFails.map((c) => c.id),
     knownBugsRed: knownRed.map((c) => ({ id: c.id, bug: c.knownBug, detail: c.detail })),
+    renderPathAudit: {
+      defects: auditIssues,
+      perStage: gt.stages.map((s) => ({ stage: s.stage, theme: s.theme,
+        keys: (s.spriteAudit || []).map((a) => ({ role: a.role, key: a.key, state: a.missing ? 'missing' : (a.loaded ? 'loaded' : 'absent') })) })),
+    },
     checks,
   };
   await writeFile(OUT, JSON.stringify(out, null, 2));

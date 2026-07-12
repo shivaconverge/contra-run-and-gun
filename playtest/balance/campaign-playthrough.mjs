@@ -161,13 +161,30 @@ async function runChunks(page, invincible, stopAtBoss, init) {
 
 async function stageSnapshot(page) {
   return page.evaluate(() => {
-    const w = window.__game, B = window.__bal;
+    const w = window.__game, B = window.__bal, A = window.__assets;
+    // RENDER-PATH SPRITE-KEY AUDIT (grounds task_wire_defect_probe_across_7_stages):
+    // enumerate the sprite keys THIS stage's render actually resolves (render.js:
+    // drawSolids -> theme.tileset; drawParallax -> bg_<id>; drawEnemy -> boss_<id>||base;
+    // drawDecor -> assets.get(d.key), which draws NOTHING if absent). For each, record
+    // loaded (asset present) vs missing (load FAILED / 404) so a per-stage integrity
+    // check can prove no stage silently ships a broken/absent required sprite.
+    const th = w.theme || {};
+    const seen = new Set(), req = [];
+    const add = (key, role) => { if (!key || seen.has(role + ':' + key)) return; seen.add(role + ':' + key);
+      req.push({ key, role, loaded: !!(A && A.get(key)), missing: !!(A && A.missing.includes(key)) }); };
+    add(th.tileset, 'tileset');
+    add('bg_' + th.id, 'parallax');
+    add('boss_' + th.id, 'boss-art');           // absent on jungle/cascade BY DESIGN → base art
+    for (const d of (w.decor || [])) add(d.key, 'decor');
+    if ((w.level.water || []).length) { add('theme_water', 'water'); add('theme_water_top', 'water'); }
+    if ((w.solids || []).some((s) => s.bridge)) add('theme_bridge', 'bridge');
     return {
       stageNum: w.stageNum, name: w.level.name, theme: w.level.theme,
       isFinalStage: !!w.isFinalStage, hasNextStage: !!w.hasNextStage,
       bossName: w.boss ? (w.boss.def.name || w.boss.kind) : null,
       bossHpMax: w.boss ? w.boss.def.hp : null,
       deaths: B.deaths, elapsedFrames: w.frame - B.startFrame,
+      spriteAudit: req, assetsMissing: A ? A.missing.slice() : [],
     };
   });
 }
@@ -224,6 +241,7 @@ async function runCampaign(page, url, mode, invincible) {
       deaths: r.deaths.length, deathsByCause, deathLog: r.deaths,
       livesRemaining: r.lives, minBossHpReached: r.minBossHp, softlock: r.softlock,
       isFinalStage: r.isFinalStage, frame,
+      spriteAudit: r.spriteAudit || [], assetsMissing: r.assetsMissing || [],
     });
     if (!cleared) { if (r.status === 'gameover') gameoverAtStage = r.stageNum; break; }
     if (r.isFinalStage) { victory = true; break; }

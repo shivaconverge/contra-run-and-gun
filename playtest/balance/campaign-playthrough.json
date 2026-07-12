@@ -1,6 +1,6 @@
 {
-  "ts": "2026-07-12T06:50:32.090Z",
-  "target": "http://127.0.0.1:63927",
+  "ts": "2026-07-12T07:18:44.001Z",
+  "target": "http://127.0.0.1:50171",
   "seed": 1234,
   "stageBudgetFrames": 15000,
   "botPolicy": "baseline run+gun+gaphop+bossaim + one bullet-hop reflex (documented; NOT skilled-human)",
@@ -35,7 +35,46 @@
         "minBossHpReached": 1,
         "softlock": null,
         "isFinalStage": false,
-        "frame": "playtest/balance/frames/arcade-inv/stage-1-boss.png"
+        "frame": "playtest/balance/frames/arcade-inv/stage-1-boss.png",
+        "spriteAudit": [
+          {
+            "key": "theme_jungle",
+            "role": "tileset",
+            "loaded": false,
+            "missing": false
+          },
+          {
+            "key": "bg_jungle",
+            "role": "parallax",
+            "loaded": false,
+            "missing": false
+          },
+          {
+            "key": "boss_jungle",
+            "role": "boss-art",
+            "loaded": false,
+            "missing": false
+          },
+          {
+            "key": "theme_water",
+            "role": "water",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "theme_water_top",
+            "role": "water",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "theme_bridge",
+            "role": "bridge",
+            "loaded": true,
+            "missing": false
+          }
+        ],
+        "assetsMissing": []
       },
       {
         "stage": 2,
@@ -60,7 +99,52 @@
         "minBossHpReached": 2,
         "softlock": null,
         "isFinalStage": false,
-        "frame": "playtest/balance/frames/arcade-inv/stage-2-boss.png"
+        "frame": "playtest/balance/frames/arcade-inv/stage-2-boss.png",
+        "spriteAudit": [
+          {
+            "key": "theme_cascade",
+            "role": "tileset",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "bg_cascade",
+            "role": "parallax",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "boss_cascade",
+            "role": "boss-art",
+            "loaded": false,
+            "missing": false
+          },
+          {
+            "key": "decor_cascade_valve",
+            "role": "decor",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "theme_water",
+            "role": "water",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "theme_water_top",
+            "role": "water",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "theme_bridge",
+            "role": "bridge",
+            "loaded": true,
+            "missing": false
+          }
+        ],
+        "assetsMissing": []
       },
       {
         "stage": 3,
@@ -85,7 +169,34 @@
         "minBossHpReached": 5,
         "softlock": null,
         "isFinalStage": false,
-        "frame": "playtest/balance/frames/arcade-inv/stage-3-boss.png"
+        "frame": "playtest/balance/frames/arcade-inv/stage-3-boss.png",
+        "spriteAudit": [
+          {
+            "key": "theme_snow",
+            "role": "tileset",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "bg_snow",
+            "role": "parallax",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "boss_snow",
+            "role": "boss-art",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "decor_snow_pine",
+            "role": "decor",
+            "loaded": true,
+            "missing": false
+          }
+        ],
+        "assetsMissing": []
       },
       {
         "stage": 4,
@@ -110,7 +221,34 @@
         "minBossHpReached": 1,
         "softlock": null,
         "isFinalStage": false,
-        "frame": "playtest/balance/frames/arcade-inv/stage-4-boss.png"
+        "frame": "playtest/balance/frames/arcade-inv/stage-4-boss.png",
+        "spriteAudit": [
+          {
+            "key": "theme_desert",
+            "role": "tileset",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "bg_desert",
+            "role": "parallax",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "boss_desert",
+            "role": "boss-art",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "decor_desert_cactus",
+            "role": "decor",
+            "loaded": true,
+            "missing": false
+          }
+        ],
+        "assetsMissing": []
       },
       {
         "stage": 5,
@@ -135,7 +273,34 @@
         "minBossHpReached": 1,
         "softlock": null,
         "isFinalStage": false,
-        "frame": "playtest/balance/frames/arcade-inv/stage-5-boss.png"
+        "frame": "playtest/balance/frames/arcade-inv/stage-5-boss.png",
+        "spriteAudit": [
+          {
+            "key": "theme_foundry",
+            "role": "tileset",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "bg_foundry",
+            "role": "parallax",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "boss_foundry",
+            "role": "boss-art",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "decor_foundry_vat",
+            "role": "decor",
+            "loaded": true,
+            "missing": false
+          }
+        ],
+        "assetsMissing": []
       },
       {
         "stage": 6,
@@ -160,7 +325,34 @@
         "minBossHpReached": 1,
         "softlock": null,
         "isFinalStage": false,
-        "frame": "playtest/balance/frames/arcade-inv/stage-6-boss.png"
+        "frame": "playtest/balance/frames/arcade-inv/stage-6-boss.png",
+        "spriteAudit": [
+          {
+            "key": "theme_caverns",
+            "role": "tileset",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "bg_caverns",
+            "role": "parallax",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "boss_caverns",
+            "role": "boss-art",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "decor_caverns_crystal",
+            "role": "decor",
+            "loaded": true,
+            "missing": false
+          }
+        ],
+        "assetsMissing": []
       },
       {
         "stage": 7,
@@ -185,7 +377,34 @@
         "minBossHpReached": 1,
         "softlock": null,
         "isFinalStage": true,
-        "frame": "playtest/balance/frames/arcade-inv/stage-7-boss.png"
+        "frame": "playtest/balance/frames/arcade-inv/stage-7-boss.png",
+        "spriteAudit": [
+          {
+            "key": "theme_fortress",
+            "role": "tileset",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "bg_fortress",
+            "role": "parallax",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "boss_fortress",
+            "role": "boss-art",
+            "loaded": true,
+            "missing": false
+          },
+          {
+            "key": "decor_fortress_brazier",
+            "role": "decor",
+            "loaded": true,
+            "missing": false
+          }
+        ],
+        "assetsMissing": []
       }
     ]
   },
@@ -250,7 +469,46 @@
           "minBossHpReached": 60,
           "softlock": null,
           "isFinalStage": false,
-          "frame": "playtest/balance/frames/arcade/stage-1-boss.png"
+          "frame": "playtest/balance/frames/arcade/stage-1-boss.png",
+          "spriteAudit": [
+            {
+              "key": "theme_jungle",
+              "role": "tileset",
+              "loaded": false,
+              "missing": false
+            },
+            {
+              "key": "bg_jungle",
+              "role": "parallax",
+              "loaded": false,
+              "missing": false
+            },
+            {
+              "key": "boss_jungle",
+              "role": "boss-art",
+              "loaded": false,
+              "missing": false
+            },
+            {
+              "key": "theme_water",
+              "role": "water",
+              "loaded": true,
+              "missing": false
+            },
+            {
+              "key": "theme_water_top",
+              "role": "water",
+              "loaded": true,
+              "missing": false
+            },
+            {
+              "key": "theme_bridge",
+              "role": "bridge",
+              "loaded": true,
+              "missing": false
+            }
+          ],
+          "assetsMissing": []
         }
       ]
     },
@@ -307,7 +565,46 @@
           "minBossHpReached": 1,
           "softlock": null,
           "isFinalStage": false,
-          "frame": "playtest/balance/frames/casual/stage-1-boss.png"
+          "frame": "playtest/balance/frames/casual/stage-1-boss.png",
+          "spriteAudit": [
+            {
+              "key": "theme_jungle",
+              "role": "tileset",
+              "loaded": false,
+              "missing": false
+            },
+            {
+              "key": "bg_jungle",
+              "role": "parallax",
+              "loaded": false,
+              "missing": false
+            },
+            {
+              "key": "boss_jungle",
+              "role": "boss-art",
+              "loaded": false,
+              "missing": false
+            },
+            {
+              "key": "theme_water",
+              "role": "water",
+              "loaded": true,
+              "missing": false
+            },
+            {
+              "key": "theme_water_top",
+              "role": "water",
+              "loaded": true,
+              "missing": false
+            },
+            {
+              "key": "theme_bridge",
+              "role": "bridge",
+              "loaded": true,
+              "missing": false
+            }
+          ],
+          "assetsMissing": []
         },
         {
           "stage": 2,
@@ -354,7 +651,52 @@
           "minBossHpReached": 50,
           "softlock": null,
           "isFinalStage": false,
-          "frame": "playtest/balance/frames/casual/stage-2-boss.png"
+          "frame": "playtest/balance/frames/casual/stage-2-boss.png",
+          "spriteAudit": [
+            {
+              "key": "theme_cascade",
+              "role": "tileset",
+              "loaded": true,
+              "missing": false
+            },
+            {
+              "key": "bg_cascade",
+              "role": "parallax",
+              "loaded": true,
+              "missing": false
+            },
+            {
+              "key": "boss_cascade",
+              "role": "boss-art",
+              "loaded": false,
+              "missing": false
+            },
+            {
+              "key": "decor_cascade_valve",
+              "role": "decor",
+              "loaded": true,
+              "missing": false
+            },
+            {
+              "key": "theme_water",
+              "role": "water",
+              "loaded": true,
+              "missing": false
+            },
+            {
+              "key": "theme_water_top",
+              "role": "water",
+              "loaded": true,
+              "missing": false
+            },
+            {
+              "key": "theme_bridge",
+              "role": "bridge",
+              "loaded": true,
+              "missing": false
+            }
+          ],
+          "assetsMissing": []
         }
       ]
     }
