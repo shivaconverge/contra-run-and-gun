@@ -42,6 +42,13 @@ an injected boss-gun / hero-both defect).
     `drawChopper` invoke neither procedural weapon, and `drawEnemy` overlays no
     `drawGun` on any body — so `boss`/`chopper`/`flyer`/`mortar`/`grunt` each show at
     most one weapon (their own art). Closes the enumeration to **all** armed kinds.
+  - `A7` **coverage / anti-staleness guard**: every enemy kind in `game/data/config.js`
+    `ENEMIES` is MODELED by the audit (`RESOLVE`+`weaponDrawMap`). Fails **closed** the
+    moment the campaign adds a new enemy/boss the audit hasn't weapon-classified — so
+    the two-weapon FACT cannot silently lose coverage as content grows. Per-stage
+    `keys.allSpawnsModeled` localizes the drift to the stage that introduced it. (Red =
+    an **audit-coverage** gap this slice fixes by classifying the new kind — NOT a
+    source bug.)
 - **Layer B — per-stage runtime grounding** (drives the REAL browser build headless,
   one load per stage, `?headless=1&level=N`):
   - `B1` the stage boots on its configured theme; the enumerated armed entities

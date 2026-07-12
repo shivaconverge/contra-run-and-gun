@@ -1,5 +1,5 @@
 {
-  "when": "2026-07-12T06:21:47.932Z",
+  "when": "2026-07-12T06:44:18.542Z",
   "tool": "feedback/audit/weapon-defect-audit.mjs",
   "scope": "creator round-2 two-weapon defect (hero drawGun + turret drawTurretBarrel) across all 7 stages",
   "epsPx": 2,
@@ -40,6 +40,11 @@
         "id": "A6.otherArmedEnemiesWeaponless",
         "ok": true,
         "detail": "drawBoss weaponCalls={gun:0,barrel:0}, drawChopper weaponCalls={gun:0,barrel:0}, drawGun-in-drawEnemy=0 ⇒ boss/chopper/flyer/mortar/grunt carry no procedural overlay"
+      },
+      {
+        "id": "A7.everyConfigKindModeled",
+        "ok": true,
+        "detail": "all 6 config ENEMIES kinds modeled: [grunt, flyer, turret, mortar, boss, chopper] (+hero) — no unaudited kind"
       }
     ],
     "weaponDrawMap": {
@@ -231,7 +236,12 @@
         {
           "id": "static.renderPathInvariants",
           "ok": true,
-          "detail": "LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)"
+          "detail": "LAYER A A1..A7 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free, every config kind modeled)"
+        },
+        {
+          "id": "keys.allSpawnsModeled",
+          "ok": true,
+          "detail": "all 5 spawned kinds modeled: [grunt, turret, flyer, mortar, boss]"
         },
         {
           "id": "keys.noBakedWeaponBody",
@@ -408,7 +418,12 @@
         {
           "id": "static.renderPathInvariants",
           "ok": true,
-          "detail": "LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)"
+          "detail": "LAYER A A1..A7 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free, every config kind modeled)"
+        },
+        {
+          "id": "keys.allSpawnsModeled",
+          "ok": true,
+          "detail": "all 5 spawned kinds modeled: [grunt, turret, flyer, mortar, chopper]"
         },
         {
           "id": "keys.noBakedWeaponBody",
@@ -564,7 +579,12 @@
         {
           "id": "static.renderPathInvariants",
           "ok": true,
-          "detail": "LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)"
+          "detail": "LAYER A A1..A7 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free, every config kind modeled)"
+        },
+        {
+          "id": "keys.allSpawnsModeled",
+          "ok": true,
+          "detail": "all 4 spawned kinds modeled: [grunt, flyer, turret, boss]"
         },
         {
           "id": "keys.noBakedWeaponBody",
@@ -720,7 +740,12 @@
         {
           "id": "static.renderPathInvariants",
           "ok": true,
-          "detail": "LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)"
+          "detail": "LAYER A A1..A7 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free, every config kind modeled)"
+        },
+        {
+          "id": "keys.allSpawnsModeled",
+          "ok": true,
+          "detail": "all 4 spawned kinds modeled: [grunt, turret, mortar, chopper]"
         },
         {
           "id": "keys.noBakedWeaponBody",
@@ -876,7 +901,12 @@
         {
           "id": "static.renderPathInvariants",
           "ok": true,
-          "detail": "LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)"
+          "detail": "LAYER A A1..A7 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free, every config kind modeled)"
+        },
+        {
+          "id": "keys.allSpawnsModeled",
+          "ok": true,
+          "detail": "all 4 spawned kinds modeled: [grunt, turret, mortar, boss]"
         },
         {
           "id": "keys.noBakedWeaponBody",
@@ -1053,7 +1083,12 @@
         {
           "id": "static.renderPathInvariants",
           "ok": true,
-          "detail": "LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)"
+          "detail": "LAYER A A1..A7 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free, every config kind modeled)"
+        },
+        {
+          "id": "keys.allSpawnsModeled",
+          "ok": true,
+          "detail": "all 5 spawned kinds modeled: [grunt, turret, flyer, mortar, chopper]"
         },
         {
           "id": "keys.noBakedWeaponBody",
@@ -1230,7 +1265,12 @@
         {
           "id": "static.renderPathInvariants",
           "ok": true,
-          "detail": "LAYER A A1..A6 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free)"
+          "detail": "LAYER A A1..A7 all hold (hero+turret weaponless bodies, one procedural weapon, shot==drawn muzzle, every other armed enemy overlay-free, every config kind modeled)"
+        },
+        {
+          "id": "keys.allSpawnsModeled",
+          "ok": true,
+          "detail": "all 5 spawned kinds modeled: [grunt, turret, flyer, mortar, boss]"
         },
         {
           "id": "keys.noBakedWeaponBody",
