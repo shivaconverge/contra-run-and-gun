@@ -1,4 +1,4 @@
-=== GO-LIVE verification @ 2026-07-11T23:39:16Z ===
+=== GO-LIVE verification @ 2026-07-12T00:13:28Z ===
 URL: https://shivaconverge.github.io/contra-run-and-gun/
 --- root HTTP 0 ---
 <!doctype html>
@@ -46,21 +46,23 @@ src/main.js: HTTP 200 (26701 bytes)
 asset resolve-gate: 31/31 referenced assets HTTP 200
 assets/audio/manifest.json: HTTP 200
 audio resolve-gate: 7/7 tracks HTTP 200:
-  assets/audio/s1_jungle.mp3: HTTP 200, audio/mp3, 1300470 bytes [current]
-  assets/audio/s2_cascade.mp3: HTTP 200, audio/mp3, 4699764 bytes [current]
-  assets/audio/s3_snow.mp3: HTTP 200, audio/mp3, 2928289 bytes [current]
-  assets/audio/s4_desert.mp3: HTTP 200, audio/mp3, 2187002 bytes [current]
-  assets/audio/s5_foundry.mp3: HTTP 200, audio/mp3, 3816049 bytes [current]
-  assets/audio/s6_caverns.mp3: HTTP 200, audio/mp3, 3957888 bytes [current]
-  assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 3581570 bytes [current]
+  assets/audio/s1_jungle.mp3: HTTP 200, audio/mp3, 874327 bytes [current]
+  assets/audio/s2_cascade.mp3: HTTP 200, audio/mp3, 3271502 bytes [current]
+  assets/audio/s3_snow.mp3: HTTP 200, audio/mp3, 1872061 bytes [current]
+  assets/audio/s4_desert.mp3: HTTP 200, audio/mp3, 1383421 bytes [current]
+  assets/audio/s5_foundry.mp3: HTTP 200, audio/mp3, 2674059 bytes [current]
+  assets/audio/s6_caverns.mp3: HTTP 200, audio/mp3, 2706956 bytes [current]
+  assets/audio/s7_fortress.mp3: HTTP 200, audio/mp3, 2408655 bytes [current]
 RESULT: LIVE ✅
 
-LOUDNESS RE-MASTER + BYTE-FRESHNESS GATE (LIVE URL):
-  Master advanced: 7 per-biome loops loudness-matched to -15 LUFS (spread
-  2.2->0.10 LU, 0dBFS clippers fixed) — audio bytes rewritten, filenames kept
-  (HEAD 705c45f). Re-deployed; resolve-gate green (31 assets + 7 tracks HTTP 200).
-  NEW: verify.sh now asserts each live track's Content-Length EQUALS the local
-  build's file size, proving the public URL serves the CURRENT re-master (not a
-  stale CDN copy) for changes a screenshot can't see. All 7 tracks: current.
-    s1_jungle 1300470 | s2_cascade 4699764 | s3_snow 2928289 | s4_desert 2187002
-    s5_foundry 3816049 | s6_caverns 3957888 | s7_fortress 3581570  (live == local)
+AUDIO REBUILD (payload cut) + DESERT GROUND (LIVE URL, HEAD 363d8ac):
+  Master rebuilt the 7 loops from Udio masters in ONE encode (rebuild-clean.py):
+  first-load audio payload 21.4MB -> 14.5MB. The byte-freshness gate FIRST caught
+  the live tracks as STALE (old larger sizes) pre-deploy — the gate doing its job —
+  then, after re-deploy, all 7 verified [current] with the new smaller sizes.
+  FACT — live audio first-load payload measured from the deployed bundle
+  (sum of the 7 track Content-Lengths): 15,190,981 bytes = 14.4 MiB. Confirms the
+  rebuild's payload reduction actually reached players.
+    s1 874327 | s2 3271502 | s3 1872061 | s4 1383421 | s5 2674059 | s6 2706956 | s7 2408655
+  Stage 4 'Scorched Dunes' distinct open-desert ground renders live:
+    deploy/evidence/live-stage4.png — rolling dune terrain, layered sand strata.
