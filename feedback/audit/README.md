@@ -60,6 +60,12 @@ an injected boss-gun / hero-both defect).
     shot's own velocity, and asserted equal to `pivot + aim·barrelLen` (≤2px) while
     displaced from the hull centre by the barrel length — i.e. one weapon, firing
     where it is drawn, not a phantom hull-centre turret.
+  - `B4` **VISUAL capture**: the REAL 480×270 frame the shipped build renders is saved
+    per stage to `report/frames/stage<N>-<theme>.png` (the showcase fires the whole run,
+    so the hero is drawn mid-fire). The creator's defect is a *look* ("two guns"), so a
+    number isn't enough — a reviewer LOOKS at these (embedded in `REPORT.md`, judged in
+    `VISUAL-REVIEW.md`) to confirm one weapon per entity. CV is a pre-filter; eyes are
+    the verdict.
 
 Each stage's verdict = AND of the checks that apply. Layer-A facts are shared: a
 render-path regression fails **every** stage (correct — it is a global break).
