@@ -73,7 +73,7 @@ const CAMPAIGN = ['jungle', 'cascade', 'snow', 'desert', 'foundry', 'caverns', '
 
     // wait for wireCampaignMusic to fetch + decode ALL 7 mp3s (network + decodeAudioData)
     let decoded = false;
-    for (let i = 0; i < 40; i++) { // up to ~10s
+    for (let i = 0; i < 60; i++) { // up to ~15s (cold-start decode margin)
       decoded = await page.evaluate(`(() => { const m = window.__audio.music; return ${JSON.stringify(ids)}.every((id) => m.hasTrack(id)); })()`);
       if (decoded) break;
       await sleep(250);
