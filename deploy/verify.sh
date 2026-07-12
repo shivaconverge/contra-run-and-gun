@@ -24,13 +24,27 @@ fetch() { curl -fsSL --max-time 25 "$1"; }
 code() { curl -s -o /dev/null -w '%{http_code}' --max-time 25 "$1"; }
 # HTTP status + Content-Type + byte size, tab-separated (for binary assets we
 # must NOT slurp the body — mp3 tracks are multi-MB). Follows redirects.
-head_meta() { curl -sIL --max-time 30 "$1" | awk '
-  BEGIN{IGNORECASE=1}
-  {gsub(/\r/,"")}                       # strip CR so numeric compares work
-  /^HTTP\//{c=$2}
-  /^content-type:/{t=$2}
-  /^content-length:/{l=$2}
-  END{printf "%s\t%s\t%s", c, t, l}'; }
+# RETRY: a single HEAD can hit a transient network blip (curl exits non-zero,
+# empty status) and produce a FALSE stale/missing verdict on a healthy deploy —
+# observed s7_fortress.mp3 fail once then return 200 twice. So retry up to 3x when
+# the status comes back EMPTY (a curl-level failure). We do NOT retry a real HTTP
+# code (e.g. 404) — that's a definitive answer, kept fast.
+head_meta() {
+  local out c try
+  for try in 1 2 3; do
+    out="$(curl -sIL --max-time 30 "$1" | awk '
+      BEGIN{IGNORECASE=1}
+      {gsub(/\r/,"")}                     # strip CR so numeric compares work
+      /^HTTP\//{c=$2}
+      /^content-type:/{t=$2}
+      /^content-length:/{l=$2}
+      END{printf "%s\t%s\t%s", c, t, l}')"
+    c="${out%%$'\t'*}"
+    [ -n "$c" ] && break                  # got a real HTTP status → done
+    sleep 2                               # transient failure → brief backoff, retry
+  done
+  printf '%s' "$out"
+}
 
 {
   echo "=== GO-LIVE verification @ $(date -u '+%Y-%m-%dT%H:%M:%SZ') ==="
