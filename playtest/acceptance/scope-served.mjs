@@ -107,6 +107,40 @@ async function serveGame() {
   };
 }
 
+// ---------------------------------------------------------------------------
+// REMOTE STALE-SERVE / DRIFT GUARD (public-URL mode). We can't kill a lingering
+// server on someone else's CDN, so instead we PROVE which bytes the public URL is
+// actually serving: fetch the key modules over HTTP, sha256 them, and diff those
+// digests against the local game/ tree. A mismatch means the deploy is STALE vs
+// this worktree (the art/wiring in game/ has not reached the live URL yet) — a
+// FACT the report surfaces rather than silently trusting the CDN.
+// ---------------------------------------------------------------------------
+async function remoteDriftProbe(baseUrl) {
+  const rels = ['index.html', 'src/main.js', 'data/config.js', 'data/level1.js', 'assets/audio/manifest.json'];
+  const base = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
+  const files = [];
+  for (const rel of rels) {
+    const entry = { rel };
+    try {
+      const res = await fetch(base + rel, { cache: 'no-store' });
+      entry.httpStatus = res.status;
+      if (res.ok) {
+        const buf = Buffer.from(await res.arrayBuffer());
+        entry.remoteSha = createHash('sha256').update(buf).digest('hex').slice(0, 16);
+      }
+    } catch (e) { entry.error = String(e); }
+    try {
+      const local = await readFile(path.join(GAME_DIR, rel));
+      entry.localSha = createHash('sha256').update(local).digest('hex').slice(0, 16);
+    } catch { entry.localSha = null; }
+    entry.matchesLocal = !!entry.remoteSha && entry.remoteSha === entry.localSha;
+    files.push(entry);
+  }
+  const drifted = files.filter((f) => f.remoteSha && f.localSha && !f.matchesLocal).map((f) => f.rel);
+  const unreachable = files.filter((f) => !f.remoteSha).map((f) => f.rel);
+  return { baseUrl: base, files, drifted, unreachable };
+}
+
 function findChrome() {
   const cands = [
     '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
@@ -183,9 +217,40 @@ function histDiff(a, b) {
 }
 
 async function main() {
-  await mkdir(FRAMES_DIR, { recursive: true });
-  const killed = killLingeringServers();
-  const server = await serveGame();
+  // TARGET RESOLUTION. Default: serve game/ locally on an ephemeral port. With
+  //   --url=<URL>  (or ACCEPT_URL env): drive the PUBLIC deploy directly, so
+  //   scope_served is grounded against the bytes real players actually reach — NOT
+  //   just the local worktree (parent correction: local != public is unverifiable
+  //   from here, so we must PROVE the live URL, not assume equivalence).
+  const urlArg = process.argv.find((a) => a.startsWith('--url='));
+  const TARGET_URL = urlArg ? urlArg.slice(6) : (process.env.ACCEPT_URL || null);
+  const mode = TARGET_URL ? 'public' : 'local';
+  const framesDir = mode === 'public' ? path.join(FRAMES_DIR, 'public') : FRAMES_DIR;
+  const outName = mode === 'public' ? 'scope-served-live.json' : 'scope-served.json';
+  await mkdir(framesDir, { recursive: true });
+
+  let bootUrl, closeServer = async () => {}, staleServeGuard;
+  if (mode === 'public') {
+    // Remote build: can't kill a CDN process — instead prove which bytes it serves.
+    const drift = await remoteDriftProbe(TARGET_URL);
+    bootUrl = drift.baseUrl;
+    staleServeGuard = {
+      mode: 'public',
+      note: 'remote CDN — verified served content hashes vs local game/ (drift = deploy behind worktree)',
+      remote: drift,
+    };
+  } else {
+    const killed = killLingeringServers();
+    const server = await serveGame();
+    bootUrl = server.url;
+    closeServer = server.close;
+    staleServeGuard = {
+      mode: 'local',
+      killedProcs: killed,
+      note: 'served game/ on ephemeral port, never :8080',
+    };
+  }
+
   const puppeteer = require('puppeteer-core');
   const browser = await puppeteer.launch({
     executablePath: findChrome(),
@@ -194,8 +259,9 @@ async function main() {
   });
   const run = {
     ts: new Date().toISOString(),
-    servedUrl: server.url,
-    staleServeGuard: { killedProcs: killed, note: 'served on ephemeral port, never :8080' },
+    mode,
+    target: bootUrl,
+    staleServeGuard,
     expectedStages: EXPECTED_STAGES,
     stages: [],
     consoleErrors: [],
@@ -209,7 +275,7 @@ async function main() {
     page.on('pageerror', (e) => run.pageErrors.push(String(e)));
 
     // BOOT at the campaign start — NO ?level param. This is the ONLY entry we use.
-    await page.goto(server.url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.goto(bootUrl, { waitUntil: 'domcontentloaded', timeout: 45000 });
     await page.waitForFunction('window.__booted === true', { timeout: 20000 });
     await page.waitForFunction('window.__game && window.__game.status', { timeout: 20000 });
 
@@ -259,7 +325,7 @@ async function main() {
       });
 
       const sig = await grabSignature(page);
-      const framePath = path.join(FRAMES_DIR, `stage-${num}-${meta.theme || 'unknown'}.png`);
+      const framePath = path.join(framesDir, `stage-${num}-${meta.theme || 'unknown'}.png`);
       const cv = await page.$('#game');
       await cv.screenshot({ path: framePath });
 
@@ -303,7 +369,7 @@ async function main() {
     }
   } finally {
     await browser.close();
-    await server.close();
+    await closeServer();
   }
 
   // -------------------------------------------------------------------------
@@ -360,13 +426,23 @@ async function main() {
   run.scope_served = `${scopeServed}/${EXPECTED_STAGES}`;
   run.scopeServedNum = scopeServed;
   run.problems = problems;
+  // Public-mode note: report (do NOT mask) if the live deploy is behind the
+  // worktree. scope_served still reflects what the LIVE URL actually served —
+  // a drifted deploy that still plays 7/7 is a PASS-with-drift, flagged so the
+  // deploy owner knows a newer game/ hasn't shipped yet.
+  run.deployDrift = mode === 'public' ? (staleServeGuard.remote.drifted || []) : [];
   run.verdict = scopeServed === EXPECTED_STAGES && run.victory ? 'PASS' : 'INCOMPLETE';
 
-  const outJson = path.join(HERE, 'scope-served.json');
+  const outJson = path.join(HERE, outName);
   await writeFile(outJson, JSON.stringify(run, null, 2));
 
   // One-line machine-readable fact to stdout (grep-friendly for parents).
-  console.log(`scope_served=${run.scope_served} verdict=${run.verdict} victory=${!!run.victory}`);
+  console.log(`scope_served=${run.scope_served} verdict=${run.verdict} victory=${!!run.victory} mode=${mode}`);
+  if (mode === 'public') {
+    console.log(`  target=${run.target}`);
+    console.log(`  deployDrift=${run.deployDrift.length ? run.deployDrift.join(',') : 'none (live bytes match worktree)'}`);
+    if (staleServeGuard.remote.unreachable.length) console.log(`  unreachable=${staleServeGuard.remote.unreachable.join(',')}`);
+  }
   for (const s of run.stages) {
     console.log(`  stage ${s.stage} [${s.theme}] boss=${s.bossName || '—'} distinct=${s.visuallyDistinct} pass=${s.pass}${s.reasons.length ? ' (' + s.reasons.join(',') + ')' : ''}`);
   }
