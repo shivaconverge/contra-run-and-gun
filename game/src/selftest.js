@@ -879,6 +879,20 @@ export function runSelfTest() {
     check('campaign.finaleIsDensestAndHardest', cs.density[6] === Math.max(...cs.density) && cs.bossHp[6] === Math.max(...cs.bossHp), `density=[${cs.density}] bossHp=[${cs.bossHp}]`);
   }
 
+  // 30. RESPAWN-SAFETY guard (World.validateRespawnSafety over the REAL shipping
+  //     STAGES ladder): a pit death must NEVER respawn the player back into a pit,
+  //     or the campaign dead-ends in an infinite death loop (game over → retry →
+  //     fall → repeat) — a real risk on the 5 gap-heavy authored stages. The
+  //     invincible campaign oracle never exercises player DEATH, so this class of
+  //     bug is invisible to every other guard; wiring it here runs the ACTUAL
+  //     respawn logic (_safeGroundX + an end-to-end pit-death→respawn per stage)
+  //     and fails the self-test loudly if any respawn lands off-ground.
+  {
+    const rs = World.validateRespawnSafety(STAGES);
+    check('campaign.respawnNeverIntoPit', rs.pass,
+      rs.violations.slice(0, 4).map((v) => `stage${v.stage}:${v.reason}`).join('; ') || `${STAGES.length} stages clean`);
+  }
+
   const passed = results.filter((r) => r.pass).length;
   return { passed, total: results.length, ok: passed === results.length, results };
 }
