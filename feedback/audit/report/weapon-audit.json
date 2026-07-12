@@ -1,5 +1,5 @@
 {
-  "when": "2026-07-12T02:25:43.655Z",
+  "when": "2026-07-12T02:56:20.194Z",
   "tool": "feedback/audit/weapon-defect-audit.mjs",
   "scope": "creator round-2 two-weapon defect (hero drawGun + turret drawTurretBarrel) across all 7 stages",
   "epsPx": 2,
