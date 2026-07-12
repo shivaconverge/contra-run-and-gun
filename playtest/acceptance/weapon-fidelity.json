@@ -1,0 +1,211 @@
+{
+  "ts": "2026-07-12T02:36:05.248Z",
+  "mode": "local",
+  "target": "http://127.0.0.1:56547",
+  "killedProcs": [],
+  "captures": [
+    {
+      "entity": "hero",
+      "pose": "aim-right",
+      "frame": "playtest/acceptance/frames/weapon/hero-aim-right-0.png",
+      "weaponKey": "rifle",
+      "facing": 1,
+      "aiming": {
+        "x": 1,
+        "y": 0
+      },
+      "prone": false,
+      "bullets": 4
+    },
+    {
+      "entity": "hero",
+      "pose": "aim-right",
+      "frame": "playtest/acceptance/frames/weapon/hero-aim-right-1.png",
+      "weaponKey": "rifle",
+      "facing": 1,
+      "aiming": {
+        "x": 1,
+        "y": 0
+      },
+      "prone": false,
+      "bullets": 5
+    },
+    {
+      "entity": "hero",
+      "pose": "aim-right",
+      "frame": "playtest/acceptance/frames/weapon/hero-aim-right-2.png",
+      "weaponKey": "rifle",
+      "facing": 1,
+      "aiming": {
+        "x": 1,
+        "y": 0
+      },
+      "prone": false,
+      "bullets": 7
+    },
+    {
+      "entity": "hero",
+      "pose": "aim-up",
+      "frame": "playtest/acceptance/frames/weapon/hero-aim-up-0.png",
+      "weaponKey": "rifle",
+      "facing": 1,
+      "aiming": {
+        "x": 0,
+        "y": -1
+      },
+      "prone": false,
+      "bullets": 6
+    },
+    {
+      "entity": "hero",
+      "pose": "aim-up",
+      "frame": "playtest/acceptance/frames/weapon/hero-aim-up-1.png",
+      "weaponKey": "rifle",
+      "facing": 1,
+      "aiming": {
+        "x": 0,
+        "y": -1
+      },
+      "prone": false,
+      "bullets": 7
+    },
+    {
+      "entity": "hero",
+      "pose": "aim-up",
+      "frame": "playtest/acceptance/frames/weapon/hero-aim-up-2.png",
+      "weaponKey": "rifle",
+      "facing": 1,
+      "aiming": {
+        "x": 0,
+        "y": -1
+      },
+      "prone": false,
+      "bullets": 8
+    },
+    {
+      "entity": "hero",
+      "pose": "aim-diag-up",
+      "frame": "playtest/acceptance/frames/weapon/hero-aim-diag-up-0.png",
+      "weaponKey": "rifle",
+      "facing": 1,
+      "aiming": {
+        "x": 0.7071067811865476,
+        "y": -0.7071067811865476
+      },
+      "prone": false,
+      "bullets": 7
+    },
+    {
+      "entity": "hero",
+      "pose": "aim-diag-up",
+      "frame": "playtest/acceptance/frames/weapon/hero-aim-diag-up-1.png",
+      "weaponKey": "rifle",
+      "facing": 1,
+      "aiming": {
+        "x": 0.7071067811865476,
+        "y": -0.7071067811865476
+      },
+      "prone": false,
+      "bullets": 7
+    },
+    {
+      "entity": "hero",
+      "pose": "aim-diag-up",
+      "frame": "playtest/acceptance/frames/weapon/hero-aim-diag-up-2.png",
+      "weaponKey": "rifle",
+      "facing": 1,
+      "aiming": {
+        "x": 0.7071067811865476,
+        "y": -0.7071067811865476
+      },
+      "prone": false,
+      "bullets": 8
+    },
+    {
+      "entity": "hero",
+      "pose": "prone",
+      "frame": "playtest/acceptance/frames/weapon/hero-prone-0.png",
+      "weaponKey": "rifle",
+      "facing": 1,
+      "aiming": {
+        "x": 1,
+        "y": 0
+      },
+      "prone": true,
+      "bullets": 12
+    },
+    {
+      "entity": "hero",
+      "pose": "prone",
+      "frame": "playtest/acceptance/frames/weapon/hero-prone-1.png",
+      "weaponKey": "rifle",
+      "facing": 1,
+      "aiming": {
+        "x": 1,
+        "y": 0
+      },
+      "prone": true,
+      "bullets": 13
+    },
+    {
+      "entity": "hero",
+      "pose": "prone",
+      "frame": "playtest/acceptance/frames/weapon/hero-prone-2.png",
+      "weaponKey": "rifle",
+      "facing": 1,
+      "aiming": {
+        "x": 1,
+        "y": 0
+      },
+      "prone": true,
+      "bullets": 13
+    },
+    {
+      "entity": "turret",
+      "pose": "at-x251",
+      "frame": "playtest/acceptance/frames/weapon/turret-0.png",
+      "kind": "turret",
+      "active": true,
+      "px": 251
+    },
+    {
+      "entity": "turret",
+      "pose": "at-x256",
+      "frame": "playtest/acceptance/frames/weapon/turret-1.png",
+      "kind": "turret",
+      "active": true,
+      "px": 256
+    },
+    {
+      "entity": "turret",
+      "pose": "at-x256",
+      "frame": "playtest/acceptance/frames/weapon/turret-2.png",
+      "kind": "turret",
+      "active": true,
+      "px": 256
+    },
+    {
+      "entity": "turret",
+      "pose": "at-x256",
+      "frame": "playtest/acceptance/frames/weapon/turret-3.png",
+      "kind": "turret",
+      "active": true,
+      "px": 256
+    }
+  ],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "turretCaptured": true,
+  "heroPoses": [
+    "aim-right",
+    "aim-up",
+    "aim-diag-up",
+    "prone"
+  ],
+  "heroWeaponKeys": [
+    "rifle"
+  ],
+  "note": "VERDICT IS BY LOOKING: read frames/weapon/*.png and assert exactly ONE weapon per entity, drawn where it fires (CREATOR_FEEDBACK.md round 2). CV cannot make this call."
+}
