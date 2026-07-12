@@ -1,0 +1,85 @@
+{
+  "ts": "2026-07-12T03:07:16.157Z",
+  "publicUrl": "https://shivaconverge.github.io/contra-run-and-gun/",
+  "localOnly": false,
+  "ran": [
+    {
+      "harness": "scope-served",
+      "mode": "local",
+      "attempts": 1,
+      "invalid": false
+    },
+    {
+      "harness": "scope-served",
+      "mode": "public",
+      "attempts": 1,
+      "invalid": false
+    },
+    {
+      "harness": "weapon-fidelity",
+      "mode": "local",
+      "exit": 0
+    },
+    {
+      "harness": "weapon-fidelity",
+      "mode": "public",
+      "exit": 0
+    }
+  ],
+  "checks": [
+    {
+      "id": "local.scope_served==7/7",
+      "passed": true,
+      "detail": "7/7"
+    },
+    {
+      "id": "local.victory",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "public.scope_served==7/7",
+      "passed": true,
+      "detail": "7/7"
+    },
+    {
+      "id": "public.victory",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "public.deployDrift==none",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "id": "public.normalProgression(keyBindingProven)",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "id": "local.weaponEvidenceCaptured",
+      "passed": true,
+      "detail": "16 crops, turret=true"
+    },
+    {
+      "id": "public.weaponEvidenceCaptured",
+      "passed": true,
+      "detail": "16 crops, turret=true"
+    }
+  ],
+  "weaponLookingVerdict": {
+    "verdict": "PASS",
+    "date": "2026-07-12",
+    "stale": false,
+    "changedRenderPaths": [],
+    "renderHashesNow": {
+      "game/src/render.js": "d57dd3e8b69f126b",
+      "game/src/player.js": "216a310f71151ab4"
+    },
+    "note": "Render path unchanged since the by-looking PASS; the recorded verdict still applies to the captured frames."
+  },
+  "scope_served": "7/7",
+  "scope_served_source": "public-url",
+  "verdict": "PASS"
+}

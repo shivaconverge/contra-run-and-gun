@@ -1,7 +1,7 @@
 {
-  "ts": "2026-07-12T02:36:05.248Z",
+  "ts": "2026-07-12T03:07:59.793Z",
   "mode": "local",
-  "target": "http://127.0.0.1:56547",
+  "target": "http://127.0.0.1:59285",
   "killedProcs": [],
   "captures": [
     {
@@ -80,7 +80,7 @@
         "y": -1
       },
       "prone": false,
-      "bullets": 8
+      "bullets": 7
     },
     {
       "entity": "hero",
@@ -145,7 +145,7 @@
         "y": 0
       },
       "prone": true,
-      "bullets": 13
+      "bullets": 12
     },
     {
       "entity": "hero",
@@ -158,39 +158,39 @@
         "y": 0
       },
       "prone": true,
-      "bullets": 13
+      "bullets": 12
     },
     {
       "entity": "turret",
-      "pose": "at-x251",
+      "pose": "at-x250",
       "frame": "playtest/acceptance/frames/weapon/turret-0.png",
       "kind": "turret",
       "active": true,
-      "px": 251
+      "px": 250
     },
     {
       "entity": "turret",
-      "pose": "at-x256",
+      "pose": "at-x255",
       "frame": "playtest/acceptance/frames/weapon/turret-1.png",
       "kind": "turret",
       "active": true,
-      "px": 256
+      "px": 255
     },
     {
       "entity": "turret",
-      "pose": "at-x256",
+      "pose": "at-x255",
       "frame": "playtest/acceptance/frames/weapon/turret-2.png",
       "kind": "turret",
       "active": true,
-      "px": 256
+      "px": 255
     },
     {
       "entity": "turret",
-      "pose": "at-x256",
+      "pose": "at-x255",
       "frame": "playtest/acceptance/frames/weapon/turret-3.png",
       "kind": "turret",
       "active": true,
-      "px": 256
+      "px": 255
     }
   ],
   "consoleErrors": [

@@ -1,0 +1,20 @@
+{
+  "axis": "two-weapon-defect",
+  "verdict": "PASS",
+  "verdictType": "by-looking (multimodal player-POV, NOT a CV threshold)",
+  "date": "2026-07-12",
+  "targets": ["local-serve", "public-url"],
+  "summary": "Hero shows exactly ONE rifle held in both hands, pointing where it fires (muzzle flash at the barrel tip) in aim-right and aim-up; the turret shows ONE gunmetal barrel on a weaponless dome. No phantom waist gun / second baked weapon on either entity. Confirmed on both the local serve and the deployed public URL.",
+  "evidenceFrames": [
+    "frames/weapon/hero-aim-right-1.png",
+    "frames/weapon/hero-aim-up-1.png",
+    "frames/weapon/turret-1.png",
+    "frames/weapon/public/hero-aim-right-1.png",
+    "frames/weapon/public/hero-aim-up-1.png"
+  ],
+  "renderPathHashesAtVerdict": {
+    "note": "The hero/turret weapon LOOK only changes if the render code (or its sprite assets) change. run-acceptance.mjs recomputes these and flags the by-looking verdict as POSSIBLY-STALE if they differ — a human must then re-look, so the recorded verdict can never silently mask a render regression.",
+    "game/src/render.js": "d57dd3e8b69f126b",
+    "game/src/player.js": "216a310f71151ab4"
+  }
+}
