@@ -335,10 +335,22 @@ referenced decor key loads (no invisible set-dressing). The full matrix is in
   best boss HP 60/90. Unchanged by BAL-4 (arcade reverts to rifle by design).
 - **Intended behavior (the test asserts this):** a real player of *ordinary* skill should be
   able to progress past boss 1 in the default (arcade) mode without perfect pattern-play.
-- **Owner/fix:** root.C — decide intended arcade boss-1 difficulty; if too steep, ease
-  `enemies.boss` fire cadence/bullet-speed in `config.js` and/or add a mid-arena weapon
-  capsule to blunt the death→rifle spiral (BAL-4). Left as a **recorded finding**, not
-  worked around — re-run this harness to confirm arcade reaches ≥ Stage 2 after tuning.
+- **⚠️ NEW — cadence is NOT the lever (`boss1-sensitivity.mjs`, 2026-07-12):** I swept the
+  Stage-1 boss's fire cadence live from ×1.0 → ×2.5 (fireEvery 92 → 230) and drove the
+  baseline bot each time. **It never cleared at any factor** — deaths stayed at **exactly 4**
+  and the boss never dropped below **~46/90 HP** even at 2.5× slower fire. So **slowing boss
+  fire will NOT move the arcade wall** for a baseline run; the wall is **DPS/dodge-skill
+  bound**, not fire-rate bound (the ~4-death floor is a roughly fixed set of aimed shots this
+  bot won't dodge, and each death reverts arcade to the low-DPS rifle so the boss is never
+  out-damaged). This also *supports* the wall being **human-fair** — a skill artifact of a
+  non-dodging bot, not unfair fire volume.
+- **Owner/fix (redirected by the probe):** root.C — if baseline-clearable arcade is intended,
+  the effective lever is **player DPS retention** (a mid-arena weapon capsule so a post-death
+  player isn't stuck on rifle vs 90 HP) or **lower boss HP**, **NOT** fire cadence. If
+  expert-tuned arcade is intended, the current values are defensible — the invincible pass
+  proves defeatable, and the bot-only failure is consistent with a fight a skilled human
+  passes. Recorded, not worked around; re-run the gate to confirm arcade reaches ≥ Stage 2
+  after any DPS-side change. Data: `boss1-sensitivity.json`.
 
 ### 2026-07-12 — [BAL-2] Casual campaign stalls at a chopper survival spike — now **Stage-4** (was Stage-2)
 - **Status update (BAL-4 shipped):** root.C's mode-gated weapon-retention (BAL-4) moved this

@@ -1,0 +1,90 @@
+{
+  "ts": "2026-07-12T11:00:22.348Z",
+  "seed": 1234,
+  "mode": "arcade",
+  "stage": 1,
+  "boss": "Sentinel",
+  "note": "baseline bot; live cadence override (what-if, no source edit); factor = ×fireEvery (bigger = slower fire)",
+  "baselineFireEvery": 92,
+  "firstClearFactor": null,
+  "firstClearFireEvery": null,
+  "rows": [
+    {
+      "factor": 1,
+      "fireEvery": 92,
+      "enrageFireEvery": 54,
+      "cleared": false,
+      "deaths": 4,
+      "minBossHp": 60,
+      "bossHpMax": 90,
+      "survivalSec": 30.2,
+      "outcome": "gameover"
+    },
+    {
+      "factor": 1.15,
+      "fireEvery": 106,
+      "enrageFireEvery": 62,
+      "cleared": false,
+      "deaths": 4,
+      "minBossHp": 58,
+      "bossHpMax": 90,
+      "survivalSec": 31.6,
+      "outcome": "gameover"
+    },
+    {
+      "factor": 1.3,
+      "fireEvery": 120,
+      "enrageFireEvery": 70,
+      "cleared": false,
+      "deaths": 4,
+      "minBossHp": 57,
+      "bossHpMax": 90,
+      "survivalSec": 34.3,
+      "outcome": "gameover"
+    },
+    {
+      "factor": 1.5,
+      "fireEvery": 138,
+      "enrageFireEvery": 81,
+      "cleared": false,
+      "deaths": 4,
+      "minBossHp": 46,
+      "bossHpMax": 90,
+      "survivalSec": 36.9,
+      "outcome": "gameover"
+    },
+    {
+      "factor": 1.75,
+      "fireEvery": 161,
+      "enrageFireEvery": 95,
+      "cleared": false,
+      "deaths": 4,
+      "minBossHp": 54,
+      "bossHpMax": 90,
+      "survivalSec": 36.5,
+      "outcome": "gameover"
+    },
+    {
+      "factor": 2,
+      "fireEvery": 184,
+      "enrageFireEvery": 108,
+      "cleared": false,
+      "deaths": 4,
+      "minBossHp": 62,
+      "bossHpMax": 90,
+      "survivalSec": 32.5,
+      "outcome": "gameover"
+    },
+    {
+      "factor": 2.5,
+      "fireEvery": 230,
+      "enrageFireEvery": 135,
+      "cleared": false,
+      "deaths": 4,
+      "minBossHp": 46,
+      "bossHpMax": 90,
+      "survivalSec": 36.2,
+      "outcome": "gameover"
+    }
+  ]
+}
